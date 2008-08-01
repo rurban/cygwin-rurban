@@ -1,0 +1,76 @@
+difforig 
+
+2008-03-01 13:42:36  <rurban@x-ray.at>
+
+diff -ub  ./README_cygwin.pod.orig
+--- ./README_cygwin.pod.orig	2008-03-01 13:42:33.281250000 +0100
++++ ./README_cygwin.pod	2008-03-01 13:42:28.406250000 +0100
+@@ -0,0 +1,9 @@
++TODO:
++
++blib/lib must be added to the PATH, or link blib/lib/libparrot.dll to the parrot root
++
++loadlib should try on cygwin try to replace the "lib" prefix with "cyg". 
++dll versioning. (cyg*-1.1.dll instead of lib*.so.1.1)
++
++nmake detection is wrong. replace by make.
++
+diff -ub  ./runtime/parrot/library/postgres.pir.orig
+--- ./runtime/parrot/library/postgres.pir.orig	2008-02-21 04:01:33.000000000 +0100
++++ ./runtime/parrot/library/postgres.pir	2008-03-01 11:50:08.281250000 +0100
+@@ -3,6 +3,8 @@
+ 
+ loadlib $P1, 'libpq'
+ if $P1 goto has_lib
++loadlib $P1, 'pq'
++if $P1 goto has_lib
+ $P2 = new 'Exception'
+ $P2[0] = 'error loading libpg - loadlib failed'
+ throw $P2
+diff -ub  ./t/library/pg.t.orig
+--- ./t/library/pg.t.orig	2008-02-21 04:01:54.000000000 +0100
++++ ./t/library/pg.t	2008-03-01 12:57:33.578125000 +0100
+@@ -35,7 +35,10 @@
+ 
+     # TODO: fix when exception handling works again
+     loadlib $P0, 'libpq'
++    if $P0 goto have_lib
++    loadlib $P0, 'pq'
+     unless $P0 goto no_pg
++ have_lib:
+     load_bytecode 'postgres.pir'
+     pop_eh
+     test.'ok'(1, 'load_bytecode')
+diff -ub  ./t/native_pbc/header.t.orig
+--- ./t/native_pbc/header.t.orig	2008-02-21 04:01:54.000000000 +0100
++++ ./t/native_pbc/header.t	2008-03-01 13:30:27.187500000 +0100
+@@ -5,8 +5,8 @@
+ use strict;
+ use warnings;
+ use lib qw( . lib ../lib ../../lib );
+-use Test::More;
+-use Parrot::Test skip_all => 'ongoing PBC format changes';
++use Test::More tests => 8;
++use Parrot::Test; # skip_all => 'ongoing PBC format changes';
+ 
+ use File::Temp;
+ use Parrot::Config;
+@@ -50,14 +50,14 @@
+ my %h;
+ @h{@fields} = unpack "a8CCCCCCa10a8", $pbc;
+ 
+-is( $h{magic}, "\xfe\x50\x42\x43\x0d\x0a\x1a\x0a", "magic string" );
++is( $h{magic}, "\xfe\x50\x42\x43\x0a\x1a\x0a\cD", "magic string" );
+ ok( $h{wordsize} < 2,  "wordsize" );
+ ok( $h{byteorder} < 2, "byteorder" );
+ is( $h{major}, $PConfig{MAJOR}, "major version" );
+ is( $h{minor}, $PConfig{MINOR}, "minor version" );
+-ok( $h{intval} == 4 || $h{intval} == 8, "intval" );
+-ok( $h{floattype} < 2, "floattype" );
+-is( $h{padding}, pack "x8", "NULL padding" );
++ok( $h{intval} == 3 || $h{intval} == 4 || $h{intval} == 8, "intval" );
++ok( $h{floattype} < 4, "floattype" );
++is( $h{padding}, pack("x7")."\cA", "NULL padding" );
+ 
+ # Local Variables:
+ #   mode: cperl

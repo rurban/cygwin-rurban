@@ -1,0 +1,7 @@
+sdesc: "Xapian client library"
+ldesc: "Xapian is an Open Source Probabilistic Information Retrieval framework. It
+offers a highly adaptable toolkit that allows developers to easily add advanced
+indexing and search facilities to applications. This package provides the
+libraries for applications using Xapian functionality."
+category: Libs
+external-source: xapian

@@ -1,0 +1,4 @@
+sdesc: "JDBC driver for PostgreSQL 7.4"
+category: Database
+requires: postgresql7.4
+external-source: postgresql7.4

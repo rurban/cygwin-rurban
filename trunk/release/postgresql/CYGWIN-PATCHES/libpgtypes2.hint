@@ -1,0 +1,7 @@
+sdesc: "shared library cygpgtypes.dll for PostgreSQL 8.2"
+ldesc: "The libpgtypes shared library is used by programs built with ecpg.
+(Embedded PostgreSQL for C).
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Libs
+external-source: postgresql

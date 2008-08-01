@@ -1,0 +1,4 @@
+sdesc: "Fulltext Indexer"
+ldesc: "Simple Web Indexing System for Humans: C++ version"
+category: Text
+requires: cygwin zlib

@@ -1,0 +1,9 @@
+sdesc: "GDAL library and includes"
+ldesc: "GDAL is a translator library for raster geospatial data formats
+that is released under an X/MIT style Open Source license. As a
+library, it presents a single abstract data model to the calling
+application for all supported formats. Also includes OGR (vector data) 
+and libgeotiff."
+external-source: gdal
+category: Libs Science
+requires: cygwin sqlite3 gdal

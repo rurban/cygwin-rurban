@@ -1,0 +1,10 @@
+category: Libs
+requires: cygwin
+external-source: icu
+sdesc: "IBM Internationalization Components for Unicode (runtime libs)"
+ldesc: "ICU is a C++ and C library that provides robust and full-featured 
+Unicode and locale support. Only libicu38 is required for runtime.
+The ICU C/C++ project is also called ICU4C when a distinction to 
+the java library ICU4J is necessary.
+For runtime only this package is needed."
+

@@ -1,0 +1,65 @@
+libassuan
+------------------------------------------
+Libassuan is a small library implementing the so-called Assuan
+protocol. This protocol is used for IPC between most newer GnuPG
+components. Both, server and client side functions are provided.
+
+Runtime requirements:
+  cygwin
+
+Build requirements:
+  cygwin
+  cygport
+  libtool
+  automake
+  gcc-core
+
+Canonical homepage:
+  http://www.gnupg.org/(en)/related_software/libassuan/
+
+Canonical download:
+  http://ftp.gnupg.zone-h.org/alpha/libassuan/libassuan-${PV}.tar.bz2
+
+------------------------------------------
+Build instructions:
+  unpack libassuan-<VER>-<CYGREL>-src.tar.bz2
+    if you use setup to install this src package, it will be
+	 unpacked under /usr/src automatically
+  cd /usr/src
+  cygport libassuan-<VER>-<CYGREL>.cygport almostall
+
+This will create:
+  /usr/src/libassuan-<VER>-<CYGREL>.tar.bz2
+  /usr/src/libassuan-<VER>-<CYGREL>-src.tar.bz2
+Or use 'cygport libassuan-<VER>-<CYGREL>.cygport prep' to get a patched source directory 
+
+------------------------------------------
+
+Files included in the package:
+
+  /etc/postinstall/libassuan.sh
+  /usr/bin/libassuan-config
+  /usr/include/assuan.h
+  /usr/lib/libassuan.a
+  /usr/share/aclocal/libassuan.m4
+  /usr/share/doc/Cygwin/libassuan-0.6.10.README
+  /usr/share/doc/libassuan-0.6.10/AUTHORS
+  /usr/share/doc/libassuan-0.6.10/COPYING
+  /usr/share/doc/libassuan-0.6.10/ChangeLog
+  /usr/share/doc/libassuan-0.6.10/INSTALL
+  /usr/share/doc/libassuan-0.6.10/NEWS
+  /usr/share/doc/libassuan-0.6.10/README
+  /usr/share/doc/libassuan-0.6.10/THANKS
+  /usr/share/doc/libassuan-0.6.10/TODO
+  /usr/share/info/assuan.info.gz
+
+------------------------------------------
+
+Port Notes:
+
+----------- version 0.6.10-1 --------------
+Initial release for a private gnupg-1.9.20-1
+
+------------------------------------------
+
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>

@@ -1,0 +1,149 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/swish++-6.1.4/GNUmakefile src/swish++-6.1.4/GNUmakefile
+--- origsrc/swish++-6.1.4/GNUmakefile	2005-06-23 15:45:33.000000000 +0000
++++ src/swish++-6.1.4/GNUmakefile	2006-07-21 21:32:29.359334700 +0000
+@@ -19,7 +19,16 @@
+ #	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ ##
+ 
+-CPP_TARGET:=	index search extract
++INDEX_EXE    := index 
++SEARCH_EXE   := search 
++EXTRACT_EXE  := extract
++ifdef WIN32
++INDEX_EXE    := index.exe
++SEARCH_EXE   := search.exe
++EXTRACT_EXE  := extract.exe
++endif
++CPP_TARGET:=	$(INDEX_EXE) $(SEARCH_EXE) $(EXTRACT_EXE)
++I_OBJECTS:=	$(I_SOURCES:.c=.o)
+ BIN_TARGET:=	$(CPP_TARGET)
+ SCRIPTS:=	$(patsubst %.in,%,$(wildcard scripts/*.in))
+ INITD_TARGET:=	searchd
+@@ -183,10 +192,10 @@
+ # Build rules
+ ##
+ 
+-extract: $(E_OBJECTS)
++$(EXTRACT_EXE): $(E_OBJECTS)
+ 	$(CC) $(CFLAGS) -o $@ $^ $(E_LINK)
+ 
+-index: $(I_OBJECTS) $(CHARSET_LIB) $(ENCODING_LIB) $(MOD_LIBS)
++$(INDEX_EXE): $(I_OBJECTS) $(CHARSET_LIB) $(ENCODING_LIB) $(MOD_LIBS)
+ 	$(CC) $(CFLAGS) $(CHARSET_LIB_PATH) $(ENCODING_LIB_PATH) \
+ 		$(MOD_LIB_PATHS) -o $@ $(I_OBJECTS) $(I_LINK)
+ 
+@@ -196,7 +205,7 @@
+ init_mod_vars.c: mod/*/vars init_mod_vars-sh
+ 	./init_mod_vars-sh > $@ || $(RM) $@
+ 
+-search: $(S_OBJECTS)
++$(SEARCH_EXE): $(S_OBJECTS)
+ 	$(CC) $(CFLAGS) -o $@ $^ $(S_LINK)
+ 
+ $(CHARSET_LIB): FORCE
+@@ -233,27 +242,27 @@
+ INITD_DIR:= $(firstword $(shell ls -d /etc/init.d /etc/rc.d/init.d 2>/dev/null))
+ LEVEL_DIR=  $(firstword $(shell ls -d /etc/rc$1.d /etc/rc.d/rc$1.d 2>/dev/null))
+ 
+-install: install_bin install_lib install_man install_conf
++install: install_bin install_lib install_man install_conf install_ex
+ 
+-install_bin: $(BIN_TARGET) $(I_BIN)
+-	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $(BIN_TARGET) $(I_BIN)
+-	cd $(I_BIN) && $(STRIP) $(CPP_TARGET)
++install_bin: $(BIN_TARGET) $(DESTDIR)$(I_BIN)
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $(BIN_TARGET) $(DESTDIR)$(I_BIN)
++	cd $(DESTDIR)$(I_BIN) && $(STRIP) $(CPP_TARGET)
+ 	@$(MAKE) -C scripts $@
+ 
+-install_lib: $(I_LIB)
+-	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_MODE) $(LIB_TARGET) $(I_LIB)
++install_lib: $(DESTDIR)$(I_LIB)
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_MODE) $(LIB_TARGET) $(DESTDIR)$(I_LIB)
+ 
+ install_man:
+ 	@$(MAKE) -C man install
+ 
+-install_conf: $(I_ETC)
+-	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_MODE) swish++.conf $(I_ETC)
++install_conf: $(DESTDIR)$(I_ETC)
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_MODE) swish++.conf $(DESTDIR)$(I_ETC)
+ 
+-$(I_BIN) $(I_ETC) $(I_LIB):
++$(DESTDIR)$(I_BIN) $(DESTDIR)$(I_ETC) $(DESTDIR)$(I_LIB):
+ 	$(MKDIR) $@
+ 
+ install_sysv: scripts/$(INITD_TARGET)
+-	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $< $(INITD_DIR)
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $< $(DESTDIR)$(INITD_DIR)
+ 	$(RM) $(call LEVEL_DIR,1)/K99$(INITD_TARGET)
+ 	$(RM) $(call LEVEL_DIR,2)/K99$(INITD_TARGET)
+ 	$(RM) $(call LEVEL_DIR,3)/S99$(INITD_TARGET)
+@@ -265,10 +274,18 @@
+ 	ln -s ../init.d/$(INITD_TARGET) $(call LEVEL_DIR,5)/S99$(INITD_TARGET)
+ 	ln -s ../init.d/$(INITD_TARGET) $(call LEVEL_DIR,6)/K99$(INITD_TARGET)
+ 
++install_ex: scripts/httpindex scripts/splitmail
++	$(MKDIR) $(DESTDIR)$(I_ROOT)/share/swish++/
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) $< $(DESTDIR)$(I_ROOT)/share/swish++/
++	$(MKDIR) $(DESTDIR)$(I_ROOT)/var/www/cgi-bin
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) www_example/search.cgi $(DESTDIR)$(I_ROOT)/var/www/cgi-bin/
++	$(MKDIR) $(DESTDIR)$(I_ROOT)/var/www/htdocs
++	$(INSTALL) $(I_OWNER) $(I_GROUP) $(I_XMODE) www_example/search.html $(DESTDIR)$(I_ROOT)/var/www/htdocs/
++
+ uninstall:
+-	cd $(I_BIN) && $(RM) $(BIN_TARGET)
+-	cd $(I_LIB) && $(RM) $(LIB_TARGET)
+-	$(RM) $(INITD_DIR)/$(INITD_TARGET) \
++	cd $(DESTDIR)$(I_BIN) && $(RM) $(DESTDIR)$(BIN_TARGET)
++	cd $(DESTDIR)$(I_LIB) && $(RM) $(DESTDIR)$(LIB_TARGET)
++	$(RM) $(DESTDIR)$(INITD_DIR)/$(INITD_TARGET) \
+ 		$(call LEVEL_DIR,1)/K99$(INITD_TARGET) \
+ 		$(call LEVEL_DIR,2)/K99$(INITD_TARGET) \
+ 		$(call LEVEL_DIR,3)/S99$(INITD_TARGET) \
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/swish++-6.1.4/www_example/search.cgi src/swish++-6.1.4/www_example/search.cgi
+--- origsrc/swish++-6.1.4/www_example/search.cgi	2002-12-17 17:27:20.000000000 +0000
++++ src/swish++-6.1.4/www_example/search.cgi	2006-07-21 21:24:41.485206200 +0000
+@@ -1,4 +1,4 @@
+-#! /usr/local/bin/perl
++#! /usr/bin/perl
+ ###############################################################################
+ #
+ # NAME
+@@ -30,19 +30,19 @@
+ #
+ ###############################################################################
+ 
+-use lib qw( /home/www/swish++/lib/ );
++# use lib qw( /home/www/swish++/lib/ );
+ #		Put the path to where the WWW library is above.
+-require WWW;
++require SWISH::WWW;
+ 
+-$SWISH_BIN =	'/usr/local/bin';
++$SWISH_BIN =	'/usr/bin';
+ #		The full path to the bin directory where you installed the
+ #		SWISH++ executables.
+ 
+-$DOC_ROOT =	'/home/www/httpd/htdocs';
++$DOC_ROOT =	'/var/www/htdocs';
+ #		The top-level directory for your document tree presumeably
+ #		where the index was generated from.
+ 
+-$INDEX_FILE =	'/home/www/swish++.index';
++$INDEX_FILE =	'/var/www/swish++.index';
+ #		The full path to the index file to be searched through.
+ 
+ #$SOCKET_FILE =	'/tmp/search.socket';
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/swish++-6.1.4/www_example/search.html src/swish++-6.1.4/www_example/search.html
+--- origsrc/swish++-6.1.4/www_example/search.html	2001-12-08 05:13:13.000000000 +0000
++++ src/swish++-6.1.4/www_example/search.html	2006-07-21 21:34:46.901808200 +0000
+@@ -26,7 +26,7 @@
+     // -->
+   </script>
+ 
+-  <form action="search.cgi" onsubmit="return not_empty( Search )">
++  <form action="/cgi-bin/search.cgi" onsubmit="return not_empty( Search )">
+     <input type="text" name="Search" size="30" /><br />
+     <input type="checkbox" name="Stem"><b>Stem&nbsp;words</b>
+     <input type="submit" value="Search" />

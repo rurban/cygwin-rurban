@@ -1,0 +1,580 @@
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/README src/postgresql-8.2.9/CYGWIN-PATCHES/README
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/README	2008-06-24 19:01:56.937500000 +0000
+@@ -0,0 +1,177 @@
++postgresql-8.2.x
++------------------------------------------
++PostgreSQL is an advanced Object-Relational database management system
++(DBMS) that supports almost all SQL constructs (including transactions,
++subselects and user-defined types and functions).
++
++Admin binaries are now in /usr/sbin/
++Contrib binaries in /usr/lib/postgreql/bin
++cygrunsrv is not required anymore, pg_ctl has now the service functions 
++included. 
++cygserver must run as service, CYGWIN must contain server.
++Build via cygport.
++
++Runtime requirements:
++  crypt-1.1-1		or newer
++  cygwin-1.5.18-1	or newer
++  libiconv2-1.9.2-2	or newer
++  libintl3-0.14.5-1	or newer
++  libreadline6-5.0-4	or newer
++  openssl-0.9.8a-1	or newer
++  zlib-1.2.3-1		or newer
++  perl-5.10.x	  	(optional, for plperl. every 5.10.x version)
++  python-2.5.x    	(optional, for plpython. every 2.5 version will work)
++
++Build requirements: (additionally)
++  cygport
++  gcc-core 3.3.x    or newer (libtool-devel-1.5.10 not required)
++  binutils-20040725-2   or newer
++  make-3.80-1           or newer
++  fileutils-4.1         or newer
++  sed-4.1.2-1           or newer
++  m4-1.4-1
++
++  OpenSP-1.5.1-1        (for man rebuilding)
++  docbook-xml42	 	(for man rebuilding)
++  cpan SGMLSpm          (for man rebuilding)
++  docbook2X      	(for man rebuilding)
++  docbook2man-sgmlspl   (for man rebuilding)
++  Sun JDK 1.4.x         (optional, for pgjava only)
++  Ant 1.5		(?)
++
++Canonical homepage:
++  http://www.postgresql.org
++
++Canonical download:
++  ftp://ftp.postgresql.org
++
++------------------------------------
++
++Build instructions:
++  cygport postgresql-<VER>-<REL>.cygport prep compile install check package finish
++
++This will create:
++  /usr/src/postgresql-<VER>-<REL>-src.tar.bz2
++  /usr/src/postgresql-<VER>-<REL>.tar.bz2
++
++Or use 'cygport postgresql-<VER>-<REL>.cygport prep' to get a patched source directory
++
++------------------
++Files:
++
++Package layout see postgresql-<VER>-<REL>.cygport
++
++-----------------------------------------------------------
++
++Port Notes:
++
++----------  postgresql-8.2.9-1 ------------ 
++update to perl-5.10.0-4
++----------  postgresql-8.2.6-1 (not uploaded) ------------ 
++removed dll versioning again: ffi problems
++----------  postgresql-8.2.5-1 ------------ 
++perl-5.8.8 and python-2.5
++----------  postgresql-8.2.4-1 (not uploaded) ------------ 
++no changes
++----------  postgresql-8.2.0-1 (not uploaded) ------------ 
++libpq5: started dll versioning, cyg$(NAME)$(SO_MAJOR_VERSION).dll
++
++----------  postgresql-8.2beta2-1 (not uploaded) ---------
++no changes
++----------  postgresql-8.1.5-0 (not uploaded) ------------ 
++no changes
++----------  postgresql-8.1.4-2 (not uploaded) ------------ 
++added make -j1
++fixed missing and duplicate files
++
++----------  postgresql-8.1.4-1 (not uploaded) ----- 
++small improvements in .cygport funcs, 
++no autoreconf not to #undef const (fails in flex)
++see below in 8.1.3-2
++
++----------  postgresql-8.1.3-2 (not uploaded) ----- 
++split into seperate packages as in debian
++changed buildmethod from gbs to cygport
++changed SOCKETDIR back to /tmp in init.d script
++  problems with clients on socket connections
++
++----------  postgresql-8.1.3-1 + 8.0.7-1 -----------
++none
++
++----------  postgresql-8.1.2-1 + 8.0.6-1 -----------
++fixed cp backend/libpostgres.a in gbs
++
++----------  postgresql-8.0.3-1 + 8.1beta1-1 -----------
++Fixed IPC problems. 
++Moved pg_dumpall back to /bin for pg_dump to work.
++Added /usr/lib/libpostgres.a manually.
++Added init.d script:
++  SOCKETDIR=/tmp/postgresql
++
++----------  postgresql-8.0.0-1  ----------- (NEVER RELEASED)
++Still IPC problems
++
++----------  postgresql-8.0.0beta5-1  ----------- (NEVER RELEASED)
++Builds OOTB, all patches accepted upstream.
++Still IPC problems
++
++----------  postgresql-8.0.0beta4-1 ----------- (NEVER RELEASED)
++- pg_ctl register fixed.
++- unsolvable concurrency problems since beta3, which are 
++  probably related to cygserver bugs?
++
++----------  postgresql-8.0.0cvs-2 ----------- (NEVER RELEASED)
++- Removed broken postinstall and preremove scripts.
++  Save and restore will have to be done manually.
++- Layout: Seperated admin (/usr/sbin) from user applications (/usr/bin) 
++  and contrib bins (usr/lib/postgresql/bin)
++- plperl and tablespace was fixed upstream
++
++----------  postgresql-8.0.0cvs-1 -----------
++Maintainership changed from Jason Tishler to Reini Urban.
++nls and charset translation support (not only -E Latin1). Building via gbs.
++Improved IPC and signals handling. Up to 50 max_connections 
++possible, but 5 are still recommended. max 63 hardlimit on cygwin.
++Added new postinstall and preremove recipes to save and restore the 
++old databases into /var/tmp/db.out.gz.
++Added contrib binaries, libs, data and docs. (Wrong. was in 7.4.5 also)
++
++TODO: add /usr/lib/postgresql/ to the postmaster service path.
++      add init.d service installer/uninstaller as with clamav.
++      fix tablespace breakage. (symlink => hardlink)
++
++----------  postgresql-7.4.5-1 -----------
++First cygserver release, ipc-daemon2 not supported anymore.
++Note: If you haven't uninstalled ipc-daemon2, it will be built against it, 
++and will therefore fail when cygserver is running.
++
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please report problems, suggestions, etc. dependent on their nature to one of
++the following:
++
++    pgsql-cygwin@postgresql.org
++    cygwin@cygwin.com
++
++======================================================================
++
++Installation:
++
++For the impatient: install as service (hard)
++
++    # save old database (optional)
++    pg_dumpall -g /tmp/$$pgdump-globals.sql
++    pg_dumpall > /tmp/$$pgdump.sql
++    # adjust the settings in /etc/rc.d/init.d/postgresql
++    nano /etc/rc.d/init.d/postgresql	
++    sysbash # /etc/rc.d/init.d/postgresql initdb
++    /etc/rc.d/init.d/postgresql install
++    /etc/rc.d/init.d/postgresql start
++
++For the impatient: install as user (easy)
++
++    cygrunsrv -S cygserver
++    initdb -D /usr/share/postgresql/data
++    pg_ctl start -D /usr/share/postgresql/data -l /var/log/postgresql.log
++    createdb
++    psql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-compat2.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-compat2.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-compat2.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-compat2.hint	2008-06-23 09:41:05.234375000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "older version of run-time library for ECPG programs"
++ldesc: "The libecpg_compat shared library is used by programs built with ecpg.
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-devel.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-devel.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg-devel.hint	2008-06-23 09:41:05.234375000 +0000
+@@ -0,0 +1,12 @@
++sdesc: "development files for ECPG (Embedded PostgreSQL for C)"
++ldesc: "This package contains the necessary files to build ECPG (Embedded
++PostgreSQL for C) programs. It includes the development libraries
++and the preprocessor program ecpg.
++.
++PostgreSQL is an object-relational SQL database management system.
++.
++Install this package if you want to write C programs with SQL statements
++embedded in them (rather than run by an external process)."
++category: Devel Libs
++requires: libpq-devel openssl-devel libecpg-compat2
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg5.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg5.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libecpg5.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libecpg5.hint	2008-06-23 09:41:05.296875000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "run-time library for ECPG programs"
++ldesc: "The libecpg shared library is used by programs built with ECPG
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpgtypes2.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libpgtypes2.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpgtypes2.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libpgtypes2.hint	2008-06-23 09:41:05.359375000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "shared library cygpgtypes.dll for PostgreSQL 8.2"
++ldesc: "The libpgtypes shared library is used by programs built with ecpg.
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpq-devel.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libpq-devel.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpq-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libpq-devel.hint	2008-06-23 09:41:05.359375000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "header files for libpq5 (PostgreSQL C client library)"
++ldesc: "Header files and static library for compiling C programs to link
++with the libpq library in order to communicate with a PostgreSQL
++database backend.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Devel Libs
++requires: openssl-devel
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpq5.hint src/postgresql-8.2.9/CYGWIN-PATCHES/libpq5.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/libpq5.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/libpq5.hint	2008-06-23 09:41:05.375000000 +0000
+@@ -0,0 +1,10 @@
++sdesc: "PostgreSQL C client library"
++ldesc: "libpq is a C library that enables user programs to communicate with
++the PostgreSQL database server. The server can be on another machine
++and accessed through TCP/IP. This version of libpq is compatible
++with servers from PostgreSQL 8.2 or later.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database Libs
++requires: crypt libintl3 openssl
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-client.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-client.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-client.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-client.hint	2008-06-23 09:41:05.375000000 +0000
+@@ -0,0 +1,16 @@
++sdesc: "front-end programs for PostgreSQL 8.x"
++ldesc: "This package contains client and administrative programs for
++PostgreSQL: these are the interactive terminal client psql and
++programs for creating and removing users and databases.
++.
++This is the client package for PostgreSQL 8.x. If you install
++PostgreSQL 8.x on a standalone machine, you need the server package
++postgresql-8.x, too. On a network, you can install this package on
++many client machines, while the server package may be installed on
++only one machine.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: libpq5 crypt libncurses8 libreadline6 libintl3 openssl zlib
++external-source: postgresql
++
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-contrib.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-contrib.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-contrib.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-contrib.hint	2008-06-23 09:41:05.375000000 +0000
+@@ -0,0 +1,44 @@
++sdesc: "additional facilities for PostgreSQL 8.2"
++ldesc: "The PostgreSQL contrib package provides several additional features
++for the PostgreSQL database. This version is built to work with the
++server package postgresql-8.2. contrib often serves as a testbed for
++features before they are adopted into PostgreSQL proper:
++.
++btree_gist - B-Tree indexing using GiST (Generalised Search Tree)
++chkpass - Password type for storing and comparing encrypted passwords
++cube - Type for n-dimensional cubes
++dbf2pg - Inserts the contents of an xBase-style .dbf file into a PostgreSQL table
++dblink - Functions to return results from a remote database
++dbmirror - Trigger-based databaase mirroring 
++earthdistance - Operator for computing the distance (in miles) between two points on the earth's surface
++fti - Full text indexing using triggers
++fuzzystrmatch - Functions for fuzzy string comparison (including Soundex)
++intagg - Integer aggregator/enumerator
++intarray - RD-tree data structure using GiST index
++isbn_issn - Type extensions for ISBN (books) and ISSN (serials)
++lo - Large Object maintenance
++ltree - data types, indexed access methods and queries for data organized as a tree-like structures.
++oid2name - Maps oids to table names
++ora2pg - Conversion utility for Oracle database schemas
++pg_buffercache - Real time queries on the shared buffer cache
++pg_trgm - Determine the similarity of text based on trigram matching
++pgbench - A simple program to run a benchmark test
++pgcrypto - Cryptographic functions
++pgstattuple - Returns the percentage of dead tuples in a table; this indicates whether a vacuum is required.
++seg - Type representing laboratory measurements as floating-point intervals
++spi - PostgreSQL Server Programming Interface; 4 examples of its use:
++autoinc - A function for implementing AUTOINCREMENT/IDENTITY
++insert_username - function for inserting user names
++moddatetime - Update modification timestamps
++refint - Functions for implementing referential integrity (foreign keys). Note that this is now superseded by built-in referential integrity.
++timetravel - Re-implements in user code the time travel feature that was removed in 6.3.
++tips - Micro HOWTOs
++tsearch2 - Searchable text data type supporting indexed access
++user_locks - User-level long-term locks
++vacuumlo - Vacuum deleted large objects
++xml2 - Manipulate XML documents in the database
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-devel.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-devel.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-devel.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,12 @@
++sdesc: "development files for PostgreSQL 8.2 server-side programming"
++ldesc: "Header files for compiling SSI code to link into PostgreSQL's backend; for
++example, for C functions to be called from SQL.
++.
++This package also contains the Makefiles necessary for building add-on
++modules of PostgreSQL, which would otherwise have to be built in the
++PostgreSQL source-code tree. (slony, postgis, ...)
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Devel Database
++requires: libpq-devel libecpg-devel openssl-devel crypt libintl3 zlib
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-doc.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-doc.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-doc.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-doc.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "documentation for the PostgreSQL database management system"
++ldesc: "This package contains all README files, user manual, and examples for
++PostgreSQL 8.x. The manual is in HTML format.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plperl.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plperl.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plperl.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plperl.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "PL/Perl procedural language for PostgreSQL 8.2"
++ldesc: "PL/Perl enables an SQL developer to write procedural language functions
++for PostgreSQL 8.2 in Perl. You need this package if you have any
++PostgreSQL 8.2 functions that use the languages plperl or plperlu.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql perl
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plpython.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plpython.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plpython.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-plpython.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "PL/Python procedural language for PostgreSQL 8.2"
++ldesc: "PL/Python enables an SQL developer to write procedural language functions
++for PostgreSQL 8.2 in Python. You need this package if you have any
++PostgreSQL 8.2 functions that use the languages plpython or plpythonu.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql python
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-pltcl.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-pltcl.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-pltcl.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql-pltcl.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "PL/TCL procedural language for PostgreSQL 8.2"
++ldesc: "PL/TCL enables an SQL developer to write procedural language functions
++for PostgreSQL 8.2 in TCL. You need this package if you have any
++PostgreSQL 8.2 functions that use the languages pltcl or pltclu.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql tcltk
++external-source: postgresql
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.hint src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.hint
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.hint	2008-06-23 09:41:05.390625000 +0000
+@@ -0,0 +1,13 @@
++sdesc: "PostgreSQL Data Base Management System"
++ldesc: "PostgreSQL is a fully featured object-relational database management
++system. It supports a large part of the SQL standard and is designed
++to be extensible by users in many aspects. Some of the features are:
++ACID transactions, foreign keys, views, sequences, subqueries,
++triggers, user-defined types and functions, outer joins, multiversion
++concurrency control. Graphical user interfaces and bindings for many
++programming languages are available as well.
++.
++This package provides the database server for PostgreSQL 8.x. Servers
++for other major release versions cannot be installed simultaneously yet."
++category: Database
++requires: postgresql-client libpq5 libpgtypes2 libecpg5 crypt libintl3 openssl zlib
+diff -urN origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.initd src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.initd
+--- origsrc/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.initd	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-8.2.9/CYGWIN-PATCHES/postgresql.initd	2008-06-24 19:05:00.203125000 +0000
+@@ -0,0 +1,168 @@
++#! /bin/bash
++#
++# crond   Start/Stop/Install the PostgreSQL postmaster daemon.
++# v1.0 2005-09-21 20:28:39 rurban@x-ray.at
++#
++# chkconfig: 2345 90 60
++# description: PostgreSQL is an advanced Object-Relational database management system.
++# processname: postmaster
++# config: /usr/share/postgresql/data/postgresql.conf
++# pidfile: /usr/share/postgresql/data/postgresql.pid
++
++PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PREFIX=/usr
++PGDATA=/usr/share/postgresql/data
++CONFIG=$PGDATA/postgresql.conf
++PIDFILE=$PGDATA/postgresql.pid
++LOGFILE=/var/log/postgresql.log
++SOCKETDIR=/tmp
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++name="PostgreSQL"
++prog="postmaster"
++progdir="/usr/sbin"
++DAEMON="$progdir/$prog.exe"
++POSTMASTER_ARGS="-D $PGDATA -k $SOCKETDIR -i"
++INITDB_ARGS="-E SQL_ASCII --locale=C -D $PGDATA"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++start() {
++        echo -n $"Starting $name: "
++        check_cygserver
++	# check if cygrunsrv process
++        cygrunsrv --start $name
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++	if [ $RETVAL -ne 0 ]; then 
++	    echo "ERROR service start FAILED"; 
++	    tail $LOGFILE; 
++	fi
++        return $RETVAL
++}
++
++startlocal() {
++	echo -n $"Starting $DAEMON locally: "
++	chmod u+rw $LOGFILE $PIDFILE
++	pg_ctl start -D $PGDATA -o "-i" -l $LOGFILE
++	RETVAL=$?
++	[ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $name: "
++	cygrunsrv --stop $name
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q $name
++}
++
++restart() {
++        echo -n $"Restarting $name: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++initdb() {
++	/usr/sbin/initdb -U SYSTEM ${INITDB_ARGS} && echo "done."
++	#mkdir ${SOCKETDIR}
++	chmod -R g+rw $PGDATA
++	chgrp -R 18 $PGDATA
++}
++
++install() {
++        check_cygserver
++        echo -n $"Installing $name daemon: "
++	touch $LOGFILE $PIDFILE
++	chmod g+rw $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	cygrunsrv --install $name --path $DAEMON \
++	    --args "${POSTMASTER_ARGS}" -e CYGWIN=server \
++	    --disp "CYGWIN `$DAEMON --version`" \
++	    --dep cygserver --termsig INT --shutdown
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove $prog
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. Try $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++check_cygserver() {
++    # Check for running cygserver processes first. 
++    if ps -ef | grep -v grep | grep -q cygserver
++    then
++        echo -n "- cygserver OK - " 
++        # echo "OK cygserver running"
++    else
++  	echo "ERROR cygserver must be started"
++  	echo cygrunsrv -S cygserver
++	exit 1
++    fi
++    # check for CYGWIN containing server
++    if [ -n "${CYGWIN%server}" ] 
++    then
++  	echo "ERROR CYGWIN must contain server for cygserver to work properly"
++	exit 1
++    fi
++}
++
++case "$1" in
++  start) 	start  ;;
++  startlocal)   startlocal ;;
++  stop)         stop  ;;
++  restart)      restart  ;;
++  reload)       reload   ;;
++  initdb)       initdb   ;;
++  install)      install  ;;
++  uninstall)    uninstall ;;
++  status)       rhstatus  ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|initdb|install|uninstall|startlocal|restart|condrestart}"
++        exit 1
++esac
++
++exit $?

@@ -1,0 +1,42 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/ffcall-1.10/avcall/Makefile.in src/ffcall-1.10/avcall/Makefile.in
+--- origsrc/ffcall-1.10/avcall/Makefile.in	2004-01-25 17:34:21.000000000 +0000
++++ src/ffcall-1.10/avcall/Makefile.in	2007-12-24 17:34:37.531250000 +0000
+@@ -155,17 +155,17 @@
+ 	$(INSTALL_DATA) avcall.h $(includedir)/avcall.h
+ 
+ install : all force
+-	if [ ! -d $(DESTDIR)$(prefix) ] ; then mkdir $(DESTDIR)$(prefix) ; fi
+-	if [ ! -d $(DESTDIR)$(exec_prefix) ] ; then mkdir $(DESTDIR)$(exec_prefix) ; fi
+-	if [ ! -d $(DESTDIR)$(libdir) ] ; then mkdir $(DESTDIR)$(libdir) ; fi
++	if [ ! -d $(DESTDIR)$(prefix) ] ; then mkdir -p $(DESTDIR)$(prefix) ; fi
++	if [ ! -d $(DESTDIR)$(exec_prefix) ] ; then mkdir -p $(DESTDIR)$(exec_prefix) ; fi
++	if [ ! -d $(DESTDIR)$(libdir) ] ; then mkdir -p $(DESTDIR)$(libdir) ; fi
+ 	$(LIBTOOL_INSTALL) $(INSTALL_DATA) libavcall.la $(DESTDIR)$(libdir)/libavcall.la
+-	if [ ! -d $(DESTDIR)$(includedir) ] ; then mkdir $(DESTDIR)$(includedir) ; fi
++	if [ ! -d $(DESTDIR)$(includedir) ] ; then mkdir -p $(DESTDIR)$(includedir) ; fi
+ 	$(INSTALL_DATA) avcall.h $(DESTDIR)$(includedir)/avcall.h
+-	if [ ! -d $(DESTDIR)$(mandir) ] ; then mkdir $(DESTDIR)$(mandir) ; fi
++	if [ ! -d $(DESTDIR)$(mandir) ] ; then mkdir -p $(DESTDIR)$(mandir) ; fi
+ 	if [ ! -d $(DESTDIR)$(mandir)/man3 ] ; then mkdir $(DESTDIR)$(mandir)/man3 ; fi
+ 	$(INSTALL_DATA) $(srcdir)/avcall.3 $(DESTDIR)$(mandir)/man3/avcall.3
+-	if [ ! -d $(DESTDIR)$(datadir) ] ; then mkdir $(DESTDIR)$(datadir) ; fi
+-	if [ ! -d $(DESTDIR)$(htmldir) ] ; then mkdir $(DESTDIR)$(htmldir) ; fi
++	if [ ! -d $(DESTDIR)$(datadir) ] ; then mkdir -p $(DESTDIR)$(datadir) ; fi
++	if [ ! -d $(DESTDIR)$(htmldir) ] ; then mkdir -p $(DESTDIR)$(htmldir) ; fi
+ 	$(INSTALL_DATA) $(srcdir)/avcall.html $(DESTDIR)$(htmldir)/avcall.html
+ 
+ installdirs : force
+@@ -173,10 +173,10 @@
+ 	if [ ! -d $(DESTDIR)$(exec_prefix) ] ; then mkdir $(DESTDIR)$(exec_prefix) ; fi
+ 	if [ ! -d $(DESTDIR)$(libdir) ] ; then mkdir $(DESTDIR)$(libdir) ; fi
+ 	if [ ! -d $(DESTDIR)$(includedir) ] ; then mkdir $(DESTDIR)$(includedir) ; fi
+-	if [ ! -d $(DESTDIR)$(mandir) ] ; then mkdir $(DESTDIR)$(mandir) ; fi
++	if [ ! -d $(DESTDIR)$(mandir) ] ; then mkdir -p $(DESTDIR)$(mandir) ; fi
+ 	if [ ! -d $(DESTDIR)$(mandir)/man3 ] ; then mkdir $(DESTDIR)$(mandir)/man3 ; fi
+-	if [ ! -d $(DESTDIR)$(datadir) ] ; then mkdir $(DESTDIR)$(datadir) ; fi
+-	if [ ! -d $(DESTDIR)$(htmldir) ] ; then mkdir $(DESTDIR)$(htmldir) ; fi
++	if [ ! -d $(DESTDIR)$(datadir) ] ; then mkdir -p $(DESTDIR)$(datadir) ; fi
++	if [ ! -d $(DESTDIR)$(htmldir) ] ; then mkdir -p $(DESTDIR)$(htmldir) ; fi
+ 
+ uninstall : force
+ 	$(LIBTOOL_UNINSTALL) $(RM) $(DESTDIR)$(libdir)/libavcall.la

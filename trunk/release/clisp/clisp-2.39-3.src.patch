@@ -1,0 +1,13 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/src/makemake.in src/clisp-2.39/src/makemake.in
+--- origsrc/clisp-2.39/src/makemake.in	2006-07-15 08:11:28.000000000 +0000
++++ src/clisp-2.39/src/makemake.in	2006-08-06 17:30:05.245750000 +0000
+@@ -2309,7 +2309,8 @@
+ # in the toplevel Makefile.devel, makemake depends olso on version.sh.
+ # we do not need that here because makemake depends on config.status -
+ # depends on src/configure - depends on version.sh in Makefile.devel
+-echol "makemake : makemake.in config.status"
++# dependency hacked for cygwin's duplicate libiconv problem -rurban
++echol "makemake : config.status # makemake.in"
+ echotab "sh config.status --file=makemake"
+ echol
+ echol "unixconf.h : unixconf.h.in config.status"

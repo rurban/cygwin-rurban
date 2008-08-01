@@ -1,0 +1,128 @@
+difforig perl-current/installperl perl-current/lib/ExtUtils/t/Embed.t perl-current/cygwin/Makefile.SHs
+
+diff -u perl-current/installperl.orig perl-current/installperl
+diff -u perl-current/lib/ExtUtils/t/Embed.t.orig perl-current/lib/ExtUtils/t/Embed.t
+diff -u perl-current/cygwin/Makefile.SHs.orig perl-current/cygwin/Makefile.SHs
+--- perl-current/cygwin/Makefile.SHs.orig	2008-03-11 21:26:07.000000000 +0000
++++ perl-current/cygwin/Makefile.SHs	2008-06-30 16:03:42.109375000 +0000
+@@ -4,7 +4,8 @@
+ # Rerun `sh Makefile.SH; make depend' after making any change.
+ 
+ # Additional rules supported: libperl.a (for static linking),
+-# ld2 and perlld removed
++# ld2 and perlld removed. 
++# DynaLoader.o added to libperl
+ #
+ 
+ #! /bin/sh
+@@ -46,27 +47,29 @@
+ LIBPERL = $libperl
+ LLIBPERL= $linklibperl
+ DLLNAME= $dllname
+-CLDFLAGS= -L$addtopath $ldflags
++CLDFLAGS= -L$addtopath \$(LDFLAGS)
+ LDDLFLAGS = --shared -L$addtopath $ldflags
+ PLDLFLAGS = 
+ CAT = $cat
+ AWK = $awk
++WIN32CORE = Win32CORE.o
+ !GROK!THIS!
+ 
+ case "$useshrplib" in
+ true)
+ 	$spitshell >>Makefile <<'!NO!SUBS!'
+-cwobj = $(obj)
++cwobj = $(obj) $(DYNALOADER) $(WIN32CORE)
+ 
+ # override default rule (NB: make croaks!) to force dll usage
+ perlmain$(OBJ_EXT): perlmain.c
+ 	$(CCCMD) $(PLDLFLAGS) -DUSEIMPORTLIB $*.c
+ 
+ # library used to make statically linked executables
+-# miniperl is linked against it to avoid libperl.dll locking
+ $(LIBPERL)$(LIB_EXT): $& $(cwobj)
+ 	$(AR) rcu $@ $(cwobj)
+ 
++$(DLLNAME)$(DLSUFFIX): $(LIBPERL).dll$(LIB_EXT)
++
+ # dll and import library
+ $(LIBPERL).dll$(LIB_EXT): $& $(cwobj)
+ 	$(LDLIBPTH) $(CC) $(SHRPLDFLAGS) -o $(DLLNAME)$(DLSUFFIX) -Wl,--out-implib=$@ \
+@@ -80,30 +83,20 @@
+ # build problems but that's not obvious to the novice.
+ # The Module used here must not depend on Config or any extensions.
+ 
+-miniperl.exe \
+-miniperl: $& miniperlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) opmini$(OBJ_EXT)
+-	$(LDLIBPTH) $(CC) $(CLDFLAGS) -o miniperl miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(libs)
++miniperl$(EXE_EXT): $& miniperlmain$(OBJ_EXT) $(obj) opmini$(OBJ_EXT)
++	$(LDLIBPTH) $(CC) -o miniperl $(CLDFLAGS) \
++	    `echo $(obj) | sed 's/ op$(OBJ_EXT) / /'` \
++	    miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(libs)
+ 	$(LDLIBPTH) ./miniperl -w -Ilib -MExporter -e '<?>' || $(MAKE) minitest
+ 
+-perl.exe \
+-perl: $& perlmain$(OBJ_EXT) $(LIBPERL).dll$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-pureperl: $& perlmain$(OBJ_EXT) $(LIBPERL).dll$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) purify $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o pureperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-purecovperl: $& perlmain$(OBJ_EXT) $(LIBPERL).dll$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) purecov $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o purecovperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-quantperl: $& perlmain$(OBJ_EXT) $(LIBPERL).dll$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) quantify $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o quantperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
++perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(DLLNAME)$(DLSUFFIX) $(static_ext) ext.libs
++	$(SHRPENV) $(LDLIBPTH) $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+ 
+ !NO!SUBS!
+ 	;;
+ *)
+ $spitshell >>Makefile <<'!NO!SUBS!'
+-cwobj = $(obj)
+-
++cwobj = $(obj) $(DYNALOADER) $(WIN32CORE)
+ # perl library
+ $(LIBPERL)$(LIB_EXT): $& $(cwobj)
+ 	$(AR) rcu $@ $(cwobj)
+@@ -116,23 +109,14 @@
+ # build problems but that's not obvious to the novice.
+ # The Module used here must not depend on Config or any extensions.
+ 
+-miniperl.exe \
+-miniperl: $& miniperlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) opmini$(OBJ_EXT)
+-	$(LDLIBPTH) $(CC) $(CLDFLAGS) -o miniperl miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(LLIBPERL) $(libs)
++miniperl$(EXE_EXT): $& miniperlmain$(OBJ_EXT) $(obj) opmini$(OBJ_EXT)
++	$(LDLIBPTH) $(CC) -o miniperl $(CLDFLAGS) \
++	    `echo $(obj) | sed 's/ op$(OBJ_EXT) / /'` \
++	    miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(libs)
+ 	$(LDLIBPTH) ./miniperl -w -Ilib -MExporter -e '<?>' || $(MAKE) minitest
+ 
+-perl.exe \
+-perl: $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) -Wl,-Bstatic $(LLIBPERL) -Wl,-Bdynamic `cat ext.libs` $(libs)
+-
+-pureperl: $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) purify $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o pureperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-purecovperl: $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) purecov $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o purecovperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-quantperl: $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(DYNALOADER) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) quantify $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o quantperl perlmain$(OBJ_EXT) $(DYNALOADER) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
++perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(static_ext) ext.libs
++	$(SHRPENV) $(LDLIBPTH) $(CC) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(static_ext) -Wl,-Bstatic $(LLIBPERL) -Wl,-Bdynamic `cat ext.libs` $(libs)
+ 
+ !NO!SUBS!
+ 	;;
+@@ -148,6 +132,9 @@
+ #
+ $spitshell >>Makefile <<'!NO!SUBS!'
+ 
++# Win32CORE is added to libperl to help linking with libtool (mod_perl)
++$(WIN32CORE):	miniperl$(EXE_EXT) preplibrary FORCE
++	@$(LDLIBPTH) sh ext/util/make_ext $(STATIC) $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL)
+ 
+ !NO!SUBS!
+ 

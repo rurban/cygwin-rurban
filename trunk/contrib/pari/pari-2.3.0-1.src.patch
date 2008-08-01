@@ -1,0 +1,53 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/pari-2.3.0/config/Makefile.SH src/pari-2.3.0/config/Makefile.SH
+--- origsrc/pari-2.3.0/config/Makefile.SH	2006-04-19 10:11:10.000000000 +0000
++++ src/pari-2.3.0/config/Makefile.SH	2006-07-30 00:19:14.302600300 +0000
+@@ -46,6 +46,7 @@
+ 	export_file=pari.def; export_create="emxexp -u"
+ 	# Actually, the build will fail until the switch to -Zomf
+ 	dlld_ignore=- ;;
++  cygwin)  dllib_prefix=cyg
+ esac
+ 
+ PLOTCFLAGS=
+@@ -171,10 +172,10 @@
+ # the nice cycle counting functions in GMP, uncomment the 4 lines below
+ # (correct the first one to the path to your gmp source tree).
+ #
+-#GMP     = /some/directory/gmp-4.0/tune
+-#GMPFLAGS= -DGMP_TIMER
+-#GMPO1 = \$(GMP)/time.o \$(GMP)/freq.o
+-#GMPOBJS=\$(GMPO1) \$(GMPO2)
++GMP     = /usr/lib/gmp-4.0/tune
++GMPFLAGS= -DGMP_TIMER
++GMPO1 = \$(GMP)/time.o \$(GMP)/freq.o
++GMPOBJS=\$(GMPO1) \$(GMPO2)
+ #
+ #You may need to add a few object files to GMPOBJS. On UltraSparc, uncomment
+ #the following line
+@@ -224,7 +225,7 @@
+ 
+ EXDIR     = \$(DATADIR)/examples
+ MISCDIR   = \$(DATADIR)/misc
+-DOCDIR    = \$(DATADIR)/doc
++DOCDIR    = \$(DESTDIR)/usr/share/doc/pari
+ 
+ INSTALL = $cfg/install
+ INSTALL_PROGRAM = \$(INSTALL)
+@@ -357,7 +358,7 @@
+ 
+ install-misc: $install_emacs_files
+ 	-mkdir -p \$(MISCDIR) \$(BINDIR)
+-	\$(INSTALL_PROGRAM) $misc/tex2mail \$(BINDIR)
++	\$(INSTALL_PROGRAM) $misc/tex2mail \$(MISCDIR)
+ 	\$(INSTALL_DATA) $doc/tex2mail.1 \$(MANDIR)
+ 	\$(INSTALL_DATA) $misc/README    \$(MISCDIR)
+ 	\$(INSTALL_DATA) $misc/color.dft \$(MISCDIR)
+@@ -513,7 +514,7 @@
+ 	   --eval '(setq load-path (append (list ".") load-path))' \
+ 	   -f batch-byte-compile *.el
+ 
+-$install_emacs_files: elc
++$install_emacs_files: # elc
+ 	-mkdir -p \$(EMACSDIR)
+ 	-cd $emx; for f in *.elc *.el pariemacs.txt; do \
+ 	  \$(INSTALL_DATA) \$\$f \$(EMACSDIR); \

@@ -1,0 +1,6 @@
+sdesc: "Console mode tetris clone"
+ldesc: "ctris is a tetris clone, formerly named ctetris. 
+It works very fast and efficient, so it should be possible to play it even over a 
+slow remote terminal. With highscores. License: GPL"
+category: Games
+requires: libncurses8 cygwin

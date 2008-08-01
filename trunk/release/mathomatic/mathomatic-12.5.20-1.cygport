@@ -1,0 +1,20 @@
+DESCRIPTION="console-mode Computer Algebra System"
+HOMEPAGE="http://www.mathomatic.org/"
+SRC_URI="http://www.panix.com/~gesslein/${PN}-${PV}.tar.bz2"
+#CVS_URI="..."
+
+# LDFLAGS="${LDFLAGS} -Wl,--enable-auto-image-base"
+CFLAGS="${CFLAGS} -O2 -pipe"
+MAKEOPTS="-j1 -f makefile.cygwin"
+
+src_compile() {
+  lndirs
+  cd ${B}
+  cygmake
+  ./compile.secure
+}
+
+src_install() {
+  cd ${B}
+  cygmake install DESTDIR=${D} prefix=/usr
+}

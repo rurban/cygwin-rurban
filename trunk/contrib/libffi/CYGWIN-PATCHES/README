@@ -1,0 +1,72 @@
+libffi
+-------------------------------
+portable foreign function interface library
+
+Problems:
+
+* The testsuite produces 15 unexpected failures under cygwin. This is
+  an expect problem not a libffi problem per se.
+
+Build requirements: (versions given or later)
+  cygwin-1.5.x
+  autoconf2.5-2.61
+  cygport-0.90 	(for the latest autoconf2.5)
+  libtool-devel-1.9 (if GCC >= 3.3.3)
+  gcc-3.4.4
+  binutils
+  make
+  bash
+  fileutils
+  sed
+
+Canonical homepage:
+  http://sourceware.org/libffi/
+
+Canonical download:
+  ftp://sourceware.org/pub/libffi/
+
+-------------------------------------------------------------------------------
+
+Build instructions:
+  tar xfvj libffi-<VER>-<CYGREL>-src.tar.bz2
+    if you use setup to install this src package, it will be
+    unpacked under /usr/src automatically
+  cd /usr/src
+  cygport libffi-<VER>-<CYGREL>.cygport almostall
+
+This will create:
+  /usr/src/libffi-<VER>-<CYGREL>.tar.bz2
+  /usr/src/libffi-<VER>-<CYGREL>-src.tar.bz2
+
+Or use './libffi-<VER>-<CYGREL>.sh prep' to get a patched source directory 
+
+-------------------------------------------------------------------------------
+
+Files included in the libffi package:
+
+  /etc/postinstall/libffi.sh
+  /usr/lib/libffi-3.0.0/include/ffi.h
+  /usr/lib/libffi-3.0.0/include/ffitarget.h
+  /usr/lib/libffi.a
+  /usr/lib/libffi.la
+  /usr/lib/pkgconfig/libffi.pc
+  /usr/share/doc/Cygwin/libffi-3.0.0.README
+  /usr/share/doc/libffi-3.0.0/ChangeLog
+  /usr/share/doc/libffi-3.0.0/LICENSE
+  /usr/share/doc/libffi-3.0.0/README
+  /usr/share/doc/libffi-3.0.0/TODO
+  /usr/share/info/libffi.info.gz
+  /usr/share/man/man3/ffi.3.gz
+  /usr/share/man/man3/ffi_call.3.gz
+  /usr/share/man/man3/ffi_prep_cif.3.gz
+
+-------------------------------------------------------------------------------
+
+Port Notes:
+
+----- version 3.0.0-1 -----
+Initial release
+
+Builds out of the box.
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Cygwin port questions to the mailinglist <cygwin@cygwin.com>

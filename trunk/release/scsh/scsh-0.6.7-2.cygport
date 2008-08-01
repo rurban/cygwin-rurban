@@ -1,0 +1,40 @@
+# -*- shell -*-
+DESCRIPTION="Scsh is an open-source Unix shell embedded within Scheme"
+HOMEPAGE="http://www.scsh.net/"
+SRC_URI="ftp://ftp.scsh.net/pub/scsh/0.6/${PN}-${PV}.tar.gz"
+
+MAKEOPTS="-j1"
+DIFF_EXCLUDES="*.scm time_dep1.c libansi.c"
+CYGCONF_ARGS="$CYGCONF_ARGS --includedir=/usr/include/scsh"
+DOCS="doc/*.txt doc/*.ps" 
+# HTMLDOCS="doc/s48-manual/html doc/scsh-manual/html doc/scsh-paper/html"
+
+src_compile() {
+	cd ${S}
+	# ignore config_h.in in subdirs
+        /usr/bin/autoreconf --force -i --verbose
+	cd ${B}
+	cygconf
+	cygmake
+}
+
+src_test() {
+	cd ${B}
+	make check
+}
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	cd ${B}
+	set -x
+	for f in scsh-manual scsh-paper s48-manual; do
+	  mkdir -p ${D}/usr/share/doc/${P}/html/${f}
+	  mv ${D}/usr/lib/scsh/doc/${f}/html/* "${D}/usr/share/doc/${P}/html/${f}/"
+	  mkdir -p ${D}/usr/share/doc/${P}/ps/${f}
+	  mv ${D}/usr/lib/scsh/doc/${f}/*.ps "${D}/usr/share/doc/${P}/ps/${f}/"
+	done
+	cd ${D}
+	rm -rf ${D}/usr/lib/scsh/doc
+}

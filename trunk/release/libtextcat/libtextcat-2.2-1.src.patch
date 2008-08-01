@@ -1,0 +1,581 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/ChangeLog src/libtextcat-2.2/ChangeLog
+--- origsrc/libtextcat-2.2/ChangeLog	2003-12-05 16:53:15.000000000 +0000
++++ src/libtextcat-2.2/ChangeLog	2006-08-20 11:34:59.703125000 +0000
+@@ -1,3 +1,6 @@
++2006-08-17 17:55:08 Reini Urban (rurban@x-ray.at)
++	* Various c++ fixes: remove extern, warp around extern "C" { }, proper c++ casts
++	* Install textcat.h
+ 
+ Fri Dec  5 2003 Frank Scheelen (fscheelen@wise-guys.nl)
+ 	* Released 2.2
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/Makefile.am src/libtextcat-2.2/src/Makefile.am
+--- origsrc/libtextcat-2.2/src/Makefile.am	2003-05-22 10:58:52.000000000 +0000
++++ src/libtextcat-2.2/src/Makefile.am	2006-08-20 11:35:00.078125000 +0000
+@@ -5,10 +5,11 @@
+ FLAGS =		-g -O3 -funroll-loops -D_THREAD_SAFE -D_GNU_SOURCE
+ VERBOSE	=	-DVERBOSE
+ AM_CFLAGS =	$(IFLAGS) $(VERBOSE) $(WARNS) $(FLAGS)
+-AM_LDFLAGS =	-g
++AM_LDFLAGS =	-no-undefined
+ 
+ noinst_HEADERS = \
+-	common.h constants.h fingerprint.h textcat.h wg_mempool.h
++	common.h constants.h fingerprint.h wg_mempool.h
++include_HEADERS = textcat.h
+ 
+ lib_LTLIBRARIES =	libtextcat.la
+ libtextcat_la_SOURCES = \
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/common.c src/libtextcat-2.2/src/common.c
+--- origsrc/libtextcat-2.2/src/common.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/common.c	2006-08-20 11:35:00.093750000 +0000
+@@ -47,7 +47,11 @@
+ #include <ctype.h>
+ #include "common.h"
+ 
+-extern void wgmem_error( const char *fmt, ... )
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++void wgmem_error( const char *fmt, ... )
+ {
+         va_list ap;
+ 
+@@ -60,7 +64,7 @@
+ }
+ 
+ 
+-extern void *wg_malloc( size_t size )
++void *wg_malloc( size_t size )
+ {
+ 	void *result;
+ 	if ( !size ) {
+@@ -75,7 +79,7 @@
+ 	return result;
+ }
+ 
+-extern void *wg_calloc( size_t nmemb, size_t size )
++void *wg_calloc( size_t nmemb, size_t size )
+ {
+ 	void *result;
+ 	if ( !size || !nmemb ) {
+@@ -90,7 +94,7 @@
+ 	return result;
+ }
+ 
+-extern void *wg_zalloc( size_t size )
++void *wg_zalloc( size_t size )
+ {
+ 	void *result;
+ 
+@@ -106,7 +110,7 @@
+ 	return result;
+ }
+ 
+-extern char* wg_strdup( const char *s )
++char* wg_strdup( const char *s )
+ {
+ 	char *result = strdup( s );
+ 
+@@ -117,7 +121,7 @@
+ 	return( result ); 
+ }
+ 
+-extern void* wg_realloc( void *ptr, size_t size ) 
++void* wg_realloc( void *ptr, size_t size ) 
+ { 
+ 	void *result;
+ 
+@@ -134,14 +138,14 @@
+ 	return( result ); 
+ }
+ 
+-extern void wg_free( void *mem )
++void wg_free( void *mem )
+ {
+         if ( mem ) {
+                 free(mem);
+         }
+ }
+ 
+-extern char *wg_getline( char *line, int size, FILE *fp )
++char *wg_getline( char *line, int size, FILE *fp )
+ {
+         char *p;
+ 
+@@ -292,7 +296,7 @@
+ }
+ 
+ 
+-extern void wg_timerstart(wgtimer_t *t)
++void wg_timerstart(wgtimer_t *t)
+ {
+ #ifdef HAVE_GETTIMEOFDAY
+         gettimeofday( &(t->start), NULL );
+@@ -300,7 +304,7 @@
+ }
+ 
+ 
+-extern uint4 wg_timerstop(wgtimer_t *t)
++uint4 wg_timerstop(wgtimer_t *t)
+ {
+ #ifdef HAVE_GETTIMEOFDAY
+ 	uint4 result;
+@@ -388,3 +392,6 @@
+ 	return dest;
+ }
+ 
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/common.h src/libtextcat-2.2/src/common.h
+--- origsrc/libtextcat-2.2/src/common.h	2003-05-22 13:02:29.000000000 +0000
++++ src/libtextcat-2.2/src/common.h	2006-08-20 11:35:00.093750000 +0000
+@@ -91,23 +91,29 @@
+         struct timeval stop;
+ } wgtimer_t;
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+-extern void *wg_malloc( size_t size );
+-extern void *wg_calloc( size_t nmemb, size_t size );
+-extern void *wg_zalloc( size_t size );
+-extern char* wg_strdup( const char *s );
+-extern void* wg_realloc( void *ptr, size_t size ) ;
+-extern void wg_free( void *mem );
+-
+-extern char *wg_getline( char *line, int size, FILE *fp );
+-
+-extern void wg_timerstart(wgtimer_t *t);
+-extern uint4 wg_timerstop(wgtimer_t *t);
+-
+-extern unsigned int wg_split( char **result, char *dest, char *src, int maxsegments );
+-extern char *wg_strgmov( char *dest, const char *src, const char *destlimit );
+-extern char *wg_trim( char *dest, const char *src );
++void *wg_malloc( size_t size );
++void *wg_calloc( size_t nmemb, size_t size );
++void *wg_zalloc( size_t size );
++char* wg_strdup( const char *s );
++void* wg_realloc( void *ptr, size_t size ) ;
++void wg_free( void *mem );
++
++char *wg_getline( char *line, int size, FILE *fp );
++
++void wg_timerstart(wgtimer_t *t);
++uint4 wg_timerstop(wgtimer_t *t);
++
++unsigned int wg_split( char **result, char *dest, char *src, int maxsegments );
++char *wg_strgmov( char *dest, const char *src, const char *destlimit );
++char *wg_trim( char *dest, const char *src );
+ 
++#ifdef __cplusplus
++}
++#endif
+       
+ #endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/createfp.c src/libtextcat-2.2/src/createfp.c
+--- origsrc/libtextcat-2.2/src/createfp.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/createfp.c	2006-08-20 11:35:00.093750000 +0000
+@@ -43,6 +43,10 @@
+ #include <stdlib.h>
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ #include "fingerprint.h"
+ #include "common.h"
+ 
+@@ -90,3 +94,8 @@
+ 
+ 	return 0;
+ }
++
++
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/fingerprint.c src/libtextcat-2.2/src/fingerprint.c
+--- origsrc/libtextcat-2.2/src/fingerprint.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/fingerprint.c	2006-08-20 11:35:00.109375000 +0000
+@@ -80,6 +80,9 @@
+ #include "wg_mempool.h"
+ #include "constants.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+ #define TABLESIZE  (1<<TABLEPOW)
+ #define TABLEMASK  ((TABLESIZE)-1)
+@@ -168,7 +171,7 @@
+ 	}
+ 
+ 	/*** Not found, so create ***/
+-	entry = wgmempool_alloc( t->pool, sizeof(entry_t) );
++	entry = (entry_t*)wgmempool_alloc( t->pool, sizeof(entry_t) );
+ 	strcpy( entry->str, p );
+ 	entry->cnt = 1;
+ 
+@@ -289,7 +292,7 @@
+ }
+ 
+ 
+-extern int heapextract( table_t *t, entry_t *item )
++int heapextract( table_t *t, entry_t *item )
+ {
+ 	entry_t *p;
+ 
+@@ -350,8 +353,7 @@
+ 	wg_free(t);	
+ }
+ 
+-
+-extern void *fp_Init(const char *name)
++void *fp_Init(const char *name)
+ {
+ 	fp_t *h = (fp_t *)wg_zalloc( sizeof(fp_t) );
+ 	
+@@ -363,7 +365,7 @@
+ }
+ 
+ 
+-extern void fp_Done( void *handle )
++void fp_Done( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 
+@@ -377,7 +379,7 @@
+ 	wg_free( h );
+ }
+ 
+-extern const char *fp_Name( void *handle )
++const char *fp_Name( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	return  h->name;
+@@ -532,7 +534,7 @@
+  * - take the most frequent n-grams
+  * - sort them alphabetically, recording their relative rank
+  */
+-extern int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams )
++int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams )
+ {
+ 	sint4 i = 0;
+ 	fp_t *h = NULL;
+@@ -582,7 +584,7 @@
+ 	return 1;
+ }
+ 
+-extern void fp_Debug( void *handle )
++void fp_Debug( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	uint4 i;
+@@ -594,7 +596,7 @@
+ 
+ }
+ 
+-extern int fp_Read( void *handle, const char *fname, int maxngrams )
++int fp_Read( void *handle, const char *fname, int maxngrams )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	FILE *fp;
+@@ -644,11 +646,11 @@
+ 
+ 
+ 
+-extern void fp_Print( void *handle, FILE *fp )
++void fp_Print( void *handle, FILE *fp )
+ {
+ 	uint4 i;
+ 	fp_t *h = (fp_t *)handle;
+-	ngram_t *tmp = wg_malloc( sizeof(ngram_t) * h->size );
++	ngram_t *tmp = (ngram_t *)wg_malloc( sizeof(ngram_t) * h->size );
+ 	
+ 	/*** Make a temporary and sort it on rank ***/
+ 	memcpy( tmp, h->fprint, h->size * sizeof(ngram_t) );
+@@ -662,7 +664,7 @@
+ 
+ 
+ 
+-extern sint4 fp_Compare( void *cat, void *unknown, int cutoff )
++sint4 fp_Compare( void *cat, void *unknown, int cutoff )
+ {
+ 	fp_t *c = (fp_t *)cat;
+ 	fp_t *u = (fp_t *)unknown;
+@@ -708,4 +710,7 @@
+ 	       	
+ }
+ 
++#ifdef __cplusplus
++}
++#endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/fingerprint.h src/libtextcat-2.2/src/fingerprint.h
+--- origsrc/libtextcat-2.2/src/fingerprint.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/fingerprint.h	2006-08-20 11:35:00.109375000 +0000
+@@ -35,13 +35,20 @@
+  */
+ #include "common.h"
+ 
+-extern void *fp_Init(const char *name);
+-extern void fp_Done( void *handle );
+-extern int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams );
+-extern int fp_Read( void *handle, const char *fname, int maxngrams );
+-extern sint4 fp_Compare( void *cat, void *unknown, int cutoff );
+-extern void fp_Show( void *handle );
+-extern const char *fp_Name( void *handle );
+-extern void fp_Print( void *handle, FILE *fp );
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++void *fp_Init(const char *name);
++void fp_Done( void *handle );
++int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams );
++int fp_Read( void *handle, const char *fname, int maxngrams );
++sint4 fp_Compare( void *cat, void *unknown, int cutoff );
++void fp_Show( void *handle );
++const char *fp_Name( void *handle );
++void fp_Print( void *handle, FILE *fp );
+ 
++#ifdef __cplusplus
++}
++#endif
+ #endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/textcat.c src/libtextcat-2.2/src/textcat.c
+--- origsrc/libtextcat-2.2/src/textcat.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/textcat.c	2006-08-20 11:35:00.109375000 +0000
+@@ -65,6 +65,10 @@
+ #include <alloca.h>
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ #include "common.h"
+ #include "fingerprint.h"
+ #include "textcat.h"
+@@ -103,7 +107,7 @@
+ }
+ 
+ 
+-extern void textcat_Done( void *handle )
++void textcat_Done( void *handle )
+ {
+ 	textcat_t *h = (textcat_t *)handle;
+ 	uint4 i;
+@@ -116,7 +120,7 @@
+ 
+ }
+ 
+-extern void *textcat_Init( const char *conffile )
++void *textcat_Init( const char *conffile )
+ {
+ 	textcat_t *h;
+ 	char line[1024];
+@@ -156,7 +160,7 @@
+ 		/*** Ensure enough space ***/
+ 		if ( h->size == h->maxsize ) {
+ 			h->maxsize *= 2;
+-			h->fprint = (void *)wg_realloc( h->fprint, sizeof(void*) * h->maxsize );
++			h->fprint = (void **)wg_realloc( h->fprint, sizeof(void*) * h->maxsize );
+ 		}
+ 
+ 		/*** Load data ***/
+@@ -180,7 +184,7 @@
+ }
+ 
+ 
+-extern char *textcat_Classify( void *handle, const char *buffer, size_t size )
++char *textcat_Classify( void *handle, const char *buffer, size_t size )
+ {
+ 	textcat_t *h = (textcat_t *)handle;
+ 	uint4 i, cnt = 0;
+@@ -255,7 +259,11 @@
+ }
+ 
+ 
+-extern char *textcat_Version()
++char *textcat_Version()
+ {
+ 	return "TextCat " PACKAGE_VERSION " (" DESCRIPTION ")";
+ }
++
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/textcat.h src/libtextcat-2.2/src/textcat.h
+--- origsrc/libtextcat-2.2/src/textcat.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/textcat.h	2006-08-20 11:35:00.125000000 +0000
+@@ -40,6 +40,9 @@
+ #define _TEXTCAT_RESULT_UNKOWN        "UNKNOWN"
+ #define _TEXTCAT_RESULT_SHORT         "SHORT"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+ /**
+  * textcat_Init() - Initialize the text classifier. The textfile
+@@ -52,12 +55,12 @@
+  * only way errors can occur, is when the library cannot read the
+  * conffile, or one of the fingerprint files listed in it.)
+  */
+-extern void *textcat_Init( const char *conffile );
++void *textcat_Init( const char *conffile );
+ 
+ /**
+  * textcat_Done() - Free up resources for handle
+  */
+-extern void textcat_Done( void *handle );
++void textcat_Done( void *handle );
+ 
+ /**
+  * textcat_Classify() - Give the most likely categories for buffer
+@@ -71,10 +74,15 @@
+  * for many uses it is not necessary to categorize the whole buffer.
+  * For language classification, a few hundred bytes will suffice.  
+  */
+-extern char *textcat_Classify( void *handle, const char *buffer, size_t size );
++char *textcat_Classify( void *handle, const char *buffer, size_t size );
+ 
+ /**
+  * textcat_Version() - Returns a string describing the version of this classifier.
+  */
+-extern char *textcat_Version();
++char *textcat_Version();
++
++#ifdef __cplusplus
++}
++#endif
++
+ #endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/wg_mempool.c src/libtextcat-2.2/src/wg_mempool.c
+--- origsrc/libtextcat-2.2/src/wg_mempool.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/wg_mempool.c	2006-08-20 11:35:00.125000000 +0000
+@@ -43,6 +43,10 @@
+ #endif
+ #include "common.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ typedef struct memblock_s {
+ 	char *pool;             
+ 	char *p;
+@@ -94,7 +98,7 @@
+ }
+ 
+ 
+-extern void *wgmempool_Init(size_t blocksize, size_t maxstrsize)
++void *wgmempool_Init(size_t blocksize, size_t maxstrsize)
+ {
+ 	mempool_t *result = (mempool_t *)wg_malloc( sizeof(mempool_t) );
+ 	
+@@ -108,7 +112,7 @@
+ }
+ 
+ 
+-extern void wgmempool_Done( void *handle )
++void wgmempool_Done( void *handle )
+ {
+ 	mempool_t *h = (mempool_t *)handle;
+ 
+@@ -142,7 +146,7 @@
+ 	wg_free(h);
+ }
+ 
+-extern void wgmempool_Reset( void *handle )
++void wgmempool_Reset( void *handle )
+ {
+ 	mempool_t *h = (mempool_t *)handle;
+ 	memblock_t *p;
+@@ -167,7 +171,7 @@
+ }
+ 
+ 
+-extern void *wgmempool_alloc( void *handle, size_t size )
++void *wgmempool_alloc( void *handle, size_t size )
+ {
+ 	void *result;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -185,7 +189,7 @@
+ 
+ 
+ 
+-extern char *wgmempool_strdup( void *handle, const char *str )
++char *wgmempool_strdup( void *handle, const char *str )
+ {
+ 	char *w, *result;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -214,7 +218,7 @@
+ }
+ 
+ 
+-extern char *wgmempool_getline( void *handle, size_t size, FILE *fp )
++char *wgmempool_getline( void *handle, size_t size, FILE *fp )
+ {
+ 	char *result, *p;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -245,4 +249,6 @@
+ 	return result;
+ }
+ 
+-
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/wg_mempool.h src/libtextcat-2.2/src/wg_mempool.h
+--- origsrc/libtextcat-2.2/src/wg_mempool.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/wg_mempool.h	2006-08-20 11:35:00.125000000 +0000
+@@ -86,13 +86,13 @@
+  * mempool handler on success, NULL on error.
+  * 
+  */
+-extern void *wgmempool_Init(uint4 blocksize, size_t maxstrsize);
++void *wgmempool_Init(uint4 blocksize, size_t maxstrsize);
+ 
+ 
+ /*
+  * wgmempool_Done() -- deallocate memory pool in its entirety
+  */
+-extern void wgmempool_Done( void *handle );
++void wgmempool_Done( void *handle );
+ 
+ 
+ /*
+@@ -101,7 +101,7 @@
+  * wgmempool_Reset() preserves already claimed memory for reuse, making
+  * it more time efficient than doing a wgmempool_Done() and wgmempool_Init().
+  */
+-extern void wgmempool_Reset( void *handle );
++void wgmempool_Reset( void *handle );
+ 
+ 
+ /*
+@@ -116,7 +116,7 @@
+  * - pointer to claimed memory on success
+  * - NULL on error
+  */
+-extern void *wgmempool_alloc( void *handle, size_t size );
++void *wgmempool_alloc( void *handle, size_t size );
+ 
+ 
+ /*
+@@ -132,7 +132,7 @@
+  * - pointer to duplicated string on success
+  * - NULL on error
+  */
+-extern char *wgmempool_strdup( void *handle, const char* str );
++char *wgmempool_strdup( void *handle, const char* str );
+ 
+ 
+ #ifdef __cplusplus

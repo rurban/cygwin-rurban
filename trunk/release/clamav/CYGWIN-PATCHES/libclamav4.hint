@@ -1,0 +1,4 @@
+sdesc: "The clamav dll since v0.93"
+category: Utils
+requires: zlib libbz2_1 libgmp3 libcurl3
+external-source: clamav

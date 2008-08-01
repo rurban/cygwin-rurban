@@ -1,0 +1,163 @@
+#!/bin/sh
+# user-defined options:
+setupdir=/usr/src/setup
+# this will get destructively modified!
+#rsync_up_target="xarch.tu-graz.ac.at:software/cygwin"
+rsync_up_target="rurban.xarch.at:software/cygwin"
+dirs="release contrib"
+
+unset NOUPSET
+unset _UPSET
+unset NOASK
+upset() {
+  # todo: check if upset is needed
+  if [ ! -z "$_UPSET" ]; then return; fi
+  if [ -n "$NOUPSET" ]; then return; fi
+  pushd ${setupdir}
+  if [ -z "`find $dirs -newer setup.ini -type f`" ]; then
+    [ -n "$VERBOSE" ] && echo "  upset not required"
+    popd
+  else
+    popd
+    # todo: trap errors
+    unset verbosity
+    [ -z "$VERBOSE" ] && verbosity="--extnowarn "
+    (cd ${setupdir}
+    echo "upset ${verbosity}${dirs} > setup.ini"
+    /usr/sbin/upset ${verbosity}${dirs} > setup.ini && \
+      bzip2 -c setup.ini > setup.bz2 )
+  fi
+  # avoid double invocation
+  _UPSET=1
+}
+setup() {
+  (cd $setupdir
+  dospath=$(cygpath -w $setupdir|sed 's,\\,/,g')
+  # writes service list to /usr/local/etc/cygsrv.lst
+  echo "stopping services..."
+  cygsrv-stop
+  echo "./setup.exe -L -l ${dospath}"
+  ./setup.exe -L -l ${dospath} )
+  # restarts services from /usr/local/etc/cygsrv.lst
+  echo "restarting services from /usr/local/etc/cygsrv.lst"
+  cygsrv-start
+}
+fixperms() {
+  # fix broken windows perms, rsync is quite strict
+  unset opts
+  #  [ -n "$VERBOSE" ] && set -x
+  [ -e .last-fixperms ] && opts="-newer .last-fixperms"
+  chown -R $USER . 
+  for f in `find . \( -type f -o -type l \) $opts`; do
+    file=`file -Lbi $f`
+    if echo $file| egrep "(application/x-perl|application/x-shellscript|application/x-dosexec)" >/dev/null; then
+      [ -n "$VERBOSE" ] && echo "chmod 754 $f"
+      chmod 754 $f
+    else
+      [ -n "$VERBOSE" ] && echo "chmod 644 $f"
+      chmod 644 $f
+    fi
+  done
+  find . -type d $opts -exec chmod 755 \{\} \;
+  touch .last-fixperms
+  #  [ -n "$VERBOSE" ] && set +x
+}
+up() {
+  (cd $setupdir ;\
+  echo "Starting rsync..."
+  fixperms ;\
+  unset verbosity
+  #[ -n "$VERBOSE" ] && verbosity="-v --progress"
+  verbosity="-v --progress"
+  rsync -azCL $verbosity setup.exe ${rsync_up_target}/ ;\
+  echo rsync -azCSn $verbosity --delete --delete-after --modify-window=2 \
+    --exclude "setup.exe" --exclude "Cygwin*" --exclude ".*" \
+    . ${rsync_up_target}
+  if [ -n "$NOASK" ]; then
+    rsync -azCSn $verbosity --delete --delete-after --modify-window=2 \
+      --exclude "setup.exe" --exclude "Cygwin*" --exclude ".*" \
+      . ${rsync_up_target}
+    echo -n Okay?
+    read ok
+  fi
+  rsync -azCS $verbosity --delete --delete-after --modify-window=2 \
+    --exclude "setup.exe" --exclude "Cygwin*" --exclude ".*" \
+    . ${rsync_up_target} )
+}
+# for maintainer only!
+mkpatch() {
+  (cd $setupdir 
+  p=patches/upset.patch
+  cat patches/upset.ChangeLog > $p
+  difforig Cygwin >> $p
+  diff -bu upset.orig upset >> $p
+  true )
+}
+# for maintainer only!
+makedist() {
+  (cd $setupdir
+  FULLPKG=upset-1.0-7
+  [ -n "$VERBOSE" ] && set -x
+  rm -rf .inst
+  rm -rf .sinst
+  mkdir -p .inst/usr/sbin/
+  mkdir -p .inst/usr/lib/perl/vendor_perl/5.8
+  mkdir -p .inst/usr/lib/perl/vendor_perl/5.10
+  mkdir -p .inst/usr/share/man/man1
+  mkdir -p .inst/usr/share/doc/Cygwin
+  mkdir -p contrib/upset
+  cp -p upset mksetup genini .inst/usr/sbin/
+  pod2man upset | gzip -c > .inst/usr/share/man/man1/upset.1.gz
+  cd .inst/usr/share/man/man1; ln -s upset.1.gz mksetup.1.gz; cd $setupdir
+  tar --create --exclude '*.orig' Cygwin | tar -C .inst/usr/lib/perl/vendor_perl/5.10 -x
+  tar --create --exclude '*.orig' Cygwin | tar -C .inst/usr/lib/perl/vendor_perl/5.8 -x
+  cp -p contrib/upset/README .inst/usr/share/doc/Cygwin/$FULLPKG.README
+  cd .inst && tar cfj ../contrib/upset/$FULLPKG.tar.bz2 *
+  cd ..
+  mkdir -p .sinst/
+  cp -p patches/upset.patch .sinst/$FULLPKG.patch
+  cp -p $0 .sinst/$FULLPKG.sh
+  cp contrib/upset/$FULLPKG.tar.bz2 .sinst/  
+  cd .sinst && tar cfj ../contrib/upset/$FULLPKG-src.tar.bz2 *
+  cd ..
+  rm -rf .inst
+  rm -rf .sinst
+  [ -n "$VERBOSE" ] && set +x
+  )
+}
+usage() {
+  echo "mksetup [OPTIONS...]"
+  echo "mksetup will update the local setup.bz2 from release and contrib."
+  echo "Options:"
+  echo "  -h,--help   prints this"
+  echo "  -v,--verbose"
+  echo "  -y,--noask  dont wait for userinput before rsync"
+  echo "  setup       calls ./setup.exe with the local setup.ini"
+  echo "  up          destructively update the remote distro"
+  echo "Maintainer options only:"
+  echo "  mkpatch        update the perl upset patch"
+  echo "  makedist       update the perl upset package"
+  echo " --noupset -y up just do rsync again"
+  echo "  upset          update setup.ini"
+  exit
+}
+if [ -z "$1" ]; then upset; fi
+while test -n "$1" ; do
+  case $1 in 
+    --help)     usage ;;
+    -h)         usage ;;
+    --verbose)  VERBOSE=1 ;;
+    -v)         VERBOSE=1 ;;
+    --noupset)  NOUPSET=1 ;;
+    -y)         NOASK=1 ;;
+    --noask)    NOASK=1 ;;
+    upset)	upset; STATUS=$? ;; 
+    setup)	upset; setup ; STATUS=$? ;; 
+    up)		upset; up ; STATUS=$? ;; 
+    mkpatch)    mkpatch ; STATUS=$? ;;
+    makedist)   makedist; STATUS=$? ;;
+    *) 		echo "Error: bad argument $1" ; exit 1 ;;
+  esac
+  ( exit ${STATUS} ) || exit ${STATUS}
+  shift
+done

@@ -1,0 +1,66 @@
+libsigsegv
+------------------------------------------
+Handling page faults in user mode.
+Mainly required to build clisp from source.
+
+This library builds as a static library by default. This seems useful
+because of the small size of the library (4 KB). Of course, you can
+build it as a shared library by specifying the configure option
+'--enable-shared'
+
+Runtime requirements:
+  cygwin-1.5.20-1 or newer
+
+Build requirements:
+  cygwin
+  gcc-core
+  automake
+  autoconf
+  binutils
+
+Canonical homepage:
+  http://libsigsegv.sourceforge.net/
+
+Canonical download:
+  ftp://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.4.tar.gz
+
+------------------------------------
+
+Build instructions:
+  tar xfj libsigsegv-<VERSION>-<CYGREL>-src.tar.bz2
+    if you use setup to install this src package, it will be
+	 unpacked under /usr/src automatically
+  cd /usr/src
+  cygport libsigsegv-<VERSION>-<CYGREL>.cygport all
+
+This will create:
+  /usr/src/libsigsegv-<VERSION>-<CYGREL>.tar.bz2
+  /usr/src/libsigsegv-<VERSION>-<CYGREL>-src.tar.bz2
+
+Or use 'cygport libsigsegv-<VERSION>-<CYGREL>.cygport prep' 
+to get a patched source directory 
+
+-------------------------------------------
+
+Files included in the binary distribution:
+
+  /usr/include/sigsegv.h
+  /usr/lib/libsigsegv.a
+  /usr/lib/libsigsegv.la
+  /usr/share/doc/Cygwin/libsigsegv-2.4.README
+  /usr/share/doc/libsigsegv-2.4/AUTHORS
+  /usr/share/doc/libsigsegv-2.4/COPYING
+  /usr/share/doc/libsigsegv-2.4/ChangeLog
+  /usr/share/doc/libsigsegv-2.4/INSTALL
+  /usr/share/doc/libsigsegv-2.4/NEWS
+  /usr/share/doc/libsigsegv-2.4/README
+
+------------------
+
+Port Notes:
+
+----------  libsigsegv-2.4-1 -----------
+Initial cygwin release for clisp-2.39-1
+
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>

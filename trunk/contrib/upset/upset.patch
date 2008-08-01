@@ -1,0 +1,387 @@
+2007-07-08 2005-11-06 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.6
+	* renamed Version to Cygwin::Setup::Version
+	* moved libs to /usr/src/setup
+
+2005-11-06 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.5
+	* mksetup: fix --noupset, avoid double invocation
+	* vendor_perl 5.8.5 => 5.8
+
+2004-11-14 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.4
+	* Cygwin/Setup/ByDir.pm: warn if md5 changed but version is not bumped. 
+	Will lead to downloads without updates.
+
+2004-10-28 Reini Urban <rurban@x-ray.at>
+
+	* upset, Cygwin/Setup.pm: enable Replaces: and more setup.ini features
+	* upset: allow -u setup.bz2, fix -u setup setup.exe conflict
+	* upset: --extnowarn or warn differently if refers to installed but not provided package
+	* Cygwin/Setup/ByDir.pm: ignore -log.tar.bz2 files
+	* Cygwin/Setup.pm: fatal on non-approved category
+
+difforig Cygwin
+
+2007-07-08  Reini Urban <rurban@x-ray.at>
+
+diff -ub  Cygwin/Setup.pm.orig
+--- Cygwin/Setup.pm.orig	2003-03-01 05:21:34.000000000 +0000
++++ Cygwin/Setup.pm	2007-07-08 20:53:33.328125000 +0000
+@@ -1,15 +1,41 @@
+ #!/usr/bin/perl -s
++# forked from the cygwin.com module
++# cgf: I'm not interested in turning it into a general purpose tool and I'm not
++#      interested in bug reports, patches, augmentations, etc.
++#      http://cygwin.com/ml/cygwin-apps/2004-10/msg00560.html
+ 
+ package Cygwin::Setup;
+ 
+ use FileHandle;
+ use strict;
++use constant 'DEVEL' => 1;
+ 
+ BEGIN {
++    # only Debian. only cgf may add. sync with http://cygwin.com/setup.html
++    @Cygwin::Setup::categories = qw(
++				    Admin 	Archive 	Base 	Comm 	Database
++				    Devel 	Doc 	Editors 	Games 	Graphics
++				    Interpreters 	Libs 	Mail 	Math 	Mingw
++				    Net 	Perl	Publishing 	Science Shells 	Sound
++				    System 	Text 	Utils 	Web 	X11);
+     $Cygwin::Setup::stringkeys = qr!^(?:sdesc|ldesc)$!io;
+     $Cygwin::Setup::validstates = qr!^(?:curr|test|prev|exp)!;
+-    $Cygwin::Setup::replacekeys = qr!^(?:sdesc|ldesc|category|requires|skip|verpat|external-source)$!io;
+-    $Cygwin::Setup::skipkeys = qr!^(?:version|install|source)$!io;
++    @Cygwin::Setup::pkgkeys = DEVEL ? qw(requires Recommends Replaces Depends Pre-Depends Build-Depends
++				         Conflicts Suggests Provides)
++                                    : qw(requires);
++    @Cygwin::Setup::otherkeys = DEVEL ? qw(Maintainer Architecture Source Binary Standards-Version
++				           Priority Files Directory)
++                                      : ();
++    @Cygwin::Setup::replacekeys = qw( sdesc ldesc category requires skip verpat external-source );
++    # always recalculate, FIXME: warn if md5 and date changed but version is the same.
++    @Cygwin::Setup::skipkeys = qw( version install source );
++    if (DEVEL) {
++	push(@Cygwin::Setup::replacekeys, (@Cygwin::Setup::skipkeys));
++	@Cygwin::Setup::skipkeys = ();
++    }
++    push(@Cygwin::Setup::replacekeys, (@Cygwin::Setup::pkgkeys, @Cygwin::Setup::otherkeys));
++    $Cygwin::Setup::replacekeys = qr!^(?:@{[join('|' => @Cygwin::Setup::replacekeys)]})$!io;
++    $Cygwin::Setup::skipkeys = qr!^(?:@{[join('|' => @Cygwin::Setup::skipkeys)]})$!io;
+     $Cygwin::Setup::validinikeys = qr!^(?:setup-timestamp|setup-version)$!io;
+ }
+ 
+@@ -233,3 +259,7 @@
+ }
+     
+ 1;
++
++# Local Variables:
++# cperl-indent-level: 4
++# End:
+diff -ub  Cygwin/Setup/ByDir.pm.orig
+--- Cygwin/Setup/ByDir.pm.orig	2003-09-19 18:55:07.000000000 +0000
++++ Cygwin/Setup/ByDir.pm	2007-07-08 21:23:26.859375000 +0000
+@@ -10,7 +10,7 @@
+ use DirHandle;
+ use FileHandle;
+ use File::Basename;
+-use Cygwin::Version;
++use Cygwin::Setup::Version;
+ use Digest::MD5;
+ use strict;
+ 
+@@ -19,12 +19,12 @@
+     my @norfiles = ();
+     my %keyed = ();
+     foreach my $f (@_) {
+-	my $nor = join ('/', (Version::Normalize($f))[1,0]);
++	my $nor = join ('/', (Cygwin::Setup::Version::Normalize($f))[1,0]);
+ 	push(@norfiles, $nor);
+ 	$keyed{$nor} = $f;
+     }
+     my @ret;
+-    foreach my $nor (reverse Version::Sort(\@norfiles)) {
++    foreach my $nor (reverse Cygwin::Setup::Version::Sort(\@norfiles)) {
+ 	push(@ret, $keyed{$nor});
+     }
+     return @ret;
+@@ -64,7 +64,8 @@
+ 	    } elsif ($f =~ m!/setup.hint$!o) {
+ 		$pkgdir{$stem}{'hint'} = $f;
+ 	    } elsif ($f =~ /\.tar\.(bz2|gz)/o) {
+-		push(@{$pkgdir{$stem}{'tars'}}, $f);
++		push(@{$pkgdir{$stem}{'tars'}}, $f)
++		  unless $f =~ /-log\.tar\.(bz2|gz)/o;
+ 	    } elsif ($f eq "$d/md5.sum") {
+ 		open(MD5, "$f") or next;
+ 		while (<MD5>) {
+@@ -124,7 +125,7 @@
+ 	    next;
+ 	}
+ 	next if defined ($pkgbase->{''}{'skip'});
+-	my ($filever_normal, $filever) = (Version::Normalize($f, $pkgbase->{_me}))[1, 2];
++	my ($filever_normal, $filever) = (Cygwin::Setup::Version::Normalize($f, $pkgbase->{_me}))[1, 2];
+ 	my ($n, $ver);
+ 	my $fnoext = $file;
+ 	$fnoext =~ s/\.tar.[bg]z2?.*$//;
+@@ -149,6 +150,7 @@
+ 	}
+ 	my $key;
+ 	my $line = $f . ' ' . int(-s $f) . $self->md5($f);
++	# TODO: check if md5 changed and warn if same version
+ 	if ($f !~ /-src\.tar/o) {
+ 	    $key = 'install';
+ 	} else {
+@@ -161,6 +163,8 @@
+ 	    $key = 'source';
+ 	}
+ 	next unless defined($n);
++	#$pkgbase->{$n}{'old-version'} = $ver;
++	#$pkgbase->{$n}{"old-$key"} = $line;
+ 	$pkgbase->{$n}{'version'} = $ver;
+ 	$pkgbase->{$n}{$key} = $line;
+     }
+--- upset.orig	2003-09-19 17:18:42.000000000 +0000
++++ upset	2005-06-14 06:24:17.950875000 +0000
+@@ -1,4 +1,116 @@
+ #!/usr/bin/perl
++# forked from the cygwin.com upset cvs version
++# cgf: "I'm not interested in turning it into a general purpose tool and I'm not
++#      interested in bug reports, patches, augmentations, etc."
++#      http://cygwin.com/ml/cygwin-apps/2004-10/msg00560.html
++
++=pod
++
++=head1 NAME 
++
++upset - update local setup.ini
++mksetup - maintain /usr/src/setup/setup.ini and local packages
++
++=head1 DESCRIPTION
++
++upset is together with the Cygwin::Setup perl module a general purpose package and
++setup.ini maintenance tool for Cygwin package writers, to avoid
++packaging and other setup errors beforehand.
++
++upset will create a setup.ini file from the parsed packages in the given 
++subdirs, and warn on any syntax error, wrong category or unresolved dependency.
++mksetup is used to locally test packages before uploading.
++
++upset and the Cygwin perl modules are based on the cygwin-internal 
++upset version by Christopher Faylor. They will be regularly sync'ed with 
++the cygwin CVS version, but are independent.
++
++=head1 SYNOPSIS
++
++Move your setup.hint, binary and src tar.bz2 into the correct 
++setup/release/<package> subdir.
++
++upset --extnowarn -C -u setup.ini release contrib
++
++mksetup 
++
++  update the local setup.ini and warn about syntax errors
++  or missing dependencies.
++
++mksetup setup 
++
++  run setup.exe with your local repository added.
++  So you can test the package before requesting a upload.
++
++mksetup up
++
++  upload all changed files to publicly accessable server.
++
++=head1 OPTIONS
++
++=over
++
++=item B<-u setup.ini>
++
++Update an existing setup.ini file. setup.ini or setup or setup.bz2
++If no -u otion is given, setup.ini is written to stdout.
++
++=item B<--[no]setup-version>
++
++On --nosetup-version no setup.exe is searched in the current path to
++determine the setup.exe version.
++
++=item B<-C>
++
++Compress the setup.ini file to setup.bz2
++
++=item --extnowarn|-e
++
++Don't warn about unresolved dependencies on locally installed packages.
++
++=head1 INSTALL
++
++  fix some options at the head of /usr/sbin/mksetup
++
++  cd /usr/src
++  mkdir setup; cd setup
++
++  # put your unmaintained contrib packages here
++  mkdir -p contrib
++
++  # put your maintained release packages here
++  mkdir -p release
++
++  # symlink setup.exe into the current dir
++  ln -s <path>/setup.exe setup.exe
++
++=head1 AUTHORS
++
++  Christopher Faylor
++  Reini Urban
++  Yaakov Selkowitz
++
++=head1 COPYRIGHT AND DISCLAIMER
++
++  Copyright 2002, 2003 by Red Hat, Inc.
++  Copyright 2004 by Reini Urban.
++
++This program is free software; you can redistribute it and/or
++modify it under the terms of the GNU General Public License
++as published by the Free Software Foundation; either version 2
++of the License, or (at your option) any later version.
++
++This program is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++If you do not have a copy of the GNU General Public License write to
++the Free Software Foundation, Inc., 675 Mass Ave, Cambridge,
++MA 02139, USA.
++
++=cut
++
+ use strict;
+ my ($u, $pgm, $compress);
+ 
+@@ -8,7 +120,8 @@
+ $pgm and $0 = $pgm;
+ $pgm = ($0 =~ m!/([^/]+)$!)[0] || $0;
+ my $setup_version = 1;
+-GetOptions('u=s'=>\$u, 'setup-version!'=>\$setup_version, 'C'=>\$compress) or do {
++my $extnowarn = 0;
++GetOptions('u=s'=>\$u, 'setup-version!'=>\$setup_version, 'C'=>\$compress, 'extnowarn|e!'=>\$extnowarn) or do {
+     die "usage: $pgm [-u setup-file] [--[no]setup-version] [dir]\n";
+ };
+ 
+@@ -24,10 +137,18 @@
+ $| = 1;
+ 
+ my $package = new Cygwin::Setup;
++my $extpackage = {};
+ 
+ $. = 0;
+-if ($u && open(U, $u)) {
++if ($u && open(U, '<', $u)) {
+     $initfn = $u;
++    if ($u =~ /.bz2$/) {
++        $initfn =~ s/\.bz2$//;
++        if (system "bunzip2 $u") {
++	    $u = $initfn;
++	    open(U, '<', $u);
++        }
++    }
+     while ($package->iniparse ($u, \*U)) {
+ 	next;
+     }
+@@ -55,6 +176,14 @@
+     exit 1;
+ }
+ 
++# prevent from warning refers to non-existant package x
++open I, "< /etc/setup/installed.db";
++while (<I>) {
++    m/^(\S+)\s(\S+)\s/;
++    $extpackage->{$1} = $2;
++}
++close I;
++
+ print <<BLAH;
+ # This file is automatically generated.  If you edit it, your
+ # edits will be discarded next time the file is generated.
+@@ -95,20 +224,38 @@
+ 	delete $pkgbase->{'ldesc'};
+     }
+     if ($pkgbase->{'category'}) {
++        for my $cat (split(' ', $pkgbase->{'category'})) {
++            die "invalid category $cat in $p\n" 
++	      unless $cat =~ /^(?:@{[join('|' => @Cygwin::Setup::categories)]})$/;
++        }
+ 	print "category:", map(" \u$_", (split(' ', $pkgbase->{'category'}))), "\n";
+ 	delete $pkgbase->{'category'};
+     } else {
+ 	print "category: ", 'Misc', "\n";
+     }
+-    if ($pkgbase->{'requires'}) {
+-	foreach my $r (split(' ', $pkgbase->{'requires'})) {
++    # keys which take multiple packages (only partial setup.exe support yet)
++    foreach my $key (@Cygwin::Setup::pkgkeys) {
++      if ($pkgbase->{$key}) {
++	foreach my $r (split(' ', $pkgbase->{$key})) {
+ 	    if (!defined($package->{$r})) {
+-		warn "upset: *** warning package $p requires non-existent package $r\n";
++		if (defined($extpackage->{$r})) {
++		    warn "upset: * warning package $p $key external package $r\n" unless $extnowarn;
++		} else {
++		    warn "upset: *** warning package $p $key non-existent package $r\n" ;
++		}
++	    }
++	}
++	print $key, ": ", $pkgbase->{$key}, "\n";
++	delete $pkgbase->{$key};
++      }
++    }
++    # other new keys
++    foreach my $key (@Cygwin::Setup::otherkeys) {
++      if ($pkgbase->{$key}) {
++	print $key, ": ", $pkgbase->{$key}, "\n";
++	delete $pkgbase->{$key};
+ 	    }
+ 	}
+-	print "requires: ", $pkgbase->{'requires'}, "\n";
+-	delete $pkgbase->{'requires'};
+-    };
+     for my $g ('', 'prev', 'test') {
+ 	my $ver = $pkg->{$g} or next;
+ 	print "[$g]\n" if length($g);
+@@ -148,6 +295,8 @@
+ 
+ if ($u) {
+     my $changed = 0;
++    die "Couldnt open $u" unless $initfn;
++    close(U);
+     open(STDOUT, ">/dev/null");
+     system  qw/diff -I^setup-timestamp -w -B -q/, $initfn, $newfn and do {
+ 	system 'mv', $newfn, $initfn;
+@@ -162,3 +311,20 @@
+     unlink($newfn);
+ }
+ exit(0);
++
++### Setup "cgf" style for perl-mode and cperl-mode.
++## Local Variables:
++## perl-indent-level: 4
++## perl-continued-statement-offset: 4
++## perl-continued-brace-offset: 0
++## perl-brace-offset: 0
++## perl-brace-imaginary-offset: 0
++## perl-label-offset: -4
++## cperl-indent-level: 4
++## cperl-brace-offset: 0
++## cperl-continued-brace-offset: 0
++## cperl-label-offset: -4
++## cperl-extra-newline-before-brace: t
++## cperl-merge-trailing-else: nil
++## cperl-continued-statement-offset: 4
++## End:

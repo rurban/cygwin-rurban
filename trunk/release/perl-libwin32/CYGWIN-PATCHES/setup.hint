@@ -1,0 +1,10 @@
+sdesc: "Perl extensions for using the Win32 API"
+ldesc: "Perl extensions for using the Win32 API.
+Included modules: Win32API::Net, Win32API::Registry,
+Win32::ChangeNotify, Win32::Clipboard, Win32::Console, Win32::Event, Win32::EventLog, 
+Win32::File, Win32::FileSecurity, Win32::IPC, Win32::Internet, Win32::Job, Win32::Mutex, 
+Win32::NetAdmin, Win32::NetResource, Win32::ODBC, Win32::OLE, Win32::PerfLib, 
+Win32::Pipe, Win32::Process, Win32::Registry, Win32::Semaphore, Win32::Service, Win32::Shortcut, 
+Win32::Sound, Win32::TieRegistry and Win32::WinError."
+category: Perl
+requires: perl cygwin crypt

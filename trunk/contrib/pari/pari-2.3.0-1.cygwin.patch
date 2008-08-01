@@ -1,0 +1,164 @@
+diff -urN origsrc/pari-2.3.0/CYGWIN-PATCHES/README src/pari-2.3.0/CYGWIN-PATCHES/README
+--- origsrc/pari-2.3.0/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/pari-2.3.0/CYGWIN-PATCHES/README	2006-07-30 00:05:37.771350300 +0000
+@@ -0,0 +1,136 @@
++pari
++------------------------------------------
++Number Theory-oriented Computer Algebra System
++
++Runtime requirements:
++  cygwin-1.5.20-1 or newer
++  libreadline6
++  gmp
++
++Build requirements:
++  cygwin
++  gcc-core
++  gmp
++  automake
++  binutils
++
++Canonical homepage:
++  http://pari.math.u-bordeaux.fr/
++
++Canonical download:
++  http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-2.3.0.tar.gz
++
++------------------------------------
++
++Build instructions:
++  tar xfj pari-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport pari-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/pari-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/libpari1-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/libpari1-devel-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/pari-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport pari-<VERSION>-<CYGREL>.cygport prep' 
++to get a patched source directory 
++
++-------------------------------------------
++
++Files included in the binary distribution:
++
++  /usr/bin/gp-2.3.exe
++  /usr/bin/gp.exe
++  /usr/bin/gphelp
++  /usr/bin/tex2mail
++  /usr/include/pari/genpari.h
++  /usr/include/pari/pari.h
++  /usr/include/pari/paricast.h
++  /usr/include/pari/paricfg.h
++  /usr/include/pari/paricom.h
++  /usr/include/pari/paridecl.h
++  /usr/include/pari/parierr.h
++  /usr/include/pari/parigen.h
++  /usr/include/pari/pariinl.h
++  /usr/include/pari/parinf.h
++  /usr/include/pari/pariold.h
++  /usr/include/pari/pariport.h
++  /usr/include/pari/paripriv.h
++  /usr/include/pari/paristio.h
++  /usr/include/pari/parisys.h
++  /usr/include/pari/paritune.h
++  /usr/include/pari/paritype.h
++  /usr/lib/libpari.dll
++  /usr/lib/pari/pari.cfg
++  /usr/share/PARI/822.pm
++  /usr/share/doc/Cygwin/pari-2.3.0.README
++  /usr/share/doc/Makefile
++  /usr/share/doc/appa.tex
++  /usr/share/doc/appb.tex
++  /usr/share/doc/appc.tex
++  /usr/share/doc/pari-2.3.0/AUTHORS
++  /usr/share/doc/pari-2.3.0/COPYING
++  /usr/share/doc/pari-2.3.0/Changes
++  /usr/share/doc/pari-2.3.0/INSTALL
++  /usr/share/doc/pari-2.3.0/README
++  /usr/share/doc/pari-2.3.0/TODO
++  /usr/share/doc/paricfg.tex
++  /usr/share/doc/parimacro.tex
++  /usr/share/doc/pdfmacs.tex
++  /usr/share/doc/refcard.tex
++  /usr/share/doc/translations
++  /usr/share/doc/tutorial.tex
++  /usr/share/doc/users.tex
++  /usr/share/doc/usersch1.tex
++  /usr/share/doc/usersch2.tex
++  /usr/share/doc/usersch3.tex
++  /usr/share/doc/usersch4.tex
++  /usr/share/doc/usersch5.tex
++  /usr/share/emacs/site-lisp/pari/pari-completion.el
++  /usr/share/emacs/site-lisp/pari/pari-conf.el
++  /usr/share/emacs/site-lisp/pari/pari-fontification.el
++  /usr/share/emacs/site-lisp/pari/pari-help.el
++  /usr/share/emacs/site-lisp/pari/pari-messages.el
++  /usr/share/emacs/site-lisp/pari/pari.el
++  /usr/share/emacs/site-lisp/pari/pariemacs.txt
++  /usr/share/emacs/site-lisp/pari/sli-tools.el
++  /usr/share/examples/EXPLAIN
++  /usr/share/examples/Inputrc
++  /usr/share/examples/Makefile
++  /usr/share/examples/bench.gp
++  /usr/share/examples/cl.gp
++  /usr/share/examples/classno.gp
++  /usr/share/examples/contfrac.gp
++  /usr/share/examples/extgcd.c
++  /usr/share/examples/lucas.gp
++  /usr/share/examples/rho.gp
++  /usr/share/examples/squfof.gp
++  /usr/share/examples/taylor.gp
++  /usr/share/man/gp-2.3.1.gz
++  /usr/share/man/gp.1
++  /usr/share/man/gphelp.1.gz
++  /usr/share/man/pari.1
++  /usr/share/man/tex2mail.1.gz
++  /usr/share/misc/README
++  /usr/share/misc/color.dft
++  /usr/share/misc/gpalias
++  /usr/share/misc/gpflog
++  /usr/share/misc/gprc.dft
++  /usr/share/misc/new.dic
++  /usr/share/misc/pari.xpm
++  /usr/share/misc/xgp
++  /usr/share/pari.desc
++
++------------------
++
++Port Notes:
++
++----------  pari-2.3.0-1 -----------
++
++Initial cygwin release for clisp-2.39-1
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>
+diff -urN origsrc/pari-2.3.0/CYGWIN-PATCHES/libpari1-devel.hint src/pari-2.3.0/CYGWIN-PATCHES/libpari1-devel.hint
+--- origsrc/pari-2.3.0/CYGWIN-PATCHES/libpari1-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/pari-2.3.0/CYGWIN-PATCHES/libpari1-devel.hint	2006-07-29 23:47:44.458850300 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Development files for PARI shared library"
++ldesc: "PARI/GP is a widely used computer algebra system designed for fast computations in number theory (factorizations, algebraic number theory, elliptic curves...), but also contains a large number of other useful functions to compute with mathematical entities such as matrices, polynomials, power series, algebraic numbers etc., and a lot of transcendental functions. PARI is also available as a C library to allow for faster computations."
++category: Libs
++requires: pari libpari1
+diff -urN origsrc/pari-2.3.0/CYGWIN-PATCHES/libpari1.hint src/pari-2.3.0/CYGWIN-PATCHES/libpari1.hint
+--- origsrc/pari-2.3.0/CYGWIN-PATCHES/libpari1.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/pari-2.3.0/CYGWIN-PATCHES/libpari1.hint	2006-07-29 23:47:39.849475300 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Shared PARI library"
++ldesc: "PARI/GP is a widely used computer algebra system designed for fast computations in number theory (factorizations, algebraic number theory, elliptic curves...), but also contains a large number of other useful functions to compute with mathematical entities such as matrices, polynomials, power series, algebraic numbers etc., and a lot of transcendental functions. PARI is also available as a C library to allow for faster computations."
++category: Libs
++requires: pari
+diff -urN origsrc/pari-2.3.0/CYGWIN-PATCHES/pari.hint src/pari-2.3.0/CYGWIN-PATCHES/pari.hint
+--- origsrc/pari-2.3.0/CYGWIN-PATCHES/pari.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/pari-2.3.0/CYGWIN-PATCHES/pari.hint	2006-07-29 22:55:52.599475300 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Number Theory-oriented Computer Algebra System"
++ldesc: "PARI/GP is a widely used computer algebra system designed for fast computations in number theory (factorizations, algebraic number theory, elliptic curves...), but also contains a large number of other useful functions to compute with mathematical entities such as matrices, polynomials, power series, algebraic numbers etc., and a lot of transcendental functions. PARI is also available as a C library to allow for faster computations."
++category: Math
++requires: 

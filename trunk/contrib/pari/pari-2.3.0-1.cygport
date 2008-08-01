@@ -1,0 +1,45 @@
+# -*- sh -*-
+DESCRIPTION="Number Theory-oriented Computer Algebra System"
+HOMEPAGE="http://pari.math.u-bordeaux.fr/"
+SRC_URI="http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-${PV}.tar.gz"
+
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+MAKEOPTS="${MAKEOPTS} -j1"
+
+PKG_NAMES="pari libpari libpari-devel"
+PKG_HINTS="${PKG_NAMES}"
+
+# pari
+PKG_CONTENTS[0]=" \
+--exclude=usr/bin/cygpari.dll
+--exclude=usr/include
+--exclude=usr/lib/libpari.dll.a
+usr"
+
+# libpari
+PKG_CONTENTS[1]="usr/bin/cygpari.dll"
+
+# libpari-devel
+PKG_CONTENTS[2]=" \
+--exclude=usr/lib/pari
+usr/include
+usr/lib"
+
+src_compile() {
+   lndirs
+   cd ${B}
+   ./Configure --graphic=none --prefix=/usr --bindir=/usr/bin --mandir=/usr/share/man --datadir=/usr/share/pari
+   cygmake gp
+}
+
+src_install() {
+   cd ${B}
+   cyginstall
+
+   mv ${D}/usr/lib/*.dll ${D}/usr/bin/
+}
+
+src_test() {
+   cd ${B}
+   cygmake dobench
+}

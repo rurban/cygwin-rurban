@@ -1,0 +1,159 @@
+--- mathomatic-12.4.2/CYGWIN-PATCHES/README.orig	1970-01-01 00:00:00.000000000 +0000
++++ mathomatic-12.4.2/CYGWIN-PATCHES/README	2005-06-15 18:42:58.243875000 +0000
+@@ -0,0 +1,88 @@
++mathomatic
++-------------------------------------------------------------------------------
++Algebraic console.
++
++Runtime requirements:
++  cygwin-1.5.x              or newer
++  libreadline6
++  libncurses8
++  
++Build requirements:
++  cygwin
++  gcc
++  binutils
++  make
++  ash
++  fileutils
++  sed
++  libncurses
++  libreadline
++
++Canonical homepage:
++  http://www.mathomatic.com
++
++Canonical download:
++  http://www.panix.com/~gesslein/mathomatic-12.4.2.tgz
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack mathomatic-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./mathomatic-<VERSION>-<CYGREL>.sh all
++
++This will create:
++  /usr/src/mathomatic-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/mathomatic-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use './mathomatic-<VERSION>-<CYGREL>.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in mathomatica:
++
++ /usr/bin/mathomatic.exe
++ /usr/share/doc/Cygwin/mathomatic-12.4.2.README (this file)
++  /usr/share/doc/mathomatic-12.4.2/am.htm
++  /usr/share/doc/mathomatic-12.4.2/changes.txt
++  /usr/share/doc/mathomatic-12.4.2/ctips.html
++  /usr/share/doc/mathomatic-12.4.2/index.html
++  /usr/share/doc/mathomatic-12.4.2/LICENSE.txt
++  /usr/share/doc/mathomatic-12.4.2/manual.htm
++  /usr/share/doc/mathomatic-12.4.2/mathomatic.ico (desktop icon)
++  /usr/share/doc/mathomatic-12.4.2/notes.html
++  /usr/share/doc/mathomatic-12.4.2/README.txt
++  /usr/share/man/man1/mathomatic.1.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version mathomatic-12.1e-1 -----
++
++none
++
++----- version mathomatic-12.1-1 -----
++
++none
++
++----- version mathomatic-11.5-1 -----
++
++patched \r\n => \n, added -DUNIX for termios handlers, added -O2
++
++----- version mathomatic-11.3f-2 -----
++ 
++Maintainer fixed his basedir. readline and curses added.
++
++----- version mathomatic-11.3d-1 -----
++
++Initial release (not packaged)
++
++This is just the mathomatic client from the mathomatic package. 
++Not the samples for prime number generation: twin, sumsq, primes and around. 
++If you want these also, get the src packages and compile them by yourself.
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+\ No newline at end of file
+--- mathomatic-12.4.2/CYGWIN-PATCHES/setup.hint.orig	1970-01-01 00:00:00.000000000 +0000
++++ mathomatic-12.4.2/CYGWIN-PATCHES/setup.hint	2005-06-15 06:06:39.000000000 +0000
+@@ -0,0 +1,11 @@
++sdesc: "Computer Algebra System"
++ldesc: "Mathomatic is a highly portable,general purpose symbolic math program
++that can solve, simplify, combine, differentiate, integrate, and
++compare algebraic equations. It can do standard, complex number, and
++polynomial arithmetic. It is designed to be as general as possible,
++with few options. It is a console mode application that compiles and
++installs easily. License: LPGL 2.1"
++category: Math
++requires: libreadline6 libncurses8 cygwin
++curr: 12.4.2-1
++prev: 12.1e-1
+--- mathomatic-12.4.2/list.c.orig	2005-06-09 01:52:46.000000000 +0000
++++ mathomatic-12.4.2/list.c	2005-06-15 18:36:09.681375000 +0000
+@@ -95,7 +95,7 @@
+ 		fprintf(gfp, ";");
+ 	}
+ 	if (high_prec) {
+-#if	CYGWIN
++#if	WIN32
+ 		fprintf(gfp, "\r\n");
+ #else
+ 		fprintf(gfp, "\n");
+--- mathomatic-12.4.2/makefile.cygwin.orig	2005-05-25 08:38:01.000000000 +0000
++++ mathomatic-12.4.2/makefile.cygwin	2005-06-15 18:43:29.540750000 +0000
+@@ -1,14 +1,20 @@
+ # Makefile for compiling Mathomatic with CygWin for Windows.
+ 
+ VERSION		= `cat VERSION`
+-CFLAGS		= -O -DCYGWIN -DVERSION=\"$(VERSION)\"
++CFLAGS		= -O2 -DUNIX -DCYGWIN -DVERSION=\"$(VERSION)\"
+ LDFLAGS		= -s
+ LIBS		= -lm
+ 
+ CFLAGS		+= -DREADLINE
+ LIBS		+= -lreadline -lcurses
+ 
+-AOUT	=mathomatic
++DESTDIR		=
++prefix		= /usr/local
++bindir		= $(prefix)/bin
++mandir		= $(prefix)/share/man
++docdir		= $(prefix)/share/doc
++
++AOUT	=mathomatic.exe
+ OBJECTS	=main.o globals.o am.o help.o parse.o cmds.o simplify.o factor.o super.o \
+ 	unfactor.o diff.o integrate.o complex.o list.o gcd.o
+ 
+@@ -29,6 +35,16 @@
+ $(AOUT): $(OBJECTS)
+ 	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(AOUT)
+ 
++install: $(AOUT)
++	install -d $(DESTDIR)$(prefix)/bin/
++	install -d $(DESTDIR)$(mandir)/man1
++	install -d $(DESTDIR)$(docdir)/mathomatic-12.4.2
++	install -m 0755 $(AOUT) $(DESTDIR)$(prefix)/bin/
++	install -m 0644 doc/mathomatic.1 $(DESTDIR)$(mandir)/man1
++	install -m 0644 doc/*.htm $(DESTDIR)$(docdir)/mathomatic-12.4.2
++	install -m 0644 doc/*.html $(DESTDIR)$(docdir)/mathomatic-12.4.2
++	@echo Install completed.
++
+ clean:
+ 	rm -f *.o
+ 	rm -f $(AOUT)

@@ -1,0 +1,533 @@
+--- perl-libwin32-0.26/CYGWIN-PATCHES/README.orig	1970-01-01 00:00:00.000000000 +0000
++++ perl-libwin32-0.26/CYGWIN-PATCHES/README	2005-09-18 09:40:53.514125000 +0000
+@@ -0,0 +1,113 @@
++perl-libwin32
++------------------------------------------
++Perl extensions for using the Win32 API.
++Included modules: Win32API::File, Win32API::Net, Win32API::Registry,
++ChangeNotify, Clipboard, Console, Event, EventLog, File, FileSecurity,
++IPC, Internet, Job, Mutex, NetAdmin, NetResource, ODBC, OLE, PerfLib, Pipe,
++Process, Registry, Semaphore, Service, Shortcut, Sound, TieRegistry and
++WinError.
++
++Runtime requirements:
++  cygwin
++  perl-5.8.8
++  crypt-1.1-1
++
++Build requirements:
++  cygwin
++  crypt-1.1-1
++  cygutils
++  perl-5.8.8
++  gcc
++  make
++  w32api-2.2-1 (at least)
++  gzip
++
++Project Homepages:
++  http://search.cpan.org/search?query=libwin32&mode=Distributions
++  http://sourceforge.net/projects/libwin32-exp/
++
++------------------------------------
++
++Build instructions:
++  unpack perl-libwin32-0.26-<REL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./perl-libwin32-0.26-<REL>.sh all
++
++This will create:
++  /usr/src/perl-libwin32-0.26-<REL>.tar.bz2
++  /usr/src/perl-libwin32-0.26-<REL>-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++Requirements:
++
++The dll's must probably be rebased. If a remap error occurs run rebaseall from 
++the rebase package. The packaged version is already rebased to my personal settings.
++
++Certain tests require esoteric apps, which probably will fail for you. 
++Win32::OLE requires Excel.Application
++
++Port TODO:
++
++* Alot of stuff needs to be fed back upstream, will add details later to this
++  file or the sourceforge project, including some references to previous
++  discussions on p5p.
++  http://rt.cpan.org/NoAuth/Bugs.html?Dist=libwin32
++* Need to make a cleaner package script and/or add some support to
++  ExtUtils::MakeMaker and Module::Build for Cygwin packages. At the very least
++  need to make a template package script for making other Perl modules, as the
++  sample setup script requires a good deal of modification.
++* Some of the hints stuff might be nicer reworked using something like:
++  http://search.cpan.org/~jstowe/TermReadKey-2.21/Configure.pm
++
++----- version 0.26-1 -----
++
++* Almost all patches accepted upstream. 
++* Added APIFile OO and tied interface (as in the previous cygwin packages).
++* fixed Win32::ODBC to use Gerrit's iodbc headers
++  https://rt.cpan.org/NoAuth/Bug.html?id=14634
++* splitted rebase into rebase1 and rebase2
++
++----- version 0.191-4 -----
++
++* fixed src patch
++
++----- version 0.191-3 ----- (NOT RELEASED)
++
++* make install_vendor (into vendor_perl)
++* keep Win32::Process::GetCurrentProcessID(),
++* remove Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) from Process.xs
++  (now in core)
++* fix pm_to_blib MM targets (APIFile, APIRegistry).
++  better than the cRegistry_pc_to_blib hack in -2
++* cleaned the build script, hints and patch. fixed rebaseall step
++
++----- version 0.191-2 ----- (NOT RELEASED)
++
++* added Win32::Process::GetCurrentProcessID(), 
++  Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) to Process.xs
++* Removed Win32::GUI. Seperate perl-win32-gui package
++* Win32CORE is now in perl-5.8.6 core statically.
++* Win32API::Net test patches (locale independency)
++* fixed APIRegistry cRegistry_pc_to_blib
++* all DLL's rebased, but a rebaseall might be required nevertheless.
++
++Maintainership taken over by Reini Urban (rurban@x-ray.at)
++
++----- version 0.191-1 -----
++
++Initial Cygwin package.
++
++Cygwin port maintained by: Rafael Kitover  (caelum@debian.org)
++Please address all cygwin related questions to the Cygwin mailing 
++list at <cygwin@cygwin.com>. 
++The new libwin32 mailinglist is <libwin32@perl.org>.
++An NNTP archive of previous messages is available from:
++    http://www.nntp.perl.org/group/perl.libwin32
++
+--- perl-libwin32-0.26/APIFile/File.pm.orig	2005-09-17 20:36:32.000000000 +0000
++++ perl-libwin32-0.26/APIFile/File.pm	2005-09-18 08:39:39.561000000 +0000
+@@ -404,6 +404,52 @@
+     return $retval;
+ }
+ 
++sub getFileSize {
++	croak 'Win32API::File Usage:  $size= getFileSize($hNativeHandle)'
++		if @_ != 1;
++
++	my $handle    = shift;
++	my $high_size = 0;
++
++	my $low_size = GetFileSize($handle, $high_size);
++
++	my $retval = $_64BITINT ?
++		$high_size : new Math::BigInt $high_size;
++
++	$retval <<= $THIRTY_TWO;
++	$retval +=  $low_size;
++
++	return $retval;
++}
++
++sub setFilePointer {
++	croak 'Win32API::File Usage:  $pos= setFilePointer($hNativeHandle, $posl, $from_where)'
++		if @_ != 3;
++
++	my ($handle, $pos, $from_where) = @_;
++
++	my ($pos_low, $pos_high) = ($pos, 0);
++
++	if ($_64BITINT) {
++		$pos_low  = ($pos & $FFFFFFFF);
++		$pos_high = (($pos >> $THIRTY_TWO) & $FFFFFFFF);
++	} elsif (UNIVERSAL::isa($pos => 'Math::BigInt')) {
++		$pos_low  = ($pos & $FFFFFFFF)->numify();
++		$pos_high = (($pos >> $THIRTY_TWO) & $FFFFFFFF)->numify();
++	}
++
++	my $retval = SetFilePointer($handle, $pos_low, $pos_high, $from_where);
++
++	if (defined $pos_high && $pos_high != 0) {
++		$retval   = new Math::BigInt $retval   unless $_64BITINT;
++		$pos_high = new Math::BigInt $pos_high unless $_64BITINT;
++
++		$retval += $pos_high << $THIRTY_TWO;
++	}
++
++	return $retval;
++}
++
+ sub attrLetsToBits
+ {
+     my( $lets )= @_;
+@@ -801,6 +847,253 @@
+ 
+ # End of Tie/OO Interface
+ 
++###############################################################################
++#   Experimental Tied Handle and Object Oriented interface.                   #
++###############################################################################
++
++sub new {
++	my $class = shift;
++	$class = ref $class || $class;
++
++	my $self = IO::File::new($class);
++	tie *$self, __PACKAGE__;
++
++	$self->open(@_) if @_;
++
++	return $self;
++}
++
++sub TIEHANDLE {
++	my ($class, $win32_handle) = @_;
++	$class = ref $class || $class;
++
++	return bless {
++		_win32_handle => $win32_handle,
++		_binmode      => FALSE,
++		_buffered     => FALSE,
++		_buffer       => '',
++		_eof          => FALSE,
++		_fileno       => undef,
++		_access       => 'r',
++		_append       => FALSE,
++	}, $class;
++}
++
++# This is called for getting the tied object from hard refs to glob refs in
++# some cases, for reasons I don't quite grok.
++
++sub FETCH { return $_[0] }
++
++# Public accessors
++
++sub win32_handle{ $_[0]->{_win32_handle}||= $_[1] }
++
++# Protected accessors
++
++sub _buffer	{ $_[0]->{_buffer}	||= $_[1] }
++sub _binmode	{ $_[0]->{_binmode}	||= $_[1] }
++sub _fileno	{ $_[0]->{_fileno}	||= $_[1] }
++sub _access	{ $_[0]->{_access}	||= $_[1] }
++sub _append	{ $_[0]->{_append}	||= $_[1] }
++
++# Tie interface
++
++sub OPEN {
++	my $self  = shift;
++	my $expr  = shift;
++	croak "Only the two argument form of open is supported at this time" if @_;
++# FIXME: this needs to parse the full Perl open syntax in $expr
++
++	my ($mixed, $mode, $path) =
++		($expr =~ /^\s* (\+)? \s* (<|>|>>)? \s* (.*?) \s*$/x);
++
++	croak "Unsupported open mode" if not $path;
++
++	my $access = 'r';
++	my $append = $mode eq '>>' ? TRUE : FALSE;
++
++	if ($mixed) {
++		$access = 'rw';
++	} elsif($mode eq '>') {
++		$access = 'w';
++	}
++
++	my $w32_handle = createFile($path, $access);
++
++	$self->win32_handle($w32_handle);
++
++	$self->seek(1,2) if $append;
++
++	$self->_access($access);
++	$self->_append($append);
++
++	return TRUE;
++}
++
++sub BINMODE {
++	$_[0]->_binmode(TRUE);
++}
++
++sub WRITE {
++	my ($self, $buf, $len, $offset, $overlap) = @_;
++
++	if ($offset) {
++		$buf = substr($buf, $offset);
++		$len = length($buf);
++	}
++
++	$len       = length($buf) if not defined $len;
++
++	$overlap   = [] if not defined $overlap;;
++
++	my $bytes_written = 0;
++
++	WriteFile (
++		$self->win32_handle, $buf, $len,
++		$bytes_written, $overlap
++	);
++
++	return $bytes_written;
++}
++
++sub PRINT {
++	my $self = shift;
++
++	my $buf = join defined $, ? $, : "" => @_;
++
++	$buf =~ s/\012/\015\012/sg unless $self->_binmode();
++
++	$buf .= $\ if defined $\;
++
++	$self->WRITE($buf, length($buf), 0);
++}
++
++sub READ {
++	my $self = shift;
++	my $into = \$_[0]; shift;
++	my ($len, $offset, $overlap) = @_;
++
++	my $buffer     = defined $self->_buffer ? $self->_buffer : "";
++	my $buf_length = length($buffer);
++	my $bytes_read = 0;
++	my $data;
++	$offset        = 0 if not defined $offset;
++
++	if ($buf_length >= $len) {
++		$data       = substr($buffer, 0, $len => "");
++		$bytes_read = $len;
++		$self->_buffer($buffer);
++	} else {
++		if ($buf_length > 0) {
++			$len -= $buf_length;
++			substr($$into, $offset) = $buffer;
++			$offset += $buf_length;
++		}
++
++		$overlap ||= [];
++
++		ReadFile (
++			$self->win32_handle, $data, $len,
++			$bytes_read, $overlap
++		);
++	}
++
++	$$into = "" if not defined $$into;
++
++	substr($$into, $offset) = $data;
++
++	return $bytes_read;
++}
++
++sub READLINE {
++	my $self = shift;
++	my $line = "";
++
++	while ((index $line, $/) == $[-1) { # read until end of line marker
++		my $char = $self->GETC();
++
++		last if !defined $char || $char eq '';
++
++		$line .= $char;
++	}
++
++	return undef if $line eq '';
++
++	return $line;
++}
++
++
++sub FILENO {
++	my $self = shift;
++
++	return $self->_fileno() if defined $self->_fileno();
++
++	return -1 if $^O eq 'cygwin';
++
++# FIXME: We don't always open the handle, better to query the handle or to set
++# the right access info at TIEHANDLE time.
++
++	my $access = $self->_access();
++	my $mode   = $access eq 'rw' ? O_RDWR :
++		$access eq 'w' ? O_WRONLY : O_RDONLY;
++
++	$mode |= O_APPEND if $self->_append();
++
++	$mode |= O_TEXT   if not $self->_binmode();
++
++	return $self->_fileno ( OsfHandleOpenFd (
++		$self->win32_handle, $mode
++	));
++}
++
++sub SEEK {
++	my ($self, $pos, $whence) = @_;
++
++	$whence = 0 if not defined $whence;
++	my @file_consts = map {
++		fileConstant($_)
++	} qw(FILE_BEGIN FILE_CURRENT FILE_END);
++
++	my $from_where = $file_consts[$whence];
++
++	return setFilePointer($self->win32_handle, $pos, $from_where);
++}
++
++sub TELL {
++# SetFilePointer with position 0 at FILE_CURRENT will return position.
++	return $_[0]->SEEK(0, 1);
++}
++
++sub EOF {
++	my $self = shift;
++
++	my $current = $self->TELL() + 0;
++	my $end     = getFileSize($self->win32_handle) + 0;
++
++	return $current == $end;
++}
++
++sub CLOSE {
++	my $self = shift;
++
++	my $retval = TRUE;
++	
++	if (defined $self->win32_handle) {
++		$retval = CloseHandle($self->win32_handle);
++
++		$self->win32_handle(undef);
++	}
++
++	return $retval;
++}
++
++# Only close the handle on explicit close, too many problems otherwise.
++sub UNTIE {}
++
++sub DESTROY {}
++
++# End of Tie/OO Interface
++
+ # Autoload methods go after =cut, and are processed by the autosplit program.
+ 
+ 1;
+@@ -854,6 +1147,26 @@
+ 
+ It has not been extensively tested yet and buffered I/O is not yet implemented.
+ 
++=head2 Object Oriented/Tied Handle Interface
++
++WARNING: this is new code, use at your own risk.
++
++This version of C<Win32API::File> can be used like an C<IO::File> object. Ie:
++
++  my $file = new Win32API::File "+> foo";
++  binmode $file;
++  print $file "hello there\n";
++  seek $file, 0, 0;
++  my $line = <$file>;
++  $file->close;
++
++It also supports tying via a win32 handle (for example, from C<createFile()>):
++
++  tie FILE, 'Win32API::File', $win32_handle;
++  print FILE "...";
++
++It has not been extensively tested yet and buffered I/O is not yet implemented.
++
+ =head2 Exports
+ 
+ Nothing is exported by default.  The following tags can be used to
+@@ -1730,6 +2043,39 @@
+ 
+ See L<http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/getoverlappedresult.asp> for more information.
+ 
++=item getFileSize
++
++=item C<$size= getFileSize( $hFile )>
++
++This is a Perl-friendly wrapper for the C<GetFileSize> (below) API call.
++
++It takes a Win32 native file handle and returns the size in bytes. Since the
++size can be a 64 bit value, on non 64 bit integer Perls the value returned will
++be an object of type C<Math::BigInt>.
++
++=item GetFileSize
++
++=item C<$iSizeLow= GetFileSize($win32Handle, $iSizeHigh)>
++
++Returns the size of a file pointed to by C<$win32Handle>, optionally storing
++the high order 32 bits into C<$iSizeHigh> if it is not C<[]>. If $iSizeHigh is
++C<[]>, a non-zero value indicates success. Otherwise, on failure the return
++value will be C<0xffffffff> and C<fileLastError()> will not be C<NO_ERROR>.
++
++=item GetOverlappedResult
++
++=item C<$bRetval= GetOverlappedResult( $win32Handle, $pOverlapped,
++ $numBytesTransferred, $bWait )>
++
++Used for asynchronous IO in Win32 to get the result of a pending IO operation,
++such as when a file operation returns C<ERROR_IO_PENDING>. Returns a false
++value on failure. The C<$overlapped> structure and C<$numBytesTransferred>
++will be modified with the results of the operation.
++
++As far as creating the C<$pOverlapped> structure, you are currently on your own.
++
++See L<http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/getoverlappedresult.asp> for more information.
++
+ =item GetLogicalDrives
+ 
+ =item C<$uDriveBits= GetLogicalDrives()>
+@@ -2136,7 +2482,16 @@
+ doesn't have 64 bit integers. The return value is the new offset and will
+ likewise be a 64 bit integer or a C<Math::BigInt> object.
+ 
++=item setFilePointer
++
++=item C<$uNewPos= setFilePointer( $hFile, $ivOffset, $uFromWhere )>
++
++This is a perl-friendly wrapper for the SetFilePointer API (below).
++C<$ivOffset> can be a 64 bit integer or C<Math::BigInt> object if your Perl
++doesn't have 64 bit integers. The return value is the new offset and will
++likewise be a 64 bit integer or a C<Math::BigInt> object.
++
+ =item SetFilePointer
+ 
+ =item C<$uNewPos = SetFilePointer( $hFile, $ivOffset, $ioivOffsetHigh, $uFromWhere )>
+--- perl-libwin32-0.26/ODBC/ODBC.xs.orig	2005-09-17 20:36:36.000000000 +0000
++++ perl-libwin32-0.26/ODBC/ODBC.xs	2005-09-18 09:07:47.686000000 +0000
+@@ -30,9 +30,13 @@
+ #include <stdio.h>
+     
+     //  ODBC Stuff
++#ifdef __CYGWIN__
++#include <iodbcinst.h>
++#else
+ #include <sql.h>
+ #include <sqlext.h>
+ #include <odbcinst.h>
++#endif
+ 
+     //  Win32 Perl Stuff
+ #if defined(__cplusplus)
+@@ -366,7 +370,7 @@
+     }
+     strcpy((char *)h->Error->szSqlState, "");
+     strcpy(h->Error->szError, "");
+-    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (UCHAR *)h->Error->szSqlState, (long *)&(h->Error->ErrNum), (unsigned char *)h->Error->szError, ODBC_BUFF_SIZE, (short *)&cbErrorMsg);
++    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (SQLCHAR *)h->Error->szSqlState, (SQLINTEGER *)&(h->Error->ErrNum), (SQLCHAR *)h->Error->szError, ODBC_BUFF_SIZE, (SQLSMALLINT *)&cbErrorMsg);
+ 
+         //  Next couple of lines should be NOT needed. If there is no error, then
+         //  we should not have come here in the first place. If, however, there

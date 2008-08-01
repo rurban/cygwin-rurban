@@ -1,0 +1,121 @@
+diff -urN -x .build -x .inst -x .sinst ctetris-0.29-orig/CYGWIN-PATCHES/README ctetris-0.29/CYGWIN-PATCHES/README
+--- ctetris-0.29-orig/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ ctetris-0.29/CYGWIN-PATCHES/README	2004-08-21 14:23:14.001404400 +0100
+@@ -0,0 +1,60 @@
++
++Runtime requirements:
++  cygwin-1.5.x              or newer
++  libncurses7               or newer  
++  
++Build requirements:
++  cygwin-1.5.x              or newer
++  gcc-3.3.1                 or newer
++  binutils-20030901         or newer
++  make-3.80                 or newer
++  ash-20031007              or newer
++  fileutils-4.1             or newer
++  sed-4.0.7                 or newer
++
++Canonical homepage:
++  http://sourceforge.net/projects/ctetris
++
++Canonical download:
++  http://prdownloads.sourceforge.net/ctetris/ctetris-0.29.tar.bz2?download
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack ctetris-0.29-2-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./ctetris-0.29-2.sh all
++
++This will create:
++  /usr/src/ctetris-0.29-2.tar.bz2
++  /usr/src/ctetris-0.29-2-src.tar.bz2
++
++Or use './ctetris-0.29-2.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in ctetris:
++
++  /usr/bin/ctetris.exe
++  /usr/share/man/man1/ctetris.1.gz
++  /usr/share/doc/Cygwin/ctetris-0.29.README (this file)
++  /usr/share/doc/ctetris-0.29/AUTHORS
++  /usr/share/doc/ctetris-0.29/COPYING
++  /usr/share/doc/ctetris-0.29/FAQ
++  /usr/share/doc/ctetris-0.29/INSTALL
++  /usr/share/doc/ctetris-0.29/KNOWN-BUGS
++  /usr/share/doc/ctetris-0.29/README
++  /usr/share/doc/ctetris-0.29/TODO
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version ctetris-0.29 -----
++
++Initial release
++
++Builds out of the box.
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN -x .build -x .inst -x .sinst ctetris-0.29-orig/CYGWIN-PATCHES/ctetris.hint ctetris-0.29/CYGWIN-PATCHES/ctetris.hint
+--- ctetris-0.29-orig/CYGWIN-PATCHES/ctetris.hint	1970-01-01 01:00:00.000000000 +0100
++++ ctetris-0.29/CYGWIN-PATCHES/ctetris.hint	2004-08-21 13:59:10.941750800 +0100
+@@ -0,0 +1,6 @@
++sdesc: "Console mode tetris clone"
++ldesc: "ctetris is a beautiful tetris clone, written in C using the ncurses library. 
++It works very fast and efficient, so it should be possible to play it even over a 
++slow remote terminal. With highscores. The author is Dominik Hackl. License: GPL"
++category: Games
++requires: libncurses7 cygwin
+diff -urN -x .build -x .inst -x .sinst ctetris-0.29-orig/Makefile ctetris-0.29/Makefile
+--- ctetris-0.29-orig/Makefile	2004-08-20 22:03:43.000000000 +0100
++++ ctetris-0.29/Makefile	2004-08-21 14:15:24.757410800 +0100
+@@ -1,16 +1,16 @@
+ 
+-DESTDIR= # this variable is overwritten to install in RPMBUILDDESTDIR
+-PREFIX=$(DESTDIR)/usr/
+-DOCDIR=$(DESTDIR)/usr/share/doc/packages/ctetris/
+-MANDIR=$(DESTDIR)/usr/share/man/man1/
+-BINDIR=$(DESTDIR)/bin/
++DESTDIR = # this variable is overwritten to install in RPMBUILDDESTDIR
++PREFIX=$(DESTDIR)/usr/
++DOCDIR=$(DESTDIR)/usr/share/doc/ctetris-0.29/
++MANDIR=$(DESTDIR)/usr/share/man/man1/
++BINDIR=$(DESTDIR)/usr/bin/
+ CC=gcc
+ MKDIR=mkdir -p
+ INSTALL=install
+ RM=rm -f
+ CFLAGS=-Wall -fomit-frame-pointer -O3
+ OBJS=ctetris.o game.o screen.o brick.o highscore.o
+-OUTPUT=ctetris
++OUTPUT=ctetris.exe
+ LIBS=-lm -lncurses
+ DOCS=AUTHORS COPYING FAQ INSTALL KNOWN-BUGS README TODO
+ MANS=ctetris.1
+@@ -19,7 +19,7 @@
+ all:
+ 	make config
+ 	make build
+-	
++
+ config:	
+ 	./create_config.sh
+ 
+@@ -37,9 +37,9 @@
+ 	$(RM) $(OBJS) $(OUTPUT) config.h
+ 
+ 
+-install:
++install: $(OUTPUT)
+ 	$(MKDIR) $(BINDIR) $(MANDIR) $(DOCDIR)
+-	$(INSTALL) $(OUTPUT) $(BINDIR)
++	$(INSTALL) -s -m 755 $(OUTPUT) $(BINDIR)
+ 	$(INSTALL) -m 644 $(DOCS) $(DOCDIR)
+ 	$(INSTALL) -m 644 $(MANS) $(MANDIR)
+ 

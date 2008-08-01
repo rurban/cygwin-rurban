@@ -1,0 +1,33 @@
+--- clamav-0.80-orig/freshclam/manager.c	2004-10-17 18:50:56.000000000 +0200
++++ clamav-0.80/freshclam/manager.c	2004-10-29 17:45:33.000000000 +0200
+@@ -477,7 +477,6 @@
+     sprintf(cmd, "GET %s/%s HTTP/1.1\r\n"
+ 	"Host: %s\r\n%s"
+ 	"User-Agent: "PACKAGE"/"VERSION"\r\n"
+-	"Cache-Control: no-cache\r\n"
+ 	"Connection: close\r\n"
+ 	"Range: bytes=0-511\r\n"
+ 	"\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"");
+@@ -485,7 +484,6 @@
+     snprintf(cmd, sizeof(cmd), "GET %s/%s HTTP/1.1\r\n"
+ 	"Host: %s\r\n%s"
+ 	"User-Agent: "PACKAGE"/"VERSION"\r\n"
+-	"Cache-Control: no-cache\r\n"
+ 	"Connection: close\r\n"
+ 	"Range: bytes=0-511\r\n"
+ 	"\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"");
+@@ -588,14 +586,12 @@
+     sprintf(cmd, "GET %s/%s HTTP/1.1\r\n"
+ 	     "Host: %s\r\n%s"
+ 	     "User-Agent: "PACKAGE"/"VERSION"\r\n"
+-	     "Cache-Control: no-cache\r\n"
+ 	     "Connection: close\r\n"
+ 	     "\r\n", (remotename != NULL)?remotename:"", dbfile, hostname, (authorization != NULL)?authorization:"");
+ #else
+     snprintf(cmd, sizeof(cmd), "GET %s/%s HTTP/1.1\r\n"
+ 	     "Host: %s\r\n%s"
+ 	     "User-Agent: "PACKAGE"/"VERSION"\r\n"
+-	     "Cache-Control: no-cache\r\n"
+ 	     "Connection: close\r\n"
+ 	     "\r\n", (remotename != NULL)?remotename:"", dbfile, hostname, (authorization != NULL)?authorization:"");
+ #endif

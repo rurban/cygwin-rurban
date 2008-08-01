@@ -1,0 +1,74 @@
+libksba
+------------------------------------------
+Libksba is a library to make the tasks of working with X.509
+certificates, CMS data and related objects more easy. It provides a
+highlevel interface to the implemented protocols and presents the data
+in a consistent way. There is no more need to worry about all the
+nasty details of the protocols. The API gives the C programmer an easy
+way of interacting with the data. It copes with the version details
+X.509 protocols tend to have as well as with the many different
+versions and dialects. Applications must usually cope with all of this
+and it has to be coded over and over again. Libksba hides this by
+providing just one API which does the Right Thing. Support for new
+features will be added as needed.
+
+Runtime requirements:
+  cygwin
+
+Build requirements:
+  cygwin
+  cygport
+  libtool
+  automake
+  gcc-core
+
+Canonical homepage:
+  http://www.gnupg.org/(en)/related_software/libksba/
+
+Canonical download:
+  http://ftp.gnupg.zone-h.org/alpha/libksba/libksba-${PV}.tar.bz2
+
+------------------------------------------
+Build instructions:
+  unpack libksba-<VER>-<CYGREL>-src.tar.bz2
+    if you use setup to install this src package, it will be
+	 unpacked under /usr/src automatically
+  cd /usr/src
+  cygport libksba-<VER>-<CYGREL>.cygport almostall
+
+This will create:
+  /usr/src/libksba-<VER>-<CYGREL>.tar.bz2
+  /usr/src/libksba-<VER>-<CYGREL>-src.tar.bz2
+Or use 'cygport libksba-<VER>-<CYGREL>.cygport prep' to get a patched source directory 
+
+------------------------------------------
+
+Files included in the package:
+
+ /etc/postinstall/libksba.sh
+ /usr/bin/ksba-config
+ /usr/include/ksba.h
+ /usr/lib/libksba.a
+ /usr/lib/libksba.la
+ /usr/share/aclocal/ksba.m4
+ /usr/share/doc/Cygwin/libksba-0.9.16.README
+ /usr/share/doc/libksba-0.9.16/AUTHORS
+ /usr/share/doc/libksba-0.9.16/COPYING
+ /usr/share/doc/libksba-0.9.16/ChangeLog
+ /usr/share/doc/libksba-0.9.16/INSTALL
+ /usr/share/doc/libksba-0.9.16/NEWS
+ /usr/share/doc/libksba-0.9.16/README
+ /usr/share/doc/libksba-0.9.16/THANKS
+ /usr/share/doc/libksba-0.9.16/TODO
+ /usr/share/info/ksba.info.gz
+
+------------------------------------------
+
+Port Notes:
+
+----------- version 0.9.16-1 --------------
+Initial release for a private gnupg-1.9.20-1
+
+------------------------------------------
+
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>

@@ -1,0 +1,191 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/NEWS src/catdoc-0.94.2/NEWS
+--- origsrc/catdoc-0.94.2/NEWS	2006-02-24 17:44:06.000000000 +0000
++++ src/catdoc-0.94.2/NEWS	2006-08-15 10:21:56.453125000 +0000
+@@ -1,7 +1,7 @@
+    0.90.1 Nov 26 1998
+           Top-level Makefile now uses $MAKE instead of make
+ 	  fixed missing end-line escaping in wordview.tcl
+-	  All occurences of strcpy, strcat and sprinf investigated
++	  All occurences of strcpy, strcat and sprintf investigated
+ 	  to avoid buffer overflows.
+    0.90   Oct 29 1998
+    	  Fixed bug with charset names redeclared locally in main()
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/README src/catdoc-0.94.2/README
+--- origsrc/catdoc-0.94.2/README	2006-02-24 17:44:06.000000000 +0000
++++ src/catdoc-0.94.2/README	2006-08-15 10:21:56.453125000 +0000
+@@ -1,22 +1,22 @@
+ CATDOC version 0.93
+ 
+-CATDOC is program which reads MS-Word file and prints readable 
+-ASCII text to stdout, just like Unix cat command.
+-It also able to produce correct escape sequences if some UNICODE
+-charachers have to be represented specially in your typesetting system
++CATDOC is a program which reads MS-Word file and prints readable 
++ASCII text to stdout, just like the Unix cat command.
++It is also able to produce correct escape sequences if some UNICODE
++characters have to be represented specially in your typesetting system
+ such as (La)TeX.
+ 
+-This is completely new version of catdoc, rewritten from scratch. 
++This is a completely new version of catdoc, rewritten from scratch. 
+ It features runtime configuration, proper charset handling,
+ user-definable output formats and support
+ for Word97 files, which contain UNICODE internally.
+ 
+-Since 0.93.0 catdoc parses OLE structure and extracts WordDocment
+-stream, but doesn't parse internal structure of it.
++Since 0.93.0 catdoc parses OLE structure and extracts WordDocument
++stream, but doesn't parse its internal structures.
+ 
+ This rough approach inevitable results in some garbage in output file,
+-especially near the end of file and if file contains embedded OLE objects,
+-such as pictures or equations.
++especially near the end of file and if the document contains embedded 
++OLE objects, such as pictures or equations.
+ 
+ So, if you are looking for purely authomatic way to convert Word to LaTeX,
+ you can better investigate word2x, wvware or LAOLA.
+@@ -34,12 +34,12 @@
+ 
+ Contributions are welcome.
+ 
+-See files INSTALL and INSTALL.dos for information about  compiling and
++See files INSTALL and INSTALL.dos for information about compiling and
+ installing catdoc.
+ 
+ Catdoc is documented in its UNIX-style manual page. For those who don't
+-have man command (i.e. MS-DOS users) plain text and postscript versions
+-of manual are provided in doc directory
++have the man command (i.e. MS-DOS users) plain text and postscript versions
++of manual are provided in the doc directory.
+                     Victor Wagner <vitus@45.free.net>
+ 
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/charsets/Makefile.in src/catdoc-0.94.2/charsets/Makefile.in
+--- origsrc/catdoc-0.94.2/charsets/Makefile.in	2006-02-24 17:44:06.000000000 +0000
++++ src/catdoc-0.94.2/charsets/Makefile.in	2006-08-15 10:21:56.468750000 +0000
+@@ -5,7 +5,7 @@
+ top_srcdir = @top_srcdir@
+ VPATH = @srcdir@
+ prefix = @prefix@
+-installroot = @installroot@
++DESTDIR = @DESTDIR@
+ exec_prefix = @exec_prefix@
+ 
+ bindir = @bindir@
+@@ -28,16 +28,16 @@
+ all: @charsetcheck@
+ clean:
+ install: install-dirs install-spc install-charsets
+-install-spc: tex.spc ascii.spc tex.rpl ascii.rpl
+-	    $(INSTALL) -m 644 ascii.spc $(installroot)$(LIB_DIR)/ascii$(SPEC_EXT) 
+-	    $(INSTALL) -m 644 tex.spc $(installroot)$(LIB_DIR)/tex$(SPEC_EXT) 
+-	    $(INSTALL) -m 644 ascii.rpl $(installroot)$(LIB_DIR)/ascii$(REPL_EXT)
+-	    $(INSTALL) -m 644 tex.rpl $(installroot)$(LIB_DIR)/tex$(REPL_EXT)
++install-spc: $(srcdir)/tex.spc $(srcdir)/ascii.spc $(srcdir)/tex.rpl $(srcdir)/ascii.rpl
++	    $(INSTALL) -m 644 ascii.spc $(DESTDIR)$(LIB_DIR)/ascii$(SPEC_EXT) 
++	    $(INSTALL) -m 644 tex.spc $(DESTDIR)$(LIB_DIR)/tex$(SPEC_EXT) 
++	    $(INSTALL) -m 644 ascii.rpl $(DESTDIR)$(LIB_DIR)/ascii$(REPL_EXT)
++	    $(INSTALL) -m 644 tex.rpl $(DESTDIR)$(LIB_DIR)/tex$(REPL_EXT)
+ install-charsets:
+-	for i in *.txt; do\
+-	   $(INSTALL) -m 0644 $$i $(installroot)$(LIB_DIR);\
++	for i in $(srcdir)/*.txt; do\
++	   $(INSTALL) -m 0644 $$i $(DESTDIR)$(LIB_DIR);\
+ 	done
+ install-dirs:
+-	../mkinstalldirs $(installroot)$(LIB_DIR)
++	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(LIB_DIR)
+ distclean:
+ 	rm Makefile
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/configure.in src/catdoc-0.94.2/configure.in
+--- origsrc/catdoc-0.94.2/configure.in	2006-02-25 15:28:12.000000000 +0000
++++ src/catdoc-0.94.2/configure.in	2006-08-15 10:21:56.468750000 +0000
+@@ -38,9 +38,6 @@
+ fi
+ ])
+ fi
+-AC_ARG_WITH(install-root,[  --with-install-root=path
+-			   allows to install catdoc into other directory 
+-			   than compilied-in path points to],installroot=$withval,)
+ replsuffix=.replchars
+ specsuffix=.specchars
+ targetcharset=koi8-r
+@@ -58,7 +55,7 @@
+  charsetcheck=""
+ fi]) 
+ test -z "$manext" && manext=.1
+-test -z "$man1dir" && man1dir=\${prefix}/man/man1
++test -z "$man1dir" && man1dir=\${prefix}/share/man/man1
+ if test -n "$WISH"; then
+ AC_ARG_ENABLE(wordview,[  --disable-wordview	   Do not install tcl-tk
+ 						wrapper],[:],)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/doc/Makefile.in src/catdoc-0.94.2/doc/Makefile.in
+--- origsrc/catdoc-0.94.2/doc/Makefile.in	2006-02-25 16:08:27.000000000 +0000
++++ src/catdoc-0.94.2/doc/Makefile.in	2006-08-15 10:21:56.484375000 +0000
+@@ -1,7 +1,7 @@
+ 
+ # Your C compilier and flags
+ SHELL = /bin/sh
+-installroot=@installroot@
++DESTDIR=@DESTDIR@
+ srcdir = @srcdir@
+ top_srcdir = @top_srcdir@
+ INSTALL = @INSTALL@
+@@ -25,13 +25,13 @@
+ 	rm build
+ install: @installtargets@
+ install-catdoc: catdoc.1 xls2csv.1 catppt.1
+-	../mkinstalldirs $(installroot)$(mandir)
+-	$(INSTALL) -m 644 catdoc.1 $(installroot)$(mandir)/catdoc$(manext)
+-	$(INSTALL) -m 644 xls2csv.1 $(installroot)$(mandir)/xls2csv$(manext)
+-	$(INSTALL) -m 644 catppt.1 $(installroot)$(mandir)/catppt$(manext)
++	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)
++	$(INSTALL) -m 644 catdoc.1 $(DESTDIR)$(mandir)/catdoc$(manext)
++	$(INSTALL) -m 644 xls2csv.1 $(DESTDIR)$(mandir)/xls2csv$(manext)
++	$(INSTALL) -m 644 catppt.1 $(DESTDIR)$(mandir)/catppt$(manext)
+ install-wordview:	
+-	../mkinstalldirs $(installroot)$(mandir)
+-	$(INSTALL) -m 644 wordview.1 $(installroot)$(mandir)/wordview$(manext)
++	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(mandir)
++	$(INSTALL) -m 644 wordview.1 $(DESTDIR)$(mandir)/wordview$(manext)
+ # Following rules are primarily for developers use. I doubt that you
+ # need to rebuild these versions of documentation
+ distclean: catppt.txt catppt.ps catdoc.1 catdoc.txt catdoc.ps xls2csv.1  xls2csv.txt xls2csv.ps
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/catdoc-0.94.2/src/Makefile.in src/catdoc-0.94.2/src/Makefile.in
+--- origsrc/catdoc-0.94.2/src/Makefile.in	2006-02-24 17:44:06.000000000 +0000
++++ src/catdoc-0.94.2/src/Makefile.in	2006-08-15 10:21:56.484375000 +0000
+@@ -6,7 +6,7 @@
+ VPATH = @srcdir@
+ prefix = @prefix@
+ exec_prefix = @exec_prefix@
+-installroot = @installroot@
++DESTDIR = @DESTDIR@
+ 
+ bindir = @bindir@
+ libdir = @libdir@
+@@ -83,17 +83,17 @@
+ 
+ install: @installtargets@
+ install-catdoc:catdoc xls2csv catppt 
+-	../mkinstalldirs $(installroot)$(bindir)
+-	$(INSTALL) -m 755 catdoc $(installroot)$(bindir)/catdoc
+-	$(INSTALL) -m 755 xls2csv $(installroot)$(bindir)/xls2csv
+-	$(INSTALL) -m 755 catppt $(installroot)$(bindir)/catppt
++	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
++	$(INSTALL) -m 755 catdoc $(DESTDIR)$(bindir)/catdoc
++	$(INSTALL) -m 755 xls2csv $(DESTDIR)$(bindir)/xls2csv
++	$(INSTALL) -m 755 catppt $(DESTDIR)$(bindir)/catppt
+ install-wordview: wordview 
+-	../mkinstalldirs $(installroot)$(bindir)
+-	$(INSTALL) -m 755 wordview $(installroot)$(bindir)/wordview
++	$(top_srcdir)/mkinstalldirs $(DESTDIR)$(bindir)
++	$(INSTALL) -m 755 wordview $(DESTDIR)$(bindir)/wordview
+ wordview: wordview.tcl
+ 	echo "#! $(WISH)" >wordview
+ 	echo set charset_lib "\"$(CHARSETPATH)\"">>wordview
+-	cat wordview.tcl >>wordview
++	cat ${top_srcdir}/src/wordview.tcl >>wordview
+ 	chmod 0755 wordview
+ strftime.o: ../compat/strftime.c
+ 	$(CC) -c $(FLAGS) -o $@ $*

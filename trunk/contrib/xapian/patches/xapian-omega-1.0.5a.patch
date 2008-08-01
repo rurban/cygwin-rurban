@@ -1,0 +1,5327 @@
+difforig xapian-omega-1.0.5a
+
+2008-01-02 11:22:58  <rurban@x-ray.at>
+
+diff -ub  xapian-omega-1.0.5a/ChangeLog.orig
+--- xapian-omega-1.0.5a/ChangeLog.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/ChangeLog	2008-01-02 10:43:05.594120800 +0100
+@@ -1350,6 +1350,43 @@
+ 
+ 	* configure.ac: Check for strftime.
+ 
++2006-08-22 09:30:12 Reini Urban <reinhard.urban@avl.com>
++
++	omega-0.9.6c:
++	* omega.m4: New file with macro XO_OMEGA_WITH
++	* configure.ac: Cleaner interface via omega.m4: XO_OMEGA_WITH. 
++	Added HAVE_PDFTOTEXT, HAVE_PDFINFO
++	* omindex.cc: Fix wrong timestamp comparison in cache logic
++	* scriptindex.cc: Support TEXTCAT for language autodetection. 
++	Add lastmod and size records and values.
++	* configfile.h: Add common VALUE_* keys for indexers and omega
++	* ppt2text.in, excel2text.in, outlook2text.in: New scripts
++	* scriptindex.1: updated by help2man
++
++2006-08-18 15:13:32 Reini Urban <reinhard.urban@avl.com>
++
++	omega-0.9.6b: 
++	* omindex.cc: last_mod as value. Add HAVE_UNRAR, HAVE_MSGCONVERT, 
++	HAVE_READPST, HAVE_CATDOC checks.
++	Add options --verbose, --silent
++	* configure.ac: Add HAVE_CATDOC
++	
++2006-08-17 18:06:26 Reini Urban <reinhard.urban@avl.com>
++
++	omega-0.9.6a: 
++	* omindex.cc: Added last_mod check, cache_dir, libtextcat, 
++	cached virtual directories (zip,msg,pst,...).
++	New options: -c/--nocleanup, -i/--ignore-time.
++	Add MS-Office mimetypes (word, excel, powerpoint, outlook).
++	Consistently log stderr to /var/log/omega/omindex-error.log.
++	* configure.ac: Add HAVE_TEXTCAT, HAVE_UNRAR, HAVE_MSGCONVERT, 
++	HAVE_READPST, HAVE_CATDOC
++	* commonhelp.cc: Update stemmer help with HAVE_TEXTCAT (lang autodetection)
++	* configfile.cc: New cache_dir
++	* Makefile.am: Prepare for omindex_test. Link omindex against configfile.
++	* langclass, langclass.conf: New file and directory
++	* omindex.1: updated by help2man
++
+ Sun Jul 09 01:40:09 BST 2006  Olly Betts <olly@survex.com>
+ 
+ 	* docs/omegascript.txt: Note that (by design) an omegascript template
+diff -ub  xapian-omega-1.0.5a/Makefile.am.orig
+--- xapian-omega-1.0.5a/Makefile.am.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/Makefile.am	2008-01-02 11:15:19.259265800 +0100
+@@ -1,5 +1,11 @@
+ ## Process this file with automake to produce Makefile.in
+ 
++# Need 1.5 for AM_CXXFLAGS, etc; 1.6.3 for AM_INIT_AUTOMAKE with no args
++# 1.8.5 contains a lot of fixes over 1.6.3
++#AUTOMAKE_OPTIONS = 1.8.5
++AUTOMAKE_OPTIONS = 1.9
++AM_LDFLAGS = -no-undefined $(ICONV_LDFLAGS)
++
+ # `make QUIET=' overrides `./configure --enable-quiet'.
+ # `make QUIET=y' overrides `./configure' without `--enable-quiet'.
+ LIBTOOL = @LIBTOOL@ $(QUIET:y=--quiet)
+@@ -54,18 +60,32 @@
+ 	images/score-7.png \
+ 	images/score-8.png \
+ 	images/score-9.png \
+-	xapian-omega.spec
++	xapian-omega.spec  \
++	omega.m4 \
++	\$(wildcard langclass/*.lm) langclass.conf \
++        test/README
+ 
+ AM_CPPFLAGS = -DCONFIGFILE_SYSTEM=\"$(sysconfdir)/omega.conf\"
+ 
+ pkglibbindir = $(pkglibdir)/bin
+ pkglibbin_PROGRAMS = omega
+ bin_PROGRAMS = omindex scriptindex
++dist_libexec_SCRIPTS = outlook2text ppt2text excel2text mimeexplode msgconvert.pl
+ dist_bin_SCRIPTS = dbi2omega htdig2omega mbox2omega
+ 
+ check_PROGRAMS = htmlparsetest md5test
+ TESTS = htmlparsetest$(EXEEXT) md5test$(EXEEXT)
+ 
++check: check-am omindex_CHECK
++
++omindex_CHECK: omindex$(EXEEXT)
++	rm -rf $(srcdir)/data
++	mkdir $(srcdir)/data
++	./omindex --verbose -c --db $(srcdir)/data --url / $(srcdir)/test
++	./omindex --verbose -p -c --db $(srcdir)/data --url / $(srcdir)/test
++	delve -d -r 1 $(srcdir)/data
++	delve -d -r 5 $(srcdir)/data 
++
+ omegadatadir = $(datadir)/omega
+ dist_omegadata_DATA = htdig2omega.script mbox2omega.script
+ 
+@@ -89,26 +109,24 @@
+ 	common/safewindows.h\
+ 	common/stringutils.h
+ 
+-AM_LDFLAGS = $(ICONV_LDFLAGS)
+-
+ omega_SOURCES = omega.cc query.cc cgiparam.cc utils.cc configfile.cc date.cc\
+  cdb_init.cc cdb_find.cc cdb_hash.cc cdb_unpack.cc loadfile.cc\
+  utf8convert.cc datematchdecider.cc
+ omega_LDADD = $(XAPIAN_LIBS) # -lpcre
+ 
+ omindex_SOURCES = omindex.cc myhtmlparse.cc htmlparse.cc\
+- common/getopt.cc commonhelp.cc utils.cc hashterm.cc loadfile.cc md5.cc\
++ common/getopt.cc commonhelp.cc configfile.cc utils.cc hashterm.cc loadfile.cc md5.cc\
+  md5wrap.cc xmlparse.cc metaxmlparse.cc utf8convert.cc sample.cc diritor.cc\
+  runfilter.cc freemem.cc
+ if NEED_MKDTEMP
+ omindex_SOURCES += portability/mkdtemp.cc
+ endif
+-omindex_LDADD = $(XAPIAN_LIBS)
++omindex_LDADD = $(XAPIAN_LIBS) $(TEXTCAT_LIB)
+ 
+ scriptindex_SOURCES = scriptindex.cc myhtmlparse.cc htmlparse.cc\
+- common/getopt.cc commonhelp.cc utils.cc hashterm.cc loadfile.cc\
++ common/getopt.cc commonhelp.cc configfile.cc utils.cc hashterm.cc loadfile.cc\
+  common/safe.cc common/stringutils.cc utf8convert.cc utf8truncate.cc
+-scriptindex_LDADD = $(XAPIAN_LIBS)
++scriptindex_LDADD = $(XAPIAN_LIBS) $(TEXTCAT_LIB)
+ 
+ htmlparsetest_SOURCES = htmlparsetest.cc myhtmlparse.cc htmlparse.cc\
+  utf8convert.cc
+@@ -121,8 +139,27 @@
+ MAINTAINERCLEANFILES = $(dist_man_MANS)
+ endif
+ 
++CLEANFILES = $(dist_libexec_SCRIPTS) $(dist_bin_SCRIPTS)
++
++omega.conf: $(srcdir)/omega.conf.in Makefile
++	cat $(srcdir)/omega.conf.in | \
++		sed "s,\@localstatedir\@,$(localstatedir),;" > $@
++ppt2text: $(srcdir)/ppt2text.in Makefile
++	cat $(srcdir)/ppt2text.in | \
++		sed "s,\@CATPPT\@,$(CATPPT),;s,\@SED\@,$(SED),;" > $@
++	chmod 0755 $@
++outlook2text: $(srcdir)/outlook2text.in mimeexplode Makefile
++	cat $(srcdir)/outlook2text.in | \
++		sed "s,\@MSGCONVERT\@,$(MSGCONVERT),;s,\@MIMEEXPLODE\@,$(pkglibbindir)/mimeexplode,;" > $@
++	chmod 0755 $@
++excel2text: $(srcdir)/excel2text.in Makefile
++	cat $(srcdir)/excel2text.in | \
++		sed "s,\@XLS2CSV\@,$(XLS2CSV),;s,\@SED\@,$(SED),;" > $@
++	chmod 0755 $@
++
++
+ if DOCUMENTATION_RULES
+-CLEANFILES = $(dist_man_MANS)
++CLEANFILES += $(dist_man_MANS)
+ 
+ omindex.1: omindex$(EXEEXT) makemanpage
+ 	./makemanpage ./omindex $(srcdir)/omindex.cc omindex.1
+diff -ub  xapian-omega-1.0.5a/Makefile.in.orig
+--- xapian-omega-1.0.5a/Makefile.in.orig	2007-12-21 04:04:18.000000000 +0100
++++ xapian-omega-1.0.5a/Makefile.in	2008-01-02 11:21:41.281249800 +0100
+@@ -39,16 +39,19 @@
+ bin_PROGRAMS = omindex$(EXEEXT) scriptindex$(EXEEXT)
+ check_PROGRAMS = htmlparsetest$(EXEEXT) md5test$(EXEEXT)
+ @NEED_MKDTEMP_TRUE@am__append_1 = portability/mkdtemp.cc
++@DOCUMENTATION_RULES_TRUE@am__append_2 = $(dist_man_MANS)
+ subdir = .
+ DIST_COMMON = README $(am__configure_deps) $(dist_bin_SCRIPTS) \
+-	$(dist_man_MANS) $(dist_omegadata_DATA) $(dist_sysconf_DATA) \
+-	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
++	$(dist_libexec_SCRIPTS) $(dist_man_MANS) \
++	$(dist_omegadata_DATA) $(dist_sysconf_DATA) $(noinst_HEADERS) \
++	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+ 	$(srcdir)/config.h.in $(srcdir)/makemanpage.in \
+ 	$(srcdir)/xapian-omega.spec.in $(top_srcdir)/configure AUTHORS \
+ 	COPYING ChangeLog INSTALL NEWS TODO config.guess config.sub \
+ 	depcomp install-sh ltmain.sh missing
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
++am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
++	$(top_srcdir)/omega.m4 $(top_srcdir)/configure.ac
+ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
+ 	$(ACLOCAL_M4)
+ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+@@ -57,8 +60,9 @@
+ CONFIG_HEADER = config.h
+ CONFIG_CLEAN_FILES = xapian-omega.spec makemanpage
+ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibbindir)" \
+-	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
+-	"$(DESTDIR)$(omegadatadir)" "$(DESTDIR)$(sysconfdir)"
++	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(libexecdir)" \
++	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(omegadatadir)" \
++	"$(DESTDIR)$(sysconfdir)"
+ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+ pkglibbinPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+ PROGRAMS = $(bin_PROGRAMS) $(pkglibbin_PROGRAMS)
+@@ -79,29 +83,30 @@
+ omega_OBJECTS = $(am_omega_OBJECTS)
+ omega_DEPENDENCIES = $(am__DEPENDENCIES_1)
+ am__omindex_SOURCES_DIST = omindex.cc myhtmlparse.cc htmlparse.cc \
+-	common/getopt.cc commonhelp.cc utils.cc hashterm.cc \
+-	loadfile.cc md5.cc md5wrap.cc xmlparse.cc metaxmlparse.cc \
+-	utf8convert.cc sample.cc diritor.cc runfilter.cc freemem.cc \
+-	portability/mkdtemp.cc
++	common/getopt.cc commonhelp.cc configfile.cc utils.cc \
++	hashterm.cc loadfile.cc md5.cc md5wrap.cc xmlparse.cc \
++	metaxmlparse.cc utf8convert.cc sample.cc diritor.cc \
++	runfilter.cc freemem.cc portability/mkdtemp.cc
+ @NEED_MKDTEMP_TRUE@am__objects_1 = mkdtemp.$(OBJEXT)
+ am_omindex_OBJECTS = omindex.$(OBJEXT) myhtmlparse.$(OBJEXT) \
+ 	htmlparse.$(OBJEXT) getopt.$(OBJEXT) commonhelp.$(OBJEXT) \
+-	utils.$(OBJEXT) hashterm.$(OBJEXT) loadfile.$(OBJEXT) \
+-	md5.$(OBJEXT) md5wrap.$(OBJEXT) xmlparse.$(OBJEXT) \
+-	metaxmlparse.$(OBJEXT) utf8convert.$(OBJEXT) sample.$(OBJEXT) \
+-	diritor.$(OBJEXT) runfilter.$(OBJEXT) freemem.$(OBJEXT) \
+-	$(am__objects_1)
++	configfile.$(OBJEXT) utils.$(OBJEXT) hashterm.$(OBJEXT) \
++	loadfile.$(OBJEXT) md5.$(OBJEXT) md5wrap.$(OBJEXT) \
++	xmlparse.$(OBJEXT) metaxmlparse.$(OBJEXT) \
++	utf8convert.$(OBJEXT) sample.$(OBJEXT) diritor.$(OBJEXT) \
++	runfilter.$(OBJEXT) freemem.$(OBJEXT) $(am__objects_1)
+ omindex_OBJECTS = $(am_omindex_OBJECTS)
+-omindex_DEPENDENCIES = $(am__DEPENDENCIES_1)
++omindex_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ am_scriptindex_OBJECTS = scriptindex.$(OBJEXT) myhtmlparse.$(OBJEXT) \
+ 	htmlparse.$(OBJEXT) getopt.$(OBJEXT) commonhelp.$(OBJEXT) \
+-	utils.$(OBJEXT) hashterm.$(OBJEXT) loadfile.$(OBJEXT) \
+-	safe.$(OBJEXT) stringutils.$(OBJEXT) utf8convert.$(OBJEXT) \
+-	utf8truncate.$(OBJEXT)
++	configfile.$(OBJEXT) utils.$(OBJEXT) hashterm.$(OBJEXT) \
++	loadfile.$(OBJEXT) safe.$(OBJEXT) stringutils.$(OBJEXT) \
++	utf8convert.$(OBJEXT) utf8truncate.$(OBJEXT)
+ scriptindex_OBJECTS = $(am_scriptindex_OBJECTS)
+-scriptindex_DEPENDENCIES = $(am__DEPENDENCIES_1)
++scriptindex_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ dist_binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
+-SCRIPTS = $(dist_bin_SCRIPTS)
++dist_libexecSCRIPT_INSTALL = $(INSTALL_SCRIPT)
++SCRIPTS = $(dist_bin_SCRIPTS) $(dist_libexec_SCRIPTS)
+ DEFAULT_INCLUDES = -I.@am__isrc@
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -163,6 +168,7 @@
+ AUTOHEADER = @AUTOHEADER@
+ AUTOMAKE = @AUTOMAKE@
+ AWK = @AWK@
++CATPPT = @CATPPT@
+ CC = @CC@
+ CCDEPMODE = @CCDEPMODE@
+ CFLAGS = @CFLAGS@
+@@ -201,6 +207,7 @@
+ MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+ MKDIR_P = @MKDIR_P@
++MSGCONVERT = @MSGCONVERT@
+ OBJEXT = @OBJEXT@
+ PACKAGE = @PACKAGE@
+ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+@@ -209,6 +216,7 @@
+ PACKAGE_TARNAME = @PACKAGE_TARNAME@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
++PDFINFO = @PDFINFO@
+ PERL = @PERL@
+ QUIET = @QUIET@
+ RANLIB = @RANLIB@
+@@ -217,11 +225,14 @@
+ SET_MAKE = @SET_MAKE@
+ SHELL = @SHELL@
+ STRIP = @STRIP@
++TEXTCAT_LIB = @TEXTCAT_LIB@
++UNRAR = @UNRAR@
+ VERSION = @VERSION@
+ XAPIAN_CONFIG = @XAPIAN_CONFIG@
+ XAPIAN_CXXFLAGS = @XAPIAN_CXXFLAGS@
+ XAPIAN_LIBS = @XAPIAN_LIBS@
+ XAPIAN_VERSION = @XAPIAN_VERSION@
++XLS2CSV = @XLS2CSV@
+ abs_builddir = @abs_builddir@
+ abs_srcdir = @abs_srcdir@
+ abs_top_builddir = @abs_top_builddir@
+@@ -233,6 +244,7 @@
+ am__quote = @am__quote@
+ am__tar = @am__tar@
+ am__untar = @am__untar@
++antiwordNAME = @antiwordNAME@
+ bindir = @bindir@
+ build = @build@
+ build_alias = @build_alias@
+@@ -240,6 +252,7 @@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
+ builddir = @builddir@
++catdocNAME = @catdocNAME@
+ datadir = @datadir@
+ datarootdir = @datarootdir@
+ docdir = @docdir@
+@@ -262,9 +275,13 @@
+ mkdir_p = @mkdir_p@
+ oldincludedir = @oldincludedir@
+ pdfdir = @pdfdir@
++pdftotextNAME = @pdftotextNAME@
++pod2textNAME = @pod2textNAME@
+ prefix = @prefix@
+ program_transform_name = @program_transform_name@
+ psdir = @psdir@
++pstotextNAME = @pstotextNAME@
++readpstNAME = @readpstNAME@
+ sbindir = @sbindir@
+ sharedstatedir = @sharedstatedir@
+ srcdir = @srcdir@
+@@ -272,6 +289,16 @@
+ target_alias = @target_alias@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
++unrtfNAME = @unrtfNAME@
++unzipNAME = @unzipNAME@
++wpd2textNAME = @wpd2textNAME@
++wps2textNAME = @wps2textNAME@
++
++# Need 1.5 for AM_CXXFLAGS, etc; 1.6.3 for AM_INIT_AUTOMAKE with no args
++# 1.8.5 contains a lot of fixes over 1.6.3
++#AUTOMAKE_OPTIONS = 1.8.5
++AUTOMAKE_OPTIONS = 1.9
++AM_LDFLAGS = -no-undefined $(ICONV_LDFLAGS)
+ SUBDIRS = . docs
+ INCLUDES = -I$(top_srcdir)/common
+ EXTRA_DIST = \
+@@ -320,10 +347,14 @@
+ 	images/score-7.png \
+ 	images/score-8.png \
+ 	images/score-9.png \
+-	xapian-omega.spec
++	xapian-omega.spec  \
++	omega.m4 \
++	\$(wildcard langclass/*.lm) langclass.conf \
++        test/README
+ 
+ AM_CPPFLAGS = -DCONFIGFILE_SYSTEM=\"$(sysconfdir)/omega.conf\"
+ pkglibbindir = $(pkglibdir)/bin
++dist_libexec_SCRIPTS = outlook2text ppt2text excel2text mimeexplode msgconvert.pl
+ dist_bin_SCRIPTS = dbi2omega htdig2omega mbox2omega
+ TESTS = htmlparsetest$(EXEEXT) md5test$(EXEEXT)
+ omegadatadir = $(datadir)/omega
+@@ -340,23 +371,22 @@
+ 	common/safeerrno.h common/safefcntl.h common/safesysselect.h \
+ 	common/safesysstat.h common/safeunistd.h common/safewindows.h \
+ 	common/stringutils.h
+-AM_LDFLAGS = $(ICONV_LDFLAGS)
+ omega_SOURCES = omega.cc query.cc cgiparam.cc utils.cc configfile.cc date.cc\
+  cdb_init.cc cdb_find.cc cdb_hash.cc cdb_unpack.cc loadfile.cc\
+  utf8convert.cc datematchdecider.cc
+ 
+ omega_LDADD = $(XAPIAN_LIBS) # -lpcre
+ omindex_SOURCES = omindex.cc myhtmlparse.cc htmlparse.cc \
+-	common/getopt.cc commonhelp.cc utils.cc hashterm.cc \
+-	loadfile.cc md5.cc md5wrap.cc xmlparse.cc metaxmlparse.cc \
+-	utf8convert.cc sample.cc diritor.cc runfilter.cc freemem.cc \
+-	$(am__append_1)
+-omindex_LDADD = $(XAPIAN_LIBS)
++	common/getopt.cc commonhelp.cc configfile.cc utils.cc \
++	hashterm.cc loadfile.cc md5.cc md5wrap.cc xmlparse.cc \
++	metaxmlparse.cc utf8convert.cc sample.cc diritor.cc \
++	runfilter.cc freemem.cc $(am__append_1)
++omindex_LDADD = $(XAPIAN_LIBS) $(TEXTCAT_LIB)
+ scriptindex_SOURCES = scriptindex.cc myhtmlparse.cc htmlparse.cc\
+- common/getopt.cc commonhelp.cc utils.cc hashterm.cc loadfile.cc\
++ common/getopt.cc commonhelp.cc configfile.cc utils.cc hashterm.cc loadfile.cc\
+  common/safe.cc common/stringutils.cc utf8convert.cc utf8truncate.cc
+ 
+-scriptindex_LDADD = $(XAPIAN_LIBS)
++scriptindex_LDADD = $(XAPIAN_LIBS) $(TEXTCAT_LIB)
+ htmlparsetest_SOURCES = htmlparsetest.cc myhtmlparse.cc htmlparse.cc\
+  utf8convert.cc
+ 
+@@ -364,7 +394,8 @@
+ md5test_SOURCES = md5test.cc md5wrap.cc md5.cc
+ @MAINTAINER_NO_DOCS_FALSE@dist_man_MANS = omindex.1 scriptindex.1
+ @MAINTAINER_NO_DOCS_FALSE@MAINTAINERCLEANFILES = $(dist_man_MANS)
+-@DOCUMENTATION_RULES_TRUE@CLEANFILES = $(dist_man_MANS)
++CLEANFILES = $(dist_libexec_SCRIPTS) $(dist_bin_SCRIPTS) \
++	$(am__append_2)
+ DISTCHECK_CONFIGURE_FLAGS = "XAPIAN_CONFIG=$(XAPIAN_CONFIG)"
+ all: config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+@@ -522,6 +553,25 @@
+ 	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
+ 	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
+ 	done
++install-dist_libexecSCRIPTS: $(dist_libexec_SCRIPTS)
++	@$(NORMAL_INSTALL)
++	test -z "$(libexecdir)" || $(MKDIR_P) "$(DESTDIR)$(libexecdir)"
++	@list='$(dist_libexec_SCRIPTS)'; for p in $$list; do \
++	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
++	  if test -f $$d$$p; then \
++	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
++	    echo " $(dist_libexecSCRIPT_INSTALL) '$$d$$p' '$(DESTDIR)$(libexecdir)/$$f'"; \
++	    $(dist_libexecSCRIPT_INSTALL) "$$d$$p" "$(DESTDIR)$(libexecdir)/$$f"; \
++	  else :; fi; \
++	done
++
++uninstall-dist_libexecSCRIPTS:
++	@$(NORMAL_UNINSTALL)
++	@list='$(dist_libexec_SCRIPTS)'; for p in $$list; do \
++	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
++	  echo " rm -f '$(DESTDIR)$(libexecdir)/$$f'"; \
++	  rm -f "$(DESTDIR)$(libexecdir)/$$f"; \
++	done
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
+@@ -1083,7 +1133,7 @@
+ 		config.h
+ installdirs: installdirs-recursive
+ installdirs-am:
+-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibbindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(omegadatadir)" "$(DESTDIR)$(sysconfdir)"; do \
++	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibbindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(omegadatadir)" "$(DESTDIR)$(sysconfdir)"; do \
+ 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+ 	done
+ install: install-recursive
+@@ -1140,7 +1190,7 @@
+ install-dvi: install-dvi-recursive
+ 
+ install-exec-am: install-binPROGRAMS install-dist_binSCRIPTS \
+-	install-dist_sysconfDATA
++	install-dist_libexecSCRIPTS install-dist_sysconfDATA
+ 
+ install-html: install-html-recursive
+ 
+@@ -1175,8 +1225,9 @@
+ ps-am:
+ 
+ uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
+-	uninstall-dist_omegadataDATA uninstall-dist_sysconfDATA \
+-	uninstall-man uninstall-pkglibbinPROGRAMS
++	uninstall-dist_libexecSCRIPTS uninstall-dist_omegadataDATA \
++	uninstall-dist_sysconfDATA uninstall-man \
++	uninstall-pkglibbinPROGRAMS
+ 
+ uninstall-man: uninstall-man1
+ 
+@@ -1193,21 +1244,48 @@
+ 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+ 	dvi-am html html-am info info-am install install-am \
+ 	install-binPROGRAMS install-data install-data-am \
+-	install-dist_binSCRIPTS install-dist_omegadataDATA \
+-	install-dist_sysconfDATA install-dvi install-dvi-am \
+-	install-exec install-exec-am install-html install-html-am \
+-	install-info install-info-am install-man install-man1 \
+-	install-pdf install-pdf-am install-pkglibbinPROGRAMS \
+-	install-ps install-ps-am install-strip installcheck \
+-	installcheck-am installdirs installdirs-am maintainer-clean \
+-	maintainer-clean-generic mostlyclean mostlyclean-compile \
+-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+-	tags tags-recursive uninstall uninstall-am \
+-	uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
++	install-dist_binSCRIPTS install-dist_libexecSCRIPTS \
++	install-dist_omegadataDATA install-dist_sysconfDATA \
++	install-dvi install-dvi-am install-exec install-exec-am \
++	install-html install-html-am install-info install-info-am \
++	install-man install-man1 install-pdf install-pdf-am \
++	install-pkglibbinPROGRAMS install-ps install-ps-am \
++	install-strip installcheck installcheck-am installdirs \
++	installdirs-am maintainer-clean maintainer-clean-generic \
++	mostlyclean mostlyclean-compile mostlyclean-generic \
++	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
++	uninstall uninstall-am uninstall-binPROGRAMS \
++	uninstall-dist_binSCRIPTS uninstall-dist_libexecSCRIPTS \
+ 	uninstall-dist_omegadataDATA uninstall-dist_sysconfDATA \
+ 	uninstall-man uninstall-man1 uninstall-pkglibbinPROGRAMS
+ 
+ 
++check: check-am omindex_CHECK
++
++omindex_CHECK: omindex$(EXEEXT)
++	rm -rf $(srcdir)/data
++	mkdir $(srcdir)/data
++	./omindex --verbose -c --db $(srcdir)/data --url / $(srcdir)/test
++	./omindex --verbose -p -c --db $(srcdir)/data --url / $(srcdir)/test
++	delve -d -r 1 $(srcdir)/data
++	delve -d -r 5 $(srcdir)/data 
++
++omega.conf: $(srcdir)/omega.conf.in Makefile
++	cat $(srcdir)/omega.conf.in | \
++		sed "s,\@localstatedir\@,$(localstatedir),;" > $@
++ppt2text: $(srcdir)/ppt2text.in Makefile
++	cat $(srcdir)/ppt2text.in | \
++		sed "s,\@CATPPT\@,$(CATPPT),;s,\@SED\@,$(SED),;" > $@
++	chmod 0755 $@
++outlook2text: $(srcdir)/outlook2text.in mimeexplode Makefile
++	cat $(srcdir)/outlook2text.in | \
++		sed "s,\@MSGCONVERT\@,$(MSGCONVERT),;s,\@MIMEEXPLODE\@,$(pkglibbindir)/mimeexplode,;" > $@
++	chmod 0755 $@
++excel2text: $(srcdir)/excel2text.in Makefile
++	cat $(srcdir)/excel2text.in | \
++		sed "s,\@XLS2CSV\@,$(XLS2CSV),;s,\@SED\@,$(SED),;" > $@
++	chmod 0755 $@
++
+ @DOCUMENTATION_RULES_TRUE@omindex.1: omindex$(EXEEXT) makemanpage
+ @DOCUMENTATION_RULES_TRUE@	./makemanpage ./omindex $(srcdir)/omindex.cc omindex.1
+ 
+diff -ub  xapian-omega-1.0.5a/acinclude.m4.orig
+--- xapian-omega-1.0.5a/acinclude.m4.orig	2008-01-02 10:43:05.750295800 +0100
++++ xapian-omega-1.0.5a/acinclude.m4	2008-01-02 10:43:05.719060800 +0100
+@@ -0,0 +1 @@
++m4_include(omega.m4)
+diff -ub  xapian-omega-1.0.5a/config.h.in.orig
+--- xapian-omega-1.0.5a/config.h.in.orig	2007-12-21 04:04:17.000000000 +0100
++++ xapian-omega-1.0.5a/config.h.in	2008-01-02 10:43:05.765913300 +0100
+@@ -1,11 +1,24 @@
+ /* config.h.in.  Generated from configure.ac by autoheader.  */
+ 
++/* path to antiword */
++#undef ANTIWORD
++
++/* path to catdoc */
++#undef CATDOC
++
+ /* Define if ftime returns void */
+ #undef FTIME_RETURNS_VOID
+ 
++/* Define to 1 if you have antiword to extract MS-Word .doc files */
++#undef HAVE_ANTIWORD
++
+ /* Define to 1 if you have the <arpa/inet.h> header file. */
+ #undef HAVE_ARPA_INET_H
+ 
++/* Define to 1 if you have catdoc to extract MS-Excel .xls and MS-Powerpoint
++   .ppt files */
++#undef HAVE_CATDOC
++
+ /* Define to 1 if you have the <dlfcn.h> header file. */
+ #undef HAVE_DLFCN_H
+ 
+@@ -36,15 +49,30 @@
+ /* Define to 1 if you have the `mmap' function. */
+ #undef HAVE_MMAP
+ 
++/* Use msgconvert.pl and extract MS-Outlook .msg files */
++#undef HAVE_MSGCONVERT
++
+ /* Define to 1 if you have the <netinet/in.h> header file. */
+ #undef HAVE_NETINET_IN_H
+ 
++/* Define to 1 if you have pdftotext to extract Adobe .pdf files */
++#undef HAVE_PDFTOTEXT
++
++/* Define to 1 if you have pod2text to extract from perl scripts */
++#undef HAVE_POD2TEXT
++
+ /* Define to 1 if you have the 'posix_fadvise' function */
+ #undef HAVE_POSIX_FADVISE
+ 
+ /* Define to 1 if you have the `pstat_getdynamic' function. */
+ #undef HAVE_PSTAT_GETDYNAMIC
+ 
++/* Define to 1 if you have pstotext to extract Postscript .ps files */
++#undef HAVE_PSTOTEXT
++
++/* Define to 1 if you have readpst to extract MS-Outlook .pst files */
++#undef HAVE_READPST
++
+ /* Define to 1 if you have the `setrlimit' function. */
+ #undef HAVE_SETRLIMIT
+ 
+@@ -102,9 +130,21 @@
+ /* Define to 1 if you have the <sys/wait.h> header file. */
+ #undef HAVE_SYS_WAIT_H
+ 
++/* Define to 1 if you have libtextcat for automatic language classification */
++#undef HAVE_TEXTCAT
++
+ /* Define to 1 if you have the <unistd.h> header file. */
+ #undef HAVE_UNISTD_H
+ 
++/* Define to 1 if you have unrar to extract .rar archives */
++#undef HAVE_UNRAR
++
++/* Define to 1 if you have unrtf to extract RTF files */
++#undef HAVE_UNRTF
++
++/* Define to 1 if you have unzip to extract .zip archives */
++#undef HAVE_UNZIP
++
+ /* Define to 1 if you have the <vm/vm_param.h> header file. */
+ #undef HAVE_VM_VM_PARAM_H
+ 
+@@ -112,6 +152,12 @@
+    C++ code. */
+ #undef HAVE_WORKING_STDINT_H
+ 
++/* Define to 1 if you have wpd2text to extract wordperfect files */
++#undef HAVE_WPD2TEXT
++
++/* Define to 1 if you have wps2text to extract MS-works files */
++#undef HAVE_WPS2TEXT
++
+ /* type of input pointer for iconv */
+ #undef ICONV_INPUT_TYPE
+ 
+@@ -133,6 +179,24 @@
+ /* Define to the version of this package. */
+ #undef PACKAGE_VERSION
+ 
++/* pdfinfo path */
++#undef PDFINFO
++
++/* path to pdftotext */
++#undef PDFTOTEXT
++
++/* path to pod2text */
++#undef POD2TEXT
++
++/* path to pstotext */
++#undef PSTOTEXT
++
++/* path to readpst */
++#undef READPST
++
++/* sed path */
++#undef SED
++
+ /* Define to the name of a function implementing snprintf but not caring about
+    ISO C90 return value semantics (if one exists) */
+ #undef SNPRINTF
+@@ -144,6 +208,15 @@
+ /* Define to 1 if you have the ANSI C header files. */
+ #undef STDC_HEADERS
+ 
++/* unrar path */
++#undef UNRAR
++
++/* path to unrtf */
++#undef UNRTF
++
++/* path to unzip */
++#undef UNZIP
++
+ /* Define if iconv() should be used for converting character sets. */
+ #undef USE_ICONV
+ 
+@@ -154,6 +227,12 @@
+    first (like Motorola and SPARC, unlike Intel and VAX). */
+ #undef WORDS_BIGENDIAN
+ 
++/* path to wpd2text */
++#undef WPD2TEXT
++
++/* path to wps2text */
++#undef WPS2TEXT
++
+ /* Define to `int' if <sys/types.h> does not define. */
+ #undef mode_t
+ 
+diff -ub  xapian-omega-1.0.5a/configfile.cc.orig
+--- xapian-omega-1.0.5a/configfile.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/configfile.cc	2008-01-02 10:43:05.797148300 +0100
+@@ -24,6 +24,7 @@
+ 
+ #include <fstream>
+ #include <iostream>
++using std::ifstream;
+ 
+ #include <sys/types.h>
+ #include "safesysstat.h"
+@@ -42,6 +43,7 @@
+ string template_dir = "/var/lib/omega/templates/";
+ string log_dir = "/var/log/omega/";
+ string cdb_dir = "/var/lib/omega/cdb/";
++string cache_dir = "/var/lib/omega/cache/";
+ 
+ /** Return true if the file fname exists.
+  */
+@@ -64,36 +66,20 @@
+     }
+ 
+     while (in) {
+-	char line[1024];
+-	in.getline(line, sizeof(line));
+-
+-	char *p = line;
+-	while (isspace((unsigned char)*p)) ++p;
+-	if (!*p || *p == '#') continue; // Ignore blank line and comments
+-
+-	char *q = p;
+-	while (*q && !isspace((unsigned char)*q)) ++q;
+-	string name(p, q - p);
+-
+-	p = q;
+-	while (isspace((unsigned char)*p)) ++p;
+-	q = p;
+-	while (*q && !isspace((unsigned char)*q)) ++q;
+-	string value(p, q - p);
+-
+-	while (*q && isspace((unsigned char)*q)) ++q;
+-	if (value.empty() || *q) {
+-	    throw string("Bad line in configuration file `") + cfile + "'";
+-	}
+-
++	string name, value;
++	in >> name >> value;
++	if (value[value.length()-1] != '/') value += "/";
++	//std::cout << "...read conf: "<<name<<"="<<value << std::endl;
+ 	if (name == "database_dir") {
+-	    database_dir = value + "/";
++	    database_dir = value;
+ 	} else if (name == "template_dir") {
+-	    template_dir = value + "/";
++	    template_dir = value;
+ 	} else if (name == "log_dir") {
+-	    log_dir = value + "/";
++	    log_dir = value;
+ 	} else if (name == "cdb_dir") {
+-	    cdb_dir = value + "/";
++	    cdb_dir = value;
++	} else if (name == "cache_dir") {
++	    cache_dir = value;
+ 	}
+     }
+ 
+@@ -123,3 +109,4 @@
+     // Just use the default configuration.
+     return;
+ }
++
+diff -ub  xapian-omega-1.0.5a/configfile.h.orig
+--- xapian-omega-1.0.5a/configfile.h.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/configfile.h	2008-01-02 10:43:05.812765800 +0100
+@@ -30,6 +30,7 @@
+ extern string template_dir;
+ extern string log_dir;
+ extern string cdb_dir;
++extern string cache_dir;
+ 
+ void read_config_file();
+ 
+diff -ub  xapian-omega-1.0.5a/configure.ac.orig
+--- xapian-omega-1.0.5a/configure.ac.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/configure.ac	2008-01-02 11:21:19.270822800 +0100
+@@ -4,7 +4,7 @@
+ dnl automake 1.6.3 requires autoconf 2.54
+ dnl autoconf 2.59 is what xapian-core requires, so be consistent
+ AC_PREREQ(2.59)
+-AC_INIT(xapian-omega, 1.0.5)dnl FIXME: bugreport addr as third argument
++AC_INIT(xapian-omega, 1.0.5a, reinhard.urbnan@avl.com) dnl FIXME: bugreport addr as third argument
+ dnl Need 1.5 for AM_CXXFLAGS, etc; 1.6.3 for AM_INIT_AUTOMAKE with no args
+ dnl 1.8.5 contains a lot of fixes over 1.6.3
+ dnl 1.9 reduces Makefile.in size, and 1.9.5 was in Debian sarge
+@@ -27,7 +27,7 @@
+ 
+ dnl Check for libxapian
+ AC_PROG_LIBTOOL
+-XO_LIB_XAPIAN
++XO_LIB_XAPIAN(, AC_MSG_ERROR([Can't find Xapian library]))
+ dnl We want XAPIAN_CXXFLAGS to be used for configure tests
+ CXXFLAGS="$CXXFLAGS $XAPIAN_CXXFLAGS"
+ 
+@@ -216,7 +216,7 @@
+   AC_CACHE_VAL([xo_cv_iconv_input],
+     [
+       xo_cv_iconv_input=
+-      for t in 'char*' 'const char *' ; do
++      for t in 'const char*' 'char *' ; do
+ 	dnl Use a link check as just compiling was falsely detecting a
+ 	dnl working iconv installation on some platforms.
+ 	AC_LINK_IFELSE(
+@@ -256,6 +256,11 @@
+ dnl Check processor endianness.
+ AC_C_BIGENDIAN
+ 
++dnl hardcode sed path in the pkglibbin_SCRIPTS
++AC_PATH_PROG([SED], [sed])
++AC_DEFINE_UNQUOTED([SED],"$SED", [sed path])
++AC_SUBST([SED])
++
+ if test x"$enable_documentation" = xyes; then
+   dnl Check for perl. (Needed to make man pages from "--help" output).
+   AC_PATH_PROG(PERL, perl, [])
+@@ -271,6 +276,75 @@
+   test -z "$RST2HTML" && AC_MSG_ERROR([rst2html is required to build documentation])
+ fi
+ 
++AC_ARG_WITH([textcat],
++[  --without-textcat       don't use libtextcat for automatic language classification])
++if test xno != x$with_textcat; then
++  AC_MSG_CHECKING(for libtextcat)
++  textcat_candidates="$with_textcat $HOME/local/lib* /usr*/local/lib* /usr/lib*"
++  for lib in $textcat_candidates; do
++    if test -f $lib/libtextcat.la; then
++      TEXTCAT_LIB="-L$lib -ltextcat"
++      break
++    elif test -f $lib/libtextcat.a; then
++      TEXTCAT_LIB="$lib/libtextcat.a"
++      break
++    fi
++  done
++  if test -z "$TEXTCAT_LIB"; then
++    AC_MSG_RESULT(not found)
++  else
++    AC_MSG_RESULT($lib)
++    AC_DEFINE([HAVE_TEXTCAT],1, [Define to 1 if you have libtextcat for automatic language classification])
++    AC_SUBST(TEXTCAT_LIB)
++    have_textcat=yes
++  fi
++fi
++
++dnl Check for unrar (default: disabled). Pending patent issues.
++AC_ARG_WITH([unrar],
++[  --with-unrar            use unrar and extract .rar files],
++[if test xyes = x$with_unrar; then
++  AC_PATH_PROG([UNRAR], [unrar])
++  test -n "$UNRAR" && (
++    AC_DEFINE([HAVE_UNRAR],1, [Define to 1 if you have unrar to extract .rar archives])
++    AC_DEFINE_UNQUOTED([UNRAR],"$UNRAR",[unrar path])
++  )
++fi])
++
++XO_OMEGA_WITH([unzip],[extract .zip archives])
++
++AC_ARG_WITH([msgconvert],
++[  --without-msgconvert    use msgconvert.pl and extract MS-Outlook .msg files])
++if test xno != x$with_msgconvert; then
++  AC_PATH_PROGS([MSGCONVERT], [msgconvert msgconvert.pl])
++  test -n "$MSGCONVERT" && (
++    AC_DEFINE([HAVE_MSGCONVERT],1, [Use msgconvert.pl and extract MS-Outlook .msg files])
++    dnl AC_DEFINE_UNQUOTED([MSGCONVERT],"$MSGCONVERT",[msgconvert.pl path])
++    AC_SUBST([MSGCONVERT])
++  )
++fi
++
++XO_OMEGA_WITH([readpst],[extract MS-Outlook .pst files])
++XO_OMEGA_WITH([catdoc], [extract MS-Excel .xls and MS-Powerpoint .ppt files],
++[
++  AC_PATH_PROG([CATPPT], [catppt])
++  AC_SUBST([CATPPT])
++  AC_PATH_PROG([XLS2CSV], [xls2csv])
++  AC_SUBST([XLS2CSV])
++])
++
++XO_OMEGA_WITH([pdftotext],[extract Adobe .pdf files],
++[
++  AC_PATH_PROG([PDFINFO], [pdfinfo])
++  AC_DEFINE_UNQUOTED([PDFINFO],"$PDFINFO",[pdfinfo path])
++])
++XO_OMEGA_WITH([pstotext], [extract Postscript .ps files])
++XO_OMEGA_WITH([antiword], [extract MS-Word .doc files])
++XO_OMEGA_WITH([wpd2text], [extract wordperfect files])
++XO_OMEGA_WITH([wps2text], [extract MS-works files])
++XO_OMEGA_WITH([unrtf],    [extract RTF files])
++XO_OMEGA_WITH([pod2text], [extract from perl scripts])
++
+ dnl Disabled XML stuff as we don't currently build omindex-config
+ dnl dnl Check for libxml or libxml2.  We do this by looking for xml-config.
+ dnl AC_PATH_PROG(XML_CONFIG_PATH, xml2-config)
+diff -ub  xapian-omega-1.0.5a/configure.orig
+--- xapian-omega-1.0.5a/configure.orig	2007-12-21 04:04:15.000000000 +0100
++++ xapian-omega-1.0.5a/configure	2008-01-02 11:21:35.817339300 +0100
+@@ -1,6 +1,8 @@
+ #! /bin/sh
+ # Guess values for system-dependent variables and create Makefiles.
+-# Generated by GNU Autoconf 2.61 for xapian-omega 1.0.5.
++# Generated by GNU Autoconf 2.61 for xapian-omega 1.0.5a.
++#
++# Report bugs to <reinhard.urbnan@avl.com>.
+ #
+ # Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
+ # 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+@@ -724,9 +726,9 @@
+ # Identity of this package.
+ PACKAGE_NAME='xapian-omega'
+ PACKAGE_TARNAME='xapian-omega'
+-PACKAGE_VERSION='1.0.5'
+-PACKAGE_STRING='xapian-omega 1.0.5'
+-PACKAGE_BUGREPORT=''
++PACKAGE_VERSION='1.0.5a'
++PACKAGE_STRING='xapian-omega 1.0.5a'
++PACKAGE_BUGREPORT='reinhard.urbnan@avl.com'
+ 
+ ac_unique_file="omega.cc"
+ # Factoring default headers for most tests.
+@@ -881,6 +883,22 @@
+ PERL
+ HELP2MAN
+ RST2HTML
++TEXTCAT_LIB
++UNRAR
++unzipNAME
++MSGCONVERT
++readpstNAME
++catdocNAME
++CATPPT
++XLS2CSV
++pdftotextNAME
++PDFINFO
++pstotextNAME
++antiwordNAME
++wpd2textNAME
++wps2textNAME
++unrtfNAME
++pod2textNAME
+ AM_CXXFLAGS
+ QUIET
+ LIBOBJS
+@@ -1402,7 +1420,7 @@
+   # Omit some internal or obsolete options to make the list less imposing.
+   # This message is too long to be a string in the A/UX 3.1 sh.
+   cat <<_ACEOF
+-\`configure' configures xapian-omega 1.0.5 to adapt to many kinds of systems.
++\`configure' configures xapian-omega 1.0.5a to adapt to many kinds of systems.
+ 
+ Usage: $0 [OPTION]... [VAR=VALUE]...
+ 
+@@ -1472,7 +1490,7 @@
+ 
+ if test -n "$ac_init_help"; then
+   case $ac_init_help in
+-     short | recursive ) echo "Configuration of xapian-omega 1.0.5:";;
++     short | recursive ) echo "Configuration of xapian-omega 1.0.5a:";;
+    esac
+   cat <<\_ACEOF
+ 
+@@ -1501,6 +1519,19 @@
+   --with-tags[=TAGS]      include additional configurations [automatic]
+   --with-iconv            force use of iconv (error if not found)
+     --without-iconv         don't use iconv
++  --without-textcat       don't use libtextcat for automatic language classification
++  --with-unrar            use unrar and extract .rar files
++  --without-unzip         use unzip to extract .zip archives
++  --without-msgconvert    use msgconvert.pl and extract MS-Outlook .msg files
++  --without-readpst         use readpst to extract MS-Outlook .pst files
++  --without-catdoc         use catdoc to extract MS-Excel .xls and MS-Powerpoint .ppt files
++  --without-pdftotext         use pdftotext to extract Adobe .pdf files
++  --without-pstotext         use pstotext to extract Postscript .ps files
++  --without-antiword         use antiword to extract MS-Word .doc files
++  --without-wpd2text         use wpd2text to extract wordperfect files
++  --without-wps2text         use wps2text to extract MS-works files
++  --without-unrtf         use unrtf to extract RTF files
++  --without-pod2text         use pod2text to extract from perl scripts
+ 
+ Some influential environment variables:
+   CC          C compiler command
+@@ -1520,6 +1551,7 @@
+ Use these variables to override the choices made by `configure' or to help
+ it to find libraries and programs with nonstandard names/locations.
+ 
++Report bugs to <reinhard.urbnan@avl.com>.
+ _ACEOF
+ ac_status=$?
+ fi
+@@ -1580,7 +1612,7 @@
+ test -n "$ac_init_help" && exit $ac_status
+ if $ac_init_version; then
+   cat <<\_ACEOF
+-xapian-omega configure 1.0.5
++xapian-omega configure 1.0.5a
+ generated by GNU Autoconf 2.61
+ 
+ Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
+@@ -1594,7 +1626,7 @@
+ This file contains any messages produced by compilers while
+ running configure, to aid debugging if configure makes a mistake.
+ 
+-It was created by xapian-omega $as_me 1.0.5, which was
++It was created by xapian-omega $as_me 1.0.5a, which was
+ generated by GNU Autoconf 2.61.  Invocation command line was
+ 
+   $ $0 $@
+@@ -1946,7 +1978,7 @@
+ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+-am__api_version='1.10'
++ am__api_version='1.10'
+ 
+ ac_aux_dir=
+ for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
+@@ -2283,7 +2315,7 @@
+ 
+ # Define the identity of the package.
+  PACKAGE='xapian-omega'
+- VERSION='1.0.5'
++ VERSION='1.0.5a'
+ 
+ 
+ cat >>confdefs.h <<_ACEOF
+@@ -3778,7 +3810,7 @@
+   test -z "$as_dir" && as_dir=.
+   for lt_ac_prog in sed gsed; do
+     for ac_exec_ext in '' $ac_executable_extensions; do
+-      if { test -f "$as_dir/$lt_ac_prog$ac_exec_ext" && $as_test_x "$as_dir/$lt_ac_prog$ac_exec_ext"; }; then
++      if $as_executable_p "$as_dir/$lt_ac_prog$ac_exec_ext"; then
+         lt_ac_sed_list="$lt_ac_sed_list $as_dir/$lt_ac_prog$ac_exec_ext"
+       fi
+     done
+@@ -4276,7 +4308,7 @@
+   esac
+   ;;
+ 
+-interix[3-9]*)
++interix3*)
+   # PIC code is broken on Interix 3.x, that's why |\.a not |_pic\.a here
+   lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so|\.a)$'
+   ;;
+@@ -4417,7 +4449,7 @@
+   ;;
+ *-*-irix6*)
+   # Find out which ABI we are using.
+-  echo '#line 4420 "configure"' > conftest.$ac_ext
++  echo '#line 4452 "configure"' > conftest.$ac_ext
+   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+   (eval $ac_compile) 2>&5
+   ac_status=$?
+@@ -5193,7 +5225,12 @@
+ echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+     { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
+ echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
+-
++    ( cat <<\_ASBOX
++## -------------------------------------- ##
++## Report this to reinhard.urbnan@avl.com ##
++## -------------------------------------- ##
++_ASBOX
++     ) | sed "s/^/$as_me: WARNING:     /" >&2
+     ;;
+ esac
+ { echo "$as_me:$LINENO: checking for $ac_header" >&5
+@@ -6012,11 +6049,9 @@
+     fi
+     ;;
+   *)
+-    lt_cv_sys_max_cmd_len=`(getconf ARG_MAX) 2> /dev/null`
+-    if test -n "$lt_cv_sys_max_cmd_len"; then
+-      lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 4`
+-      lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \* 3`
+-    else
++    # If test is not a shell built-in, we'll probably end up computing a
++    # maximum length that is only half of the actual maximum length, but
++    # we can't tell.
+       SHELL=${SHELL-${CONFIG_SHELL-/bin/sh}}
+       while (test "X"`$SHELL $0 --fallback-echo "X$teststring" 2>/dev/null` \
+ 	       = "XX$teststring") >/dev/null 2>&1 &&
+@@ -6032,7 +6067,6 @@
+       # amounts of additional arguments before passing them to the linker.
+       # It appears as though 1/2 is a usable value.
+       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 2`
+-    fi
+     ;;
+   esac
+ 
+@@ -6049,7 +6083,6 @@
+ 
+ 
+ 
+-
+ # Check for command to grab the raw symbol name followed by C symbol from nm.
+ { echo "$as_me:$LINENO: checking command to parse $NM output from $compiler object" >&5
+ echo $ECHO_N "checking command to parse $NM output from $compiler object... $ECHO_C" >&6; }
+@@ -6638,7 +6671,7 @@
+ test -z "$ac_objext" && ac_objext=o
+ 
+ # Determine commands to create old-style static archives.
+-old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs'
++old_archive_cmds='$AR $AR_FLAGS $oldlib$oldobjs$old_deplibs'
+ old_postinstall_cmds='chmod 644 $oldlib'
+ old_postuninstall_cmds=
+ 
+@@ -6893,11 +6926,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:6896: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:6929: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>conftest.err)
+    ac_status=$?
+    cat conftest.err >&5
+-   echo "$as_me:6900: \$? = $ac_status" >&5
++   echo "$as_me:6933: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s "$ac_outfile"; then
+      # The compiler can only warn and ignore the option if not recognized
+      # So say no if there are warnings other than the usual output.
+@@ -6966,7 +6999,7 @@
+       lt_prog_compiler_pic='-fno-common'
+       ;;
+ 
+-    interix[3-9]*)
++    interix3*)
+       # Interix 3.x gcc -fpic/-fPIC options generate broken code.
+       # Instead, we relocate shared libraries at runtime.
+       ;;
+@@ -7183,11 +7216,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7186: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7219: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>conftest.err)
+    ac_status=$?
+    cat conftest.err >&5
+-   echo "$as_me:7190: \$? = $ac_status" >&5
++   echo "$as_me:7223: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s "$ac_outfile"; then
+      # The compiler can only warn and ignore the option if not recognized
+      # So say no if there are warnings other than the usual output.
+@@ -7287,11 +7320,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:7290: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7323: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>out/conftest.err)
+    ac_status=$?
+    cat out/conftest.err >&5
+-   echo "$as_me:7294: \$? = $ac_status" >&5
++   echo "$as_me:7327: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s out/conftest2.$ac_objext
+    then
+      # The compiler can only warn and ignore the option if not recognized
+@@ -7501,7 +7534,7 @@
+       fi
+       ;;
+ 
+-    interix[3-9]*)
++    interix3*)
+       hardcode_direct=no
+       hardcode_shlibpath_var=no
+       hardcode_libdir_flag_spec='${wl}-rpath,$libdir'
+@@ -7516,7 +7549,7 @@
+       archive_expsym_cmds='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
+       ;;
+ 
+-    gnu* | linux* | k*bsd*-gnu)
++    linux* | k*bsd*-gnu)
+       if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
+ 	tmp_addflag=
+ 	case $cc_basename,$host_cpu in
+@@ -7536,7 +7569,7 @@
+ 	esac
+ 	case `$CC -V 2>&1 | sed 5q` in
+ 	*Sun\ C*)			# Sun C 5.9
+-	  whole_archive_flag_spec='${wl}--whole-archive`new_convenience=; for conv in $convenience\"\"; do test -z \"$conv\" || new_convenience=\"$new_convenience,$conv\"; done; $echo \"$new_convenience\"` ${wl}--no-whole-archive'
++	  whole_archive_flag_spec='${wl}--whole-archive`new_convenience=; for conv in $convenience\"\"; do test -z \"$conv\" || new_convenience=\"$new_convenience,$conv\"; done; $echo \"$new_convenience\"` ${wl}--no-whole-archive /dev/null'
+ 	  tmp_sharedflag='-G' ;;
+ 	*Sun\ F*)			# Sun Fortran 8.3
+ 	  tmp_sharedflag='-G' ;;
+@@ -7913,7 +7946,7 @@
+       # The linker will automatically build a .lib file if we build a DLL.
+       old_archive_From_new_cmds='true'
+       # FIXME: Should let the user specify the lib program.
+-      old_archive_cmds='lib -OUT:$oldlib$oldobjs$old_deplibs'
++      old_archive_cmds='lib /OUT:$oldlib$oldobjs$old_deplibs'
+       fix_srcfile_path='`cygpath -w "$srcfile"`'
+       enable_shared_with_static_runtimes=yes
+       ;;
+@@ -7955,10 +7988,10 @@
+       case $cc_basename in
+         xlc*)
+          output_verbose_link_cmd='echo'
+-         archive_cmds='$CC -qmkshrobj $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}`echo $rpath/$soname` $xlcverstring'
++         archive_cmds='$CC -qmkshrobj $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}`echo $rpath/$soname` $verstring'
+          module_cmds='$CC $allow_undefined_flag -o $lib -bundle $libobjs $deplibs$compiler_flags'
+           # Don't fix this by using the ld -exported_symbols_list flag, it doesn't exist in older darwin lds
+-         archive_expsym_cmds='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC -qmkshrobj $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}$rpath/$soname $xlcverstring~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
++         archive_expsym_cmds='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC -qmkshrobj $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}$rpath/$soname $verstring~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
+           module_expsym_cmds='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC $allow_undefined_flag  -o $lib -bundle $libobjs $deplibs$compiler_flags~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
+           ;;
+        *)
+@@ -8120,7 +8153,6 @@
+       ;;
+ 
+     openbsd*)
+-      if test -f /usr/libexec/ld.so; then
+ 	hardcode_direct=yes
+ 	hardcode_shlibpath_var=no
+ 	if test -z "`echo __ELF__ | $CC -E - | grep __ELF__`" || test "$host_os-$host_cpu" = "openbsd2.8-powerpc"; then
+@@ -8140,9 +8172,6 @@
+ 	     ;;
+ 	  esac
+         fi
+-      else
+-	ld_shlibs=no
+-      fi
+       ;;
+ 
+     os2*)
+@@ -8401,55 +8430,17 @@
+ version_type=none
+ dynamic_linker="$host_os ld.so"
+ sys_lib_dlsearch_path_spec="/lib /usr/lib"
+-
+ if test "$GCC" = yes; then
+-  case $host_os in
+-    darwin*) lt_awk_arg="/^libraries:/,/LR/" ;;
+-    *) lt_awk_arg="/^libraries:/" ;;
+-  esac
+-  lt_search_path_spec=`$CC -print-search-dirs | awk $lt_awk_arg | $SED -e "s/^libraries://" -e "s,=/,/,g"`
+-  if echo "$lt_search_path_spec" | grep ';' >/dev/null ; then
++  sys_lib_search_path_spec=`$CC -print-search-dirs | grep "^libraries:" | $SED -e "s/^libraries://" -e "s,=/,/,g"`
++  if echo "$sys_lib_search_path_spec" | grep ';' >/dev/null ; then
+     # if the path contains ";" then we assume it to be the separator
+     # otherwise default to the standard path separator (i.e. ":") - it is
+     # assumed that no part of a normal pathname contains ";" but that should
+     # okay in the real world where ";" in dirpaths is itself problematic.
+-    lt_search_path_spec=`echo "$lt_search_path_spec" | $SED -e 's/;/ /g'`
+-  else
+-    lt_search_path_spec=`echo "$lt_search_path_spec" | $SED  -e "s/$PATH_SEPARATOR/ /g"`
+-  fi
+-  # Ok, now we have the path, separated by spaces, we can step through it
+-  # and add multilib dir if necessary.
+-  lt_tmp_lt_search_path_spec=
+-  lt_multi_os_dir=`$CC $CPPFLAGS $CFLAGS $LDFLAGS -print-multi-os-directory 2>/dev/null`
+-  for lt_sys_path in $lt_search_path_spec; do
+-    if test -d "$lt_sys_path/$lt_multi_os_dir"; then
+-      lt_tmp_lt_search_path_spec="$lt_tmp_lt_search_path_spec $lt_sys_path/$lt_multi_os_dir"
++    sys_lib_search_path_spec=`echo "$sys_lib_search_path_spec" | $SED -e 's/;/ /g'`
+     else
+-      test -d "$lt_sys_path" && \
+-	lt_tmp_lt_search_path_spec="$lt_tmp_lt_search_path_spec $lt_sys_path"
++    sys_lib_search_path_spec=`echo "$sys_lib_search_path_spec" | $SED  -e "s/$PATH_SEPARATOR/ /g"`
+     fi
+-  done
+-  lt_search_path_spec=`echo $lt_tmp_lt_search_path_spec | awk '
+-BEGIN {RS=" "; FS="/|\n";} {
+-  lt_foo="";
+-  lt_count=0;
+-  for (lt_i = NF; lt_i > 0; lt_i--) {
+-    if ($lt_i != "" && $lt_i != ".") {
+-      if ($lt_i == "..") {
+-        lt_count++;
+-      } else {
+-        if (lt_count == 0) {
+-          lt_foo="/" $lt_i lt_foo;
+-        } else {
+-          lt_count--;
+-        }
+-      }
+-    }
+-  }
+-  if (lt_foo != "") { lt_freq[lt_foo]++; }
+-  if (lt_freq[lt_foo] == 1) { print lt_foo; }
+-}'`
+-  sys_lib_search_path_spec=`echo $lt_search_path_spec`
+ else
+   sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
+ fi
+@@ -8609,8 +8600,12 @@
+   shlibpath_overrides_runpath=yes
+   shlibpath_var=DYLD_LIBRARY_PATH
+   shrext_cmds='`test .$module = .yes && echo .so || echo .dylib`'
+-
+-  sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/local/lib"
++  # Apple's gcc prints 'gcc -print-search-dirs' doesn't operate the same.
++  if test "$GCC" = yes; then
++    sys_lib_search_path_spec=`$CC -print-search-dirs | tr "\n" "$PATH_SEPARATOR" | sed -e 's/libraries:/@libraries:/' | tr "@" "\n" | grep "^libraries:" | sed -e "s/^libraries://" -e "s,=/,/,g" -e "s,$PATH_SEPARATOR, ,g" -e "s,.*,& /lib /usr/lib /usr/local/lib,g"`
++  else
++    sys_lib_search_path_spec='/lib /usr/lib /usr/local/lib'
++  fi
+   sys_lib_dlsearch_path_spec='/usr/local/lib /lib /usr/lib'
+   ;;
+ 
+@@ -8727,7 +8722,7 @@
+   postinstall_cmds='chmod 555 $lib'
+   ;;
+ 
+-interix[3-9]*)
++interix3*)
+   version_type=linux
+   need_lib_prefix=no
+   need_version=no
+@@ -8798,7 +8793,7 @@
+ 
+   # Append ld.so.conf contents to the search path
+   if test -f /etc/ld.so.conf; then
+-    lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[ 	]*hwcap[ 	]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;/^$/d' | tr '\n' ' '`
++    lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;/^$/d' | tr '\n' ' '`
+     sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
+   fi
+ 
+@@ -9049,7 +9044,6 @@
+    darwin*)
+        if test -n "$STRIP" ; then
+          striplib="$STRIP -x"
+-         old_striplib="$STRIP -S"
+          { echo "$as_me:$LINENO: result: yes" >&5
+ echo "${ECHO_T}yes" >&6; }
+        else
+@@ -9636,7 +9630,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<EOF
+-#line 9639 "configure"
++#line 9633 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -9736,7 +9730,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<EOF
+-#line 9739 "configure"
++#line 9733 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -9934,7 +9928,6 @@
+     module_cmds \
+     module_expsym_cmds \
+     lt_cv_prog_compiler_c_o \
+-    fix_srcfile_path \
+     exclude_expsyms \
+     include_expsyms; do
+ 
+@@ -9979,7 +9972,7 @@
+ # Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION$TIMESTAMP)
+ # NOTE: Changes made to this file will be lost: look at ltmain.sh.
+ #
+-# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
++# Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+ # Free Software Foundation, Inc.
+ #
+ # This file is part of GNU Libtool:
+@@ -10303,7 +10296,7 @@
+ sys_lib_dlsearch_path_spec=$lt_sys_lib_dlsearch_path_spec
+ 
+ # Fix the shell variable \$srcfile for the compiler.
+-fix_srcfile_path=$lt_fix_srcfile_path
++fix_srcfile_path="$fix_srcfile_path"
+ 
+ # Set to yes if exported symbols are required.
+ always_export_symbols=$always_export_symbols
+@@ -11027,10 +11020,10 @@
+       case $cc_basename in
+         xlc*)
+          output_verbose_link_cmd='echo'
+-          archive_cmds_CXX='$CC -qmkshrobj ${wl}-single_module $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}`echo $rpath/$soname` $xlcverstring'
++          archive_cmds_CXX='$CC -qmkshrobj ${wl}-single_module $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}`echo $rpath/$soname` $verstring'
+           module_cmds_CXX='$CC $allow_undefined_flag -o $lib -bundle $libobjs $deplibs$compiler_flags'
+           # Don't fix this by using the ld -exported_symbols_list flag, it doesn't exist in older darwin lds
+-          archive_expsym_cmds_CXX='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC -qmkshrobj ${wl}-single_module $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}$rpath/$soname $xlcverstring~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
++          archive_expsym_cmds_CXX='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC -qmkshrobj ${wl}-single_module $allow_undefined_flag -o $lib $libobjs $deplibs $compiler_flags ${wl}-install_name ${wl}$rpath/$soname $verstring~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
+           module_expsym_cmds_CXX='sed -e "s,#.*,," -e "s,^[    ]*,," -e "s,^\(..*\),_&," < $export_symbols > $output_objdir/${libname}-symbols.expsym~$CC $allow_undefined_flag  -o $lib -bundle $libobjs $deplibs$compiler_flags~nmedit -s $output_objdir/${libname}-symbols.expsym ${lib}'
+           ;;
+        *)
+@@ -11181,7 +11174,7 @@
+ 	;;
+     esac
+     ;;
+-  interix[3-9]*)
++  interix3*)
+     hardcode_direct_CXX=no
+     hardcode_shlibpath_var_CXX=no
+     hardcode_libdir_flag_spec_CXX='${wl}-rpath,$libdir'
+@@ -11362,7 +11355,6 @@
+     ld_shlibs_CXX=no
+     ;;
+   openbsd*)
+-    if test -f /usr/libexec/ld.so; then
+       hardcode_direct_CXX=yes
+       hardcode_shlibpath_var_CXX=no
+       archive_cmds_CXX='$CC -shared $pic_flag $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $lib'
+@@ -11373,9 +11365,6 @@
+ 	whole_archive_flag_spec_CXX="$wlarc"'--whole-archive$convenience '"$wlarc"'--no-whole-archive'
+       fi
+       output_verbose_link_cmd='echo'
+-    else
+-      ld_shlibs_CXX=no
+-    fi
+     ;;
+   osf3*)
+     case $cc_basename in
+@@ -11784,7 +11773,7 @@
+ 
+ # PORTME: override above test on systems where it is broken
+ case $host_os in
+-interix[3-9]*)
++interix3*)
+   # Interix 3.5 installs completely hosed .la files for C++, so rather than
+   # hack all around it, let's just trust "g++" to DTRT.
+   predep_objects_CXX=
+@@ -11887,7 +11876,7 @@
+       # DJGPP does not support shared libraries at all
+       lt_prog_compiler_pic_CXX=
+       ;;
+-    interix[3-9]*)
++    interix3*)
+       # Interix 3.x gcc -fpic/-fPIC options generate broken code.
+       # Instead, we relocate shared libraries at runtime.
+       ;;
+@@ -12156,11 +12145,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:12159: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:12148: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>conftest.err)
+    ac_status=$?
+    cat conftest.err >&5
+-   echo "$as_me:12163: \$? = $ac_status" >&5
++   echo "$as_me:12152: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s "$ac_outfile"; then
+      # The compiler can only warn and ignore the option if not recognized
+      # So say no if there are warnings other than the usual output.
+@@ -12260,11 +12249,11 @@
+    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
+    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
+    -e 's:$: $lt_compiler_flag:'`
+-   (eval echo "\"\$as_me:12263: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:12252: $lt_compile\"" >&5)
+    (eval "$lt_compile" 2>out/conftest.err)
+    ac_status=$?
+    cat out/conftest.err >&5
+-   echo "$as_me:12267: \$? = $ac_status" >&5
++   echo "$as_me:12256: \$? = $ac_status" >&5
+    if (exit $ac_status) && test -s out/conftest2.$ac_objext
+    then
+      # The compiler can only warn and ignore the option if not recognized
+@@ -12330,7 +12319,7 @@
+     export_symbols_cmds_CXX="$ltdll_cmds"
+   ;;
+   cygwin* | mingw*)
+-    export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED -e '\''/^[BCDGRS][ ]/s/.*[ ]\([^ ]*\)/\1 DATA/;/^.*[ ]__nm__/s/^.*[ ]__nm__\([^ ]*\)[ ][^ ]*/\1 DATA/;/^I[ ]/d;/^[AITW][ ]/s/.*[ ]//'\'' | sort | uniq > $export_symbols'
++    export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED -e '\''/^[BCDGRS][ ]/s/.*[ ]\([^ ]*\)/\1 DATA/;/^.*[ ]__nm__/s/^.*[ ]__nm__\([^ ]*\)[ ][^ ]*/\1 DATA/;/^I /d;/^[AITW][ ]/s/.*[ ]//'\'' | sort | uniq > $export_symbols'
+   ;;
+   *)
+     export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
+@@ -12419,7 +12408,20 @@
+ version_type=none
+ dynamic_linker="$host_os ld.so"
+ sys_lib_dlsearch_path_spec="/lib /usr/lib"
+-
++if test "$GCC" = yes; then
++  sys_lib_search_path_spec=`$CC -print-search-dirs | grep "^libraries:" | $SED -e "s/^libraries://" -e "s,=/,/,g"`
++  if echo "$sys_lib_search_path_spec" | grep ';' >/dev/null ; then
++    # if the path contains ";" then we assume it to be the separator
++    # otherwise default to the standard path separator (i.e. ":") - it is
++    # assumed that no part of a normal pathname contains ";" but that should
++    # okay in the real world where ";" in dirpaths is itself problematic.
++    sys_lib_search_path_spec=`echo "$sys_lib_search_path_spec" | $SED -e 's/;/ /g'`
++  else
++    sys_lib_search_path_spec=`echo "$sys_lib_search_path_spec" | $SED  -e "s/$PATH_SEPARATOR/ /g"`
++  fi
++else
++  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
++fi
+ need_lib_prefix=unknown
+ hardcode_into_libs=no
+ 
+@@ -12576,7 +12578,12 @@
+   shlibpath_overrides_runpath=yes
+   shlibpath_var=DYLD_LIBRARY_PATH
+   shrext_cmds='`test .$module = .yes && echo .so || echo .dylib`'
+-
++  # Apple's gcc prints 'gcc -print-search-dirs' doesn't operate the same.
++  if test "$GCC" = yes; then
++    sys_lib_search_path_spec=`$CC -print-search-dirs | tr "\n" "$PATH_SEPARATOR" | sed -e 's/libraries:/@libraries:/' | tr "@" "\n" | grep "^libraries:" | sed -e "s/^libraries://" -e "s,=/,/,g" -e "s,$PATH_SEPARATOR, ,g" -e "s,.*,& /lib /usr/lib /usr/local/lib,g"`
++  else
++    sys_lib_search_path_spec='/lib /usr/lib /usr/local/lib'
++  fi
+   sys_lib_dlsearch_path_spec='/usr/local/lib /lib /usr/lib'
+   ;;
+ 
+@@ -12693,7 +12700,7 @@
+   postinstall_cmds='chmod 555 $lib'
+   ;;
+ 
+-interix[3-9]*)
++interix3*)
+   version_type=linux
+   need_lib_prefix=no
+   need_version=no
+@@ -12764,7 +12771,7 @@
+ 
+   # Append ld.so.conf contents to the search path
+   if test -f /etc/ld.so.conf; then
+-    lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;/^[ 	]*hwcap[ 	]/d;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;/^$/d' | tr '\n' ' '`
++    lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s 2>/dev/null", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;/^$/d' | tr '\n' ' '`
+     sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
+   fi
+ 
+@@ -13056,7 +13063,6 @@
+     module_cmds_CXX \
+     module_expsym_cmds_CXX \
+     lt_cv_prog_compiler_c_o_CXX \
+-    fix_srcfile_path_CXX \
+     exclude_expsyms_CXX \
+     include_expsyms_CXX; do
+ 
+@@ -13377,7 +13383,7 @@
+ sys_lib_dlsearch_path_spec=$lt_sys_lib_dlsearch_path_spec
+ 
+ # Fix the shell variable \$srcfile for the compiler.
+-fix_srcfile_path=$lt_fix_srcfile_path
++fix_srcfile_path="$fix_srcfile_path_CXX"
+ 
+ # Set to yes if exported symbols are required.
+ always_export_symbols=$always_export_symbols_CXX
+@@ -13546,20 +13552,6 @@
+ 
+ 
+   if test -z "$XAPIAN_CONFIG"; then
+-
+-				for sfx in '' 32 64 ; do
+-	  set /usr/lib$sfx/libxapian.so.*
+-	  if test "/usr/lib$sfx/libxapian.so.*" != "" ; then
+-	    if test -r /etc/debian_version ; then
+-	      pkg="libxapian-dev"
+-	    else
+-	      pkg="xapian-core-devel"
+-	    fi
+-	    { { echo "$as_me:$LINENO: error: Can't find xapian-config, although the xapian-core runtime library seems to be installed.  If you've installed xapian-core from a package, you probably need to install an extra package called something like $pkg in order to be able to build code using the Xapian library." >&5
+-echo "$as_me: error: Can't find xapian-config, although the xapian-core runtime library seems to be installed.  If you've installed xapian-core from a package, you probably need to install an extra package called something like $pkg in order to be able to build code using the Xapian library." >&2;}
+-   { (exit 1); exit 1; }; }
+-	  fi
+-	done
+ 	{ { echo "$as_me:$LINENO: error: Can't find Xapian library" >&5
+ echo "$as_me: error: Can't find Xapian library" >&2;}
+    { (exit 1); exit 1; }; }
+@@ -15437,7 +15429,7 @@
+ else
+ 
+       xo_cv_iconv_input=
+-      for t in 'char*' 'const char *' ; do
++      for t in 'const char*' 'char *' ; do
+ 			cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -15761,6 +15753,53 @@
+ esac
+ 
+ 
++# Extract the first word of "sed", so it can be a program name with args.
++set dummy sed; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_SED+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $SED in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_SED="$SED" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_SED="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++SED=$ac_cv_path_SED
++if test -n "$SED"; then
++  { echo "$as_me:$LINENO: result: $SED" >&5
++echo "${ECHO_T}$SED" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++
++cat >>confdefs.h <<_ACEOF
++#define SED "$SED"
++_ACEOF
++
++
++
+ if test x"$enable_documentation" = xyes; then
+     # Extract the first word of "perl", so it can be a program name with args.
+ set dummy perl; ac_word=$2
+@@ -15901,6 +15940,945 @@
+ fi
+ 
+ 
++# Check whether --with-textcat was given.
++if test "${with_textcat+set}" = set; then
++  withval=$with_textcat;
++fi
++
++if test xno != x$with_textcat; then
++  { echo "$as_me:$LINENO: checking for libtextcat" >&5
++echo $ECHO_N "checking for libtextcat... $ECHO_C" >&6; }
++  textcat_candidates="$with_textcat $HOME/local/lib* /usr*/local/lib* /usr/lib*"
++  for lib in $textcat_candidates; do
++    if test -f $lib/libtextcat.la; then
++      TEXTCAT_LIB="-L$lib -ltextcat"
++      break
++    elif test -f $lib/libtextcat.a; then
++      TEXTCAT_LIB="$lib/libtextcat.a"
++      break
++    fi
++  done
++  if test -z "$TEXTCAT_LIB"; then
++    { echo "$as_me:$LINENO: result: not found" >&5
++echo "${ECHO_T}not found" >&6; }
++  else
++    { echo "$as_me:$LINENO: result: $lib" >&5
++echo "${ECHO_T}$lib" >&6; }
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_TEXTCAT 1
++_ACEOF
++
++
++    have_textcat=yes
++  fi
++fi
++
++
++# Check whether --with-unrar was given.
++if test "${with_unrar+set}" = set; then
++  withval=$with_unrar; if test xyes = x$with_unrar; then
++  # Extract the first word of "unrar", so it can be a program name with args.
++set dummy unrar; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_UNRAR+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $UNRAR in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_UNRAR="$UNRAR" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_UNRAR="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++UNRAR=$ac_cv_path_UNRAR
++if test -n "$UNRAR"; then
++  { echo "$as_me:$LINENO: result: $UNRAR" >&5
++echo "${ECHO_T}$UNRAR" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$UNRAR" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_UNRAR 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define UNRAR "$UNRAR"
++_ACEOF
++
++  )
++fi
++fi
++
++
++
++
++# Check whether --with-unzip was given.
++if test "${with_unzip+set}" = set; then
++  withval=$with_unzip;
++fi
++
++
++if test xno != x$with_unzip; then
++  # Extract the first word of "unzip", so it can be a program name with args.
++set dummy unzip; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_unzipNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $UNZIP in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_unzipNAME="$UNZIP" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_unzipNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++UNZIP=$ac_cv_path_unzipNAME
++if test -n "$UNZIP"; then
++  { echo "$as_me:$LINENO: result: $UNZIP" >&5
++echo "${ECHO_T}$UNZIP" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$UNZIP" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_UNZIP 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define UNZIP "$UNZIP"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-msgconvert was given.
++if test "${with_msgconvert+set}" = set; then
++  withval=$with_msgconvert;
++fi
++
++if test xno != x$with_msgconvert; then
++  for ac_prog in msgconvert msgconvert.pl
++do
++  # Extract the first word of "$ac_prog", so it can be a program name with args.
++set dummy $ac_prog; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_MSGCONVERT+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $MSGCONVERT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_MSGCONVERT="$MSGCONVERT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_MSGCONVERT="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++MSGCONVERT=$ac_cv_path_MSGCONVERT
++if test -n "$MSGCONVERT"; then
++  { echo "$as_me:$LINENO: result: $MSGCONVERT" >&5
++echo "${ECHO_T}$MSGCONVERT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$MSGCONVERT" && break
++done
++
++  test -n "$MSGCONVERT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_MSGCONVERT 1
++_ACEOF
++
++
++  )
++fi
++
++
++
++# Check whether --with-readpst was given.
++if test "${with_readpst+set}" = set; then
++  withval=$with_readpst;
++fi
++
++
++if test xno != x$with_readpst; then
++  # Extract the first word of "readpst", so it can be a program name with args.
++set dummy readpst; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_readpstNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $READPST in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_readpstNAME="$READPST" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_readpstNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++READPST=$ac_cv_path_readpstNAME
++if test -n "$READPST"; then
++  { echo "$as_me:$LINENO: result: $READPST" >&5
++echo "${ECHO_T}$READPST" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$READPST" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_READPST 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define READPST "$READPST"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-catdoc was given.
++if test "${with_catdoc+set}" = set; then
++  withval=$with_catdoc;
++fi
++
++
++if test xno != x$with_catdoc; then
++  # Extract the first word of "catdoc", so it can be a program name with args.
++set dummy catdoc; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_catdocNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $CATDOC in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_catdocNAME="$CATDOC" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_catdocNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++CATDOC=$ac_cv_path_catdocNAME
++if test -n "$CATDOC"; then
++  { echo "$as_me:$LINENO: result: $CATDOC" >&5
++echo "${ECHO_T}$CATDOC" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$CATDOC" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_CATDOC 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define CATDOC "$CATDOC"
++_ACEOF
++
++  )
++
++  # Extract the first word of "catppt", so it can be a program name with args.
++set dummy catppt; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_CATPPT+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $CATPPT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_CATPPT="$CATPPT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_CATPPT="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++CATPPT=$ac_cv_path_CATPPT
++if test -n "$CATPPT"; then
++  { echo "$as_me:$LINENO: result: $CATPPT" >&5
++echo "${ECHO_T}$CATPPT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++
++  # Extract the first word of "xls2csv", so it can be a program name with args.
++set dummy xls2csv; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_XLS2CSV+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $XLS2CSV in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_XLS2CSV="$XLS2CSV" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_XLS2CSV="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++XLS2CSV=$ac_cv_path_XLS2CSV
++if test -n "$XLS2CSV"; then
++  { echo "$as_me:$LINENO: result: $XLS2CSV" >&5
++echo "${ECHO_T}$XLS2CSV" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++
++
++fi
++
++
++
++
++
++# Check whether --with-pdftotext was given.
++if test "${with_pdftotext+set}" = set; then
++  withval=$with_pdftotext;
++fi
++
++
++if test xno != x$with_pdftotext; then
++  # Extract the first word of "pdftotext", so it can be a program name with args.
++set dummy pdftotext; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_pdftotextNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $PDFTOTEXT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_pdftotextNAME="$PDFTOTEXT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_pdftotextNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++PDFTOTEXT=$ac_cv_path_pdftotextNAME
++if test -n "$PDFTOTEXT"; then
++  { echo "$as_me:$LINENO: result: $PDFTOTEXT" >&5
++echo "${ECHO_T}$PDFTOTEXT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$PDFTOTEXT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_PDFTOTEXT 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define PDFTOTEXT "$PDFTOTEXT"
++_ACEOF
++
++  )
++
++  # Extract the first word of "pdfinfo", so it can be a program name with args.
++set dummy pdfinfo; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_PDFINFO+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $PDFINFO in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_PDFINFO="$PDFINFO" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_PDFINFO="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++PDFINFO=$ac_cv_path_PDFINFO
++if test -n "$PDFINFO"; then
++  { echo "$as_me:$LINENO: result: $PDFINFO" >&5
++echo "${ECHO_T}$PDFINFO" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++
++cat >>confdefs.h <<_ACEOF
++#define PDFINFO "$PDFINFO"
++_ACEOF
++
++
++fi
++
++
++
++
++# Check whether --with-pstotext was given.
++if test "${with_pstotext+set}" = set; then
++  withval=$with_pstotext;
++fi
++
++
++if test xno != x$with_pstotext; then
++  # Extract the first word of "pstotext", so it can be a program name with args.
++set dummy pstotext; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_pstotextNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $PSTOTEXT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_pstotextNAME="$PSTOTEXT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_pstotextNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++PSTOTEXT=$ac_cv_path_pstotextNAME
++if test -n "$PSTOTEXT"; then
++  { echo "$as_me:$LINENO: result: $PSTOTEXT" >&5
++echo "${ECHO_T}$PSTOTEXT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$PSTOTEXT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_PSTOTEXT 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define PSTOTEXT "$PSTOTEXT"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-antiword was given.
++if test "${with_antiword+set}" = set; then
++  withval=$with_antiword;
++fi
++
++
++if test xno != x$with_antiword; then
++  # Extract the first word of "antiword", so it can be a program name with args.
++set dummy antiword; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_antiwordNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $ANTIWORD in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_antiwordNAME="$ANTIWORD" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_antiwordNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++ANTIWORD=$ac_cv_path_antiwordNAME
++if test -n "$ANTIWORD"; then
++  { echo "$as_me:$LINENO: result: $ANTIWORD" >&5
++echo "${ECHO_T}$ANTIWORD" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$ANTIWORD" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_ANTIWORD 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define ANTIWORD "$ANTIWORD"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-wpd2text was given.
++if test "${with_wpd2text+set}" = set; then
++  withval=$with_wpd2text;
++fi
++
++
++if test xno != x$with_wpd2text; then
++  # Extract the first word of "wpd2text", so it can be a program name with args.
++set dummy wpd2text; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_wpd2textNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $WPD2TEXT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_wpd2textNAME="$WPD2TEXT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_wpd2textNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++WPD2TEXT=$ac_cv_path_wpd2textNAME
++if test -n "$WPD2TEXT"; then
++  { echo "$as_me:$LINENO: result: $WPD2TEXT" >&5
++echo "${ECHO_T}$WPD2TEXT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$WPD2TEXT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_WPD2TEXT 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define WPD2TEXT "$WPD2TEXT"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-wps2text was given.
++if test "${with_wps2text+set}" = set; then
++  withval=$with_wps2text;
++fi
++
++
++if test xno != x$with_wps2text; then
++  # Extract the first word of "wps2text", so it can be a program name with args.
++set dummy wps2text; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_wps2textNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $WPS2TEXT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_wps2textNAME="$WPS2TEXT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_wps2textNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++WPS2TEXT=$ac_cv_path_wps2textNAME
++if test -n "$WPS2TEXT"; then
++  { echo "$as_me:$LINENO: result: $WPS2TEXT" >&5
++echo "${ECHO_T}$WPS2TEXT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$WPS2TEXT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_WPS2TEXT 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define WPS2TEXT "$WPS2TEXT"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-unrtf was given.
++if test "${with_unrtf+set}" = set; then
++  withval=$with_unrtf;
++fi
++
++
++if test xno != x$with_unrtf; then
++  # Extract the first word of "unrtf", so it can be a program name with args.
++set dummy unrtf; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_unrtfNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $UNRTF in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_unrtfNAME="$UNRTF" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_unrtfNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++UNRTF=$ac_cv_path_unrtfNAME
++if test -n "$UNRTF"; then
++  { echo "$as_me:$LINENO: result: $UNRTF" >&5
++echo "${ECHO_T}$UNRTF" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$UNRTF" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_UNRTF 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define UNRTF "$UNRTF"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
++# Check whether --with-pod2text was given.
++if test "${with_pod2text+set}" = set; then
++  withval=$with_pod2text;
++fi
++
++
++if test xno != x$with_pod2text; then
++  # Extract the first word of "pod2text", so it can be a program name with args.
++set dummy pod2text; ac_word=$2
++{ echo "$as_me:$LINENO: checking for $ac_word" >&5
++echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
++if test "${ac_cv_path_pod2textNAME+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  case $POD2TEXT in
++  [\\/]* | ?:[\\/]*)
++  ac_cv_path_pod2textNAME="$POD2TEXT" # Let the user override the test with a path.
++  ;;
++  *)
++  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++  for ac_exec_ext in '' $ac_executable_extensions; do
++  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
++    ac_cv_path_pod2textNAME="$as_dir/$ac_word$ac_exec_ext"
++    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++done
++IFS=$as_save_IFS
++
++  ;;
++esac
++fi
++POD2TEXT=$ac_cv_path_pod2textNAME
++if test -n "$POD2TEXT"; then
++  { echo "$as_me:$LINENO: result: $POD2TEXT" >&5
++echo "${ECHO_T}$POD2TEXT" >&6; }
++else
++  { echo "$as_me:$LINENO: result: no" >&5
++echo "${ECHO_T}no" >&6; }
++fi
++
++
++  test -n "$POD2TEXT" && (
++
++cat >>confdefs.h <<\_ACEOF
++#define HAVE_POD2TEXT 1
++_ACEOF
++
++
++cat >>confdefs.h <<_ACEOF
++#define POD2TEXT "$POD2TEXT"
++_ACEOF
++
++  )
++
++fi
++
++
++
++
+ 
+ if test yes = "$GXX"; then
+ 
+@@ -16427,7 +17405,7 @@
+ # report actual input values of CONFIG_FILES etc. instead of their
+ # values after options handling.
+ ac_log="
+-This file was extended by xapian-omega $as_me 1.0.5, which was
++This file was extended by xapian-omega $as_me 1.0.5a, which was
+ generated by GNU Autoconf 2.61.  Invocation command line was
+ 
+   CONFIG_FILES    = $CONFIG_FILES
+@@ -16480,7 +17458,7 @@
+ _ACEOF
+ cat >>$CONFIG_STATUS <<_ACEOF
+ ac_cs_version="\\
+-xapian-omega config.status 1.0.5
++xapian-omega config.status 1.0.5a
+ configured by $0, generated by GNU Autoconf 2.61,
+   with options \\"`echo "$ac_configure_args" | sed 's/^ //; s/[\\""\`\$]/\\\\&/g'`\\"
+ 
+@@ -16819,13 +17797,29 @@
+ PERL!$PERL$ac_delim
+ HELP2MAN!$HELP2MAN$ac_delim
+ RST2HTML!$RST2HTML$ac_delim
++TEXTCAT_LIB!$TEXTCAT_LIB$ac_delim
++UNRAR!$UNRAR$ac_delim
++unzipNAME!$unzipNAME$ac_delim
++MSGCONVERT!$MSGCONVERT$ac_delim
++readpstNAME!$readpstNAME$ac_delim
++catdocNAME!$catdocNAME$ac_delim
++CATPPT!$CATPPT$ac_delim
++XLS2CSV!$XLS2CSV$ac_delim
++pdftotextNAME!$pdftotextNAME$ac_delim
++PDFINFO!$PDFINFO$ac_delim
++pstotextNAME!$pstotextNAME$ac_delim
++antiwordNAME!$antiwordNAME$ac_delim
++wpd2textNAME!$wpd2textNAME$ac_delim
++wps2textNAME!$wps2textNAME$ac_delim
++unrtfNAME!$unrtfNAME$ac_delim
++pod2textNAME!$pod2textNAME$ac_delim
+ AM_CXXFLAGS!$AM_CXXFLAGS$ac_delim
+ QUIET!$QUIET$ac_delim
+ LIBOBJS!$LIBOBJS$ac_delim
+ LTLIBOBJS!$LTLIBOBJS$ac_delim
+ _ACEOF
+ 
+-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 23; then
++  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 39; then
+     break
+   elif $ac_last_try; then
+     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
+diff -ub  xapian-omega-1.0.5a/excel2text.in.orig
+--- xapian-omega-1.0.5a/excel2text.in.orig	2008-01-02 10:43:05.984558300 +0100
++++ xapian-omega-1.0.5a/excel2text.in	2008-01-02 10:43:05.968940800 +0100
+@@ -0,0 +1,3 @@
++#! /bin/sh
++# strip numbers, to stdout
++@XLS2CSV@ -q0 "$1" | @SED@ -re's/[0123456789.]+,//g'
+diff -ub  xapian-omega-1.0.5a/langclass.conf.orig
+--- xapian-omega-1.0.5a/langclass.conf.orig	2008-01-02 10:43:05.984558300 +0100
++++ xapian-omega-1.0.5a/langclass.conf	2008-01-02 10:43:05.984558300 +0100
+@@ -0,0 +1,23 @@
++# A config file for the language models 
++# provided with Gertjan van Noords language guesser
++# (http://odur.let.rug.nl/~vannoord/TextCat/)
++#
++# Notes: 
++# - Putting the most probable languages at the top of the list
++# improves performance, because this will raise the threshold for
++# likely candidates more quickly.
++#
++/var/lib/omega/langclass/english.lm		english
++/var/lib/omega/langclass/german.lm		german
++/var/lib/omega/langclass/french.lm		french
++/var/lib/omega/langclass/danish.lm		danish
++/var/lib/omega/langclass/dutch.lm		dutch
++/var/lib/omega/langclass/finnish.lm		finnish
++/var/lib/omega/langclass/italian.lm		italian
++/var/lib/omega/langclass/norwegian.lm		norwegian
++/var/lib/omega/langclass/portuguese.lm		portuguese
++/var/lib/omega/langclass/russian-iso8859_5.lm	russian
++/var/lib/omega/langclass/russian-koi8_r.lm	russian
++/var/lib/omega/langclass/russian-windows1251.lm	russian
++/var/lib/omega/langclass/spanish.lm		spanish
++/var/lib/omega/langclass/swedish.lm		swedish
+diff -ub  xapian-omega-1.0.5a/mimeexplode.orig
+--- xapian-omega-1.0.5a/mimeexplode.orig	2008-01-02 10:43:06.000175800 +0100
++++ xapian-omega-1.0.5a/mimeexplode	2008-01-02 10:43:06.000175800 +0100
+@@ -0,0 +1,140 @@
++#!/usr/bin/perl -w
++
++=head1 NAME
++
++mimeexplode - explode one or more MIME messages
++
++=head1 SYNOPSIS
++
++    mimeexplode [-d <dir>] <mime-msg-file> <mime-msg-file> ...
++
++    someprocess | mimeexplode -
++
++=head1 DESCRIPTION
++
++Takes one or more files from the command line that contain MIME
++messages, and explodes their contents out into subdirectories
++of the current working directory.  The subdirectories are
++just called C<msg0>, C<msg1>, C<msg2>, etc.  Existing directories are
++skipped over.
++
++The message information is output to the stdout, like this:
++
++    Message: msg3 (inputfile1.msg)
++        Part: msg3/filename-1.dat (text/plain)
++        Part: msg3/filename-2.dat (text/plain)
++    Message: msg5 (input-file2.msg)
++        Part: msg5/dir.gif (image/gif)
++        Part: msg5/face.jpg (image/jpeg)
++    Message: msg6 (infile3)
++        Part: msg6/filename-1.dat (text/plain)
++
++This was written as an example of the MIME:: modules in the
++MIME-parser package I wrote.  It may prove useful as a quick-and-dirty
++way of splitting a MIME message if you need to decode something, and
++you don't have a MIME mail reader on hand.
++
++=head1 COMMAND LINE OPTIONS
++
++-d outdir
++
++=head1 AUTHOR
++
++Eryq C<eryq@zeegee.com>, in a big hurry...
++Reini Urban C<rurban@x-ray.at>: -d option to always explode into the same dir
++
++=cut
++
++#BEGIN { unshift @INC, ".." }    # to test MIME:: stuff before installing it!
++
++require 5.001;
++
++use strict;
++use vars;
++
++use MIME::Parser;
++use Getopt::Std;
++my %opts;
++my $outbase = '';
++my $postfix = '';
++
++#------------------------------------------------------------
++# make_msg - make and return the name of a msgXXX directory
++#------------------------------------------------------------
++
++#ignored
++#sub make_msg {
++#    while (-d "msg$Msgno") {
++#	++$Msgno;
++#	die "self-imposed limit reached" if $Msgno == 256;
++#    }
++#   mkdir "msg$Msgno",0755 or die "couldn't make msg$Msgno: $!";
++#    "msg$Msgno";
++#}
++
++#------------------------------------------------------------
++# dump_entity - dump an entity's file info
++#------------------------------------------------------------
++sub dump_entity {
++    my $ent = shift;
++    my @parts = $ent->parts;
++
++    if (@parts) {        # multipart...
++	map { dump_entity($_) } @parts;
++    }
++    else {               # single part...
++	print "    Part: ", $ent->bodyhandle->path,
++	      " (", scalar($ent->head->mime_type), ")\n";
++    }
++}
++
++#------------------------------------------------------------
++# main
++#------------------------------------------------------------
++sub main {
++    my $file;
++    my $entity;
++
++    # make sure the same message gets exploded into the same dir
++    getopts('d:', \%opts);
++    $outbase = $opts{d} ? $opts{d} : "msg0";
++    my $outdir = $outbase;
++
++    # Go through messages:
++    @ARGV or unshift @ARGV, "-";
++    while (defined($file = shift @ARGV)) {
++
++      # Sanity:
++      (-d $outdir) or mkdir "$outdir",0755;
++      (-w "$outdir") or die "cwd $outdir not writable!";
++      #my $msgdir = make_msg();
++      #print "Message: $msgdir ($file)\n";
++
++      # Create a new parser object:
++      my $parser = new MIME::Parser;
++      ### $parser->parse_nested_messages('REPLACE');
++
++      # Optional: set up parameters that will affect how it extracts
++      #   documents from the input stream:
++      $parser->output_dir($outdir);
++
++      # Parse an input stream:
++      open FILE, $file or die "couldn't open $file";
++      $entity = $parser->read(\*FILE) or
++	print STDERR "Couldn't parse MIME in $file; continuing...\n";
++      close FILE;
++
++      # Congratulations: you now have a (possibly multipart) MIME entity!
++      dump_entity($entity) if $entity;
++      ### $entity->dump_skeleton if $entity;
++
++      $postfix++;
++      $outdir = $outbase.$postfix;
++    }
++    1;
++}
++
++exit (&main ? 0 : -1);
++#------------------------------------------------------------
++1;
++
+diff -ub  xapian-omega-1.0.5a/msgconvert.pl.orig
+--- xapian-omega-1.0.5a/msgconvert.pl.orig	2008-01-02 10:43:06.031410800 +0100
++++ xapian-omega-1.0.5a/msgconvert.pl	2008-01-02 10:43:06.015793300 +0100
+@@ -0,0 +1,782 @@
++#!/usr/bin/perl -w
++#
++# msgconvert.pl:
++#
++# Convert .MSG files (made by Outlook (Express)) to multipart MIME messages.
++#
++# Copyright 2002, 2004, 2006 Matijs van Zuijlen
++#
++# This program is free software; you can redistribute it and/or modify it
++# under the terms of the GNU General Public License as published by the
++# Free Software Foundation; either version 2 of the License, or (at your
++# option) any later version.
++#
++# This program is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
++# Public License for more details.
++#
++# CHANGES:
++# 20020715  Recognize new items 'Cc', mime type of attachment, long
++#	    filename of attachment, and full headers. Attachments turn out
++#	    to be numbered, so a regexp is now used to recognize label of
++#	    items that are attachments.
++# 20020831  long file name will definitely be used if present. Full headers
++#	    and mime type information are used when present. Created
++#	    generic system for specifying known items to be skipped.
++#	    Unexpected contents is never reason to bail out anymore. Added
++#	    support for usage message and option processing (--verbose).
++# 20040104  Handle address data slightly better, make From line less fake,
++#	    make $verbose and $skippable_entries global vars, handle HTML
++#	    variant of body text if present (though not optimally).
++# 20040214  Fix typos and incorrect comments.
++# 20040307  - Complete rewrite: All functional parts are now in the package
++#	      MSGParser;
++#	    - Creation of MIME::Entity object is delayed until the output
++#	      routines, which means all data is known; This means I can
++#	      create a multipart/alternative body.
++#	    - Item names are parsed (thanks to bfrederi@alumni.sfu.ca for
++#	      the information).
++# 20040514  Check if $self->{HEAD} actually exists before trying to add its
++#	    contents to the output Mime object's header data.
++#	    (Bug reported by Thomas Ng).
++#	    Don't produce multipart messages if not needed.
++#	    (Bug reported by Justin B. Scout).
++# 20040529  Correctly format OLEDATE.
++# 20040530  - Extract date from property 0047 (thanks, Marc Goodman).
++#	    - Use address data to make To: and Cc: lines complete
++#	    - Use the in-reply-to property
++#	    - More unknown properties named.
++#	    - Found another property containing an SMTP address.
++#	    - Put non-SMTP type addresses back in output.
++# 20040825  Replace 'our' to declare globals with 'use vars'. This means
++#	    the globals our now properly scoped inside the package and not
++#	    the file.
++#	    This also fixes the bug that this program did not work on perl
++#	    versions below 5.6. (Bug reported by Tim Gustafson)
++# 20060218  More sensible encoding warnings.
++# 20060219  Move OLE parsing to main program.
++#           Parse nested MSG files (Bug reported by Christof Lukas).
++# 20060225  Simplify code.
++#
++
++#
++# Import modules.
++#
++package MSGParser;
++use strict;
++use OLE::Storage_Lite;
++use MIME::Entity;
++use MIME::Parser;
++use Date::Format;
++use POSIX qw(mktime);
++use constant DIR_TYPE => 1;
++use constant FILE_TYPE => 2;
++
++use vars qw($skipproperties $skipheaders);
++#
++# Descriptions partially based on mapitags.h
++#
++$skipproperties = {
++  # Envelope properties
++  '000B' => "Conversation key?",
++  '001A' => "Type of message",
++  '003B' => "Sender address variant",
++  '003D' => "Contains 'Re: '",
++  '003F' => "'recieved by' id",
++  '0040' => "'recieved by' name",
++  '0041' => "Sender variant address id",
++  '0042' => "Sender variant name",
++  '0043' => "'recieved representing' id",
++  '0044' => "'recieved representing' name",
++  '0046' => "Read receipt address id",
++  '0051' => "'recieved by' search key",
++  '0052' => "'recieved representing' search key",
++  '0053' => "Read receipt search key",
++  '0064' => "Sender variant address type",
++  '0065' => "Sender variant address",
++  '0070' => "Conversation topic",
++  '0071' => "Conversation index",
++  '0075' => "'recieved by' address type",
++  '0076' => "'recieved by' email address",
++  '0077' => "'recieved representing' address type",
++  '0078' => "'recieved representing' email address",
++  '007F' => "something like a message id",
++  # Recipient properties
++  '0C19' => "Reply address variant",
++  '0C1D' => "Reply address variant",
++  '0C1E' => "Reply address type",
++  # Non-transmittable properties
++  '0E02' => "?Should BCC be displayed",
++  '0E0A' => "sent mail id",
++  '0E1D' => "Subject w/o Re",
++  '0E27' => "64 bytes: Unknown",
++  '0FF6' => "Index",
++  '0FF9' => "Index",
++  '0FFF' => "Address variant",
++  # Content properties
++  '1008' => "Summary or something",
++  '1009' => "RTF Compressed",
++  # 'Common property'
++  '3001' => "Display name",
++  '3002' => "Address Type",
++  '300B' => "'Search key'",
++  # Attachment properties
++  '3702' => "Attachment encoding",
++  '3703' => "Attachment extension",
++  '3709' => "'Attachment rendering'", # Maybe an icon or something?
++  '3713' => "Icon URL?",
++  # 'Mail user'
++  '3A20' => "Address variant",
++  # 3900 -- 39FF: 'Address book'
++  '39FF' => "7 bit display name",
++  # 'Display table properties'
++  '3FF8' => "Routing data?",
++  '3FF9' => "Routing data?",
++  '3FFA' => "Routing data?",
++  '3FFB' => "Routing data?",
++  # 'Transport-defined envelope property'
++  '4029' => "Sender variant address type",
++  '402A' => "Sender variant address",
++  '402B' => "Sender variant name",
++  '5FF6' => "Recipient name",
++  '5FF7' => "Recipient address variant",
++  # 'Provider-defined internal non-transmittable property'
++  '6740' => "Unknown, binary data",
++  # User defined id's
++  '8000' => "Content Class",
++  '8002' => "Unknown, binary data",
++};
++
++$skipheaders = {
++  "MIME-Version" => 1,
++  "Content-Type" => 1,
++  "Content-Transfer-Encoding" => 1,
++  "X-Mailer" => 1,
++  "X-Msgconvert" => 1,
++  "X-MS-Tnef-Correlator" => 1,
++  "X-MS-Has-Attach" => 1,
++};
++
++use constant ENCODING_UNICODE => '001F';
++use constant KNOWN_ENCODINGS => {
++    '000D' => 'Directory',
++    '001F' => 'Unicode',
++    '001E' => 'Ascii?',
++    '0102' => 'Binary',
++};
++
++use constant MAP_ATTACHMENT_FILE => {
++  '3701' => ["DATA",	    0], # Data
++  '3704' => ["SHORTNAME",   1], # Short file name
++  '3707' => ["LONGNAME",    1], # Long file name
++  '370E' => ["MIMETYPE",    1], # mime type
++  '3716' => ["DISPOSITION", 1], # disposition
++};
++
++use constant MAP_SUBITEM_FILE => {
++  '1000' => ["BODY_PLAIN",	0], # Body
++  '1013' => ["BODY_HTML",	0], # HTML Version of body
++  '0037' => ["SUBJECT",		1], # Subject
++  '0047' => ["SUBMISSION_ID",	1], # Seems to contain the date
++  '007D' => ["HEAD",		1], # Full headers
++  '0C1A' => ["FROM",		1], # Reply-To: Name
++  '0C1E' => ["FROM_ADDR_TYPE",	1], # From: Address type
++  '0C1F' => ["FROM_ADDR",	1], # Reply-To: Address
++  '0E04' => ["TO",		1], # To: Names
++  '0E03' => ["CC",		1], # Cc: Names
++  '1035' => ["MESSAGEID",	1], # Message-Id
++  '1042' => ["INREPLYTO",	1], # In reply to Message-Id
++};
++
++use constant MAP_ADDRESSITEM_FILE => {
++  '3001' => ["NAME",		1], # Real name
++  '3002' => ["TYPE",		1], # Address type
++  '403D' => ["TYPE",		1], # Address type
++  '3003' => ["ADDRESS",		1], # Address
++  '403E' => ["ADDRESS",		1], # Address
++  '39FE' => ["SMTPADDRESS",	1], # SMTP Address variant
++};
++
++#
++# Main body of module
++#
++
++sub new {
++  my $that = shift;
++  my $class = ref $that || $that;
++
++  my $self = {
++    ATTACHMENTS => [],
++    ADDRESSES => [],
++    VERBOSE => 0,
++    HAS_UNICODE => 0,
++    FROM_ADDR_TYPE => "",
++  };
++  bless $self, $class;
++}
++
++#
++# Main sub: parse the PPS tree, and return 
++#
++sub parse {
++  my $self = shift;
++  my $PPS = shift or die "Internal error: No PPS tree";
++  $self->_RootDir($PPS);
++}
++
++sub mime_object {
++  my $self = shift;
++
++  my $bodymime;
++  my $mime;
++
++  if ($self->_IsMultiPart) {
++    # Construct a multipart message object
++
++    $mime = MIME::Entity->build(Type => "multipart/mixed");
++
++    # Set the entity that we'll save the body parts to. If there's more than
++    # one part, it's a new entity, otherwise, it's the main $mime object.
++    if ($self->{BODY_HTML} and $self->{BODY_PLAIN}) {
++      $bodymime = MIME::Entity->build(
++	Type => "multipart/alternative",
++	Encoding => "8bit",
++      );
++      $mime->add_part($bodymime);
++    } else {
++      $bodymime = $mime;
++    }
++    if ($self->{BODY_PLAIN}) {
++      $self->_SaveAttachment($bodymime, {
++	MIMETYPE => 'text/plain; charset=ISO-8859-1',
++	ENCODING => '8bit',
++	DATA => $self->{BODY_PLAIN},
++	DISPOSITION => 'inline',
++      });
++    }
++    if ($self->{BODY_HTML}) {
++      $self->_SaveAttachment($bodymime, {
++	MIMETYPE => 'text/html',
++	ENCODING => '8bit',
++	DATA => $self->{BODY_HTML},
++	DISPOSITION => 'inline',
++      });
++    }
++    foreach my $att (@{$self->{ATTACHMENTS}}) {
++      $self->_SaveAttachment($mime, $att);
++    }
++  } elsif ($self->{BODY_PLAIN}) {
++    # Construct a single part message object with a plain text body
++    $mime = MIME::Entity->build(
++      Type => "text/plain",
++      Data => $self->{BODY_PLAIN}
++    );
++  } elsif ($self->{BODY_HTML}) {
++    # Construct a single part message object with an HTML body
++    $mime = MIME::Entity->build(
++      Type => "text/html",
++      Data => $self->{BODY_HTML}
++    );
++  }
++
++  $self->_CopyHeaderData($mime);
++
++  $self->_SetHeaderFields($mime);
++
++  return $mime;
++}
++
++# Actually output the message in mbox format
++sub print {
++  my $self = shift;
++
++  my $mime = $self->mime_object;
++
++  # Construct From line from whatever we know.
++  my $string = "";
++  $string = (
++    $self->{FROM_ADDR_TYPE} eq "SMTP" ?
++    $self->{FROM_ADDR} :
++    'someone@somewhere'
++  );
++  $string =~ s/\n//g;
++
++  # The date used here is not really important.
++  print "From ", $string, " ", scalar localtime, "\n";
++  $mime->print(\*STDOUT);
++  print "\n";
++}
++
++sub set_verbosity {
++  my ($self, $verbosity) = @_;
++  defined $verbosity or die "Internal error: no verbosity level";
++  $self->{VERBOSE} = $verbosity;
++}
++
++#
++# Below are functions that walk the PPS tree. The *Dir functions handle
++# processing the directory nodes of the tree (mainly, iterating over the
++# children), whereas the *Item functions handle processing the items in the
++# directory (if such an item is itself a directory, it will in turn be
++# processed by the relevant *Dir function).
++#
++
++#
++# RootItem: Check Root Entry, parse sub-entries.
++# The OLE file consists of a single entry called Root Entry, which has
++# several children. These children are parsed in the sub SubItem.
++# 
++sub _RootDir {
++  my ($self, $PPS) = @_;
++
++  foreach my $child (@{$PPS->{Child}}) {
++    $self->_SubItem($child);
++  }
++}
++
++sub _SubItem {
++  my ($self, $PPS) = @_;
++  
++  if ($PPS->{Type} == DIR_TYPE) {
++    $self->_SubItemDir($PPS);
++  } elsif ($PPS->{Type} == FILE_TYPE) {
++    $self->_SubItemFile($PPS);
++  } else {
++    warn "Unknown entry type: $PPS->{Type}";
++  }
++}
++
++sub _SubItemDir {
++  my ($self, $PPS) = @_;
++
++  $self->_GetOLEDate($PPS);
++
++  my $name = $self->_GetName($PPS);
++
++  if ($name =~ /__recip_version1 0_ /) { # Address of one recipient
++    $self->_AddressDir($PPS);
++  } elsif ($name =~ '__attach_version1 0_ ') { # Attachment
++    $self->_AttachmentDir($PPS);
++  } else {
++    $self->_UnknownDir($self->_GetName($PPS));
++  }
++}
++
++sub _SubItemFile {
++  my ($self, $PPS) = @_;
++
++  my $name = $self->_GetName($PPS);
++  my ($property, $encoding) = $self->_ParseItemName($name);
++
++  $self->_MapProperty($self, $PPS->{Data}, $property,
++    MAP_SUBITEM_FILE) or $self->_UnknownFile($name);
++}
++
++sub _AddressDir {
++  my ($self, $PPS) = @_;
++
++  my $address = {
++    NAME	=> undef,
++    ADDRESS	=> undef,
++    TYPE	=> "",
++  };
++  foreach my $child (@{$PPS->{Child}}) {
++    $self->_AddressItem($child, $address);
++  }
++  push @{$self->{ADDRESSES}}, $address;
++}
++
++sub _AddressItem {
++  my ($self, $PPS, $addr_info) = @_;
++
++  my $name = $self->_GetName($PPS);
++
++  # DIR Entries: There should be none.
++  if ($PPS->{Type} == DIR_TYPE) {
++    $self->_UnknownDir($name);
++  } elsif ($PPS->{Type} == FILE_TYPE) {
++    my ($property, $encoding) = $self->_ParseItemName($name);
++    $self->_MapProperty($addr_info, $PPS->{Data}, $property,
++      MAP_ADDRESSITEM_FILE) or $self->_UnknownFile($name);
++  } else {
++    warn "Unknown entry type: $PPS->{Type}";
++  }
++}
++
++sub _AttachmentDir {
++  my ($self, $PPS) = @_;
++
++  my $attachment = {
++    SHORTNAME	=> undef,
++    LONGNAME	=> undef,
++    MIMETYPE	=> 'application/octet-stream',
++    ENCODING	=> 'base64',
++    DISPOSITION	=> 'attachment',
++    DATA	=> undef
++  };
++  foreach my $child (@{$PPS->{Child}}) {
++    $self->_AttachmentItem($child, $attachment);
++  }
++  push @{$self->{ATTACHMENTS}}, $attachment;
++}
++
++sub _AttachmentItem {
++  my ($self, $PPS, $att_info) = @_;
++
++  my $name = $self->_GetName($PPS);
++
++  my ($property, $encoding) = $self->_ParseItemName($name);
++
++  if ($PPS->{Type} == DIR_TYPE) {
++
++    if ($property eq '3701') {	# Nested MSG file
++      my $msgp = new MSGParser();
++      $msgp->parse($PPS);
++      my $data = $msgp->mime_object->as_string;
++      $att_info->{DATA} = $data;
++      $att_info->{MIMETYPE} = 'message/rfc822';
++      $att_info->{ENCODING} = '8bit';
++    } else {
++      $self->_UnknownDir($name);
++    }
++
++  } elsif ($PPS->{Type} == FILE_TYPE) {
++    $self->_MapProperty($att_info, $PPS->{Data}, $property,
++      MAP_ATTACHMENT_FILE) or $self->_UnknownFile($name);
++  } else {
++    warn "Unknown entry type: $PPS->{Type}";
++  }
++}
++
++sub _MapProperty {
++  my ($self, $hash, $data, $property, $map) = @_;
++
++  defined $property or return 0;
++  my $arr = $map->{$property} or return 0;
++
++  $arr->[1] and $data =~ s/\000//g;
++  $hash->{$arr->[0]} = $data;
++
++  return 1;
++}
++
++sub _UnknownDir {
++  my ($self, $name) = @_;
++
++  if ($name eq '__nameid_version1 0') {
++    $self->{VERBOSE}
++      and warn "Skipping DIR entry $name (Introductory stuff)\n";
++    return;
++  }
++  warn "Unknown DIR entry $name\n";
++}
++
++sub _UnknownFile {
++  my ($self, $name) = @_;
++
++  if ($name eq '__properties_version1 0') {
++    $self->{VERBOSE}
++      and warn "Skipping FILE entry $name (Properties)\n";
++    return;
++  }
++
++  my ($property, $encoding) = $self->_ParseItemName($name);
++  unless (defined $property) {
++    warn "Unknown FILE entry $name\n";
++    return;
++  }
++  if ($skipproperties->{$property}) {
++    $self->{VERBOSE}
++      and warn "Skipping property $property ($skipproperties->{$property})\n";
++    return;
++  } elsif ($property =~ /^80/) {
++    $self->{VERBOSE}
++      and warn "Skipping property $property (user-defined property)\n";
++    return;
++  } else {
++    warn "Unknown property $property\n";
++    return;
++  }
++}
++
++#
++# Helper functions
++#
++
++sub _GetName {
++  my ($self, $PPS) = @_;
++  return $self->_NormalizeWhiteSpace(OLE::Storage_Lite::Ucs2Asc($PPS->{Name}));
++}
++
++sub _NormalizeWhiteSpace {
++  my ($self, $name) = @_;
++  $name =~ s/\W/ /g;
++  return $name;
++}
++
++sub _GetOLEDate {
++  my ($self, $PPS) = @_;
++  unless (defined ($self->{OLEDATE})) {
++    # Make Date
++    my $datearr;
++    $datearr = $PPS->{Time2nd};
++    $datearr = $PPS->{Time1st} unless($datearr);
++    $self->{OLEDATE} = $self->_FormatDate($datearr) if $datearr;
++  }
++}
++
++sub _FormatDate {
++  my ($self, $datearr) = @_;
++
++  # TODO: This is a little convoluted. Directly using strftime didn't seem
++  # to work.
++  my $datetime = mktime(@$datearr);
++  return time2str("%a, %d %h %Y %X %z", $datetime);
++}
++
++# If we didn't get the date from the original header data, we may be able
++# to get it from the SUBMISSION_ID:
++# It seems to have the format of a semicolon-separated list of key=value
++# pairs. The key l has a value with the format:
++# <SERVER>-<DATETIME>Z-<NUMBER>, where DATETIME is the date and time in
++# the format YYMMDDHHMMSS.
++sub _SubmissionIdDate {
++  my $self = shift;
++
++  my $submission_id = $self->{SUBMISSION_ID} or return undef;
++  $submission_id =~ m/l=.*-(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)Z-.*/
++    or return undef;
++  my $year = $1;
++  $year += 100 if $year < 20;
++  return $self->_FormatDate([$6,$5,$4,$3,$2-1,$year]);
++}
++
++sub _ParseItemName {
++  my ($self, $name) = @_;
++
++  if ($name =~ /^__substg1 0_(....)(....)$/) {
++    my ($property, $encoding) = ($1, $2);
++    if ($encoding eq ENCODING_UNICODE and not ($self->{HAS_UNICODE})) {
++      warn "This MSG file contains Unicode fields." 
++	. " This is currently unsupported.\n";
++      $self->{HAS_UNICODE} = 1;
++    } elsif (not (KNOWN_ENCODINGS()->{$encoding})) {
++      warn "Unknown encoding $encoding. Results may be strange or wrong.\n";
++    }
++    return ($property, $encoding);
++  } else {
++    return (undef, undef);
++  }
++}
++
++sub _SaveAttachment {
++  my ($self, $mime, $att) = @_;
++
++  my $ent = $mime->attach(
++    Type => $att->{MIMETYPE},
++    Encoding => $att->{ENCODING},
++    Data => [],
++    Filename => ($att->{LONGNAME} ? $att->{LONGNAME} : $att->{SHORTNAME}),
++    Disposition => $att->{DISPOSITION}
++  );
++
++  my $handle;
++  if ($handle = $ent->open("w")) {
++    $handle->print($att->{DATA});
++    $handle->close;
++  } else {
++    warn "Could not write data!";
++  }
++}
++
++sub _SetAddressPart {
++  my ($self, $adrname, $partname, $data) = @_;
++
++  my $address = $self->{ADDRESSES}->{$adrname};
++  $data =~ s/\000//g;
++  #warn "Processing address data part $partname : $data\n";
++  if (defined ($address->{$partname})) {
++    if ($address->{$partname} eq $data) {
++      warn "Skipping duplicate but identical address information for"
++      . " $partname\n" if $self->{VERBOSE};
++    } else {
++      warn "Address information $partname inconsistent:\n";
++      warn "    Original data: $address->{$partname}\n";
++      warn "    New data: $data\n";
++    }
++  } else {
++    $address->{$partname} = $data;
++  }
++}
++
++# Set header fields
++sub _AddHeaderField {
++  my ($self, $mime, $fieldname, $value) = @_;
++
++  my $oldvalue = $mime->head->get($fieldname);
++  return if $oldvalue;
++  $mime->head->add($fieldname, $value) if $value;
++}
++
++sub _Address {
++  my ($self, $tag) = @_;
++  my $name = $self->{$tag} || "";
++  my $address = $self->{$tag . "_ADDR"} || "";
++  return "$name <$address>";
++}
++
++# Find SMTP addresses for the given list of names
++sub _ExpandAddressList {
++  my ($self, $names) = @_;
++
++  my $addresspool = $self->{ADDRESSES};
++  my @namelist = split /; */, $names;
++  my @result;
++  name: foreach my $name (@namelist) {
++    foreach my $address (@$addresspool) {
++      if ($name eq $address->{NAME}) {
++	my $addresstext = $address->{NAME} . " <";
++	if (defined ($address->{SMTPADDRESS})) {
++	  $addresstext .= $address->{SMTPADDRESS};
++	} elsif ($address->{TYPE} eq "SMTP") {
++	  $addresstext .= $address->{ADDRESS};
++	}
++	$addresstext .= ">";
++	push @result, $addresstext;
++	next name;
++      }
++    }
++    push @result, $name;
++  }
++  return join ", ", @result;
++}
++
++sub _ParseHead {
++  my ($self, $data) = @_;
++  defined $data or return undef;
++  # Parse full header date if we got that.
++  my $parser = new MIME::Parser();
++  $parser->output_to_core(1);
++  $parser->decode_headers(1);
++  $data =~ s/^Microsoft Mail.*$/X-MSGConvert: yes/m;
++  my $entity = $parser->parse_data($data)
++    or warn "Couldn't parse full headers!"; 
++  my $head = $entity->head;
++  $head->unfold;
++  return $head;
++}
++
++# Find out if we need to construct a multipart message
++sub _IsMultiPart {
++  my $self = shift;
++
++  return (
++    ($self->{BODY_HTML} and $self->{BODY_PLAIN})
++      or @{$self->{ATTACHMENTS}}>0
++  );
++}
++
++# Copy original header data.
++# Note: This should contain the Date: header.
++sub _CopyHeaderData {
++  my ($self, $mime) = @_;
++
++  my $head = $self->_ParseHead($self->{HEAD}) or return;
++
++  foreach my $tag (grep {!$skipheaders->{$_}} $head->tags) {
++    foreach my $value ($head->get_all($tag)) {
++      $mime->head->add($tag, $value);
++    }
++  }
++}
++
++# Set header fields
++sub _SetHeaderFields {
++  my ($self, $mime) = @_;
++
++  # If we didn't get the date from the original header data, we may be able
++  # to get it from the SUBMISSION_ID:
++  $self->_AddHeaderField($mime, 'Date', $self->_SubmissionIdDate());
++
++  # Third and last chance to set the Date: header; this uses the date the
++  # MSG file was saved.
++  $self->_AddHeaderField($mime, 'Date', $self->{OLEDATE});
++  $self->_AddHeaderField($mime, 'Subject', $self->{SUBJECT});
++  $self->_AddHeaderField($mime, 'From', $self->_Address("FROM"));
++  #$self->_AddHeaderField($mime, 'Reply-To', $self->_Address("REPLYTO"));
++  $self->_AddHeaderField($mime, 'To', $self->_ExpandAddressList($self->{TO}));
++  $self->_AddHeaderField($mime, 'Cc', $self->_ExpandAddressList($self->{CC}));
++  $self->_AddHeaderField($mime, 'Message-Id', $self->{MESSAGEID});
++  $self->_AddHeaderField($mime, 'In-Reply-To', $self->{INREPLYTO});
++}
++
++package main;
++use Getopt::Long;
++use Pod::Usage;
++
++# Setup command line processing.
++my $verbose = '';
++my $help = '';	    # Print help message and exit.
++GetOptions('verbose' => \$verbose, 'help|?' => \$help) or pod2usage(2);
++pod2usage(1) if $help;
++
++# Get file name
++my $file = $ARGV[0];
++defined $file or pod2usage(2);
++warn "Will parse file: $file\n" if $verbose; 
++
++# Load and parse MSG file (is OLE)
++my $Msg = OLE::Storage_Lite->new($file);
++my $PPS = $Msg->getPpsTree(1);
++$PPS or die "$file must be an OLE file";
++
++# parse PPS tree
++my $parser = new MSGParser();
++$parser->set_verbosity(1) if $verbose;
++$parser->parse($PPS);
++$parser->print();
++
++#
++# Usage info follows.
++#
++__END__
++
++=head1 NAME
++
++msgconvert.pl - Convert Outlook .msg files to mbox format
++
++=head1 SYNOPSIS
++
++msgconvert.pl [options] <file.msg>
++
++  Options:
++    --verbose	be verbose
++    --help	help message
++
++=head1 OPTIONS
++
++=over 8
++
++=item B<--verbose>
++
++    Print information about skipped parts of the .msg file.
++
++=item B<--help>
++
++    Print a brief help message.
++
++=head1 DESCRIPTION
++
++This program will output the message contained in file.msg in mbox format
++on stdout. It will complain about unrecognized OLE parts on
++stderr.
++
++=head1 BUGS
++
++Not all data that's in the .MSG file is converted. There simply are some
++parts whose meaning escapes me. One of these must contain the date the
++message was sent, for example. Formatting of text messages will also be
++lost. YMMV.
++
++=cut
+diff -ub  xapian-omega-1.0.5a/omega.cc.orig
+--- xapian-omega-1.0.5a/omega.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/omega.cc	2008-01-02 10:43:06.047028300 +0100
+@@ -172,6 +172,10 @@
+ 	const string & v = val->second;
+ 	if (v == "AND" || v == "and")
+ 	    default_op = Xapian::Query::OP_AND;
++	else if (v == "OR" || v == "or")
++	    default_op = Xapian::Query::OP_OR;
++    } else {
++	default_op = Xapian::Query::OP_AND;
+     }
+ 
+     val = cgi_params.find("FMT");
+@@ -264,6 +268,16 @@
+ 	}
+     }
+ 
++    // filter by URL substring
++    val = cgi_params.find("U");
++    if (val != cgi_params.end()) {
++        string url = val->second;
++	if (!url.empty()) {
++	    filters += ("U" + url + "*");
++	    filters += filter_sep;
++	}
++    }
++
+     // date range filters
+     val = cgi_params.find("START");
+     if (val != cgi_params.end()) date_start = val->second;
+diff -ub  xapian-omega-1.0.5a/omega.conf.in.orig
+--- xapian-omega-1.0.5a/omega.conf.in.orig	2008-01-02 10:43:06.062645800 +0100
++++ xapian-omega-1.0.5a/omega.conf.in	2008-01-02 10:43:06.062645800 +0100
+@@ -0,0 +1,14 @@
++# Directory containing Xapian databases:
++database_dir @localstatedir@/omega/data
++
++# Directory containing OmegaScript templates:
++template_dir @localstatedir@/omega/templates
++
++# Directory to write Omega logs to:
++log_dir      /var/log/omega
++
++# Directory containing any cdb files for the $lookup OmegaScript command:
++cdb_dir      @localstatedir@/omega/cdb
++
++# Directory containing extracted archives:
++cache_dir    @localstatedir@/omega/cache
+diff -ub  xapian-omega-1.0.5a/omega.conf.orig
+--- xapian-omega-1.0.5a/omega.conf.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/omega.conf	2008-01-02 10:43:06.062645800 +0100
+@@ -1,11 +0,0 @@
+-# Directory containing Xapian databases:
+-database_dir /var/lib/omega/data
+-
+-# Directory containing OmegaScript templates:
+-template_dir /var/lib/omega/templates
+-
+-# Directory to write Omega logs to:
+-log_dir /var/log/omega
+-
+-# Directory containing any cdb files for the $lookup OmegaScript command:
+-cdb_dir /var/lib/omega/cdb
+diff -ub  xapian-omega-1.0.5a/omega.m4.orig
+--- xapian-omega-1.0.5a/omega.m4.orig	2008-01-02 10:43:06.093880800 +0100
++++ xapian-omega-1.0.5a/omega.m4	2008-01-02 10:43:06.078263300 +0100
+@@ -0,0 +1,56 @@
++# macro to check for omindex helpers
++# serial 1
++
++# XO_OMEGA_WITH(package, description, [action-if-with-and-found])
++# --------------------------------------------------------
++# AC_ARG_WITH(package, --without-package           description)
++# AC_PATH_PROG(PACKAGE, package)
++#  AC_DEFINE(HAVE_PACKAGE,[], "Define to 1 if you have " description)
++#  AC_DEFINE_UNQUOTED(PACKAGE,"$PACKAGE",package " path")
++# The progname to search for is the same as the package.
++#
++# action-if-with-and-found is executed when --without-package is 
++# not given and the program is found in the path. For additional AC_SUBST
++#
++# This simplifies the omindex prerequisite definition.
++AC_DEFUN([XO_OMEGA_WITH],
++[
++AC_ARG_WITH([$1],[  --without-$1         use $1 to $2])
++define([$1NAME],[translit([$1],[a-z], [A-Z])])
++if test xno != x$with_$1; then
++  AC_PATH_PROG([$1NAME],[$1])
++  test -n "$[]$1NAME" && (
++    AC_DEFINE([HAVE_]$1NAME, 1, [Define to 1 if you have $1 to $2])
++    AC_DEFINE_UNQUOTED($1NAME,"$[]$1NAME",[path to $1])
++  )
++  $3
++fi
++undefine([$1NAME])
++])
++
++# XO_OMEGA_WITH_PROGS(package, progs, description, [action-if-with-and-found])
++# --------------------------------------------------------
++# AC_ARG_WITH(package, --without-package           description)
++# AC_PATH_PROGS(PACKAGE, progs)
++#  AC_DEFINE(HAVE_PACKAGE,[], "Define to 1 if you have " description)
++#  AC_DEFINE_UNQUOTED(PACKAGE,"$PACKAGE",package " path")
++# The progname to search for is the same as the package.
++#
++# action-if-with-and-found is executed when --without-package is 
++# not given and the program is found in the path. For additional AC_SUBST
++#
++# This simplifies the omindex prerequisite definition.
++AC_DEFUN([XO_OMEGA_WITH_PROGS],
++[
++AC_ARG_WITH([$1],[  --without-$1         use $1 to $3])
++define([$1NAME],[translit([$1],[a-z], [A-Z])])
++if test xno != x$with_$1; then
++  AC_PATH_PROGS([$1NAME],$2)
++  test -n "$[]$1NAME" && (
++    AC_DEFINE([HAVE_]$1NAME, 1, [Define to 1 if you have $1 to $3])
++    AC_DEFINE_UNQUOTED($1NAME,"$[]$1NAME",[path to $1])
++  )
++  $4
++fi
++undefine([$1NAME])
++])
+diff -ub  xapian-omega-1.0.5a/omindex.1.orig
+--- xapian-omega-1.0.5a/omindex.1.orig	2007-12-21 04:09:35.000000000 +0100
++++ xapian-omega-1.0.5a/omindex.1	2008-01-02 10:49:51.711590800 +0100
+@@ -1,5 +1,5 @@
+ .\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.36.
+-.TH OMINDEX "1" "December 2007" "xapian-omega 1.0.5" "User Commands"
++.TH OMINDEX "1" "December 2007" "xapian-omega 1.0.5a" "User Commands"
+ .SH NAME
+ omindex \- Index static website data via the filesystem
+ .SH SYNOPSIS
+@@ -22,6 +22,9 @@
+ \fB\-U\fR, \fB\-\-url\fR
+ base url DIRECTORY represents (default: /)
+ .TP
++\fB\-C\fR, \fB\-\-cache\fR
++path to local cache to use (default from omega.conf)
++.TP
+ \fB\-M\fR, \fB\-\-mime\-type\fR
+ additional MIME mapping ext:type
+ .TP
+@@ -36,13 +39,22 @@
+ if the database already exists)
+ .TP
+ \fB\-s\fR, \fB\-\-stemmer\fR=\fILANG\fR
+-set the stemming language, the default is 'english'.
++set the stemming language, the default is autodetected.
+ Possible values: danish dutch english finnish french
+ german german2 hungarian italian kraaij_pohlmann
+ lovins norwegian porter portuguese romanian russian
+ spanish swedish turkish (pass 'none' to disable
+ stemming)
+ .TP
++\fB\-i\fR, \fB\-\-ignore\-time\fR
++ignore timestamp comparison
++.TP
++\fB\-c\fR, \fB\-\-nocleanup\fR
++keep cache, don't delete temporary .zip,.rar,.pst,.msg cache folders
++.TP
++\fB\-\-verbose\fR
++Print commands also
++.TP
+ \fB\-h\fR, \fB\-\-help\fR
+ display this help and exit
+ .TP
+@@ -59,6 +71,20 @@
+ Copyright \(co 2001,2002 Ananova Ltd
+ .br
+ Copyright \(co 2002,2003,2004,2005,2006 Olly Betts
++.br
++Copyright \(co 2006 AVL List GesmbH
+ .PP
+ This is free software, and may be redistributed under
+ the terms of the GNU Public License.
++.SH "SEE ALSO"
++The full documentation for
++.B omindex
++is maintained as a Texinfo manual.  If the
++.B info
++and
++.B omindex
++programs are properly installed at your site, the command
++.IP
++.B info omindex
++.PP
++should give you access to the complete manual.
+diff -ub  xapian-omega-1.0.5a/omindex.cc.orig
+--- xapian-omega-1.0.5a/omindex.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/omindex.cc	2008-01-02 11:04:18.826425800 +0100
+@@ -4,6 +4,7 @@
+  * Copyright 2001,2005 James Aylett
+  * Copyright 2001,2002 Ananova Ltd
+  * Copyright 2002,2003,2004,2005,2006,2007 Olly Betts
++ * Copyright 2006 AVL List GesmbH
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+@@ -23,6 +24,12 @@
+ 
+ #include <config.h>
+ 
++#ifdef HAVE_POSIX_FADVISE
++# ifdef __linux__
++#  define _POSIX_C_SOURCE 200112L // for posix_fadvise from fcntl.h
++#  define _BSD_SOURCE 1 // Need this to get lstat() as well
++# endif
++#endif
+ #include <algorithm>
+ #include <fstream>
+ #include <iostream>
+@@ -42,6 +49,7 @@
+ #include <xapian.h>
+ 
+ #include "commonhelp.h"
++#include "configfile.h"
+ #include "diritor.h"
+ #include "hashterm.h"
+ #include "loadfile.h"
+@@ -62,6 +70,22 @@
+ extern char * mkdtemp(char *);
+ #endif
+ 
++#ifdef HAVE_TEXTCAT
++# include "textcat.h"
++# ifndef LANGCLASS_CONF
++#  define LANGCLASS_CONF "/var/lib/omega/langclass/langclass.conf"
++# endif
++#endif
++#ifndef LIBEXECDIR 
++// must have ending slash
++//# define LIBEXECDIR "/usr/lib/omega/bin/"
++# define LIBEXECDIR ""
++#endif
++#ifndef PKGDATADIR 
++// must have ending slash
++# define PKGDATADIR "/usr/share/omega/"
++#endif
++
+ using namespace std;
+ 
+ #define TITLE_SIZE 128
+@@ -69,48 +93,49 @@
+ 
+ #define PROG_NAME "omindex"
+ #define PROG_DESC "Index static website data via the filesystem"
++#define POPEN_TIMEOUT 180 	/* in seconds */
++
++/* used in runfilter.cc */
++bool verbose = false;
++string error_log;
+ 
+ static bool skip_duplicates = false;
+ static bool follow_symlinks = false;
++static bool ignore_time = false;
++static bool nocleanup = false;
++static bool silent = false;
+ static string dbpath;
+ static string root;
+ static string indexroot;
+ static string baseurl;
++static string curr_lang = "english";
+ static Xapian::WritableDatabase db;
+-static Xapian::Stem stemmer("english");
++static Xapian::Stem stemmer(curr_lang);
+ static Xapian::TermGenerator indexer;
+ static vector<bool> updated;
+ static string tmpdir;
+ 
++#ifdef HAVE_TEXTCAT
++static void *textcat;
++#endif
++
++static void
++index_cached_directory(size_t depth_limit, 
++		       const string &file,
++		       const string &url,
++		       const string &ext, 
++		       const string &cmd,
++		       map<string, string>& mime_map);
++static
++int mkdir_p(const string &path, mode_t mode);
++
+ inline static bool
+ p_notalnum(unsigned int c)
+ {
+     return !isalnum(static_cast<unsigned char>(c));
+ }
+ 
+-static string
+-shell_protect(const string & file)
+-{
+-    string safefile = file;
+-    string::size_type p = 0;
+-    if (!safefile.empty() && safefile[0] == '-') {
+-	// If the filename starts with a '-', protect it from being treated as
+-	// an option by prepending "./".
+-	safefile.insert(0, "./");
+-	p = 2;
+-    }
+-    while (p < safefile.size()) {
+-	// Don't escape some safe characters which are common in filenames.
+-	unsigned char ch = safefile[p];
+-	if (!isalnum(ch) && strchr("/._-", ch) == NULL) {
+-	    safefile.insert(p, "\\");
+-	    ++p;
+-	}
+-	++p;
+-    }
+-    return safefile;
+-}
+-
++#ifdef HAVE_PSTOTEXT
+ static bool ensure_tmpdir() {
+     if (!tmpdir.empty()) return true;
+ 
+@@ -127,15 +152,8 @@
+     delete dir_template;
+     return (p != NULL);
+ }
+-
+-static string
+-file_to_string(const string &file)
+-{
+-    string out;
+-    if (!load_file(file, out)) throw ReadError();
+-    return out;
+-}
+-
++#endif
++#if defined(HAVE_PSTOTEXT) || defined(HAVE_PDFTOTEXT)
+ static void
+ get_pdf_metainfo(const string & safefile, string &title, string &keywords)
+ {
+@@ -179,14 +197,25 @@
+ 	// It's probably best to index the document even if pdfinfo fails.
+     }
+ }
++#endif
++
++static string
++file_to_string(const string &file)
++{
++    string out;
++    if (!load_file(file, out)) throw ReadError();
++    return out;
++}
+ 
+ static void
+-index_file(const string &url, const string &mimetype, time_t last_mod, off_t size)
++index_file(const string &url, const string &mimetype, time_t last_mod, off_t file_size)
+ {
+     string file = root + url;
+     string title, sample, keywords, dump;
++    string language;
+ 
+-    cout << "Indexing \"" << url << "\" as " << mimetype << " ... " << flush;
++    if (!silent)
++	cout << "Indexing \"" << url.substr(1) << "\" as " << mimetype << " ... " << flush;
+ 
+     string urlterm("U");
+     urlterm += baseurl;
+@@ -195,10 +224,36 @@
+     if (urlterm.length() > MAX_SAFE_TERM_LENGTH)
+ 	urlterm = hash_long_term(urlterm, MAX_SAFE_TERM_LENGTH);
+ 
+-    if (skip_duplicates && db.term_exists(urlterm)) {
++    {
++	// at first find the docid with the urlterm
++	Xapian::docid docid = 0;
++	Xapian::PostingIterator p = db.postlist_begin(urlterm);
++	if (p != db.postlist_end(urlterm)) {
++	    docid = *p;
++	    if (skip_duplicates) {
++		if (!silent)
+ 	cout << "duplicate. Ignored." << endl;
+ 	return;
+     }
++	}
++	if (docid && !ignore_time) {
++	    Xapian::Document doc = db.get_document(docid);
++	    string lastmod;
++	    if (doc.values_count())
++		lastmod = doc.get_value(VALUE_LASTMOD);
++	    if (!lastmod.empty()) {
++		if (string_to_int(lastmod) >= last_mod) {
++		    if (!silent)
++			cout << "not newer. Ignored." << endl;
++		    if (docid < updated.size()) {
++			updated[docid] = true;
++			return;
++		    }
++		    cout << "OOPS! This almost would have delete the unchanged doc - ignore datecheck." << endl;
++		}
++	    }
++	}
++    }
+ 
+     string md5;
+     if (mimetype == "text/html") {
+@@ -206,7 +261,7 @@
+ 	try {
+ 	    text = file_to_string(file);
+ 	} catch (ReadError) {
+-	    cout << "can't read \"" << file << "\" - skipping\n";
++	    cout << "can't read \"" << file << "\" - skipping" << endl;
+ 	    return;
+ 	}
+ 	MyHtmlParser p;
+@@ -217,7 +272,8 @@
+ 	    // indexing is disallowed
+ 	}
+ 	if (!p.indexing_allowed) {
+-	    cout << "indexing disallowed by meta tag - skipping\n";
++	    if (!silent)
++		cout << "indexing disallowed by meta tag - skipping" << endl;
+ 	    return;
+ 	}
+ 	dump = p.dump;
+@@ -231,20 +287,33 @@
+ 	    // FIXME: What charset is the file?  Look for BOM?  Look at contents?
+ 	    dump = file_to_string(file);
+ 	} catch (ReadError) {
+-	    cout << "can't read \"" << file << "\" - skipping\n";
++	    cout << "can't read \"" << file << "\" - skipping" << endl;
+ 	    return;
+ 	}
+ 	md5_string(dump, md5);
++    } else if (mimetype == "message/rfc822") { // // => mbox2script
++	//for stemmer lang, parse stemmer.get_description => Xapian::Stem(bla)
++	string cmd = LIBEXECDIR"mbox2omega " + shell_protect(file) + error_log+"| "
++	    "scriptindex " + shell_protect(dbpath) + " "PKGDATADIR"mbox2script.script";
++	try {
++	    dump = stdout_to_string(cmd);
++	} catch (ReadError) {
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
++	    return;
++	}
++#ifdef HAVE_PDFTOTEXT
+     } else if (mimetype == "application/pdf") {
+ 	string safefile = shell_protect(file);
+-	string cmd = "pdftotext -enc UTF-8 " + safefile + " -";
++	string cmd = PDFTOTEXT" -enc UTF-8 " + safefile + " -";
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
+ 	get_pdf_metainfo(safefile, title, keywords);
++#endif
++#ifdef HAVE_PSTOTEXT
+     } else if (mimetype == "application/postscript") {
+ 	// There simply doesn't seem to be a Unicode capable PostScript to
+ 	// text converter (e.g. pstotext always outputs ISO-8859-1).  The only
+@@ -280,18 +349,20 @@
+ 	    throw;
+ 	}
+ 	unlink(tmpfile.c_str());
++#endif
++#ifdef HAVE_UNZIP
+     } else if (startswith(mimetype, "application/vnd.sun.xml.") ||
+ 	       startswith(mimetype, "application/vnd.oasis.opendocument."))
+     {
+ 	// Inspired by http://mjr.towers.org.uk/comp/sxw2text
+ 	string safefile = shell_protect(file);
+-	string cmd = "unzip -p " + safefile + " content.xml";
++	string cmd = UNZIP" -P. -p " + safefile + " content.xml"+error_log;
+ 	try {
+ 	    XmlParser xmlparser;
+ 	    xmlparser.parse_html(stdout_to_string(cmd));
+ 	    dump = xmlparser.dump;
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
+ 
+@@ -304,51 +375,63 @@
+ 	    sample = metaxmlparser.sample;
+ 	} catch (ReadError) {
+ 	    // It's probably best to index the document even if this fails.
++	    sample = "";
+ 	}
++#endif
++#ifdef HAVE_ANTIWORD
+     } else if (mimetype == "application/msword") {
+ 	string cmd = "antiword -mUTF-8.txt " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
++#ifdef HAVE_CATDOC
+     } else if (mimetype == "application/vnd.ms-excel") {
+-	string cmd = "xls2csv -q0 -dutf-8 " + shell_protect(file);
++	string cmd = LIBEXECDIR"excel2text " + shell_protect(file);
++	//string cmd = "xls2csv -q0 -dutf-8 " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
+     } else if (mimetype == "application/vnd.ms-powerpoint") {
+-	string cmd = "catppt -dutf-8 " + shell_protect(file);
++ 	string cmd = LIBEXECDIR"ppt2text " + shell_protect(file);
++ 	//string cmd = "catppt -dutf-8 " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
++#ifdef HAVE_WPD2TEXT
+     } else if (mimetype == "application/vnd.wordperfect") {
+ 	// Looking at the source of wpd2html and wpd2text I think both output
+ 	// utf-8, but it's hard to be sure without sample Unicode .wpd files
+ 	// as they don't seem to be at all well documented.
+-	string cmd = "wpd2text " + shell_protect(file);
++	string cmd = WPD2TEXT" " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
++#ifdef HAVE_WPS2TEXT
+     } else if (mimetype == "application/vnd.ms-works") {
+ 	// wps2text produces UTF-8 output from the sample files I've tested.
+-	string cmd = "wps2text " + shell_protect(file);
++	string cmd = WPS2TEXT" " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
+     } else if (mimetype == "application/x-abiword") {
+ 	// FIXME: Implement support for metadata.
+ 	try {
+@@ -358,7 +441,7 @@
+ 	    dump = xmlparser.dump;
+ 	    md5_string(text, md5);
+ 	} catch (ReadError) {
+-	    cout << "can't read \"" << file << "\" - skipping\n";
++	    cout << "can't read \"" << file << "\" - skipping" << endl;
+ 	    return;
+ 	}
+     } else if (mimetype == "application/x-abiword-compressed") {
+@@ -369,65 +452,82 @@
+ 	    xmlparser.parse_html(stdout_to_string(cmd));
+ 	    dump = xmlparser.dump;
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
++	    return;
++	}
++#ifdef HAVE_MSGCONVERT
++     } else if (mimetype == "application/vnd.ms-outlook") { // msg
++ 	string cmd = LIBEXECDIR"outlook2text " + shell_protect(file);
++ 	try {
++ 	    dump = stdout_to_string(cmd);
++ 	} catch (ReadError) {
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
++#ifdef HAVE_UNRTF
+     } else if (mimetype == "text/rtf") {
+ 	// The --text option unhelpfully converts all non-ASCII characters to
+ 	// "?" so we use --html instead, which produces HTML entities.
+-	string cmd = "unrtf --nopict --html 2>/dev/null " + shell_protect(file);
++	string cmd = "unrtf --nopict --html 2>/dev/null " + shell_protect(file) + error_log+
++	    "|"SED" '/^### .*/d'";
+ 	MyHtmlParser p;
+ 	try {
+ 	    p.parse_html(stdout_to_string(cmd));
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	} catch (bool) {
+ 	    // MyHtmlParser throws a bool to abandon parsing at </body> or when
+ 	    // indexing is disallowed
+ 	}
+ 	if (!p.indexing_allowed) {
+-	    cout << "indexing disallowed by meta tag - skipping\n";
++	    cout << "indexing disallowed by meta tag - skipping" << endl;
+ 	    return;
+ 	}
+ 	dump = p.dump;
+ 	title = p.title;
+ 	keywords = p.keywords;
+ 	sample = p.sample;
++#endif
++#ifdef HAVE_POD2TEXT
+     } else if (mimetype == "text/x-perl") {
+ 	// pod2text's output character set doesn't seem to be documented, but
+ 	// from inspecting the source it looks like it's probably iso-8859-1.
+-	string cmd = "pod2text " + shell_protect(file);
++	string cmd = POD2TEXT" " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	    convert_to_utf8(dump, "ISO-8859-1");
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
++#ifdef HAVE_CATDVI
+     } else if (mimetype == "application/x-dvi") {
+ 	// FIXME: -e2 means "UTF-8", but that results in "fi", "ff", "ffi", etc
+ 	// appearing as single ligatures.  For European languages, it's
+ 	// actually better to use -e2 (ISO-8859-1) and then convert, so let's
+ 	// do that for now until we handle Unicode "compatibility
+ 	// decompositions".
+-	string cmd = "catdvi -e2 -s " + shell_protect(file);
++	string cmd = CATDVI" -e2 -s " + shell_protect(file);
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+ 	    convert_to_utf8(dump, "ISO-8859-1");
+ 	} catch (ReadError) {
+-	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    cout << "\"" << cmd << "\" failed - skipping" << endl;
+ 	    return;
+ 	}
++#endif
+     } else {
+ 	// Don't know how to index this type.
+-	cout << "unknown MIME type - skipping\n";
++	cout << "unknown MIME type - skipping" << endl;
+ 	return;
+     }
+ 
+     // Compute the MD5 of the file if we haven't already.
+     if (md5.empty() && md5_file(file, md5) == 0) {
+-	cout << "failed to read file to calculate MD5 checksum - skipping\n";
++	cout << "failed to read file to calculate MD5 checksum - skipping" << endl;
+ 	return;
+     }
+ 
+@@ -440,15 +540,35 @@
+ 
+     // Put the data in the document
+     Xapian::Document newdocument;
+-    string record = "url=" + baseurl + url + "\nsample=" + sample;
++    string record = "url=" + baseurl + url;
++    record += "\nsample=" + sample;
++#ifdef HAVE_TEXTCAT
++    char * lang;
++    lang = textcat_Classify( textcat, sample.c_str(), sample.length()+1 );
++    language = string(lang);
++    if ((language != _TEXTCAT_RESULT_UNKOWN) // unknown language
++	&& (language != _TEXTCAT_RESULT_SHORT)) // too little information
++    {
++	if (language[0] == '[') {
++	    int pos = language.find(']',0);
++	    language = language.substr(1,pos-1);
++	}
++	record += "\nlanguage=" + language;
++	if (language != curr_lang)  {
++	    cout << "curr_lang=" << language << ", ";
++	    stemmer = Xapian::Stem(language);
++	    curr_lang = language;
++	}
++    }
++#endif
+     if (!title.empty()) {
+ 	record += "\ncaption=" + generate_sample(title, TITLE_SIZE);
+     }
+     record += "\ntype=" + mimetype;
+     if (last_mod != (time_t)-1)
+ 	record += "\nmodtime=" + long_to_string(last_mod);
+-    if (size)
+-	record += "\nsize=" + long_to_string(size);
++    if (file_size)
++	record += "\nsize=" + long_to_string(file_size);
+     newdocument.set_data(record);
+ 
+     // Index the title, document text, and keywords.
+@@ -503,6 +623,9 @@
+     // Add MD5 as a value to allow duplicate documents to be collapsed together.
+     newdocument.add_value(VALUE_MD5, md5);
+ 
++    // filesize also to sort by size
++    newdocument.add_value(VALUE_FILESIZE, int_to_binary_string((uint32_t)file_size));
++
+     if (!skip_duplicates) {
+ 	// If this document has already been indexed, update the existing
+ 	// entry.
+@@ -510,29 +633,36 @@
+ 	    Xapian::docid did = db.replace_document(urlterm, newdocument);
+ 	    if (did < updated.size()) {
+ 		updated[did] = true;
++		if (!silent)
+ 		cout << "updated." << endl;
+ 	    } else {
++		if (!silent)
+ 		cout << "added." << endl;
+ 	    }
+ 	} catch (...) {
+ 	    // FIXME: is this ever actually needed?
+ 	    db.add_document(newdocument);
++	    if (!silent)
+ 	    cout << "added (failed re-seek for duplicate)." << endl;
+ 	}
+     } else {
+ 	// If this were a duplicate, we'd have skipped it above.
+ 	db.add_document(newdocument);
++	if (!silent)
+ 	cout << "added." << endl;
+     }
+ }
+ 
++/* Note: switched to cache_dir as root for virtual directories, 
++   because /srcdir/.zip might not be creatable. */
+ static void
+ index_directory(size_t depth_limit, const string &dir,
+ 		map<string, string>& mime_map)
+ {
+     string path = root + indexroot + dir;
+ 
+-    cout << "[Entering directory " << dir << "]" << endl;
++    if (!silent)
++	cout << "[Entering directory " << dir.substr(1) << "]" << endl;
+ 
+     DirectoryIterator d(follow_symlinks);
+     try {
+@@ -542,6 +672,7 @@
+ 	return;
+     }
+     while (d.next()) try {
++	struct stat statbuf;
+ 	string url = dir;
+ 	if (!url.empty() && url[url.size() - 1] != '/') url += '/';
+ 	url += d.leafname();
+@@ -562,6 +693,17 @@
+ 		string ext;
+ 		string::size_type dot = url.find_last_of('.');
+ 		if (dot != string::npos) ext = url.substr(dot + 1);
++		if (!ext.empty()) {
++		    ext = string(ext); // lowercase ext
++		    for (unsigned int i=0; i<ext.length(); i++) {
++			ext[i] = tolower(ext[i]);
++		    }
++		}
++
++		if (d.leafname() == "mbox") { // special filename, no extension
++		    index_file(indexroot + url, "message/rfc822", statbuf.st_mtime, statbuf.st_size);
++		    continue;
++		}
+ 
+ 		map<string,string>::iterator mt = mime_map.find(ext);
+ 		if (mt == mime_map.end()) {
+@@ -578,6 +720,7 @@
+ 		    if (changed) mt = mime_map.find(ext);
+ 		}
+ 		if (mt != mime_map.end()) {
++		    string oldroot = root;
+ 		    // Only check the file size if we recognise the extension
+ 		    // to avoid a call to stat()/lstat() for files we can't
+ 		    // handle when readdir() tells us the file type.
+@@ -587,6 +730,122 @@
+ 			continue;
+ 		    }
+ 
++#ifndef _MSC_VER
++		    // NOTE: unpacking does not work on MSWin32 this way!
++		    // we'd really have to pull in utils.cc:rmdir from xapian-core
++		    if (ext == "zip") {
++			if (depth_limit == 1) {
++			    cout << "Recursion limit reached for \""<< url << "\" - skipping " << endl;
++			    continue;
++			}
++#ifdef HAVE_UNZIP
++			// overwrite
++			string cmd = UNZIP" -u -P. -o " +shell_protect(file) + " -d " +shell_protect(cache_dir+"/.zip"+indexroot+url+"/");
++			try {
++			    size_t new_limit = depth_limit;
++			    if (new_limit) --new_limit;
++			    index_cached_directory(new_limit, file, url, ext, cmd, mime_map);
++			} catch (ReadError) {
++			    cout << "failed " << cmd << " << in index_cached_directory" << endl;
++			    root = oldroot;
++			} catch (...) {
++			    cout << "Caught unknown exception in index_cached_directory, rethrowing" << endl;
++			    root = oldroot;
++			    throw;
++			}
++			continue;
++#endif
++		    }
++#ifdef HAVE_UNRAR
++		    else if (ext == "rar") {
++			if (depth_limit == 1) {
++			    cout << "Recursion limit reached for \""<< url << "\" - skipping " << endl;
++			    continue;
++			}
++			// overwrite
++			string cmd = UNRAR" x -o+ " +shell_protect(file) + " " 
++			    + shell_protect(cache_dir+"/.rar"+indexroot+url+"/");
++			try {
++			    size_t new_limit = depth_limit;
++			    if (new_limit) --new_limit;
++			    index_cached_directory(new_limit, file, url, ext, cmd, mime_map);
++			} catch (ReadError) {
++			    cout << "failed " << cmd << " << in index_cached_directory" << endl;
++			    root = oldroot;
++			} catch (...) {
++			    cout << "Caught unknown exception in index_cached_directory, rethrowing" << endl;
++			    root = oldroot;
++			    throw;
++			}
++			continue;
++		    } 
++#endif
++#ifdef HAVE_MSGCONVERT
++		    else if (ext == "msg") {
++			struct stat statcache;
++			char olddir[256];
++			
++			if (depth_limit == 1) {
++			    cout << "Recursion limit reached for \""<< url << "\" - skipping " << endl;
++			    continue;
++			}
++			string cmd = LIBEXECDIR"outlook2text "+shell_protect(file);
++			// unpack multiparts and attachments. so we have to chdir first
++			string fulldir = cache_dir+"/.msg"+indexroot+url;
++			getcwd(olddir,256);
++#ifdef HAVE_LSTAT
++			lstat(fulldir.c_str(), &statcache);
++#else
++			stat(fulldir.c_str(), &statcache);
++#endif
++			if (!S_ISDIR(statcache.st_mode)) {
++			    mkdir_p(fulldir, 0755); 
++			}
++			try {
++			    chdir (fulldir.c_str());
++			    size_t new_limit = depth_limit;
++			    if (new_limit) --new_limit;
++			    index_cached_directory(new_limit, file, url, ext, cmd, mime_map);
++			    chdir (olddir);
++			} catch (ReadError) {
++			    cout << "failed " << cmd << " << in index_cached_directory" << endl;
++			    chdir (olddir);
++			    root = oldroot;
++			} catch (...) {
++			    cout << "Caught unknown exception in index_cached_directory, rethrowing" << endl;
++			    chdir (olddir);
++			    root = oldroot;
++			    throw;
++			}
++			continue;
++		    }
++#endif
++#ifdef HAVE_READPST
++		    else if (ext == "pst") {
++			if (depth_limit == 1) {
++			    cout << "Recursion limit reached for \""<< url << "\" - skipping " << endl;
++			    continue;
++			}
++			// unpack attachments also, together with mbox files
++			string cmd = READPST" -r -cv -w -o "
++			    + shell_protect(cache_dir+"/.pst"+indexroot+url+"/")+" "+shell_protect(file);
++			try {
++			    size_t new_limit = depth_limit;
++			    if (new_limit) --new_limit;
++			    index_cached_directory(new_limit, file, url, ext, cmd, mime_map);
++			} catch (ReadError) {
++			    root = oldroot;
++			    cout << "failed " << cmd << " << in index_cached_directory" << endl;
++			} catch (...) {
++			    root = oldroot;
++			    cout << "Caught unknown exception in index_cached_directory, rethrowing" << endl;
++			    throw;
++			}
++			continue;
++		    }
++#endif
++#endif
++
+ 		    // It's in our MIME map so we know how to index it.
+ 		    const string & mimetype = mt->second;
+ 		    try {
+@@ -603,7 +862,7 @@
+ 		continue;
+ 	    }
+ 	    default:
+-		cout << "Not a regular file \"" << file << "\" - skipping\n";
++		cout << "Not a regular file \"" << file << "\" - skipping" << endl;
+ 	}
+     } catch (const std::string & error) {
+ 	cout << error << " - skipping" << endl;
+@@ -611,6 +870,133 @@
+     }
+ }
+ 
++static
++int mkdir_p(const string &path, mode_t mode) {
++#ifdef __WIN32__
++    stdout_to_string("mkdir \""+shell_protect(path)+"\"");
++#else
++    stdout_to_string("mkdir -p "+shell_protect(path));
++#endif
++    return 0;
++}
++
++/* 
++ * unpack .msg/.pst/.rar/.zip into local cache dir and recurse there 
++ */
++static void
++index_cached_directory(size_t depth_limit, 
++		       const string &file,
++		       const string &url,
++		       const string &ext, 
++		       const string &cmd,
++		       map<string, string>& mime_map)
++{
++    string oldroot = root;
++    root = cache_dir;
++    string cache = root+"/."+ext+indexroot;
++    string cachedir = cache+url;
++    struct stat statfile, statcache;
++    bool extract_cache;
++#ifdef HAVE_LSTAT
++    lstat(file.c_str(), &statfile);
++    lstat(cachedir.c_str(), &statcache);
++#else
++    stat(file.c_str(), &statfile);
++    stat(cachedir.c_str(), &statcache);
++#endif
++    extract_cache = true;
++    // if cachedir exists and if file is older as cachedir and if cachedir existed 5 secs ago, 
++    // then it was already extracted.
++    if (S_ISDIR(statcache.st_mode) 
++	&& S_ISREG(statfile.st_mode) 
++	&& (statfile.st_mtime < statcache.st_mtime)
++	&& (statcache.st_mtime < (time_t)(time(NULL)-500))) // not created by nested mkdir call
++    {
++	// but is it in the database also? prevent from deleting skipped files
++	if (!silent)
++	    cout << "Unchanged cache \"" << cachedir << "\" - \"" << file << "\" - skip extraction " 
++		 // << statfile.st_mtime << " < " << statcache.st_mtime 
++		 << endl;
++	extract_cache = false;
++    }
++    if (S_ISDIR(statcache.st_mode) && S_ISREG(statfile.st_mode) )
++    {
++	// check database timestamp for cached container, esp. for cleaned up caches.
++	// if already in db we need not to extract again
++	string urlterm("U");
++	urlterm += baseurl;
++	urlterm += "/."+ext+indexroot+url;
++	if (urlterm.length() > MAX_SAFE_TERM_LENGTH)
++	    urlterm = hash_long_term(urlterm, MAX_SAFE_TERM_LENGTH);
++	
++	{
++	    // at first find the docid with the beginning urlterm and check its timestamp
++	    Xapian::docid docid = 0;
++	    Xapian::PostingIterator p = db.postlist_begin(urlterm);
++	    if (p != db.postlist_end(urlterm)) {
++		docid = *p;
++	    }
++	    if (docid && !ignore_time) {
++		// new: first search value (1)
++		Xapian::Document doc = db.get_document(docid);
++		string lastmod;
++		if (doc.values_count())
++		    lastmod = doc.get_value(VALUE_LASTMOD);
++		if (!lastmod.empty()) {
++		    if (string_to_int(lastmod) >= statfile.st_mtime) {
++			if (!silent)
++			    cout << "Cache "<< "."+ext+indexroot+url << " not newer. Ignored." << endl;
++			if (docid < updated.size()) {
++			    updated[docid] = true;
++			    root = oldroot;
++			    return;
++			}
++		    }
++		}
++	    }
++	}
++    }
++
++    if (extract_cache) {
++	if (!silent)
++	    cout << "[EXTRACT into cache " << shell_protect(cachedir) << "]" << endl;
++	if (verbose && S_ISDIR(statcache.st_mode) && S_ISREG(statfile.st_mode))
++	    cout << " ...changed cache \"" << cachedir << "\" - \"" << file << "\" " 
++		 << statfile.st_mtime << " < " << statcache.st_mtime << " time: " << time(NULL) 
++		 << endl;
++	if (!S_ISDIR(statcache.st_mode))
++	    mkdir_p(cachedir, 0755);
++	//stdout_to_string("mkdir -p "+shell_protect(cachedir));
++	stdout_to_string(cmd);
++#ifndef __WIN32__
++	stdout_to_string("chmod -R u+rwx " + shell_protect(cachedir));
++#endif
++#ifdef HAVE_LSTAT
++	lstat(cachedir.c_str(), &statcache);
++#else
++	stat(cachedir.c_str(), &statcache);
++#endif
++    }
++
++    if (S_ISDIR(statcache.st_mode)) {
++	if (depth_limit == 1) {
++	    cout << "Recursion limit reached for \""<< url << "\" - skipping " << endl;
++	} else {
++	    // max loop 5, magic start: /.ext+file
++	    index_directory(depth_limit+5, "/."+ext+url, mime_map);
++	    if (!nocleanup) {
++		if (!silent)
++		    cout << "[CLEANUP " << "rm -rf " << shell_protect(cachedir) << "]" << endl;
++		rmdir(cachedir);
++	    }
++	}
++    }
++    else { // no -p would be fatal here
++	cout << "cachedir " << shell_protect(cachedir) << " does not exist - skipped" << endl;
++    }
++    root = oldroot;
++}
++
+ int
+ main(int argc, char **argv)
+ {
+@@ -620,11 +1006,15 @@
+     // If preserve_unupdated is false, delete any documents we don't
+     // replace (if in replace duplicates mode)
+     bool preserve_unupdated = false;
++    // If ignore_time is true, the existing timestamps are not checked on updates 
++    // and every file will be parsed.
+     size_t depth_limit = 0;
+ 
+     static const struct option longopts[] = {
+ 	{ "help",	no_argument,		NULL, 'h' },
+ 	{ "version",	no_argument,		NULL, 'v' },
++	{ "verbose",	no_argument,		NULL, 'V' },
++	{ "silent",	no_argument,		NULL, 'S' },
+ 	{ "overwrite",	no_argument,		NULL, 'o' },
+ 	{ "duplicates",	required_argument,	NULL, 'd' },
+ 	{ "preserve-nonduplicates",	no_argument,	NULL, 'p' },
+@@ -634,6 +1024,9 @@
+ 	{ "depth-limit",required_argument,	NULL, 'l' },
+ 	{ "follow",	no_argument,		NULL, 'f' },
+ 	{ "stemmer",	required_argument,	NULL, 's' },
++	{ "ignore-time",no_argument,		NULL, 'i' },
++	{ "nocleanup",  no_argument,		NULL, 'c' },
++	{ "cachedir",   required_argument,	NULL, 'C' },
+ 	{ 0, 0, NULL, 0 }
+     };
+ 
+@@ -649,13 +1042,18 @@
+     mime_map["shtml"] = "text/html";
+     mime_map["php"] = "text/html"; // Our HTML parser knows to ignore PHP code.
+     // PDF:
++#ifdef HAVE_PDFTOTEXT
+     mime_map["pdf"] = "application/pdf";
+     // PostScript:
++#endif
++#ifdef HAVE_PSTOTEXT
+     mime_map["ps"] = "application/postscript";
+     mime_map["eps"] = "application/postscript";
+     mime_map["ai"] = "application/postscript";
++#endif
+     // OpenDocument:
+     // FIXME: need to find sample documents to test all of these.
++#ifdef HAVE_UNZIP
+     mime_map["odt"] = "application/vnd.oasis.opendocument.text";
+     mime_map["ods"] = "application/vnd.oasis.opendocument.spreadsheet";
+     mime_map["odp"] = "application/vnd.oasis.opendocument.presentation";
+@@ -684,29 +1082,66 @@
+     mime_map["sxw"] = "application/vnd.sun.xml.writer";
+     mime_map["sxg"] = "application/vnd.sun.xml.writer.global";
+     mime_map["stw"] = "application/vnd.sun.xml.writer.template";
++#endif
+     // Some other word processor formats:
++#ifdef HAVE_ANTIWORD
+     mime_map["doc"] = "application/msword";
+     mime_map["dot"] = "application/msword"; // Word template
++#endif
++#ifdef HAVE_WPD2TEXT
+     mime_map["wpd"] = "application/vnd.wordperfect";
++#endif
++#ifdef HAVE_WPS2TEXT
+     mime_map["wps"] = "application/vnd.ms-works";
+     mime_map["wpt"] = "application/vnd.ms-works"; // Works template
++#endif
+     mime_map["abw"] = "application/x-abiword"; // AbiWord
+     mime_map["zabw"] = "application/x-abiword-compressed"; // AbiWord compressed
++#ifdef HAVE_UNRTF
+     mime_map["rtf"] = "text/rtf";
++#endif
+     // Other MS formats:
++#ifdef HAVE_CATDOC
+     mime_map["xls"] = "application/vnd.ms-excel";
+     mime_map["xlb"] = "application/vnd.ms-excel";
+     mime_map["xlt"] = "application/vnd.ms-excel"; // Excel template
+     mime_map["ppt"] = "application/vnd.ms-powerpoint";
+     mime_map["pps"] = "application/vnd.ms-powerpoint"; // Powerpoint slideshow
++#endif
++#ifdef HAVE_READPST
++    //  Outlook messager folder
++    mime_map["pst"] = "application/vnd.ms-outlook-pst"; // readpst | uudeview (libpst)
++#endif
++#ifdef HAVE_MSGCONVERT
++    mime_map["msg"] = "application/vnd.ms-outlook";     // outlook2text via msgconvert.pl 
++#endif
++    mime_map["mbox"] = "message/rfc822";                // => mbox2script
+     // Perl:
+     mime_map["pl"] = "text/x-perl";
+     mime_map["pm"] = "text/x-perl";
++#ifdef HAVE_POD2TEXT
+     mime_map["pod"] = "text/x-perl";
++#endif
+     // Other formats:
++#ifdef HAVE_CATDVI
+     mime_map["dvi"] = "application/x-dvi";
++#endif
++#ifndef _MSC_VER
++#  ifdef HAVE_UNZIP
++    mime_map["zip"] = "application/x-zip"; // recursive scanning
++#  endif
++#  ifdef HAVE_UNRAR
++    mime_map["rar"] = "application/x-rar"; // recursive scanning
++#  endif
++#endif
++
++    read_config_file();
+ 
+-    while ((getopt_ret = gnu_getopt_long(argc, argv, "hvd:D:U:M:lpf", longopts, NULL)) != -1) {
++#ifdef HAVE_TEXTCAT
++    textcat = textcat_Init( LANGCLASS_CONF );
++#endif
++
++    while ((getopt_ret = gnu_getopt_long(argc, argv, "hvd:D:U:M:C:lpfic", longopts, NULL))!=EOF) {
+ 	switch (getopt_ret) {
+ 	case 'h': {
+ 	    cout << PROG_NAME" - "PROG_DESC"\n\n"
+@@ -717,11 +1152,16 @@
+ "                                duplicate replace mode\n"
+ "  -D, --db                 path to database to use\n"
+ "  -U, --url                base url DIRECTORY represents (default: /)\n"
++"  -C, --cachedir           path to local cache to use (default from omega.conf)\n"
+ "  -M, --mime-type          additional MIME mapping ext:type\n"
+ "  -l, --depth-limit=LIMIT  set recursion limit (0 = unlimited)\n"
+ "  -f, --follow             follow symbolic links\n"
++"  -i, --ignore-time        ignore timestamp comparison\n"
++"  -c, --nocleanup          keep cache, don't delete temporary .zip,.rar,.pst,.msg cache folders\n"
+ "      --overwrite          create the database anew (the default is to update\n"
+-"                           if the database already exists)" << endl;
++"                           if the database already exists)"
++"      --verbose            Print commands also\n"
++"      --silent             Print only errors\n";
+ 	    print_stemmer_help("     ");
+ 	    print_help_and_version_help("     ");
+ 	    return 0;
+@@ -732,7 +1172,8 @@
+ 		 << "Copyright (c) 1999,2000,2001 BrightStation PLC.\n"
+ 		 << "Copyright (c) 2001,2005 James Aylett\n"
+ 		 << "Copyright (c) 2001,2002 Ananova Ltd\n"
+-		 << "Copyright (c) 2002,2003,2004,2005,2006 Olly Betts\n\n"
++		 << "Copyright (c) 2002,2003,2004,2005,2006 Olly Betts\n"
++		 << "Copyright (c) 2006,2007 AVL List GesmbH\n\n"
+ 		 << "This is free software, and may be redistributed under\n"
+ 		 << "the terms of the GNU Public License." << endl;
+ 	    return 0;
+@@ -749,6 +1190,15 @@
+ 	case 'p': // don't delete unupdated documents
+ 	    preserve_unupdated = true;
+ 	    break;
++	case 'i': // --ignore-time: on updates parse the file again
++	    ignore_time = true;
++	    break;
++	case 'V':
++	    verbose = true;
++	    break;
++	case 'c':
++	    nocleanup = true;
++	    break;
+ 	case 'l': { // Set recursion limit
+ 	    int arg = atoi(optarg);
+ 	    if (arg < 0) arg = 0;
+@@ -781,6 +1231,9 @@
+ 	case 'U':
+ 	    baseurl = optarg;
+ 	    break;
++	case 'C':
++	    cache_dir = optarg;
++	    break;
+ 	case 'o': // --overwrite
+ 	    overwrite = true;
+ 	    break;
+@@ -808,6 +1261,7 @@
+     if (baseurl.empty()) {
+ 	cerr << PROG_NAME": --url not specified, assuming `/'.\n";
+     }
++    error_log = " 2>>"+log_dir+"omindex-error.log";
+     // baseurl mustn't end '/' or you end up with the wrong URL
+     // (//thing is different to /thing). We could probably make this
+     // safe a different way, by ensuring that we don't put a leading '/'
+@@ -833,6 +1287,23 @@
+     } else {
+ 	indexroot = ""; // index the whole of root
+     }
++    if (dbpath.empty()) {
++	//dbpath = database_dir + basename(indexroot);
++	//cerr << PROG_NAME": database assumed " << dbpath << endl;
++	cerr << PROG_NAME << ": --db missing "<< endl;
++	return 1;
++    }
++    // add the db basename to cache_dir
++    {
++	const char *p = strrchr(dbpath.c_str(), '/');
++	// on windows only
++	if (!p) p = strrchr(dbpath.c_str(), '\\');
++	if (p) { p++; } else { p = dbpath.c_str(); }
++	cache_dir += p;
++    }
++
++    /* Establish a handler for SIGALRM signals. */
++    //signal (SIGALRM, catch_alarm);
+ 
+     int exitcode = 1;
+     try {
+@@ -869,6 +1340,8 @@
+ 	cout << "Exception: " << s << endl;
+     } catch (const char *s) {
+ 	cout << "Exception: " << s << endl;
++	if (!tmpdir.empty()) rmdir(tmpdir.c_str());
++	return exitcode;
+     } catch (...) {
+ 	cout << "Caught unknown exception" << endl;
+     }
+@@ -876,5 +1349,8 @@
+     // If we created a temporary directory then delete it.
+     if (!tmpdir.empty()) rmdir(tmpdir.c_str());
+ 
++#ifdef HAVE_TEXTCAT
++    textcat_Done(textcat);
++#endif
+     return exitcode;
+ }
+diff -ub  xapian-omega-1.0.5a/outlook2text.in.orig
+--- xapian-omega-1.0.5a/outlook2text.in.orig	2008-01-02 10:43:06.203203300 +0100
++++ xapian-omega-1.0.5a/outlook2text.in	2008-01-02 10:43:06.203203300 +0100
+@@ -0,0 +1,10 @@
++#! /bin/sh
++# converts msg to mbox and extract attachments
++# either be in the cache dir, or accept it as 2nd arg
++if [ -n $2 ]; then 
++  @MSGCONVERT@ "$1" | @MIMEEXPLODE@ -d "$2"
++else
++  # already is in the cache dir
++  base=`basename "$1" .msg`
++  @MSGCONVERT@ "$1" | @MIMEEXPLODE@ -d "${base}"
++fi
+diff -ub  xapian-omega-1.0.5a/ppt2text.in.orig
+--- xapian-omega-1.0.5a/ppt2text.in.orig	2008-01-02 10:43:06.203203300 +0100
++++ xapian-omega-1.0.5a/ppt2text.in	2008-01-02 10:43:06.203203300 +0100
+@@ -0,0 +1,3 @@
++#! /bin/sh
++# strip numbers, to stdout
++@CATPPT@ "$1" | @SED@ -re's/[0123456789.]+,//g'
+diff -ub  xapian-omega-1.0.5a/query.cc.orig
+--- xapian-omega-1.0.5a/query.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/query.cc	2008-01-02 10:43:06.234438300 +0100
+@@ -106,7 +106,7 @@
+ 
+ static Xapian::Query query;
+ //static string url_query_string;
+-Xapian::Query::op default_op = Xapian::Query::OP_OR; // default matching mode
++Xapian::Query::op default_op = Xapian::Query::OP_AND; // default matching mode
+ 
+ static Xapian::QueryParser qp;
+ static Xapian::Stem *stemmer = NULL;
+@@ -140,7 +140,10 @@
+ 	switch (t[0]) {
+ 	    case 'a':
+ 		return (t == "a" || t == "about" || t == "an" || t == "and" ||
+-			t == "are" || t == "as" || t == "at");
++		    t == "are" || t == "as" || t == "at" || t == "according" || 
++		    t == "again"  || t == "against"  || t == "ah"  || t == "all" || 
++		    t == "although"  || t == "always" || t == "anyone" || t == "after" || 
++		    t == "also"  || t == "any");
+ 	    case 'b':
+ 		return (t == "be" || t == "by");
+ 	    case 'e':
+@@ -235,7 +238,8 @@
+     }
+ 
+     try {
+-	query = qp.parse_query(query_string);
++	//query = qp.parse_query(query_string); // simple query
++	query = qp.parse_query(query_string, qp.FLAG_WILDCARD);
+     } catch (Xapian::QueryParserError &e) {
+ 	error_msg = e.get_msg();
+ 	return BAD_QUERY;
+@@ -717,6 +721,7 @@
+ CMD_add,
+ CMD_allterms,
+ CMD_and,
++CMD_author,
+ CMD_cgi,
+ CMD_cgilist,
+ CMD_collapsed,
+diff -ub  xapian-omega-1.0.5a/runfilter.cc.orig
+--- xapian-omega-1.0.5a/runfilter.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/runfilter.cc	2008-01-02 10:43:06.265673300 +0100
+@@ -60,6 +60,9 @@
+ 
+ using namespace std;
+ 
++extern string error_log;
++extern bool verbose;
++
+ string
+ stdout_to_string(const string &cmd)
+ {
+@@ -97,7 +100,13 @@
+ 	    setrlimit(RLIMIT_AS, &ram_limit);
+ 	}
+ 
+-	execl("/bin/sh", "/bin/sh", "-c", cmd.c_str(), (void*)NULL);
++	string tmp;
++	tmp = cmd + error_log;
++	if (verbose) {
++	    cout << " Executing '" << tmp << "'..." << endl;
++	}
++
++	execl("/bin/sh", "/bin/sh", "-c", tmp.c_str(), (void*)NULL);
+ 	_exit(-1);
+     }
+ 
+@@ -134,7 +143,12 @@
+ 	throw ReadError();
+     }
+ #else
+-    FILE * fh = popen(cmd.c_str(), "r");
++    string tmp;
++    tmp = cmd + error_log;
++    if (verbose) {
++	cout << " Executing '" << tmp << "'..." << endl;
++    }
++    FILE * fh = popen(tmp.c_str(), "r");
+     if (fh == NULL) throw ReadError();
+     while (!feof(fh)) {
+ 	char buf[4096];
+diff -ub  xapian-omega-1.0.5a/runfilter.h.orig
+--- xapian-omega-1.0.5a/runfilter.h.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/runfilter.h	2008-01-02 10:43:06.374995800 +0100
+@@ -28,6 +28,9 @@
+ /// Exception thrown if the filter program isn't found.
+ struct NoSuchFilter { };
+ 
++/// Timeout exception
++struct TimeOut {};
++
+ /// Run command @a cmd, capture its stdout, and return it as a std::string.
+ std::string stdout_to_string(const std::string &cmd);
+ 
+diff -ub  xapian-omega-1.0.5a/scriptindex.1.orig
+--- xapian-omega-1.0.5a/scriptindex.1.orig	2007-12-21 04:09:35.000000000 +0100
++++ xapian-omega-1.0.5a/scriptindex.1	2008-01-02 11:07:31.546375800 +0100
+@@ -1,5 +1,5 @@
+ .\" DO NOT MODIFY THIS FILE!  It was generated by help2man 1.36.
+-.TH SCRIPTINDEX "1" "December 2007" "xapian-omega 1.0.5" "User Commands"
++.TH SCRIPTINDEX "1" "December 2007" "xapian-omega 1.0.5a" "User Commands"
+ .SH NAME
+ scriptindex \- index arbitrary data as described by an index script
+ .SH SYNOPSIS
+@@ -20,7 +20,7 @@
+ the database already exists)
+ .TP
+ \fB\-s\fR, \fB\-\-stemmer\fR=\fILANG\fR
+-set the stemming language, the default is 'english'.
++forces one stemming language (default: autodetection)
+ Possible values: danish dutch english finnish french
+ german german2 hungarian italian kraaij_pohlmann lovins
+ norwegian porter portuguese romanian russian spanish
+@@ -34,3 +34,15 @@
+ .PP
+ Please report bugs using bugzilla:
+ http://www.xapian.org/bugs.php
++.SH "SEE ALSO"
++The full documentation for
++.B scriptindex
++is maintained as a Texinfo manual.  If the
++.B info
++and
++.B scriptindex
++programs are properly installed at your site, the command
++.IP
++.B info scriptindex
++.PP
++should give you access to the complete manual.
+diff -ub  xapian-omega-1.0.5a/scriptindex.cc.orig
+--- xapian-omega-1.0.5a/scriptindex.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/scriptindex.cc	2008-01-02 11:06:32.824575800 +0100
+@@ -4,6 +4,7 @@
+  * Copyright 2001 Sam Liddicott
+  * Copyright 2001,2002 Ananova Ltd
+  * Copyright 2002,2003,2004,2005,2006,2007 Olly Betts
++ * Copyright 2006,2007 AVL List GesmbH
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+@@ -38,17 +39,27 @@
+ #include <stdio.h>
+ #include <time.h>
+ #include "safeunistd.h"
++#include <sys/stat.h>
+ 
+ #include "commonhelp.h"
++#include "configfile.h"
+ #include "hashterm.h"
+ #include "loadfile.h"
+ #include "myhtmlparse.h"
+ #include "stringutils.h"
+ #include "utf8truncate.h"
+ #include "utils.h"
++#include "values.h"
+ 
+ #include "gnu_getopt.h"
+ 
++#ifdef HAVE_TEXTCAT
++# include "textcat.h"
++# ifndef LANGCLASS_CONF
++#  define LANGCLASS_CONF "/var/lib/omega/langclass/langclass.conf"
++# endif
++#endif
++
+ using namespace std;
+ 
+ #define PROG_NAME "scriptindex"
+@@ -58,6 +69,10 @@
+ static int addcount;
+ static int repcount;
+ static int delcount;
++static string curr_lang = "english";
++#ifdef HAVE_TEXTCAT
++static void *textcat;
++#endif
+ 
+ inline static bool
+ p_space(unsigned int c)
+@@ -422,6 +437,20 @@
+ {
+     string line;
+     size_t line_no = 0;
++    time_t last_mod = 0;
++    long   file_size = 0;
++    string language;
++
++    if (strcmp(fname,"<stdin>") != 0) {
++	struct stat statbuf;
++	stat(fname, &statbuf);
++	if (! statbuf.st_size) {
++	    cout << "Empty \"" << string(fname) << "\" - skipping\n";
++	    return false;
++	}
++	file_size = statbuf.st_size;
++	last_mod = statbuf.st_mtime;
++    }
+     while (!stream.eof() && getline(stream, line)) {
+ 	++line_no;
+ 	Xapian::Document doc;
+@@ -459,6 +488,28 @@
+ 		value += line;
+ 	    }
+ 
++#ifdef HAVE_TEXTCAT
++	    char * lang;
++	    lang = textcat_Classify( textcat, value.c_str(), value.length()+1 );
++	    language = string(lang);
++	    if ((language != _TEXTCAT_RESULT_UNKOWN) // unknown language
++		&& (language != _TEXTCAT_RESULT_SHORT)) // too little information
++	    {
++		if (language[0] == '[') {
++		    int pos = language.find(']',0);
++		    language = language.substr(1,pos-1);
++		}
++		// cache language. may be overridden by the script
++		if (language != curr_lang)  {
++		    cout << "new language " << curr_lang << " => " << language << " ";
++		    indexer.set_stemmer(Xapian::Stem(language));
++		    curr_lang = language;
++		}
++	    } else {
++		language = "";
++	    }
++#endif
++
+ 	    const vector<Action> &v = index_spec[field];
+ 	    string old_value = value;
+ 	    vector<Action>::const_iterator i;
+@@ -638,12 +689,28 @@
+ 	    for (i = fields.begin(); i != fields.end(); ++i) {
+ 		list<string>::const_iterator j;
+ 		for (j = i->second.begin(); j != i->second.end(); j++) {
++		    if (i->first == "language") language = "";
++		    if (i->first == "lastmod")  last_mod = 0;
++		    if (i->first == "size")     file_size = 0;
+ 		    data += i->first;
+ 		    data += '=';
+ 		    data += *j;
+ 		    data += '\n';
+ 		}
+ 	    }
++	    // provide some extra fields if not already provided by the script
++#ifdef HAVE_TEXTCAT
++	    if (!language.empty()) // autodetected language
++		data += "language="+language+'\n';
++#endif
++	    if (last_mod) {        // if indexed per filename
++		data += "lastmod="+int_to_string(last_mod)+'\n';
++		doc.add_value(VALUE_LASTMOD, int_to_string(last_mod));
++	    }
++	    if (file_size) {        // if indexed per filename
++		data += "size="+int_to_string(file_size)+'\n';
++		doc.add_value(VALUE_FILESIZE, int_to_string(file_size));
++	    }
+ 
+ 	    // Put the data in the document
+ 	    doc.set_data(data);
+@@ -682,7 +749,8 @@
+     // If the database already exists, default to updating not overwriting.
+     int database_mode = Xapian::DB_CREATE_OR_OPEN;
+     verbose = false;
+-    Xapian::Stem stemmer("english");
++    int exit_code = 0;
++    Xapian::Stem stemmer(curr_lang);
+ 
+     static const struct option longopts[] = {
+ 	{ "help",	no_argument,	NULL, 'h' },
+@@ -742,6 +810,10 @@
+ 	exit(show_help ? 0 : 1);
+     }
+ 
++#ifdef HAVE_TEXTCAT
++    textcat = textcat_Init( LANGCLASS_CONF );
++#endif
++
+     parse_index_script(argv[1]);
+ 
+     // Catch any Xapian::Error exceptions thrown.
+@@ -785,14 +857,20 @@
+ 
+ 	cout << "records (added, replaced, deleted) = (" << addcount <<
+ 		", " << repcount << ", " << delcount << ")" << endl;
+-    } catch (const Xapian::Error &error) {
+-	cout << "Exception: " << error.get_msg() << endl;
+-	exit(1);
++    } catch (const Xapian::Error &e) {
++	cout << "Exception: XapianError:\"" << e.get_msg()
++	     << "\" Type:" << e.get_type() << " Context:" << e.get_context() 
++	     << " Errno:" << e.get_error_string() << endl;
++	exit_code = 1;
+     } catch (const std::bad_alloc &) {
+ 	cout << "Exception: std::bad_alloc" << endl;
+-	exit(1);
++	exit_code = 1;
+     } catch (...) {
+ 	cout << "Unknown Exception" << endl;
+-	exit(1);
++	exit_code = 1;
+     }
++#ifdef HAVE_TEXTCAT
++    textcat_Done(textcat);
++#endif
++    return exit_code;
+ }
+diff -ub  xapian-omega-1.0.5a/utils.cc.orig
+--- xapian-omega-1.0.5a/utils.cc.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/utils.cc	2008-01-02 11:20:19.322592300 +0100
+@@ -22,6 +22,7 @@
+ #include <config.h>
+ 
+ #include "utils.h"
++#include "common/stringutils.h"
+ 
+ #include <stdio.h> // for sprintf/snprintf
+ #include <stdlib.h>
+@@ -30,6 +31,10 @@
+ 
+ using namespace std;
+ 
++#ifdef __WIN32__
++#include "safewindows.h"
++#endif
++
+ // This ought to be enough for any of the conversions below.
+ #define BUFSIZE 100
+ 
+@@ -90,3 +95,85 @@
+     return string(buf);
+ #endif
+ }
++
++string
++shell_protect(const string & file)
++{
++    string safefile = file;
++    string::size_type p = 0;
++    if (!safefile.empty() && safefile[0] == '-') {
++	// If the filename starts with a '-', protect it from being treated as
++	// an option by prepending "./".
++	safefile.insert(0, "./");
++	p = 2;
++    }
++#ifdef __WIN32__
++    string::iterator i;
++    for (i = safefile.begin(); i != safefile.end(); ++i) {
++	if (*i == '/') {
++	    // Convert Unix path separators to backslashes.  C library
++	    // functions understand "/" in paths, but Win32 API functions
++	    // don't.
++	    *i = '\\';
++	} else if (*i < 32 || strchr("<>\"|*?", *i)) {
++	    // Check for illegal characters in filename.
++	    safefile.insert(i, "\\");
++	    ++i;
++	}
++    }
++#else
++    while (p < safefile.size()) {
++	// Don't escape some safe characters which are common in filenames.
++	unsigned char ch = safefile[p];
++	if (!C_isalnum(ch) && strchr("/._-", ch) == NULL) {
++	    safefile.insert(p, "\\");
++	    ++p;
++	}
++	++p;
++    }
++#endif
++    return safefile;
++}
++
++/// Remove a directory and contents.
++void
++rmdir(const string &filename)
++{
++    // Check filename exists and is actually a directory
++    struct stat sb;
++    if (stat(filename, &sb) != 0 || !S_ISDIR(sb.st_mode)) return;
++
++    string safefile = shell_protect(filename);
++#ifdef __WIN32__
++# if 1
++    static int win95 = -1;
++    if (win95 == -1) {
++	OSVERSIONINFO info;
++	memset(&info, 0, sizeof(OSVERSIONINFO));
++	info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
++	if (GetVersionEx(&info)) {
++	    win95 = (info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS);
++	}
++    }
++
++    if (win95) {
++	// for 95 like systems:
++	system("deltree /y \"" + safefile + "\"");
++    } else {
++	// for NT like systems:
++	system("rd /s /q \"" + safefile + "\"");
++    }
++# else
++    safefile.append("\0", 2);
++    SHFILEOPSTRUCT shfo;
++    memset((void*)&shfo, 0, sizeof(shfo));
++    shfo.hwnd = 0;
++    shfo.wFunc = FO_DELETE;
++    shfo.pFrom = safefile.data();
++    shfo.fFlags = FOF_NOCONFIRMATION|FOF_NOERRORUI|FOF_SILENT;
++    (void)SHFileOperation(&shfo);
++# endif
++#else
++    system("rm -rf " + safefile);
++#endif
++}
+diff -ub  xapian-omega-1.0.5a/utils.h.orig
+--- xapian-omega-1.0.5a/utils.h.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/utils.h	2008-01-02 11:19:20.194722300 +0100
+@@ -22,6 +22,19 @@
+ 
+ #include <string>
+ 
++#include <stdlib.h>
++#include <sys/stat.h>
++#include <sys/types.h>
++#ifdef _MSC_VER
++# include <direct.h>
++# include <io.h>
++#else
++# include <unistd.h>
++#endif
++#include <ctype.h>
++#include <fcntl.h>
++
++
+ /** Converts year, month, day into an 8 character string like: "20061031". */
+ std::string date_to_string(int year, int month, int day);
+ 
+@@ -37,4 +50,32 @@
+ /** Converts a string to an int. */
+ int string_to_int(const std::string & s);
+ 
++/* AVL */
++using namespace std;
++
++string shell_protect(const string & file);
++void rmdir(const string &filename);
++
++/// Allow mkdir to work directly on C++ strings.
++#ifdef __WIN32__
++inline int mkdir(const string &filename, int /*mode*/) {
++    return _mkdir(filename.c_str());
++}
++#else
++inline int mkdir(const string &filename, mode_t mode) {
++    return mkdir(filename.c_str(), mode);
++}
++#endif
++
++/// Allow stat to work directly on C++ strings.
++inline int stat(const string &filename, struct stat *buf) {
++    return stat(filename.c_str(), buf);
++}
++
++/// Allow unlink to work directly on C++ strings.
++inline int unlink(const string &filename) { return unlink(filename.c_str()); }
++
++/// Allow system to work directly on C++ strings.
++inline int system(const string &command) { return system(command.c_str()); }
++
+ #endif
+diff -ub  xapian-omega-1.0.5a/values.h.orig
+--- xapian-omega-1.0.5a/values.h.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/values.h	2008-01-02 10:43:06.484318300 +0100
+@@ -44,7 +44,8 @@
+ 
+ enum value_slot {
+     VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
+-    VALUE_MD5 = 1	// 16 byte MD5 checksum of original document.
++    VALUE_MD5 	   = 1,	// 16 byte MD5 checksum of original document.
++    VALUE_FILESIZE = 2  // filesize in bytes 
+ };
+ 
+ inline uint32_t binary_string_to_int(const std::string &s)
+diff -ub  xapian-omega-1.0.5a/xapian-omega.spec.in.orig
+--- xapian-omega-1.0.5a/xapian-omega.spec.in.orig	2007-12-21 04:01:10.000000000 +0100
++++ xapian-omega-1.0.5a/xapian-omega.spec.in	2008-01-02 10:43:06.484318300 +0100
+@@ -45,6 +45,7 @@
+ # Create /var directories
+ mkdir -p %{buildroot}%{contentdir}/omega/data
+ mkdir -p %{buildroot}%{contentdir}/omega/cdb
++mkdir -p %{buildroot}%{contentdir}/omega/cache
+ mkdir -p %{buildroot}%{logdir}/omega
+ # Default templates
+ mkdir -p %{buildroot}%{contentdir}/omega/templates
+@@ -77,7 +78,8 @@
+ /var/www/icons/omega
+ %{_datadir}/%{name}
+ %config(noreplace) /etc/omega.conf
+-%doc %{_datadir}/doc/%{name}-%{version}
++%docdir /usr/share/doc/%{name}-%{version}
++%doc AUTHORS ChangeLog COPYING NEWS README TODO
+ # man pages may be gzipped, hence the trailing wildcard.
+ %{_mandir}/man1/omindex.1*
+ %{_mandir}/man1/scriptindex.1*

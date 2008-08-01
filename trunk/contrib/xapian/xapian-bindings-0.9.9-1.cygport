@@ -1,0 +1,29 @@
+# inherit mono eutils autotools java-pkg
+
+DESCRIPTION="Xapian Omega UI"
+HOMEPAGE="http://www.xapian.org/"
+SRC_URI="http://www.oligarchy.co.uk/xapian/${PV}/${P}.tar.gz"
+
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="~x86"
+IUSE="python php tcltk mono java ruby"
+
+src_install () {
+	emake -j1 DESTDIR="${D}" install || die
+
+	if use java; then
+		java-pkg_dojar java/built/xapian_jni.jar
+		# TODO: make the build system not install this...
+		java-pkg_doso "${D}/${S}/java/built/libxapian_jni.so"
+		rm "${D}/${S}/java/built/libxapian_jni.so"
+		rmdir -p "${D}/${S}/java/built"
+	fi
+
+	# For some USE combos this directory is not created
+	if [[ -d "${D}/usr/share/doc/xapian-bindings" ]]; then
+		mv "${D}/usr/share/doc/xapian-bindings" "${D}/usr/share/doc/${PF}"
+	fi
+
+	dodoc AUTHORS HACKING NEWS TODO README
+}

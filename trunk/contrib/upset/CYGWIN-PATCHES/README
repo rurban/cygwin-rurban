@@ -1,0 +1,74 @@
+upset
+--------------------------------
+upset and the Cygwin perl modules are based on the cygwin-internal 
+upset version by Christopher Faylor's, for which he refuses to 
+accept patches and replaced by the better genini.
+mksetup is loosely based in the version from Yaakov Selkovitz.
+
+INSTALL
+
+fix some options at the head of /usr/sbin/mksetup
+
+cd /usr/src
+mkdir setup; cd setup
+
+# put your unmaintained contrib packages here
+mkdir contrib
+
+# put your maintained release packages here
+mkdir release
+
+# symlink setup.exe into the current dir
+ln -s <path>/setup.exe setup.exe
+
+USAGE
+
+Move your setup.hint, binary and src tar.bz2 into the correct setup/release/<package> subdir
+
+mksetup --help
+
+"mksetup" will update the local setup.ini and warn about syntax errors
+or missing dependencies.
+
+"mksetup setup" will run setup.exe with your local repository added.
+So you can test the package before requesting a upload.
+
+Runtime requirements:
+  cygwin
+  perl
+  file
+  findutils
+  rsync
+
+Build requirements:
+  cygwin
+  perl
+  ash
+  patch
+
+Canonical homepage:
+  http://rurban.xarch.at/software/cygwin/contrib/upset
+
+Canonical download:
+  http://rurban.xarch.at/software/cygwin/contrib/upset
+Original Version:
+  cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/sourceware co infra/bin/cygwin
+
+Build instructions: 
+  mksetup makedist
+
+Files included in upset:
+
+  /usr/sbin/upset
+  /usr/sbin/mksetup
+  /usr/share/doc/Cygwin/upset-<VERSION>-<CYGREL>.README
+  /usr/src/setup/Cygwin/Setup/ByDir.pm
+  /usr/src/setup/Cygwin/Setup/Listing.pm
+  /usr/src/setup/Cygwin/Setup.pm
+  /usr/src/setup/Cygwin/Version.pm
+
+Maintained by: Reini Urban <rurban@x-ray.at>
+
+Please report problems, suggestions, etc. to cygwin@cygwin.com only when you 
+downloaded it from an official cygwin mirror, 
+otherwise to the maintainer.

@@ -1,0 +1,175 @@
+diff -urN origsrc/fcgi-2.4.0/CYGWIN-PATCHES/README src/fcgi-2.4.0/CYGWIN-PATCHES/README
+--- origsrc/fcgi-2.4.0/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/CYGWIN-PATCHES/README	2006-08-06 18:27:04.495750000 +0000
+@@ -0,0 +1,141 @@
++fcgi
++------------------------------------------
++FastCGI A High-Performance Gateway Interface.
++
++Static library and a cgi-wrapper to create fastcgi enabled applications. 
++End users will most likely not need that.
++FastCGI is a fast, open, and secure Web server interface that
++solves the performance problems inherent in CGI without introducing
++any of the new problems associated with writing applications to
++lower-level Web server APIs. Modules to support FastCGI can be plugged
++into Web server APIs such as Apache API, NSAPI, and ISAPI.
++
++Runtime requirements:
++  cygwin-1.5.20-1 or newer
++
++Build requirements:
++  cygwin
++  gcc-core
++  automake
++  autoconf
++  binutils
++
++Canonical homepage:
++  http://fastcgi.com/
++
++Canonical download:
++  http://fastcgi.com/dist/fcgi-2.4.0.tar.gz
++
++------------------------------------
++
++Build instructions:
++  tar xfj fcgi-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport fcgi-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/fcgi-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/fcgi-<VERSION>-<CYGREL>-src.tar.bz2
++  /usr/src/libfcgi0-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/libfcgi-devel-<VERSION>-<CYGREL>.tar.bz2
++
++Or use 'cygport fcgi-<VERSION>-<CYGREL>.cygport prep' 
++to get a patched source directory.
++
++-------------------------------------------
++
++Files included in the fcgi package:
++
++  /usr/bin/cgi-fcgi.exe
++  /usr/lib/fcgi/examples/authorizer.exe
++  /usr/lib/fcgi/examples/echo-cpp.exe
++  /usr/lib/fcgi/examples/echo-x.exe
++  /usr/lib/fcgi/examples/echo.exe
++  /usr/lib/fcgi/examples/log-dump.exe
++  /usr/lib/fcgi/examples/size.exe
++  /usr/lib/fcgi/examples/threaded.exe
++  /usr/share/doc/Cygwin/fcgi-2.4.0.README
++  /usr/share/doc/fcgi-2.4.0/INSTALL
++  /usr/share/doc/fcgi-2.4.0/LICENSE.TERMS
++  /usr/share/doc/fcgi-2.4.0/README
++  /usr/share/doc/fcgi-2.4.0/examples/authorizer.c
++  /usr/share/doc/fcgi-2.4.0/examples/authorizer.mak
++  /usr/share/doc/fcgi-2.4.0/examples/echo-cpp.cpp
++  /usr/share/doc/fcgi-2.4.0/examples/echo-cpp.mak
++  /usr/share/doc/fcgi-2.4.0/examples/echo-x.c
++  /usr/share/doc/fcgi-2.4.0/examples/echo.c
++  /usr/share/doc/fcgi-2.4.0/examples/echo.mak
++  /usr/share/doc/fcgi-2.4.0/examples/echox.mak
++  /usr/share/doc/fcgi-2.4.0/examples/log-dump.c
++  /usr/share/doc/fcgi-2.4.0/examples/size.c
++  /usr/share/doc/fcgi-2.4.0/examples/size.mak
++  /usr/share/doc/fcgi-2.4.0/examples/threaded.c
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ap_guida.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ap_guide.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/apaman.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch1inta1.gif
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch1intra.gif
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch1intro.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch2c.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch3perl.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/ch4tcl.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/cover.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-prog-guide/covera.gif
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-whitepaper/fastcgi.htm
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-whitepaper/img00001.gif
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-whitepaper/img00002.gif
++  /usr/share/doc/fcgi-2.4.0/html/fastcgi-whitepaper/img00003.gif
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-devel-kit.htm
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-java.htm
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-perf.htm
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-perl.htm
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-spec.html
++  /usr/share/doc/fcgi-2.4.0/html/fcgi-tcl.htm
++  /usr/share/doc/fcgi-2.4.0/html/omi-logo.gif
++  /usr/share/doc/fcgi-2.4.0/html/overview.html
++  /usr/share/doc/fcgi-2.4.0/html/www5-api-workshop.html
++  /usr/share/doc/fcgi-2.4.0/images/aplib-hd.gif
++  /usr/share/doc/fcgi-2.4.0/images/divider.gif
++  /usr/share/doc/fcgi-2.4.0/images/fcgi-hd.gif
++  /usr/share/doc/fcgi-2.4.0/images/mail-hd.gif
++  /usr/share/doc/fcgi-2.4.0/images/navbar.gif
++  /usr/share/doc/fcgi-2.4.0/images/serv-hd.gif
++  /usr/share/doc/fcgi-2.4.0/images/words-hd.gif
++  /usr/share/man/man1/cgi-fcgi.1.gz
++  /usr/share/man/man3/FCGI_Accept.3.gz
++  /usr/share/man/man3/FCGI_Finish.3.gz
++  /usr/share/man/man3/FCGI_SetExitStatus.3.gz
++  /usr/share/man/man3/FCGI_StartFilterData.3.gz
++
++Files included in the libfcgi0 package:
++  /usr/bin/cygfcgi-0.dll
++  /usr/bin/cygfcgi++-0.dll 
++
++Files included in the libfcgi-devel package:
++  /usr/include/fastcgi.h
++  /usr/include/fcgi_config.h
++  /usr/include/fcgi_stdio.h
++  /usr/include/fcgiapp.h
++  /usr/include/fcgimisc.h
++  /usr/include/fcgio.h
++  /usr/include/fcgios.h
++  /usr/lib/libfcgi++.a
++  /usr/lib/libfcgi++.la
++  /usr/lib/libfcgi.a
++  /usr/lib/libfcgi.la
++
++------------------
++
++Port Notes:
++
++----------  fcgi-2.4.0-2 -----------
++added shared libraries
++split into fcgi, libfcg0 and libfcgi-devel packages
++
++----------  fcgi-2.4.0-1 (not released) -----------
++Initial cygwin release. (for clisp-2.39-1)
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Address all questions to the Cygwin mailing list at <cygwin@cygwin.com>
+diff -urN origsrc/fcgi-2.4.0/CYGWIN-PATCHES/fcgi.hint src/fcgi-2.4.0/CYGWIN-PATCHES/fcgi.hint
+--- origsrc/fcgi-2.4.0/CYGWIN-PATCHES/fcgi.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/CYGWIN-PATCHES/fcgi.hint	2006-08-06 18:29:13.464500000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "FastCGI A High-Performance Gateway Interface"
++ldesc: "Library and cgi-wrapper to create fastcgi enabled applications. 
++FastCGI is a fast, open, and secure Web server interface that
++solves the performance problems inherent in CGI without introducing
++any of the new problems associated with writing applications to
++lower-level Web server APIs. Modules to support FastCGI can be plugged
++into Web server APIs such as Apache API, NSAPI, and ISAPI."
++category: Web
++requires: cygwin libfcgi0
+diff -urN origsrc/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi-devel.hint src/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi-devel.hint
+--- origsrc/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi-devel.hint	2006-08-06 18:23:23.902000000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Headers and Libraries for FastCGI (fcgi)"
++category: Devel Web
++requires: libfcgi0
++external-source: fcgi
+\ No newline at end of file
+diff -urN origsrc/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi0.hint src/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi0.hint
+--- origsrc/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi0.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/CYGWIN-PATCHES/libfcgi0.hint	2006-08-06 18:29:19.511375000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "The FastCGI (fcgi) DLL"
++requires: cygwin
++category: Web
++external-source: fcgi

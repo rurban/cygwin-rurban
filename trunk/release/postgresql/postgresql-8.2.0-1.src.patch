@@ -1,0 +1,81 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.0/src/Makefile.global.in src/postgresql-8.2.0/src/Makefile.global.in
+--- origsrc/postgresql-8.2.0/src/Makefile.global.in	2006-10-08 17:15:33.000000000 +0000
++++ src/postgresql-8.2.0/src/Makefile.global.in	2006-12-05 22:09:10.625000000 +0000
+@@ -341,8 +341,8 @@
+ 
+ # This macro is for use by libraries linking to libpq.  (Because libpgport
+ # isn't created with the same link flags as libpq, it can't be used.)
+-libpq := -L$(libpq_builddir) -lpq
+-  
++libpq := -L$(libpq_builddir) -lpq5
++
+ # If doing static linking, shared library dependency info isn't available,
+ # so add in the libraries that libpq depends on.
+ ifeq ($(enable_shared), no)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.0/src/Makefile.shlib src/postgresql-8.2.0/src/Makefile.shlib
+--- origsrc/postgresql-8.2.0/src/Makefile.shlib	2006-09-19 15:36:07.000000000 +0000
++++ src/postgresql-8.2.0/src/Makefile.shlib	2006-12-05 22:11:10.546875000 +0000
+@@ -237,7 +237,7 @@
+ endif
+ 
+ ifeq ($(PORTNAME), cygwin)
+-  shlib			= cyg$(NAME)$(DLSUFFIX)
++  shlib			= cyg$(NAME)$(SO_MAJOR_VERSION)$(DLSUFFIX)
+   haslibarule   = yes
+ endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.0/src/interfaces/libpq/Makefile src/postgresql-8.2.0/src/interfaces/libpq/Makefile
+--- origsrc/postgresql-8.2.0/src/interfaces/libpq/Makefile	2006-09-27 21:29:17.000000000 +0000
++++ src/postgresql-8.2.0/src/interfaces/libpq/Makefile	2006-12-05 21:55:04.234375000 +0000
+@@ -37,7 +37,7 @@
+ 	$(filter crypt.o getaddrinfo.o inet_aton.o open.o snprintf.o strerror.o strlcpy.o, $(LIBOBJS))
+ 
+ ifeq ($(PORTNAME), cygwin)
+-override shlib = cyg$(NAME)$(DLSUFFIX)
++override shlib = cyg$(NAME)5$(DLSUFFIX)
+ endif
+ 
+ ifeq ($(PORTNAME), win32)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.0/src/interfaces/libpq/libpq.rc src/postgresql-8.2.0/src/interfaces/libpq/libpq.rc
+--- origsrc/postgresql-8.2.0/src/interfaces/libpq/libpq.rc	2006-12-02 08:48:11.000000000 +0000
++++ src/postgresql-8.2.0/src/interfaces/libpq/libpq.rc	2006-12-06 07:17:44.656250000 +0000
+@@ -1,8 +1,8 @@
+ #include <winver.h>
+ 
+ VS_VERSION_INFO VERSIONINFO
+- FILEVERSION 8,2,0,6336
+- PRODUCTVERSION 8,2,0,6336
++ FILEVERSION 8,2,0,6340
++ PRODUCTVERSION 8,2,0,6340
+  FILEFLAGSMASK 0x3fL
+  FILEFLAGS 0
+  FILEOS VOS__WINDOWS32
+@@ -16,10 +16,10 @@
+             VALUE "CompanyName", "\0"
+             VALUE "FileDescription", "PostgreSQL Access Library\0"
+             VALUE "FileVersion", "8.2.0\0"
+-            VALUE "InternalName", "libpq\0"
++            VALUE "InternalName", "cygpq5\0"
+             VALUE "LegalCopyright", "Copyright (C) 2005\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq5.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.2.0\0"
+         END
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.0/src/interfaces/libpq/libpq.rc.in src/postgresql-8.2.0/src/interfaces/libpq/libpq.rc.in
+--- origsrc/postgresql-8.2.0/src/interfaces/libpq/libpq.rc.in	2005-12-09 02:49:09.000000000 +0000
++++ src/postgresql-8.2.0/src/interfaces/libpq/libpq.rc.in	2006-12-05 21:55:54.453125000 +0000
+@@ -16,10 +16,10 @@
+             VALUE "CompanyName", "\0"
+             VALUE "FileDescription", "PostgreSQL Access Library\0"
+             VALUE "FileVersion", "8.2.0\0"
+-            VALUE "InternalName", "libpq\0"
++            VALUE "InternalName", "cygpq5\0"
+             VALUE "LegalCopyright", "Copyright (C) 2005\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq5.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.2.0\0"
+         END

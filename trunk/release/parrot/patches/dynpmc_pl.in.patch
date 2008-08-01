@@ -1,0 +1,16 @@
+difforig config/gen/makefiles
+
+2008-03-18  Reini Urban <rurban@x-ray.at>
+
+diff -ub  config/gen/makefiles/dynpmc_pl.in.orig
+--- config/gen/makefiles/dynpmc_pl.in.orig	2008-03-15 22:01:26.015625000 +0000
++++ config/gen/makefiles/dynpmc_pl.in	2008-03-18 21:06:16.250000000 +0000
+@@ -92,6 +92,8 @@
+     }
+     else {
+         $liblist = join( ' ', map { "-l$_" } keys %$libs );
++        my $extraLibs = '@libs@ @icu_shared@';
++        $liblist .= ' ' . $extraLibs;
+     }
+ 
+     return

@@ -1,0 +1,83 @@
+difforig config/auto/opengl.pm lib/Parrot/Configure/Step/Methods.pm
+
+revised to add -L/usr/X11R6/lib
+
+diff -u config/auto/opengl.pm.orig config/auto/opengl.pm
+--- config/auto/opengl.pm.orig	2008-06-02 17:35:05.000000000 +0000
++++ config/auto/opengl.pm	2008-07-16 18:52:29.906250000 +0000
+@@ -110,10 +110,13 @@
+  XXXX: No details yet
+ 
+ 
+-=head3 cygwin
++=head3 cygwin/X
+ 
+- XXXX: No details yet
++F<freeglut>, F<libglut-devel>
+ 
++The mingw packages for native opengl support will also work,
++but then you will need the mingw headers and libs
++-lglut32 -lglu32 -lopengl32
+ 
+ =cut
+ 
+@@ -166,6 +169,7 @@
+         win32_gcc       => '-lglut32 -lglu32 -lopengl32',
+         win32_nongcc    => 'opengl32.lib glu32.lib glut32.lib',
+         darwin          => '-framework OpenGL -framework GLUT',
++	cygwin          => '-lglut -L/usr/X11R6/lib -lGLU -lGL',
+         default         => '-lglut -lGLU -lGL',
+     } );
+ 
+diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Methods.pm
+--- lib/Parrot/Configure/Step/Methods.pm.orig	2008-06-24 19:59:15.000000000 +0000
++++ lib/Parrot/Configure/Step/Methods.pm	2008-07-16 19:01:24.078125000 +0000
+@@ -119,6 +119,7 @@
+         cc              => $cc,
+         win32_gcc       => '-lalpha32 -lalpha32 -lopenalpha32',
+         win32_nongcc    => 'alpha.lib',
++        cygwin          => '-lalpha32 -lXalpha32', # optional
+         darwin          => 'alphadarwin.lib',
+         default         => '-lalpha',
+     } );
+@@ -138,6 +139,8 @@
+ 
+ =item * MSWin32 with any C-compiler other than F<gcc>.
+ 
++=item * Cygwin to override Mingw.
++
+ =item * Darwin.
+ 
+ =back
+@@ -173,7 +176,7 @@
+ 
+ =item * C<win32_gcc>
+ 
+-Libraries to be added where OS is mswin32 and C-compiler is F<gcc>.
++Libraries to be added where OS is mswin32 or cygwin and C-compiler is F<gcc>.
+ Single whitespace-delimited string.
+ 
+ =item * C<win32_nongcc>
+@@ -181,6 +184,12 @@
+ Libraries to be added where OS is mswin32 and C-compiler is not F<gcc>.
+ Single whitespace-delimited string.
+ 
++=item * C<cygwin>
++
++Optional libraries to be added where OS is cygwin. This overrides C<win32_gcc>
++if defined.
++Single whitespace-delimited string.
++
+ =item * C<darwin>
+ 
+ Libraries to be added where OS is Darwin.  Do not supply a value if the value
+@@ -197,7 +206,8 @@
+     my $args = shift;
+     croak "_add_to_libs() takes hashref: $!" unless ref($args) eq 'HASH';
+     my $platform =
+-          (($args->{osname} =~ /mswin32/i ||
++           $args->{osname} =~ /cygwin/i      ? 'cygwin'
++        :(($args->{osname} =~ /mswin32/i ||
+            $args->{osname} =~ /cygwin/i) &&
+            $args->{cc} =~ /^gcc/i)          ? 'win32_gcc'
+         :  $args->{osname} =~ /mswin32/i    ? 'win32_nongcc'

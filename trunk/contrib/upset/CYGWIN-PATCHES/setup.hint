@@ -1,0 +1,4 @@
+sdesc: "upset and mksetup setup.ini and package administration"
+ldesc: "Create, maintain and test your own setup.ini and package repository"
+category: Devel
+requires: cygwin perl

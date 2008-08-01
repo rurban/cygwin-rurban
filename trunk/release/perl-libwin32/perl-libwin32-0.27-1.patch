@@ -1,0 +1,155 @@
+--- perl-libwin32-0.27/CYGWIN-PATCHES/README.orig	1970-01-01 00:00:00.000000000 +0000
++++ perl-libwin32-0.27/CYGWIN-PATCHES/README	2007-07-23 17:23:08.781250000 +0000
+@@ -0,0 +1,126 @@
++perl-libwin32
++------------------------------------------
++Perl extensions for using the Win32 API.
++Included modules: Win32API::Net, Win32API::Registry,
++Win32::ChangeNotify, Win32::Clipboard, Win32::Console, Win32::Event, 
++Win32::EventLog, Win32::File, Win32::FileSecurity,
++Win32::IPC, Win32::Internet, Win32::Job, Win32::Mutex, Win32::NetAdmin, 
++Win32::NetResource, Win32::ODBC, Win32::OLE, Win32::PerfLib, Win32::Pipe,
++Win32::Process, Win32::Registry, Win32::Semaphore, Win32::Service, 
++Win32::Shortcut, Win32::Sound, Win32::TieRegistry and Win32::WinError.
++
++Note: Win32 and Win32API::File are now in core.
++
++Runtime requirements:
++  cygwin
++  perl-5.8
++  crypt-1.1-1
++
++Build requirements:
++  cygwin
++  crypt-1.1-1
++  cygutils
++  perl-5.8
++  gcc
++  make
++  w32api-2.2-1 (at least)
++  gzip
++  libiodbc from http://sf.net/projects/iodbc/ 
++
++    wget http://switch.dl.sourceforge.net/sourceforge/iodbc/libiodbc-3.52.5.tar.gz
++    tar xfz libiodbc-3.52.5.tar.gz
++    cd libiodbc-3.52.5
++    ./configure --disable-gui --prefix=/usr --sysconfdir=/etc
++    make
++    make check
++    make install 
++
++Project Homepages:
++  http://search.cpan.org/~jdb/libwin32-0.27/
++Download:
++  http://search.cpan.org/CPAN/authors/id/J/JD/JDB/libwin32-0.27.tar.gz
++
++Old defunct versions:
++  http://search.cpan.org/search?query=libwin32&mode=Distributions
++  http://sourceforge.net/projects/libwin32-exp/
++
++------------------------------------
++
++Build instructions:
++  unpack perl-libwin32-<VER>-<REL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./perl-libwin32-<VER>-<REL>.sh all
++
++This will create:
++  /usr/src/perl-libwin32-<VER>-<REL>.tar.bz2
++  /usr/src/perl-libwin32-<VER>-<REL>-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++Requirements:
++
++The dll's must probably be rebased. If a remap error occurs run rebaseall from 
++the rebase package. The packaged version is already rebased to my personal settings.
++
++Certain tests require esoteric apps, which probably will fail for you. 
++Win32::OLE requires Excel.Application
++
++Port TODO:
++
++* Need to make a cleaner package script and/or add some support to
++  ExtUtils::MakeMaker and Module::Build for Cygwin packages. At the very least
++  need to make a template package script for making other Perl modules, as the
++  sample setup script requires a good deal of modification.
++* Some of the hints stuff might be nicer reworked using something like:
++  http://search.cpan.org/~jstowe/TermReadKey-2.21/Configure.pm
++
++----- version 0.27-1 -----
++none
++
++----- version 0.26-1 -----
++
++* Almost all patches accepted upstream. 
++* Added APIFile OO and tied interface (as in the previous cygwin packages).
++* fixed Win32::ODBC to use Gerrit's iodbc headers
++  https://rt.cpan.org/NoAuth/Bug.html?id=14634
++* splitted rebase into rebase1 and rebase2
++
++----- version 0.191-4 -----
++* fixed src patch
++
++----- version 0.191-3 ----- (NOT RELEASED)
++
++* make install_vendor (into vendor_perl)
++* keep Win32::Process::GetCurrentProcessID(),
++* remove Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) from Process.xs
++  (now in core)
++* fix pm_to_blib MM targets (APIFile, APIRegistry).
++  better than the cRegistry_pc_to_blib hack in -2
++* cleaned the build script, hints and patch. fixed rebaseall step
++
++----- version 0.191-2 ----- (NOT RELEASED)
++
++* added Win32::Process::GetCurrentProcessID(), 
++  Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) to Process.xs
++* Removed Win32::GUI. Seperate perl-win32-gui package
++* Win32CORE is now in perl-5.8.6 core statically.
++* Win32API::Net test patches (locale independency)
++* fixed APIRegistry cRegistry_pc_to_blib
++* all DLL's rebased, but a rebaseall might be required nevertheless.
++
++Maintainership taken over by Reini Urban (rurban@x-ray.at)
++
++----- version 0.191-1 -----
++
++Initial Cygwin package.
++
++Cygwin port maintained by: Reini Urban
++Please address all cygwin related questions to the Cygwin mailing 
++list at <cygwin@cygwin.com>. 
++The new libwin32 mailinglist is <libwin32@lists.perl.org>.
+\ No newline at end of file
+--- perl-libwin32-0.27/ODBC/ODBC.xs.orig	2005-09-17 20:36:36.000000000 +0000
++++ perl-libwin32-0.27/ODBC/ODBC.xs	2007-07-21 22:19:52.718750000 +0000
+@@ -30,9 +30,13 @@
+ #include <stdio.h>
+     
+     //  ODBC Stuff
++#ifdef __CYGWIN__
++#include <iodbcinst.h>
++#else
+ #include <sql.h>
+ #include <sqlext.h>
+ #include <odbcinst.h>
++#endif
+ 
+     //  Win32 Perl Stuff
+ #if defined(__cplusplus)
+@@ -366,7 +370,7 @@
+     }
+     strcpy((char *)h->Error->szSqlState, "");
+     strcpy(h->Error->szError, "");
+-    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (UCHAR *)h->Error->szSqlState, (long *)&(h->Error->ErrNum), (unsigned char *)h->Error->szError, ODBC_BUFF_SIZE, (short *)&cbErrorMsg);
++    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (SQLCHAR *)h->Error->szSqlState, (SQLINTEGER *)&(h->Error->ErrNum), (SQLCHAR *)h->Error->szError, ODBC_BUFF_SIZE, (SQLSMALLINT *)&cbErrorMsg);
+ 
+         //  Next couple of lines should be NOT needed. If there is no error, then
+         //  we should not have come here in the first place. If, however, there

@@ -1,0 +1,423 @@
+--- perl-Win32-GUI-1.0/CYGWIN-PATCHES/README.orig	1970-01-01 01:00:00.000000000 +0100
++++ perl-Win32-GUI-1.0/CYGWIN-PATCHES/README	2005-02-15 09:10:33.765625000 +0100
+@@ -0,0 +1,55 @@
++perl-Win32-GUI
++------------------------------------------
++Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
++basically, it's an XS implementation of most of the functions found in 
++user32.dll and gdi32.dll, with an object oriented perl interface and an 
++event-based dialog model that mimic the functionality of visual basic. 
++
++Runtime requirements:
++  cygwin
++  perl-5.8.6
++  w32api
++
++Build requirements:
++  cygwin
++  cygutils
++  perl-5.8.6
++  gcc
++  make
++  w32api
++  gzip
++
++Project Homepages:
++  http://search.cpan.org/search?query=Win32::GUI
++
++------------------------------------
++
++Build instructions:
++  unpack perl-Win32-GUI-1.0-2-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./perl-Win32-GUI-1.0-2.sh all
++
++This will create:
++  /usr/src/perl-Win32-GUI-1.0-2.tar.bz2
++  /usr/src/perl-Win32-GUI-1.0-2-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++The dll's must probably be rebased. If a remap error occurs run rebaseall from 
++the rebase package. The packaged version is already rebased to my personal settings.
++
++----- version 1.0-2 -----
++* INSTALLDIRS=vendor
++
++----- version 1.0-1 ----- (NOT RELEASED)
++
++Initial Cygwin package, seperated from perl-libwin32-0.191.
++* Several new cygwin patches. Added missing itoa definition. 
++* Renamed ToolTip.xs to Tooltip.xs
++
++Cygwin port maintained by: Reini Urban  (rurban@x-ray.at)
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- perl-Win32-GUI-1.0/GUI.h.orig	2004-05-08 19:31:22.000000000 +0100
++++ perl-Win32-GUI-1.0/GUI.h	2004-12-01 23:44:10.000000000 +0100
+@@ -37,6 +37,11 @@
+ extern "C" {
+ #endif
+ 
++#ifdef __CYGWIN__
++/* This is no strict ANSI definition, and not in newlib */
++char* itoa (int, char*, int);
++#endif
++
+ /* we want manage context if possible, See perlguts */
+ #if defined(PERL_IMPLICIT_CONTEXT)    
+     #define PERL_NO_GET_CONTEXT
+@@ -656,7 +661,7 @@
+ int  MonthCal_onEvent (NOTXSPROC LPPERLWIN32GUI_USERDATA perlud, UINT uMsg, WPARAM wParam, LPARAM lParam);
+ 
+ // MinGW patch
+-#ifdef __MINGW__
++#if defined(__MINGW__) || defined(__CYGWIN__)
+   #define WNDPROC_CAST WNDPROC
+   #ifndef HDHITTESTINFO
+     #define HDHITTESTINFO HD_HITTESTINFO
+@@ -728,3 +733,5 @@
+ #else
+   #define WNDPROC_CAST FARPROC
+ #endif
++
++}
+--- perl-Win32-GUI-1.0/GUI.pm.orig	2004-11-12 16:58:50.000000000 +0100
++++ perl-Win32-GUI-1.0/GUI.pm	2004-12-02 00:53:07.000000000 +0100
+@@ -787,6 +787,7 @@
+     # figure out the correct background color 
+     # (to avoid the "white background" syndrome on XP)
+     if(not exists $args{-color} && not exists $args{-brush}) {
++        eval { require Win32 };
+         my($undef, $major, $minor) = Win32::GetOSVersion();
+         if($major == 5 && $minor > 0) {         
+             $args{-color} = Win32::GUI::constant("COLOR_BTNFACE", 0)+1;
+--- perl-Win32-GUI-1.0/GUI_MessageLoops.cpp.orig	2004-09-29 23:17:56.000000000 +0100
++++ perl-Win32-GUI-1.0/GUI_MessageLoops.cpp	2004-12-01 21:49:15.000000000 +0100
+@@ -176,7 +176,7 @@
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CUSTOMCLASS, 1);  // Set Custom class flag
+ 
+             // Search for an extend MsgLoop procedure (-extends option in RegisterClassEx)
+-            perlud->WndProc = (WNDPROC) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
++            perlud->WndProc = (WNDPROC_CAST) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+             }
+@@ -658,7 +658,7 @@
+             SetWindowLong(hwnd, GWL_USERDATA, (long) perlud);
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CUSTOMCLASS, 1);  // Set Custom class flag
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_MDIFRAME   , 1);  // Set MDI Frame flag
+-            perlud->WndProc = (WNDPROC) DefMDIFrameLoop;                // Set DefFrameProc
++            perlud->WndProc = (WNDPROC_CAST) DefMDIFrameLoop;                // Set DefFrameProc
+ 
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+@@ -739,7 +739,7 @@
+             SetWindowLong(hwnd, GWL_USERDATA, (long) perlud);
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CUSTOMCLASS, 1);  // Set Custom class flag
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_MDICHILD   , 1);  // Set MDI Frame flag
+-            perlud->WndProc = (WNDPROC) DefMDIChildLoop;                // Set DefMDIChildProc
++            perlud->WndProc = (WNDPROC_CAST) DefMDIChildLoop;                // Set DefMDIChildProc
+             perlud->dwData = (DWORD) hwnd;                              // For fast hwnd acces (Activate/Deactivate)
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+@@ -776,7 +776,7 @@
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CUSTOMCLASS, 1);  // Set Custom class flag
+ 
+             // Search for an extend MsgLoop procedure (-extends option in RegisterClassEx)
+-            perlud->WndProc = (WNDPROC) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
++            perlud->WndProc = (WNDPROC_CAST) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+             }
+@@ -966,7 +966,7 @@
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CONTAINER  , 1);  // Set Container flag
+ 
+             // Search for an extend MsgLoop procedure (-extends option in RegisterClassEx)
+-            perlud->WndProc = (WNDPROC) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
++            perlud->WndProc = (WNDPROC_CAST) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+             }
+@@ -1003,7 +1003,7 @@
+             SwitchBit(perlud->dwPlStyle, PERLWIN32GUI_CUSTOMCLASS, 1);  // Set Custom class flag
+ 
+             // Search for an extend MsgLoop procedure (-extends option in RegisterClassEx)
+-            perlud->WndProc = (WNDPROC) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
++            perlud->WndProc = (WNDPROC_CAST) GetDefClassProc (NOTXSCALL ((CREATESTRUCT *) lParam)->lpszClass);
+             if (perlud->WndProc) {
+                 return CallWindowProc((WNDPROC_CAST) perlud->WndProc, hwnd, uMsg, wParam, lParam);
+             }
+--- perl-Win32-GUI-1.0/MANIFEST.orig	2004-03-22 19:23:16.000000000 +0100
++++ perl-Win32-GUI-1.0/MANIFEST	2004-12-02 13:06:46.000000000 +0100
+@@ -2,6 +2,8 @@
+ README
+ README.txt
+ MANIFEST
++MANIFEST.SKIP
++CHANGELOG
+ TODO
+ TYPEMAP
+ GUI.pm
+@@ -20,6 +22,8 @@
+ Label.xs
+ ListView.xs
+ Listbox.xs
++MDI.xs
++MonthCal.xs
+ NotifyIcon.xs
+ ProgressBar.xs
+ Rebar.xs
+@@ -29,7 +33,7 @@
+ TabStrip.xs
+ Textfield.xs
+ Toolbar.xs
+-ToolTip.xs
++Tooltip.xs
+ Trackbar.xs
+ TreeView.xs
+ UpDown.xs
+@@ -59,3 +63,28 @@
+ t/01_basic.t
+ t/02_window.t
+ t/03_button.t
++META.yml                                Module meta-data (added by MakeMaker)
++cygwin.c				missing cygwin funcs
++samples/Animation.pl
++samples/BitmapScroll.pl
++samples/DateTime.pl
++samples/Draw.pl
++samples/EventModel.pl
++samples/GetOpenFileName.pl
++samples/harrow.cur
++samples/MDI.pl
++samples/MonthCal.pl
++samples/Notepad.pl
++samples/Region.pl
++docs/tut/guitut1-1.gif
++docs/tut/guitut1-2.gif
++docs/tut/guitut1-3.gif
++docs/tut/guitut1.pod
++docs/tut/guitut2.pod
++docs/tut/guitut3.pod
++docs/tut/guitut4.pod
++docs/tut/guitut5-1.gif
++docs/tut/guitut5-2.gif
++docs/tut/guitut5.pod
++docs/tut/guitut9.pod
++docs/tut/morethanone.pl
+--- perl-Win32-GUI-1.0/META.yml.orig	2005-02-10 02:15:50.132812500 +0100
++++ perl-Win32-GUI-1.0/META.yml	2005-02-10 02:12:41.000000000 +0100
+@@ -0,0 +1,10 @@
++# http://module-build.sourceforge.net/META-spec.html
++#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
++name:         Win32-GUI
++version:      1.0
++version_from: GUI.pm
++installdirs:  site
++requires:
++
++distribution_type: module
++generated_by: ExtUtils::MakeMaker version 6.25
+--- perl-Win32-GUI-1.0/Makefile.PL.orig	2004-09-29 22:59:46.000000000 +0100
++++ perl-Win32-GUI-1.0/Makefile.PL	2005-02-10 02:11:51.000000000 +0100
+@@ -1,17 +1,17 @@
+ use ExtUtils::MakeMaker;
+ use Config;
+ 
+-$USERESOURCE = 0;
++$USERESOURCE = 1;
+ 
+ foreach (@ARGV) {
+     if(/USERESOURCE=0/) {
+         $USERESOURCE = -1;
+-        undef $_;
+-        last;
++  } elsif(/USERESOURCE=1/) {
++    $USERESOURCE = 1;
+     }
+ }
+ 
+-if($USERESOURCE == -1) {
++if ($USERESOURCE == -1) {
+     $USERESOURCE = 0;
+ } else {
+     if($Config{'cc'} =~ /^cl(\.exe)?/i) {
+@@ -72,8 +72,7 @@
+     GUI_Events
+ );
+ 
+-$c_ext = ($^O eq "cygwin") ? "c" : "cpp";
+-
++$c_ext = "cpp"; # Note: mingw and cygwin do fine with cpp
+ @arg_c = ();
+ $arg_object = "";
+ 
+@@ -91,11 +90,10 @@
+     $arg_object .= ' ' . $_ . $Config{'obj_ext'};
+ }
+ 
+-
+ %MakefileArgs = (
+     'NAME'         => 'Win32::GUI',
+     'VERSION_FROM' => 'GUI.pm',
+-    'LIBS'         => ( ($^O eq "cygwin") ? '-lcomctl32' : 'comctl32.lib' ),
++    'LIBS'         => ['comctl32.lib'],
+     'PM' => {
+         'GUI.pm'            => '$(INST_LIBDIR)/GUI.pm',
+         'BitmapInline.pm'   => '$(INST_LIBDIR)/GUI/BitmapInline.pm',
+@@ -106,8 +104,6 @@
+     'OBJECT' => $arg_object,
+     'DL_FUNCS' => { 'Win32::GUI' => [ @arg_dl_funcs ] },
+ 
+-    ($^O eq "cygwin") ? ( 'DEFINE' => '-UWIN32' ) : (), 
+-
+     'dist'  => {
+         ZIP => 'zip',
+         ZIPFLAGS => '-r9',
+@@ -116,10 +112,16 @@
+         'AUTHOR'        => 'Aldo Calpini <dada@perl.it>',
+         'ABSTRACT'      => 'Perl-Win32 Graphical User Interface Extension',
+     )),
+-
+ );
+ 
+-
++if ($^O eq "cygwin") {
++  $MakefileArgs{'LIBS'} = ['-L/usr/lib/w32api -L. -lcomctl32 -lcomdlg32 -luser32 -lgdi32'];
++  $MakefileArgs{'DEFINE'} = '-UWIN32';
++} elsif ($^O eq "mingw") {
++  $MakefileArgs{'LIBS'} = ['-lcomctl32'];
++  $MakefileArgs{'DEFINE'} = '-D__MINGW__'; # isn't that used automatically?
++# $MakefileArgs{'CCFLAGS'} = '-mno-cygwin'; # might be needed to force on cygwin
++}
+ $MakefileArgs{'LDFROM'} = '$(OBJECT) GUI.res' if $USERESOURCE;
+ 
+ WriteMakefile( %MakefileArgs );
+@@ -129,17 +131,20 @@
+ package MY;
+ 
+ sub xs_c {
+-($^O eq 'cygwin') ? 
+-    shift->SUPER::xs_c(@_)
+-:
+-    '
+-.xs.cpp:
+-    $(PERL) -I$(PERL_ARCHLIB) -I$(PERL_LIB) $(XSUBPP) $(XSPROTOARG) $(XSUBPPARGS) $*.xs >$*.cpp
+-';
++  my $inherited = shift->SUPER::xs_c(@_);
++  $inherited =~ s/\.c/.cpp/g;
++  return $inherited;
++}
++
++sub xs_o {
++  my $inherited = shift->SUPER::xs_o(@_);
++  $inherited =~ s/\.c$/.cpp/mg;
++  return $inherited;
+ }
+ 
+-sub constants {
+-    my $inherited = shift->SUPER::constants(@_);
++sub special_targets {
++    my $inherited = shift->SUPER::special_targets(@_);
++    $inherited =~ s/\.SUFFIXES: \.xs \.c \.C \.cpp/.SUFFIXES: .xs .cpp .c .C/;
+     if($main::USERESOURCE) {
+         $inherited =~ s/\.SUFFIXES([^\n]+)\n/\.SUFFIXES$1 .rc .res\n/;
+     }
+@@ -148,8 +153,12 @@
+ 
+ sub c_o {
+     my $inherited = shift->SUPER::c_o(@_);
+-    if($main::USERESOURCE) {
++    if ($main::USERESOURCE) {
++      if ($Config{'cc'} =~ /^cl(\.exe)?/i) {
+         $inherited .= "\nGUI.res:\n\trc.exe /l 0x409 /fo\"GUI.res\" GUI.rc\n\n";
++      } else {
++        $inherited .= "\nGUI.res:\n\twindres -O coff -i GUI.rc -o GUI.res\n\n";
++      }
+     }
+     return $inherited;
+ }
+@@ -161,3 +170,44 @@
+     }
+     return $inherited;
+ }
++
++sub postamble {
++  if ($^O eq "cygwin") {
++    # cygwin w32api comctl32 before 2004-12-02 misses some stubs
++    $missing = '';
++    $def = '
++comctl32.def: 
++	@echo "LIBRARY COMCTL32.DLL" >$@
++	@echo "EXPORTS" >$@';
++
++    $defs = `nm -g /usr/lib/w32api/libcomctl32.a`;
++    for (qw(ImageList_Duplicate@4 ImageList_DrawIndirect@4 ImageList_Copy@20)) {
++      unless ($defs =~ / _$_/) {
++	$missing .= "\n\t".'@echo "'.$_.'" >$@';
++      }
++    }
++    if ($missing) {
++      return $def . $missing . '
++
++libcyg.a: comctl32.def cygwin.o
++	dlltool -k --output-lib libcyg.a --def comctl32.def
++	ar r libcyg.a cygwin.o
++';
++    } else {
++'
++libcyg.a: cygwin.o
++	ar r libcyg.a cygwin.o
++'
++    }
++  }
++}
++
++sub const_loadlibs {
++  my $inherited = shift->SUPER::const_loadlibs(@_);
++  if ($^O eq "cygwin") {
++    $inherited = "MYEXTLIB = libcyg.a\n\n". $inherited;
++    $inherited =~ s/(EXTRALIBS.*)\n/$1 libcyg.a\n/;
++    $inherited =~ s/(LDLOADLIBS.*)\n/$1 libcyg.a\n/;
++  }
++  return $inherited;
++}
+--- perl-Win32-GUI-1.0/cygwin.c.orig	2005-02-10 02:15:50.132812500 +0100
++++ perl-Win32-GUI-1.0/cygwin.c	2004-12-02 00:33:11.000000000 +0100
+@@ -0,0 +1,22 @@
++/* missing definitions for cygwin:
++   itoa
++
++   and this .def file:
++   LIBRARY COMCTL32.DLL
++   EXPORTS
++   ImageList_Duplicate@4
++   ImageList_DrawIndirect@4
++   ImageList_Copy@20
++*/
++
++#ifdef __CYGWIN__
++char* itoa (int value, char * buffer, int radix);
++
++/* This is no strict ANSI definition, and not in newlib */
++#include <stdio.h>
++char* itoa (int value, char * buffer, int radix) {
++  if (sprintf(buffer, "%d", value)) return buffer;
++  else return NULL;
++}
++
++#endif
+--- perl-Win32-GUI-1.0/t/02_window.t.orig	2001-01-29 15:08:48.000000000 +0100
++++ perl-Win32-GUI-1.0/t/02_window.t	2005-02-10 02:19:34.476562500 +0100
+@@ -3,6 +3,7 @@
+ # `make test'. After `make install' it should work as `perl test.pl'
+ 
+ use strict;
++use blib;
+ use vars qw( $loaded $clip $actual );
+ 
+ ######################### We start with some black magic to print on failure.

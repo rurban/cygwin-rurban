@@ -1,0 +1,17 @@
+2008-07-03 13:44:35 rurban
+
+	* config/gen/makefiles/root.in: add the cygwin importlib to please
+	-lparrot in packaged version.
+
+--- origsrc/parrot-0.6.3/config/gen/makefiles/root.in	2008-06-16 13:06:01.000000000 +0000
++++ src/parrot-0.6.3/config/gen/makefiles/root.in	2008-07-03 11:40:14.171875000 +0000
+@@ -870,7 +870,8 @@
+ $(LIBPARROT_SHARED) : $(O_FILES)
+ 	$(MKPATH) @blib_dir@
+ 	$(LD) $(LD_SHARE_FLAGS) $(LDFLAGS) @ld_out@$@ @libparrot_soname@ \
+-    $(O_FILES) $(C_LIBS) $(ICU_SHARED)
++#CONDITIONED_LINE(cygchkdll):		-Wl,--out-implib=blib/lib/libparrot.dll.a \
++		$(O_FILES) $(C_LIBS) $(ICU_SHARED)
+ #CONDITIONED_LINE(libparrot_shared_alias):	( cd @blib_dir@ ; ln -sf @libparrot_shared@ @libparrot_shared_alias@ )
+ 
+ 

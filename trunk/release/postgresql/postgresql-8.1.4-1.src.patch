@@ -1,0 +1,24 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x configure postgresql-8.1.4-orig/configure.in postgresql-8.1.4/configure.in
+--- postgresql-8.1.4-orig/configure.in	2006-05-21 21:52:58.000000000 +0000
++++ postgresql-8.1.4/configure.in	2006-05-24 23:14:18.696500000 +0000
+@@ -17,7 +17,7 @@
+ dnl
+ m4_pattern_forbid(^PGAC_)dnl to catch undefined macros
+ 
+-AC_INIT([PostgreSQL], [8.1.4], [pgsql-bugs@postgresql.org])
++AC_INIT([PostgreSQL], [8.1.4], [cygwin@cygwin.com])
+ 
+ AC_PREREQ(2.59)
+ AC_COPYRIGHT([Copyright (c) 1996-2005, PostgreSQL Global Development Group])
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x configure postgresql-8.1.4-orig/src/include/pg_config.h.in postgresql-8.1.4/src/include/pg_config.h.in
+--- postgresql-8.1.4-orig/src/include/pg_config.h.in	2006-02-21 06:07:10.000000000 +0000
++++ postgresql-8.1.4/src/include/pg_config.h.in	2006-05-24 18:15:51.852750000 +0000
+@@ -129,7 +129,7 @@
+ /* Define to 1 if your compiler understands __FUNCTION__. */
+ #undef HAVE_FUNCNAME__FUNCTION
+ 
+-/* Define to 1 if you have getaddrinfo(). */
++/* Define to 1 if you have the `getaddrinfo' function. */
+ #undef HAVE_GETADDRINFO
+ 
+ /* Define to 1 if you have the `gethostbyname_r' function. */

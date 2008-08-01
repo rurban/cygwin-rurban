@@ -1,0 +1,10 @@
+sdesc: "PostgreSQL C client library"
+ldesc: "libpq is a C library that enables user programs to communicate with
+the PostgreSQL database server. The server can be on another machine
+and accessed through TCP/IP. This version of libpq is compatible
+with servers from PostgreSQL 8.2 or later.
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Database Libs
+requires: crypt libintl3 openssl
+external-source: postgresql

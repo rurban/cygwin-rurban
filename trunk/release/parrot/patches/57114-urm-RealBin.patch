@@ -1,0 +1,14 @@
+difforig languages/urm/urmc
+
+diff -u languages/urm/urmc.orig languages/urm/urmc
+--- languages/urm/urmc.orig	2008-02-23 18:27:38.000000000 +0000
++++ languages/urm/urmc	2008-07-19 09:44:38.781250000 +0000
+@@ -18,7 +18,7 @@
+ 
+ use strict;
+ use FindBin;
+-use lib "$FindBin::RealBin/../../lib";
++use lib "$FindBin::Bin/../../lib";
+ 
+ use Data::Dumper;
+ use Getopt::Long;

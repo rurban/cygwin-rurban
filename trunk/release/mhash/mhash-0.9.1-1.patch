@@ -1,0 +1,159 @@
+--- mhash-0.9.1/CYGWIN-PATCHES/README.orig	1970-01-01 02:00:00.000000000 +0200
++++ mhash-0.9.1/CYGWIN-PATCHES/README	2004-10-05 20:31:37.356399600 +0200
+@@ -0,0 +1,73 @@
++mhash-0.9.1-1
++------------------------------------------ 
++MHash - library of hash algorithms
++
++Runtime requirements:
++  cygwin-1.5.11-1	or newer
++  
++Build requirements:
++  cygwin-1.5.11-1       or newer
++  gcc-3.3.1             or newer (did it with 3.4.1)
++  binutils-20040725-2   or newer
++  libtool-devel-1.5.10-1
++  automake-devel-1.9.1-1
++  autoconf-devel-2.59-1
++  make-3.80-1           or newer
++  ash-20040127-1        or newer
++  fileutils-4.1         or newer
++  sed-4.1.2-1           or newer
++  m4-1.4-1
++  perl-5                (for automake)
++
++Canonical homepage:
++  http://mhash.sourceforge.net/
++
++Canonical download:
++  http://mhash.sourceforge.net/
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++
++  cd /usr/src
++  unpack mhash-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  ./mhash-<VERSION>-<CYGREL>.sh prep build install
++
++./mhash-<VERSION>-<CYGREL>.sh all will create:
++  /usr/src/mhash-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/mhash-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use './mhash-<VERSION>-<CYGREL>.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in the binary distribution:
++
++  /usr/bin/cygmhash-2.dll
++  /usr/include/mhash.h
++  /usr/lib/libmhash.a
++  /usr/lib/libmhash.dll.a
++  /usr/lib/libmhash.la
++  /usr/share/doc/Cygwin/mhash-0.9.1.README (this file)
++  /usr/share/doc/mhash-0.9.1/AUTHORS
++  /usr/share/doc/mhash-0.9.1/ChangeLog
++  /usr/share/doc/mhash-0.9.1/COPYING
++  /usr/share/doc/mhash-0.9.1/INSTALL
++  /usr/share/doc/mhash-0.9.1/NEWS
++  /usr/share/doc/mhash-0.9.1/README
++  /usr/share/doc/mhash-0.9.1/THANKS
++  /usr/share/doc/mhash-0.9.1/TODO
++  /usr/share/man/man3/mhash.3.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version mhash-0.9.1-1 -----
++
++Maintainer change. Fixed to be mingw independent. All tests PASS.
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>
+--- mhash-0.9.1/CYGWIN-PATCHES/setup.hint.orig	1970-01-01 02:00:00.000000000 +0200
++++ mhash-0.9.1/CYGWIN-PATCHES/setup.hint	2004-10-05 19:01:17.000000000 +0200
+@@ -0,0 +1,7 @@
++sdesc: "MHash - library of hash algorithms (runtime environment)"
++ldesc: "MHash is a library that provides a uniform interface to several hash
++algorithms. It supports the basics for message authentication by following
++rfc2104 (HMAC). It also includes some key generation algorithms which are based
++on hash algorithms. This package contains the runtime environment."
++category: Libs
++requires: cygwin
+--- mhash-0.9.1/acinclude.m4.orig	2000-12-15 14:45:20.000000000 +0200
++++ mhash-0.9.1/acinclude.m4	2004-10-05 19:55:22.000000000 +0200
+@@ -1,3 +1,3 @@
+-AC_DEFUN(AM_SET_LIBTOOL_VARIABLE,[
++AC_DEFUN([AM_SET_LIBTOOL_VARIABLE],[
+   LIBTOOL='$(SHELL) $(top_builddir)/libtool $1'
+ ])
+--- mhash-0.9.1/configure.in.orig	2004-04-18 03:00:54.000000000 +0200
++++ mhash-0.9.1/configure.in	2004-10-05 20:14:22.000000000 +0200
+@@ -1,10 +1,10 @@
+ dnl Process this file with autoconf to produce a configure script.
++VERSION=0.9.1
+ AC_INIT(lib/mhash.c)
+ 
+ AC_CANONICAL_SYSTEM
+ 
+-AM_INIT_AUTOMAKE(mhash, 0.8.18)
+-
++AM_INIT_AUTOMAKE(mhash, $VERSION)
+ MHASH_VERSION=$VERSION
+ AC_SUBST(MHASH_VERSION)
+ 
+@@ -14,8 +14,6 @@
+ 	
+ dnl AC_PROG_MAKE_SET
+ 
+-dnl sinclude(threads.m4)
+-
+ AC_ARG_WITH(CC,
+ [  --with-CC               choose compiler],
+   if test "$withval" != "no" && test "$withval" != "yes" ; then
+@@ -104,21 +102,8 @@
+ , 
+ AC_DEFINE(ENABLE_WHIRLPOOL))
+ 
+-
+-
+ AC_PROG_CC
+ 
+-case "${target}" in
+-    *-cygwin*)
+-	AC_DEFINE(WIN32)
+-	AC_DEFINE(WIN32_DLOPEN)
+-	if test $ac_cv_prog_gcc = yes; then
+-	  CFLAGS="${CFLAGS} -mno-cygwin"
+-	fi
+-        ;;
+-esac
+-
+-
+ dnl Checks for programs.
+ AC_PROG_INSTALL
+ AC_PROG_LN_S
+@@ -143,7 +128,7 @@
+ 
+ AC_C_BIGENDIAN
+ 
+-AC_DISABLE_STATIC
++dnl AC_DISABLE_STATIC
+ AC_LIBTOOL_WIN32_DLL
+ AM_PROG_LIBTOOL
+ AM_SET_LIBTOOL_VARIABLE([--silent])
+--- mhash-0.9.1/lib/mhash.c.orig	2004-04-18 03:00:54.000000000 +0200
++++ mhash-0.9.1/lib/mhash.c	2004-10-05 19:11:12.000000000 +0200
+@@ -687,7 +687,7 @@
+ 		return MHASH_FAILED;
+ }
+ 
+-#ifdef WIN32
++#if defined(WIN32) || defined (__CYGWIN__)
+ WIN32DLL_DEFINE int main (void)
+ {
+        /* empty main function to avoid linker error (see cygwin FAQ) */

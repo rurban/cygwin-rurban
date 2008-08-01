@@ -1,0 +1,92 @@
+diff -urN origsrc/ffcall-1.10/CYGWIN-PATCHES/README src/ffcall-1.10/CYGWIN-PATCHES/README
+--- origsrc/ffcall-1.10/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/ffcall-1.10/CYGWIN-PATCHES/README	2007-12-24 17:41:40.109375000 +0000
+@@ -0,0 +1,80 @@
++ffcall - Foreign function call libraries
++----------------------------------------
++
++Runtime requirements:
++  cygwin-1.5.x              or newer
++  
++Build requirements:
++  cygwin
++  gcc
++  binutils
++  make
++  bash
++  fileutils
++  sed
++
++Canonical homepage:
++  http://www.haible.de/bruno/packages-ffcall.html
++
++Canonical download:
++  ftp://ftp.santafe.edu/pub/gnu/ffcall-<VERSION>.tar.gz
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  tar xfj ffcall-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++    unpacked under /usr/src automatically
++  cd /usr/src
++  cygport ffcall-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/ffcall-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/ffcall-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport ffcall-<VERSION>-<CYGREL>.cygport prep' to 
++get a patched source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in ffcall:
++
++  /usr/include/avcall.h
++  /usr/include/callback.h
++  /usr/include/trampoline.h
++  /usr/include/trampoline_r.h
++  /usr/include/vacall.h
++  /usr/include/vacall_r.h
++  /usr/lib/libavcall.a
++  /usr/lib/libavcall.la
++  /usr/lib/libcallback.a
++  /usr/lib/libcallback.la
++  /usr/lib/libtrampoline.a
++  /usr/lib/libvacall.a
++  /usr/share/doc/Cygwin/ffcall-1.10.README
++  /usr/share/doc/ffcall-1.10/COPYING
++  /usr/share/doc/ffcall-1.10/NEWS
++  /usr/share/doc/ffcall-1.10/README
++  /usr/share/doc/ffcall-1.10/html/avcall.html
++  /usr/share/doc/ffcall-1.10/html/callback.html
++  /usr/share/doc/ffcall-1.10/html/trampoline.html
++  /usr/share/doc/ffcall-1.10/html/trampoline_r.html
++  /usr/share/doc/ffcall-1.10/html/vacall.html
++  /usr/share/man/man3/avcall.3.gz
++  /usr/share/man/man3/callback.3.gz
++  /usr/share/man/man3/trampoline.3.gz
++  /usr/share/man/man3/trampoline_r.3.gz
++  /usr/share/man/man3/vacall.3.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version ffcall-1.10-1 -----
++Initial release.
++autoreconf requires 2.59
++
++This is the first version seperate from clisp, needed since clisp-2.44
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN origsrc/ffcall-1.10/CYGWIN-PATCHES/setup.hint src/ffcall-1.10/CYGWIN-PATCHES/setup.hint
+--- origsrc/ffcall-1.10/CYGWIN-PATCHES/setup.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/ffcall-1.10/CYGWIN-PATCHES/setup.hint	2007-12-24 17:34:37.250000000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Foreign function call libraries"
++ldesc: "This is a collection of four libraries which can be used to build
++foreign function call interfaces in embedded interpreters. Required by clisp."
++category: Libs

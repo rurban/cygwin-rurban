@@ -1,0 +1,9 @@
+sdesc: "FastCGI A High-Performance Gateway Interface"
+ldesc: "Library and cgi-wrapper to create fastcgi enabled applications. 
+FastCGI is a fast, open, and secure Web server interface that
+solves the performance problems inherent in CGI without introducing
+any of the new problems associated with writing applications to
+lower-level Web server APIs. Modules to support FastCGI can be plugged
+into Web server APIs such as Apache API, NSAPI, and ISAPI."
+category: Web
+requires: cygwin libfcgi0

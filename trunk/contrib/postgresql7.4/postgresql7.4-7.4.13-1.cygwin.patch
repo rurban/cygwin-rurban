@@ -1,0 +1,1711 @@
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/README src/postgresql-7.4.13/CYGWIN-PATCHES/README
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/README	2006-08-19 12:49:25.078125000 +0000
+@@ -0,0 +1,102 @@
++postgresql7.4
++------------------------------------------
++PostgreSQL is an advanced Object-Relational database management system
++(DBMS) that supports almost all SQL constructs (including transactions,
++subselects and user-defined types and functions).
++
++postgresql7.4 ican be used in a side-by-side install with the current PostgreSQL-8.x
++Binaries are in /usr/lib/postgreql7.4/bin, which is typically NOT in the PATH!
++And it is recommended to keep it this way.
++cygserver must run as service, CYGWIN must contain server. 
++cygipc is not used, and if building from source cygipc must be uninstalled.
++Built via cygport.
++
++Runtime requirements:
++  crypt-1.1-1
++  cygwin-1.5.18-1
++  postgresql7.4-client
++  libpq3
++  libiconv2-1.9.2-2
++  libintl3-0.14.5-1
++  libreadline6-5.0-4
++  openssl-0.9.8a-1
++  zlib-1.2.3-1
++  perl-5.8.7	  (optional, for plperl. only this version!)
++  python-2.4.x    (optional, for plpython. every 2.4 version will work)
++
++Build requirements: (additionally)
++  cygport
++  gcc-core 3.3.x    or newer (libtool-devel-1.5.10 not required)
++  binutils-20040725-2   or newer
++  make-3.80-1           or newer
++  fileutils-4.1         or newer
++  sed-4.1.2-1           or newer
++  m4-1.4-1
++
++  Sun JDK 1.4.x         (optional, for pgjava only)
++  Ant 1.5		(optional, for pgjava only)
++  tk84, tcl84 		(optional, for pgtcl only)
++
++  OpenSP-1.5.1-1        (optional, for man rebuilding)
++  docbook-xml42	 	(optional, for man rebuilding)
++  cpan SGMLSpm          (optional, for man rebuilding)
++  docbook2X      	(optional, for man rebuilding)
++  docbook2man-sgmlspl   (optional, for man rebuilding)
++
++Canonical homepage:
++  http://www.postgresql.org
++
++Canonical download:
++  ftp://ftp.postgresql.org
++
++------------------------------------
++
++Build instructions:
++  cygport postgresql7.4-<VER>-<REL>.cygport almostall
++
++This will create:
++  /usr/src/postgresql7.4-<VER>-<REL>-src.tar.bz2
++  /usr/src/postgresql7.4-<VER>-<REL>.tar.bz2
++
++Or use 'cygport postgresql7.4-<VER>-<REL>.cygport prep' to 
++get a patched source directory.
++
++------------------
++Files:
++
++Package layout see postgresql7.4-<VER>-<REL>-pkg.log
++
++------------------
++
++Port Notes:
++
++----------  postgresql7.4-7.4.13-1 ------------ 
++New release.
++DBMirror: Applied fix for http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=375744
++Make system: fixed some run-time paths from postgresql to postgresql7.4
++changed default pgport from 5432 to 15432
++fixed LIBS := "-lpgport $(LIBS)" for contrib
++appended "-7.4" to all nls basenames in the src and the mo files.
++updated FAQ_MSWIN from parts of this README.
++fixed --with-java to build with cygwin and in a seperate build dir
++added Tcl_FindExecutable(""). Required to prevent error loading init.tcl (fix from 8.1.x)
++
++----------  postgresql-7.4.5-1 ------------ 
++Latest version which can only be used alone.
++
++======================================================================
++
++More documentation:
++
++See /usr/share/doc/postgresql7.4/FAQ_MSWIN
++
++======================================================================
++
++Cygwin port maintained now by: Reini Urban <rurban@x-ray.at>, 
++taken over from Jason Tishler.
++Please report problems, suggestions, etc. dependent on their nature to one of
++the following:
++
++    cygwin@cygwin.com
++    pgsql-cygwin@postgresql.org
++
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg-compat.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg-compat.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg-compat.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg-compat.hint	2006-08-12 18:42:54.062500000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "older version of run-time library for ECPG programs"
++ldesc: "The libecpg_compat shared library is used by programs built with ecpg.
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4-devel.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4-devel.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4-devel.hint	2006-08-12 18:40:26.953125000 +0000
+@@ -0,0 +1,12 @@
++sdesc: "development files for ECPG (Embedded PostgreSQL for C)"
++ldesc: "This package contains the necessary files to build ECPG (Embedded
++PostgreSQL for C) programs. It includes the development libraries
++and the preprocessor program ecpg.
++.
++PostgreSQL is an object-relational SQL database management system.
++.
++Install this package if you want to write C programs with SQL statements
++embedded in them (rather than run by an external process)."
++category: Devel Libs
++requires: libpq3-devel openssl-devel libecpg-compat1
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libecpg4.hint	2006-08-12 18:41:19.859375000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "run-time library for ECPG programs"
++ldesc: "The libecpg shared library is used by programs built with ECPG
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpgtypes1.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libpgtypes1.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpgtypes1.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libpgtypes1.hint	2006-08-12 18:41:48.078125000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "shared library pgtypes.dll for PostgreSQL 7.4"
++ldesc: "The libpgtypes shared library is used by programs built with ecpg.
++(Embedded PostgreSQL for C).
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Libs
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpq3-devel.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libpq3-devel.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpq3-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libpq3-devel.hint	2006-08-12 18:43:04.968750000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "header files for libpq3 (PostgreSQL C client library)"
++ldesc: "Header files and static library for compiling C programs to link
++with the libpq library in order to communicate with a PostgreSQL
++database backend.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Devel Libs
++requires: libpq3 openssl-devel
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpq3.hint src/postgresql-7.4.13/CYGWIN-PATCHES/libpq3.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/libpq3.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/libpq3.hint	2006-08-12 18:42:47.593750000 +0000
+@@ -0,0 +1,12 @@
++sdesc: "PostgreSQL C client library"
++ldesc: "libpq is a C library that enables user programs to communicate with
++the PostgreSQL database server. The server can be on another machine
++and accessed through TCP/IP. This version of pq.dll is compatible
++with servers up to PostgreSQL 7.4.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database Libs
++requires: crypt libintl3 openssl
++external-source: postgresql7.4
++curr: 7.4.13-1
++prev: 7.4.5-1
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-7.4.13-1-pkg.log src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-7.4.13-1-pkg.log
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-7.4.13-1-pkg.log	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-7.4.13-1-pkg.log	2006-08-19 12:54:42.734375000 +0000
+@@ -0,0 +1,1203 @@
++>>> Creating binary package(s)
++postgresql7.4-7.4.13-1.tar.bz2
++etc/
++etc/rc.d/
++etc/rc.d/init.d/
++etc/rc.d/init.d/postgresql7.4
++usr/lib/postgresql7.4/bin/initdb
++usr/lib/postgresql7.4/bin/initlocation
++usr/lib/postgresql7.4/bin/ipcclean
++usr/lib/postgresql7.4/bin/pg_controldata.exe
++usr/lib/postgresql7.4/bin/pg_ctl
++usr/lib/postgresql7.4/bin/pg_resetxlog.exe
++usr/lib/postgresql7.4/bin/postgres.exe
++usr/lib/postgresql7.4/bin/postmaster
++usr/lib/postgresql7.4/lib/ascii_and_mic.dll
++usr/lib/postgresql7.4/lib/cyrillic_and_mic.dll
++usr/lib/postgresql7.4/lib/euc_cn_and_mic.dll
++usr/lib/postgresql7.4/lib/euc_jp_and_sjis.dll
++usr/lib/postgresql7.4/lib/euc_kr_and_mic.dll
++usr/lib/postgresql7.4/lib/euc_tw_and_big5.dll
++usr/lib/postgresql7.4/lib/latin2_and_win1250.dll
++usr/lib/postgresql7.4/lib/latin_and_mic.dll
++usr/lib/postgresql7.4/lib/utf8_and_ascii.dll
++usr/lib/postgresql7.4/lib/utf8_and_big5.dll
++usr/lib/postgresql7.4/lib/utf8_and_cyrillic.dll
++usr/lib/postgresql7.4/lib/utf8_and_euc_cn.dll
++usr/lib/postgresql7.4/lib/utf8_and_euc_jp.dll
++usr/lib/postgresql7.4/lib/utf8_and_euc_kr.dll
++usr/lib/postgresql7.4/lib/utf8_and_euc_tw.dll
++usr/lib/postgresql7.4/lib/utf8_and_gb18030.dll
++usr/lib/postgresql7.4/lib/utf8_and_gbk.dll
++usr/lib/postgresql7.4/lib/utf8_and_iso8859.dll
++usr/lib/postgresql7.4/lib/utf8_and_iso8859_1.dll
++usr/lib/postgresql7.4/lib/utf8_and_johab.dll
++usr/lib/postgresql7.4/lib/utf8_and_sjis.dll
++usr/lib/postgresql7.4/lib/utf8_and_tcvn.dll
++usr/lib/postgresql7.4/lib/utf8_and_uhc.dll
++usr/lib/postgresql7.4/lib/utf8_and_win1250.dll
++usr/lib/postgresql7.4/lib/utf8_and_win1256.dll
++usr/lib/postgresql7.4/lib/utf8_and_win874.dll
++usr/lib/postgresql7.4/lib/plpgsql.dll
++usr/share/locale/cs/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/de/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/es/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/hu/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/it/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/sl/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/zh_TW/LC_MESSAGES/pg_controldata-7.4.mo
++usr/share/locale/cs/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/de/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/es/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/hu/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/it/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/sl/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/pg_resetxlog-7.4.mo
++usr/share/locale/cs/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/de/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/es/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/hr/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/hu/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/it/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/postgres-7.4.mo
++usr/share/locale/zh_TW/LC_MESSAGES/postgres-7.4.mo
++usr/share/postgresql7.4/man/man1/ipcclean.1.gz
++usr/share/postgresql7.4/man/man1/initdb.1.gz
++usr/share/postgresql7.4/man/man1/initlocation.1.gz
++usr/share/postgresql7.4/man/man1/pg_controldata.1.gz
++usr/share/postgresql7.4/man/man1/pg_ctl.1.gz
++usr/share/postgresql7.4/man/man1/pg_resetxlog.1.gz
++usr/share/postgresql7.4/man/man1/postgres.1.gz
++usr/share/postgresql7.4/man/man1/postmaster.1.gz
++usr/share/doc/Cygwin/postgresql7.4-7.4.13.README
++usr/share/doc/postgresql7.4-7.4.13/COPYRIGHT
++usr/share/doc/postgresql7.4-7.4.13/INSTALL
++usr/share/doc/postgresql7.4-7.4.13/README
++usr/share/postgresql7.4/data/
++usr/share/postgresql7.4/data/conversion_create.sql
++usr/share/postgresql7.4/data/information_schema.sql
++usr/share/postgresql7.4/data/pg_hba.conf.sample
++usr/share/postgresql7.4/data/pg_ident.conf.sample
++usr/share/postgresql7.4/data/pg_service.conf.sample
++usr/share/postgresql7.4/data/postgres.bki
++usr/share/postgresql7.4/data/postgres.description
++usr/share/postgresql7.4/data/postgresql.conf.sample
++usr/share/postgresql7.4/data/sql_features.txt
++
++postgresql7.4-devel-7.4.13-1.tar.bz2
++usr/include/postgresql/7.4/
++usr/include/postgresql/7.4/libpq/
++usr/lib/postgresql7.4/lib/libpostgres.a
++usr/share/postgresql7.4/man/man1/pgtclsh.1.gz
++usr/share/postgresql7.4/man/man1/pgtksh.1.gz
++
++postgresql7.4-client-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/bin/clusterdb.exe
++usr/lib/postgresql7.4/bin/createdb.exe
++usr/lib/postgresql7.4/bin/dropdb.exe
++usr/lib/postgresql7.4/bin/pg_dump.exe
++usr/lib/postgresql7.4/bin/pg_dumpall.exe
++usr/lib/postgresql7.4/bin/psql.exe
++usr/lib/postgresql7.4/bin/createlang.exe
++usr/lib/postgresql7.4/bin/createuser.exe
++usr/lib/postgresql7.4/bin/droplang.exe
++usr/lib/postgresql7.4/bin/dropuser.exe
++usr/lib/postgresql7.4/bin/pg_restore.exe
++usr/lib/postgresql7.4/bin/vacuumdb.exe
++usr/share/postgresql7.4/man/man1/clusterdb.1.gz
++usr/share/postgresql7.4/man/man1/createdb.1.gz
++usr/share/postgresql7.4/man/man1/createlang.1.gz
++usr/share/postgresql7.4/man/man1/createuser.1.gz
++usr/share/postgresql7.4/man/man1/dropdb.1.gz
++usr/share/postgresql7.4/man/man1/droplang.1.gz
++usr/share/postgresql7.4/man/man1/dropuser.1.gz
++usr/share/postgresql7.4/man/man1/pg_dump.1.gz
++usr/share/postgresql7.4/man/man1/pg_dumpall.1.gz
++usr/share/postgresql7.4/man/man1/pg_restore.1.gz
++usr/share/postgresql7.4/man/man1/psql.1.gz
++usr/share/postgresql7.4/man/man1/vacuumdb.1.gz
++usr/share/postgresql7.4/man/man7/
++usr/share/postgresql7.4/man/man7/abort.7.gz
++usr/share/postgresql7.4/man/man7/alter_aggregate.7.gz
++usr/share/postgresql7.4/man/man7/alter_conversion.7.gz
++usr/share/postgresql7.4/man/man7/alter_database.7.gz
++usr/share/postgresql7.4/man/man7/alter_domain.7.gz
++usr/share/postgresql7.4/man/man7/alter_function.7.gz
++usr/share/postgresql7.4/man/man7/alter_group.7.gz
++usr/share/postgresql7.4/man/man7/alter_language.7.gz
++usr/share/postgresql7.4/man/man7/alter_operator_class.7.gz
++usr/share/postgresql7.4/man/man7/alter_schema.7.gz
++usr/share/postgresql7.4/man/man7/alter_sequence.7.gz
++usr/share/postgresql7.4/man/man7/alter_table.7.gz
++usr/share/postgresql7.4/man/man7/alter_trigger.7.gz
++usr/share/postgresql7.4/man/man7/alter_user.7.gz
++usr/share/postgresql7.4/man/man7/analyze.7.gz
++usr/share/postgresql7.4/man/man7/begin.7.gz
++usr/share/postgresql7.4/man/man7/checkpoint.7.gz
++usr/share/postgresql7.4/man/man7/close.7.gz
++usr/share/postgresql7.4/man/man7/cluster.7.gz
++usr/share/postgresql7.4/man/man7/comment.7.gz
++usr/share/postgresql7.4/man/man7/commit.7.gz
++usr/share/postgresql7.4/man/man7/copy.7.gz
++usr/share/postgresql7.4/man/man7/create_aggregate.7.gz
++usr/share/postgresql7.4/man/man7/create_cast.7.gz
++usr/share/postgresql7.4/man/man7/create_constraint_trigger.7.gz
++usr/share/postgresql7.4/man/man7/create_conversion.7.gz
++usr/share/postgresql7.4/man/man7/create_database.7.gz
++usr/share/postgresql7.4/man/man7/create_domain.7.gz
++usr/share/postgresql7.4/man/man7/create_function.7.gz
++usr/share/postgresql7.4/man/man7/create_group.7.gz
++usr/share/postgresql7.4/man/man7/create_index.7.gz
++usr/share/postgresql7.4/man/man7/create_language.7.gz
++usr/share/postgresql7.4/man/man7/create_operator.7.gz
++usr/share/postgresql7.4/man/man7/create_operator_class.7.gz
++usr/share/postgresql7.4/man/man7/create_rule.7.gz
++usr/share/postgresql7.4/man/man7/create_schema.7.gz
++usr/share/postgresql7.4/man/man7/create_sequence.7.gz
++usr/share/postgresql7.4/man/man7/create_table.7.gz
++usr/share/postgresql7.4/man/man7/create_table_as.7.gz
++usr/share/postgresql7.4/man/man7/create_trigger.7.gz
++usr/share/postgresql7.4/man/man7/create_type.7.gz
++usr/share/postgresql7.4/man/man7/create_user.7.gz
++usr/share/postgresql7.4/man/man7/create_view.7.gz
++usr/share/postgresql7.4/man/man7/deallocate.7.gz
++usr/share/postgresql7.4/man/man7/declare.7.gz
++usr/share/postgresql7.4/man/man7/delete.7.gz
++usr/share/postgresql7.4/man/man7/drop_aggregate.7.gz
++usr/share/postgresql7.4/man/man7/drop_cast.7.gz
++usr/share/postgresql7.4/man/man7/drop_conversion.7.gz
++usr/share/postgresql7.4/man/man7/drop_database.7.gz
++usr/share/postgresql7.4/man/man7/drop_domain.7.gz
++usr/share/postgresql7.4/man/man7/drop_function.7.gz
++usr/share/postgresql7.4/man/man7/drop_group.7.gz
++usr/share/postgresql7.4/man/man7/drop_index.7.gz
++usr/share/postgresql7.4/man/man7/drop_language.7.gz
++usr/share/postgresql7.4/man/man7/drop_operator.7.gz
++usr/share/postgresql7.4/man/man7/drop_operator_class.7.gz
++usr/share/postgresql7.4/man/man7/drop_rule.7.gz
++usr/share/postgresql7.4/man/man7/drop_schema.7.gz
++usr/share/postgresql7.4/man/man7/drop_sequence.7.gz
++usr/share/postgresql7.4/man/man7/drop_table.7.gz
++usr/share/postgresql7.4/man/man7/drop_trigger.7.gz
++usr/share/postgresql7.4/man/man7/drop_type.7.gz
++usr/share/postgresql7.4/man/man7/drop_user.7.gz
++usr/share/postgresql7.4/man/man7/drop_view.7.gz
++usr/share/postgresql7.4/man/man7/end.7.gz
++usr/share/postgresql7.4/man/man7/execute.7.gz
++usr/share/postgresql7.4/man/man7/explain.7.gz
++usr/share/postgresql7.4/man/man7/fetch.7.gz
++usr/share/postgresql7.4/man/man7/grant.7.gz
++usr/share/postgresql7.4/man/man7/insert.7.gz
++usr/share/postgresql7.4/man/man7/listen.7.gz
++usr/share/postgresql7.4/man/man7/load.7.gz
++usr/share/postgresql7.4/man/man7/lock.7.gz
++usr/share/postgresql7.4/man/man7/move.7.gz
++usr/share/postgresql7.4/man/man7/notify.7.gz
++usr/share/postgresql7.4/man/man7/prepare.7.gz
++usr/share/postgresql7.4/man/man7/reindex.7.gz
++usr/share/postgresql7.4/man/man7/reset.7.gz
++usr/share/postgresql7.4/man/man7/revoke.7.gz
++usr/share/postgresql7.4/man/man7/rollback.7.gz
++usr/share/postgresql7.4/man/man7/select.7.gz
++usr/share/postgresql7.4/man/man7/select_into.7.gz
++usr/share/postgresql7.4/man/man7/set.7.gz
++usr/share/postgresql7.4/man/man7/set_constraints.7.gz
++usr/share/postgresql7.4/man/man7/set_session_authorization.7.gz
++usr/share/postgresql7.4/man/man7/set_transaction.7.gz
++usr/share/postgresql7.4/man/man7/show.7.gz
++usr/share/postgresql7.4/man/man7/start_transaction.7.gz
++usr/share/postgresql7.4/man/man7/truncate.7.gz
++usr/share/postgresql7.4/man/man7/unlisten.7.gz
++usr/share/postgresql7.4/man/man7/update.7.gz
++usr/share/postgresql7.4/man/man7/vacuum.7.gz
++usr/share/locale/cs/LC_MESSAGES/
++usr/share/locale/cs/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/cs/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/cs/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/cs/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/de/LC_MESSAGES/
++usr/share/locale/de/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/de/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/de/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/de/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/es/LC_MESSAGES/
++usr/share/locale/es/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/es/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/es/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/es/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/
++usr/share/locale/fr/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/fr/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/hr/LC_MESSAGES/
++usr/share/locale/hr/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/hu/LC_MESSAGES/
++usr/share/locale/hu/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/it/LC_MESSAGES/
++usr/share/locale/it/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/it/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/it/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/it/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/
++usr/share/locale/nb/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/nb/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/
++usr/share/locale/pt_BR/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/pt_BR/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/
++usr/share/locale/ru/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/ru/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/sl/LC_MESSAGES/
++usr/share/locale/sl/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/sl/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/sl/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/
++usr/share/locale/sv/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/sv/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/
++usr/share/locale/tr/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/tr/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/
++usr/share/locale/zh_CN/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/pgscripts-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/zh_CN/LC_MESSAGES/psql-7.4.mo
++usr/share/locale/zh_TW/LC_MESSAGES/
++usr/share/locale/zh_TW/LC_MESSAGES/libpq-7.4.mo
++usr/share/locale/zh_TW/LC_MESSAGES/pg_dump-7.4.mo
++usr/share/locale/zh_TW/LC_MESSAGES/psql-7.4.mo
++
++postgresql7.4-contrib-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/bin/
++usr/lib/postgresql7.4/bin/ApplySnapshot
++usr/lib/postgresql7.4/bin/CleanLog
++usr/lib/postgresql7.4/bin/dbf2pg.exe
++usr/lib/postgresql7.4/bin/findoidjoins.exe
++usr/lib/postgresql7.4/bin/fti.pl
++usr/lib/postgresql7.4/bin/GetSyncID
++usr/lib/postgresql7.4/bin/InitRservTest
++usr/lib/postgresql7.4/bin/make_oidjoins_check
++usr/lib/postgresql7.4/bin/MasterAddTable
++usr/lib/postgresql7.4/bin/MasterInit
++usr/lib/postgresql7.4/bin/MasterSync
++usr/lib/postgresql7.4/bin/oid2name.exe
++usr/lib/postgresql7.4/bin/pgbench.exe
++usr/lib/postgresql7.4/bin/pg_autovacuum.exe
++usr/lib/postgresql7.4/bin/pg_dumplo.exe
++usr/lib/postgresql7.4/bin/pg_encoding.exe
++usr/lib/postgresql7.4/bin/pg_id.exe
++usr/lib/postgresql7.4/bin/pg_logger.exe
++usr/lib/postgresql7.4/bin/PrepareSnapshot
++usr/lib/postgresql7.4/bin/Replicate
++usr/lib/postgresql7.4/bin/RservTest
++usr/lib/postgresql7.4/bin/SlaveAddTable
++usr/lib/postgresql7.4/bin/SlaveInit
++usr/lib/postgresql7.4/bin/vacuumlo.exe
++usr/lib/postgresql7.4/lib/_int.dll
++usr/lib/postgresql7.4/lib/autoinc.dll
++usr/lib/postgresql7.4/lib/btree_gist.dll
++usr/lib/postgresql7.4/lib/chkpass.dll
++usr/lib/postgresql7.4/lib/cube.dll
++usr/lib/postgresql7.4/lib/dblink.dll
++usr/lib/postgresql7.4/lib/dbsize.dll
++usr/lib/postgresql7.4/lib/earthdistance.dll
++usr/lib/postgresql7.4/lib/fti.dll
++usr/lib/postgresql7.4/lib/fuzzystrmatch.dll
++usr/lib/postgresql7.4/lib/insert_username.dll
++usr/lib/postgresql7.4/lib/int_aggregate.dll
++usr/lib/postgresql7.4/lib/isbn_issn.dll
++usr/lib/postgresql7.4/lib/lo.dll
++usr/lib/postgresql7.4/lib/ltree.dll
++usr/lib/postgresql7.4/lib/misc_utils.dll
++usr/lib/postgresql7.4/lib/moddatetime.dll
++usr/lib/postgresql7.4/lib/noup.dll
++usr/lib/postgresql7.4/lib/pending.dll
++usr/lib/postgresql7.4/lib/pgcrypto.dll
++usr/lib/postgresql7.4/lib/pgstattuple.dll
++usr/lib/postgresql7.4/lib/refint.dll
++usr/lib/postgresql7.4/lib/rserv.dll
++usr/lib/postgresql7.4/lib/rtree_gist.dll
++usr/lib/postgresql7.4/lib/seg.dll
++usr/lib/postgresql7.4/lib/string_io.dll
++usr/lib/postgresql7.4/lib/tablefunc.dll
++usr/lib/postgresql7.4/lib/timetravel.dll
++usr/lib/postgresql7.4/lib/tsearch.dll
++usr/lib/postgresql7.4/lib/tsearch2.dll
++usr/lib/postgresql7.4/lib/user_locks.dll
++usr/share/postgresql7.4/contrib/
++usr/share/postgresql7.4/contrib/autoinc.sql
++usr/share/postgresql7.4/contrib/btree_gist.sql
++usr/share/postgresql7.4/contrib/chkpass.sql
++usr/share/postgresql7.4/contrib/cube.sql
++usr/share/postgresql7.4/contrib/dblink.sql
++usr/share/postgresql7.4/contrib/dbsize.sql
++usr/share/postgresql7.4/contrib/earthdistance.sql
++usr/share/postgresql7.4/contrib/english.stop
++usr/share/postgresql7.4/contrib/fti.sql
++usr/share/postgresql7.4/contrib/fuzzystrmatch.sql
++usr/share/postgresql7.4/contrib/insert_username.sql
++usr/share/postgresql7.4/contrib/int_aggregate.sql
++usr/share/postgresql7.4/contrib/isbn_issn.sql
++usr/share/postgresql7.4/contrib/lo.sql
++usr/share/postgresql7.4/contrib/lo_drop.sql
++usr/share/postgresql7.4/contrib/lo_test.sql
++usr/share/postgresql7.4/contrib/ltree.sql
++usr/share/postgresql7.4/contrib/master.sql
++usr/share/postgresql7.4/contrib/misc_utils.sql
++usr/share/postgresql7.4/contrib/moddatetime.sql
++usr/share/postgresql7.4/contrib/noup.sql
++usr/share/postgresql7.4/contrib/pgcrypto.sql
++usr/share/postgresql7.4/contrib/pgstattuple.sql
++usr/share/postgresql7.4/contrib/refint.sql
++usr/share/postgresql7.4/contrib/RServ.pm
++usr/share/postgresql7.4/contrib/rtree_gist.sql
++usr/share/postgresql7.4/contrib/russian.stop
++usr/share/postgresql7.4/contrib/seg.sql
++usr/share/postgresql7.4/contrib/slave.sql
++usr/share/postgresql7.4/contrib/string_io.sql
++usr/share/postgresql7.4/contrib/tablefunc.sql
++usr/share/postgresql7.4/contrib/timetravel.sql
++usr/share/postgresql7.4/contrib/tsearch.sql
++usr/share/postgresql7.4/contrib/tsearch2.sql
++usr/share/postgresql7.4/contrib/untsearch2.sql
++usr/share/postgresql7.4/contrib/user_locks.sql
++usr/share/postgresql7.4/contrib/_int.sql
++usr/share/doc/postgresql7.4-7.4.13/contrib/
++usr/share/doc/postgresql7.4-7.4.13/contrib/autoinc.example
++usr/share/doc/postgresql7.4-7.4.13/contrib/insert_username.example
++usr/share/doc/postgresql7.4-7.4.13/contrib/moddatetime.example
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.apachelog
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.btree_gist
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.chkpass
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.cube
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.dbf2pg
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.dblink
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.dbmirror
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.dbsize
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.earthdistance
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.findoidjoins
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.fti
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.fuzzystrmatch
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.intarray
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.int_aggregate
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.isbn_issn
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.lo
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.ltree
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.misc_utils
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.noup
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.oid2name
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pgbench
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pgbench_jis
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pgcrypto
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pgstattuple
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pgstattuple.euc_jp
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pg_autovacuum
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pg_dumplo
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.pg_logger
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.rserv
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.rtree_gist
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.seg
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.soundex
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.spi
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.string_io
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.tablefunc
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.tsearch
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.tsearch2
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.user_locks
++usr/share/doc/postgresql7.4-7.4.13/contrib/README.vacuumlo
++usr/share/doc/postgresql7.4-7.4.13/contrib/refint.example
++usr/share/doc/postgresql7.4-7.4.13/contrib/timetravel.example
++
++postgresql7.4-doc-7.4.13-1.tar.bz2
++usr/share/doc/postgresql7.4-7.4.13/
++usr/share/doc/postgresql7.4-7.4.13/bug.template
++usr/share/doc/postgresql7.4-7.4.13/FAQ
++usr/share/doc/postgresql7.4-7.4.13/FAQ_AIX
++usr/share/doc/postgresql7.4-7.4.13/FAQ_brazilian
++usr/share/doc/postgresql7.4-7.4.13/FAQ_czech
++usr/share/doc/postgresql7.4-7.4.13/FAQ_DEV
++usr/share/doc/postgresql7.4-7.4.13/FAQ_german
++usr/share/doc/postgresql7.4-7.4.13/FAQ_HPUX
++usr/share/doc/postgresql7.4-7.4.13/FAQ_hungarian
++usr/share/doc/postgresql7.4-7.4.13/FAQ_IRIX
++usr/share/doc/postgresql7.4-7.4.13/FAQ_japanese
++usr/share/doc/postgresql7.4-7.4.13/FAQ_MSWIN
++usr/share/doc/postgresql7.4-7.4.13/FAQ_MSWIN~
++usr/share/doc/postgresql7.4-7.4.13/FAQ_polish
++usr/share/doc/postgresql7.4-7.4.13/FAQ_QNX4
++usr/share/doc/postgresql7.4-7.4.13/FAQ_russian
++usr/share/doc/postgresql7.4-7.4.13/FAQ_SCO
++usr/share/doc/postgresql7.4-7.4.13/FAQ_Solaris
++usr/share/doc/postgresql7.4-7.4.13/FAQ_turkish
++usr/share/doc/postgresql7.4-7.4.13/html/
++usr/share/doc/postgresql7.4-7.4.13/html/admin.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-clusterdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-createdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-createlang.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-createuser.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-dropdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-droplang.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-dropuser.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-ecpg.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-initdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-initlocation.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-ipcclean.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pg-ctl.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pg-dumpall.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgconfig.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgcontroldata.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgdump.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgresetxlog.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgrestore.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgtclsh.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-pgtksh.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-postgres.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-postmaster.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-psql.html
++usr/share/doc/postgresql7.4-7.4.13/html/app-vacuumdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/appendixes.html
++usr/share/doc/postgresql7.4-7.4.13/html/applevel-consistency.html
++usr/share/doc/postgresql7.4-7.4.13/html/arrays.html
++usr/share/doc/postgresql7.4-7.4.13/html/auth-methods.html
++usr/share/doc/postgresql7.4-7.4.13/html/backup-file.html
++usr/share/doc/postgresql7.4-7.4.13/html/backup.html
++usr/share/doc/postgresql7.4-7.4.13/html/biblio.html
++usr/share/doc/postgresql7.4-7.4.13/html/bki-commands.html
++usr/share/doc/postgresql7.4-7.4.13/html/bki-example.html
++usr/share/doc/postgresql7.4-7.4.13/html/bki.html
++usr/share/doc/postgresql7.4-7.4.13/html/bookindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/bug-reporting.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-aggregate.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-am.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-amop.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-amproc.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-attrdef.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-attribute.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-cast.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-class.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-constraint.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-conversion.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-database.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-depend.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-description.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-group.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-index.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-inherits.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-language.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-largeobject.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-listener.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-namespace.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-opclass.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-operator.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-proc.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-rewrite.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-shadow.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-statistic.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-trigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalog-pg-type.html
++usr/share/doc/postgresql7.4-7.4.13/html/catalogs.html
++usr/share/doc/postgresql7.4-7.4.13/html/charset.html
++usr/share/doc/postgresql7.4-7.4.13/html/client-authentication-problems.html
++usr/share/doc/postgresql7.4-7.4.13/html/client-authentication.html
++usr/share/doc/postgresql7.4-7.4.13/html/client-interfaces.html
++usr/share/doc/postgresql7.4-7.4.13/html/connect-estab.html
++usr/share/doc/postgresql7.4-7.4.13/html/creating-cluster.html
++usr/share/doc/postgresql7.4-7.4.13/html/cvs-tree.html
++usr/share/doc/postgresql7.4-7.4.13/html/cvs.html
++usr/share/doc/postgresql7.4-7.4.13/html/cvsup.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-binary.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-bit.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-boolean.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-character.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-datetime.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-geometric.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-money.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-net-types.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-oid.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype-pseudo.html
++usr/share/doc/postgresql7.4-7.4.13/html/datatype.html
++usr/share/doc/postgresql7.4-7.4.13/html/datetime-appendix.html
++usr/share/doc/postgresql7.4-7.4.13/html/datetime-keywords.html
++usr/share/doc/postgresql7.4-7.4.13/html/datetime-units-history.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-alter.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-default.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-depend.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-inherit.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-others.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-priv.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-schemas.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl-system-columns.html
++usr/share/doc/postgresql7.4-7.4.13/html/ddl.html
++usr/share/doc/postgresql7.4-7.4.13/html/disk-full.html
++usr/share/doc/postgresql7.4-7.4.13/html/diskusage.html
++usr/share/doc/postgresql7.4-7.4.13/html/dml-delete.html
++usr/share/doc/postgresql7.4-7.4.13/html/dml-update.html
++usr/share/doc/postgresql7.4-7.4.13/html/dml.html
++usr/share/doc/postgresql7.4-7.4.13/html/docguide-authoring.html
++usr/share/doc/postgresql7.4-7.4.13/html/docguide-build.html
++usr/share/doc/postgresql7.4-7.4.13/html/docguide-style.html
++usr/share/doc/postgresql7.4-7.4.13/html/docguide-toolsets.html
++usr/share/doc/postgresql7.4-7.4.13/html/docguide.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-commands.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-connect.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-descriptors.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-develop.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-disconnect.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-dynamic.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-errors.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-include.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-library.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-process.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-set-connection.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg-variables.html
++usr/share/doc/postgresql7.4-7.4.13/html/ecpg.html
++usr/share/doc/postgresql7.4-7.4.13/html/errcodes-appendix.html
++usr/share/doc/postgresql7.4-7.4.13/html/error-message-reporting.html
++usr/share/doc/postgresql7.4-7.4.13/html/error-style-guide.html
++usr/share/doc/postgresql7.4-7.4.13/html/examples.html
++usr/share/doc/postgresql7.4-7.4.13/html/executor.html
++usr/share/doc/postgresql7.4-7.4.13/html/explicit-joins.html
++usr/share/doc/postgresql7.4-7.4.13/html/explicit-locking.html
++usr/share/doc/postgresql7.4-7.4.13/html/extend-type-system.html
++usr/share/doc/postgresql7.4-7.4.13/html/extend.html
++usr/share/doc/postgresql7.4-7.4.13/html/extensibility.html
++usr/share/doc/postgresql7.4-7.4.13/html/features.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-aggregate.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-array.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-binarystring.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-comparison.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-comparisons.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-conditional.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-datetime.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-formatting.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-geometry.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-matching.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-math.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-misc.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-net.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-sequence.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-string.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions-subquery.html
++usr/share/doc/postgresql7.4-7.4.13/html/functions.html
++usr/share/doc/postgresql7.4-7.4.13/html/geqo-biblio.html
++usr/share/doc/postgresql7.4-7.4.13/html/geqo-intro2.html
++usr/share/doc/postgresql7.4-7.4.13/html/geqo-pg-intro.html
++usr/share/doc/postgresql7.4-7.4.13/html/geqo.html
++usr/share/doc/postgresql7.4-7.4.13/html/gist.html
++usr/share/doc/postgresql7.4-7.4.13/html/groups.html
++usr/share/doc/postgresql7.4-7.4.13/html/history.html
++usr/share/doc/postgresql7.4-7.4.13/html/implementation.html
++usr/share/doc/postgresql7.4-7.4.13/html/index.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexcost.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-examine.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-expressional.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-multicolumn.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-opclass.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-partial.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-types.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes-unique.html
++usr/share/doc/postgresql7.4-7.4.13/html/indexes.html
++usr/share/doc/postgresql7.4-7.4.13/html/information-schema.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-applicable-roles.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-check-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-column-domain-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-column-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-column-udt-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-columns.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-constraint-column-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-constraint-table-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-data-type-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-datatypes.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-domain-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-domain-udt-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-domains.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-element-types.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-enabled-roles.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-information-schema-catalog-name.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-key-column-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-parameters.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-referential-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-role-column-grants.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-role-routine-grants.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-role-table-grants.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-role-usage-grants.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-routine-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-routines.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-schemata.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-features.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-implementation-info.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-languages.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-packages.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-sizing-profiles.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-sql-sizing.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-table-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-table-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-tables.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-triggers.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-usage-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-view-column-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-view-table-usage.html
++usr/share/doc/postgresql7.4-7.4.13/html/infoschema-views.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-getsource.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-post.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-procedure.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-requirements.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-upgrading.html
++usr/share/doc/postgresql7.4-7.4.13/html/install-win32.html
++usr/share/doc/postgresql7.4-7.4.13/html/installation.html
++usr/share/doc/postgresql7.4-7.4.13/html/internals.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-binary-data.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-callproc.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-datasource.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-ddl.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-ext.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-query.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-reading.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-thread.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-update.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc-use.html
++usr/share/doc/postgresql7.4-7.4.13/html/jdbc.html
++usr/share/doc/postgresql7.4-7.4.13/html/kernel-resources.html
++usr/share/doc/postgresql7.4-7.4.13/html/largeobjects.html
++usr/share/doc/postgresql7.4-7.4.13/html/LEGALNOTICE.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpgtcl-loading.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpgtcl-ref.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-async.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-build.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-control.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-copy.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-envars.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-example.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-exec.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-fastpath.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-notice-processing.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-notify.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-pgpass.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-status.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq-threading.html
++usr/share/doc/postgresql7.4-7.4.13/html/libpq.html
++usr/share/doc/postgresql7.4-7.4.13/html/limitations.html
++usr/share/doc/postgresql7.4-7.4.13/html/lo-examplesect.html
++usr/share/doc/postgresql7.4-7.4.13/html/lo-funcs.html
++usr/share/doc/postgresql7.4-7.4.13/html/lo-implementation.html
++usr/share/doc/postgresql7.4-7.4.13/html/lo-interfaces.html
++usr/share/doc/postgresql7.4-7.4.13/html/locking-indexes.html
++usr/share/doc/postgresql7.4-7.4.13/html/logfile-maintenance.html
++usr/share/doc/postgresql7.4-7.4.13/html/maintenance.html
++usr/share/doc/postgresql7.4-7.4.13/html/manage-ag-alternate-locs.html
++usr/share/doc/postgresql7.4-7.4.13/html/manage-ag-config.html
++usr/share/doc/postgresql7.4-7.4.13/html/manage-ag-createdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/manage-ag-dropdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/manage-ag-templatedbs.html
++usr/share/doc/postgresql7.4-7.4.13/html/managing-databases.html
++usr/share/doc/postgresql7.4-7.4.13/html/migration.html
++usr/share/doc/postgresql7.4-7.4.13/html/monitoring-locks.html
++usr/share/doc/postgresql7.4-7.4.13/html/monitoring-stats.html
++usr/share/doc/postgresql7.4-7.4.13/html/monitoring.html
++usr/share/doc/postgresql7.4-7.4.13/html/multibyte.html
++usr/share/doc/postgresql7.4-7.4.13/html/mvcc.html
++usr/share/doc/postgresql7.4-7.4.13/html/nls-programmer.html
++usr/share/doc/postgresql7.4-7.4.13/html/nls.html
++usr/share/doc/postgresql7.4-7.4.13/html/notation.html
++usr/share/doc/postgresql7.4-7.4.13/html/overview.html
++usr/share/doc/postgresql7.4-7.4.13/html/page.html
++usr/share/doc/postgresql7.4-7.4.13/html/parser-stage.html
++usr/share/doc/postgresql7.4-7.4.13/html/performance-tips.html
++usr/share/doc/postgresql7.4-7.4.13/html/perm-functions.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-examplesect.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgconndefaults.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgconnect.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgdisconnect.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgexec.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgexecute.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglisten.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgloclose.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglocreat.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgloexport.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgloimport.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglolseek.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgloopen.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgloread.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglotell.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglounlink.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pglowrite.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgon-connection-loss.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgresult.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl-pgselect.html
++usr/share/doc/postgresql7.4-7.4.13/html/pgtcl.html
++usr/share/doc/postgresql7.4-7.4.13/html/planner-optimizer.html
++usr/share/doc/postgresql7.4-7.4.13/html/planner-stats.html
++usr/share/doc/postgresql7.4-7.4.13/html/plhandler.html
++usr/share/doc/postgresql7.4-7.4.13/html/plperl-data.html
++usr/share/doc/postgresql7.4-7.4.13/html/plperl-database.html
++usr/share/doc/postgresql7.4-7.4.13/html/plperl-missing.html
++usr/share/doc/postgresql7.4-7.4.13/html/plperl-trusted.html
++usr/share/doc/postgresql7.4-7.4.13/html/plperl.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-control-structures.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-cursors.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-declarations.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-development-tips.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-errors-and-messages.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-expressions.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-porting.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-statements.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-structure.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql-trigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpgsql.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpython-database.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpython-trigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/plpython.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-data.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-dbaccess.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-functions.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-global.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-procnames.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-trigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl-unknown.html
++usr/share/doc/postgresql7.4-7.4.13/html/pltcl.html
++usr/share/doc/postgresql7.4-7.4.13/html/populate.html
++usr/share/doc/postgresql7.4-7.4.13/html/postmaster-shutdown.html
++usr/share/doc/postgresql7.4-7.4.13/html/postmaster-start.html
++usr/share/doc/postgresql7.4-7.4.13/html/preface.html
++usr/share/doc/postgresql7.4-7.4.13/html/privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol-changes.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol-error-fields.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol-flow.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol-message-formats.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol-message-types.html
++usr/share/doc/postgresql7.4-7.4.13/html/protocol.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries-limit.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries-order.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries-select-lists.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries-table-expressions.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries-union.html
++usr/share/doc/postgresql7.4-7.4.13/html/queries.html
++usr/share/doc/postgresql7.4-7.4.13/html/reference-client.html
++usr/share/doc/postgresql7.4-7.4.13/html/reference-server.html
++usr/share/doc/postgresql7.4-7.4.13/html/reference.html
++usr/share/doc/postgresql7.4-7.4.13/html/regress-evaluation.html
++usr/share/doc/postgresql7.4-7.4.13/html/regress-platform.html
++usr/share/doc/postgresql7.4-7.4.13/html/regress.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-0-01.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-0-02.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-0-03.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-1-0.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-1-01.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-1-02.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-1-09.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-0.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-1-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-2-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-3-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-3-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-4-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-4-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-4.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-5-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-5-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-5-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-6-5.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-0-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-0-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-0-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-0.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-1-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-1-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-1-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-4.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-5.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-6.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-7.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2-8.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-10.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-11.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-12.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-13.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-14.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-15.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-4.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-5.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-6.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-7.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-8.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3-9.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-1.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-10.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-11.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-12.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-2.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-3.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-4.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-5.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-6.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-7.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-8.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4-9.html
++usr/share/doc/postgresql7.4-7.4.13/html/release-7-4.html
++usr/share/doc/postgresql7.4-7.4.13/html/release.html
++usr/share/doc/postgresql7.4-7.4.13/html/resources.html
++usr/share/doc/postgresql7.4-7.4.13/html/routine-reindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/rule-system.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules-privileges.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules-status.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules-triggers.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules-update.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules-views.html
++usr/share/doc/postgresql7.4-7.4.13/html/rules.html
++usr/share/doc/postgresql7.4-7.4.13/html/runtime-config.html
++usr/share/doc/postgresql7.4-7.4.13/html/runtime.html
++usr/share/doc/postgresql7.4-7.4.13/html/server-programming.html
++usr/share/doc/postgresql7.4-7.4.13/html/source.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-examples.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-interface-support.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-memory.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-realloc.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-connect.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-copytuple.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-copytupledesc.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-copytupleintoslot.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-cursor-close.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-cursor-fetch.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-cursor-find.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-cursor-move.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-cursor-open.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-exec.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-execp.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-finish.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-fname.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-fnumber.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-freeplan.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-freetuple.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-freetupletable.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-getbinval.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-getrelname.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-gettype.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-gettypeid.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-getvalue.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-modifytuple.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-palloc.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-pfree.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-prepare.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-spi-saveplan.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi-visibility.html
++usr/share/doc/postgresql7.4-7.4.13/html/spi.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-abort.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alteraggregate.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterconversion.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterdatabase.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterdomain.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterfunction.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-altergroup.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterlanguage.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alteropclass.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alterschema.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-altersequence.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-altertable.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-altertrigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-alteruser.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-analyze.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-begin.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-checkpoint.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-close.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-cluster.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-commands.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-comment.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-commit.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-copy.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createaggregate.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createcast.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createconstraint.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createconversion.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createdatabase.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createdomain.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createfunction.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-creategroup.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createlanguage.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createopclass.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createoperator.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createrule.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createschema.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createsequence.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createtable.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createtableas.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createtrigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createtype.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createuser.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-createview.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-deallocate.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-declare.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-delete.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropaggregate.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropcast.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropconversion.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropdatabase.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropdomain.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropfunction.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropgroup.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-droplanguage.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropopclass.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropoperator.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-droprule.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropschema.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropsequence.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-droptable.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-droptrigger.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-droptype.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropuser.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-dropview.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-end.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-execute.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-explain.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-expressions.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-fetch.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-grant.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-insert.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-keywords-appendix.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-listen.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-load.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-lock.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-move.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-notify.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-prepare.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-reindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-reset.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-revoke.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-rollback.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-select.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-selectinto.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-set-constraints.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-set-session-authorization.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-set-transaction.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-set.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-show.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-start-transaction.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-syntax.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-truncate.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-unlisten.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-update.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql-vacuum.html
++usr/share/doc/postgresql7.4-7.4.13/html/sql.html
++usr/share/doc/postgresql7.4-7.4.13/html/ssh-tunnels.html
++usr/share/doc/postgresql7.4-7.4.13/html/ssl-tcp.html
++usr/share/doc/postgresql7.4-7.4.13/html/stylesheet.css
++usr/share/doc/postgresql7.4-7.4.13/html/supported-platforms.html
++usr/share/doc/postgresql7.4-7.4.13/html/transaction-iso.html
++usr/share/doc/postgresql7.4-7.4.13/html/trigger-datachanges.html
++usr/share/doc/postgresql7.4-7.4.13/html/trigger-example.html
++usr/share/doc/postgresql7.4-7.4.13/html/trigger-interface.html
++usr/share/doc/postgresql7.4-7.4.13/html/triggers.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-accessdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-advanced.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-agg.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-arch.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-concepts.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-conclusion.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-createdb.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-delete.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-fk.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-inheritance.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-join.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-populate.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-select.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-sql.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-start.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-table.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-transactions.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-update.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial-views.html
++usr/share/doc/postgresql7.4-7.4.13/html/tutorial.html
++usr/share/doc/postgresql7.4-7.4.13/html/typeconv-func.html
++usr/share/doc/postgresql7.4-7.4.13/html/typeconv-oper.html
++usr/share/doc/postgresql7.4-7.4.13/html/typeconv-query.html
++usr/share/doc/postgresql7.4-7.4.13/html/typeconv-union-case.html
++usr/share/doc/postgresql7.4-7.4.13/html/typeconv.html
++usr/share/doc/postgresql7.4-7.4.13/html/unsupported-features-sql99.html
++usr/share/doc/postgresql7.4-7.4.13/html/user-attributes.html
++usr/share/doc/postgresql7.4-7.4.13/html/user-manag.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-indexes.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-locks.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-rules.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-settings.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-stats.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-tables.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-user.html
++usr/share/doc/postgresql7.4-7.4.13/html/view-pg-views.html
++usr/share/doc/postgresql7.4-7.4.13/html/views-overview.html
++usr/share/doc/postgresql7.4-7.4.13/html/wal-benefits-later.html
++usr/share/doc/postgresql7.4-7.4.13/html/wal-configuration.html
++usr/share/doc/postgresql7.4-7.4.13/html/wal-internals.html
++usr/share/doc/postgresql7.4-7.4.13/html/wal.html
++usr/share/doc/postgresql7.4-7.4.13/html/xaggr.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc-c.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc-internal.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc-overload.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc-pl.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc-sql.html
++usr/share/doc/postgresql7.4-7.4.13/html/xfunc.html
++usr/share/doc/postgresql7.4-7.4.13/html/xindex.html
++usr/share/doc/postgresql7.4-7.4.13/html/xoper-optimization.html
++usr/share/doc/postgresql7.4-7.4.13/html/xoper.html
++usr/share/doc/postgresql7.4-7.4.13/html/xplang.html
++usr/share/doc/postgresql7.4-7.4.13/html/xtypes.html
++usr/share/doc/postgresql7.4-7.4.13/MISSING_FEATURES
++usr/share/doc/postgresql7.4-7.4.13/README.mb.big5
++usr/share/doc/postgresql7.4-7.4.13/README.mb.jp
++usr/share/doc/postgresql7.4-7.4.13/TODO
++
++postgresql7.4-plperl-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/lib/plperl.dll
++
++postgresql7.4-plpython-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/lib/plpython.dll
++
++libpq3-7.4.13-1.tar.bz2
++usr/bin/pq.dll
++
++libpq3-devel-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/bin/pg_config
++usr/include/postgresql/7.4/libpq-fe.h
++usr/include/postgresql/7.4/libpq/libpq-fs.h
++usr/include/postgresql/7.4/pg_config.h
++usr/include/postgresql/7.4/pg_config_manual.h
++usr/include/postgresql/7.4/pg_config_os.h
++usr/include/postgresql/7.4/postgres_ext.h
++usr/include/postgresql/7.4/internal/c.h
++usr/include/postgresql/7.4/internal/lib/dllist.h
++usr/include/postgresql/7.4/internal/libpq-int.h
++usr/include/postgresql/7.4/internal/libpq/pqcomm.h
++usr/include/postgresql/7.4/internal/port.h
++usr/include/postgresql/7.4/internal/postgres_fe.h
++usr/include/postgresql/7.4/internal/pqexpbuffer.h
++usr/lib/postgresql7.4/lib/libpq.a
++usr/share/postgresql7.4/man/man1/pg_config.1.gz
++
++libpgtypes1-7.4.13-1.tar.bz2
++usr/bin/pgtypes.dll
++
++libecpg4-7.4.13-1.tar.bz2
++usr/lib/postgresql7.4/bin/ecpg.exe
++usr/bin/ecpg.dll
++usr/share/postgresql7.4/man/man1/ecpg.1.gz
++
++libecpg-compat-7.4.13-1.tar.bz2
++usr/bin/ecpg_compat.dll
++
++libecpg4-devel-7.4.13-1.tar.bz2
++usr/include/postgresql/7.4/ecpg_informix.h
++usr/include/postgresql/7.4/ecpgerrno.h
++usr/include/postgresql/7.4/ecpglib.h
++usr/include/postgresql/7.4/ecpgtype.h
++usr/include/postgresql/7.4/informix/
++usr/include/postgresql/7.4/informix/esql/
++usr/include/postgresql/7.4/informix/esql/datetime.h
++usr/include/postgresql/7.4/informix/esql/decimal.h
++usr/include/postgresql/7.4/informix/esql/sqlda.h
++usr/include/postgresql/7.4/informix/esql/sqltypes.h
++usr/include/postgresql/7.4/pgtypes_date.h
++usr/include/postgresql/7.4/pgtypes_error.h
++usr/include/postgresql/7.4/pgtypes_interval.h
++usr/include/postgresql/7.4/pgtypes_numeric.h
++usr/include/postgresql/7.4/pgtypes_timestamp.h
++usr/include/postgresql/7.4/sql3types.h
++usr/include/postgresql/7.4/sqlca.h
++usr/lib/postgresql7.4/lib/libecpg.a
++usr/lib/postgresql7.4/lib/libecpg_compat.a
++usr/lib/postgresql7.4/lib/libpgtypes.a
++
++postgresql7.4-java-7.4.13-1.tar.bz2
++usr/share/postgresql7.4/data/java/
++usr/share/postgresql7.4/data/java/postgresql-examples.jar
++usr/share/postgresql7.4/data/java/postgresql.jar
++
++>>> Checking packages for missing or duplicate files
++
++>>> Creating source patches
++ CYGWIN-PATCHES/README                         |  102 ++
++ CYGWIN-PATCHES/libecpg4-devel.hint            |   12 
++ CYGWIN-PATCHES/libecpg4.hint                  |    7 
++ CYGWIN-PATCHES/libpgtypes1.hint               |    7 
++ CYGWIN-PATCHES/libpq3-devel.hint              |    9 
++ CYGWIN-PATCHES/libpq3.hint                    |   12 
++ CYGWIN-PATCHES/postgresql7.4-7.4.13-1-pkg.log | 1189 ++++++++++++++++++++++++++
++ CYGWIN-PATCHES/postgresql7.4-client.hint      |   15 
++ CYGWIN-PATCHES/postgresql7.4-contrib.hint     |   44 
++ CYGWIN-PATCHES/postgresql7.4-devel.hint       |   12 
++ CYGWIN-PATCHES/postgresql7.4-doc.hint         |    7 
++ CYGWIN-PATCHES/postgresql7.4-java.hint        |    4 
++ CYGWIN-PATCHES/postgresql7.4-plperl.hint      |    9 
++ CYGWIN-PATCHES/postgresql7.4-plpython.hint    |    9 
++ CYGWIN-PATCHES/postgresql7.4.hint             |   14 
++ CYGWIN-PATCHES/postgresql7.4.initd            |  169 +++
++ contrib/dbase/Makefile                        |    4 
++ contrib/dbmirror/DBMirror.pl                  |    3 
++ doc/FAQ_MSWIN                                 |  300 +++++-
++ src/Makefile.global.in                        |   32 
++ src/backend/main/main.c                       |    4 
++ src/bin/pg_controldata/pg_controldata.c       |    4 
++ src/bin/pg_dump/pg_dump.c                     |    4 
++ src/bin/pg_dump/pg_dumpall.c                  |    4 
++ src/bin/pg_dump/pg_restore.c                  |    4 
++ src/bin/pg_resetxlog/pg_resetxlog.c           |    4 
++ src/bin/psql/startup.c                        |    4 
++ src/bin/scripts/common.c                      |    4 
++ src/interfaces/jdbc/Makefile                  |   12 
++ src/interfaces/jdbc/build.properties          |    6 
++ src/interfaces/libpq/fe-misc.c                |    4 
++ src/nls-global.mk                             |    4 
++ src/pl/tcl/Makefile                           |    2 
++ src/pl/tcl/pltcl.c                            |    5 
++ 34 files changed, 1925 insertions(+), 100 deletions(-)
++>>> Creating source package
++CYGWIN PATCH signature needs to be updated
++SOURCE PATCH signature needs to be updated
++CYGPORT SCRIPT signature needs to be updated
++postgresql-7.4.13.tar.gz
++postgresql7.4-7.4.13-1.cygport
++postgresql7.4-7.4.13-1.cygport.sig
++postgresql7.4-7.4.13-1.cygwin.patch
++postgresql7.4-7.4.13-1.cygwin.patch.sig
++postgresql7.4-7.4.13-1.src.patch
++postgresql7.4-7.4.13-1.src.patch.sig
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-client.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-client.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-client.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-client.hint	2006-08-12 18:43:46.984375000 +0000
+@@ -0,0 +1,15 @@
++sdesc: "front-end programs for PostgreSQL 7.4"
++ldesc: "This package contains client and administrative programs for
++PostgreSQL: these are the interactive terminal client psql and
++programs for creating and removing users and databases.
++.
++This is the client package for PostgreSQL 7.4. If you install
++PostgreSQL on a standalone machine, you need the server package
++postgresql7.4, too. On a network, you can install this package on
++many client machines, while the server package may be installed on
++only one machine.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: libpq3 crypt libncurses8 libreadline6 libintl3 openssl zlib
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-contrib.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-contrib.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-contrib.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-contrib.hint	2006-08-12 18:44:08.281250000 +0000
+@@ -0,0 +1,44 @@
++sdesc: "additional facilities for PostgreSQL 7.4"
++ldesc: "The PostgreSQL contrib package provides several additional features
++for the PostgreSQL database. This version is built to work with the
++server package postgresql7.4. contrib often serves as a testbed for
++features before they are adopted into PostgreSQL proper:
++.
++btree_gist - B-Tree indexing using GiST (Generalised Search Tree)
++chkpass - Password type for storing and comparing encrypted passwords
++cube - Type for n-dimensional cubes
++dbf2pg - Inserts the contents of an xBase-style .dbf file into a PostgreSQL table
++dblink - Functions to return results from a remote database
++dbmirror - Trigger-based databaase mirroring 
++earthdistance - Operator for computing the distance (in miles) between two points on the earth's surface
++fti - Full text indexing using triggers
++fuzzystrmatch - Functions for fuzzy string comparison (including Soundex)
++intagg - Integer aggregator/enumerator
++intarray - RD-tree data structure using GiST index
++isbn_issn - Type extensions for ISBN (books) and ISSN (serials)
++lo - Large Object maintenance
++ltree - data types, indexed access methods and queries for data organized as a tree-like structures.
++oid2name - Maps oids to table names
++ora2pg - Conversion utility for Oracle database schemas
++pg_buffercache - Real time queries on the shared buffer cache
++pg_trgm - Determine the similarity of text based on trigram matching
++pgbench - A simple program to run a benchmark test
++pgcrypto - Cryptographic functions
++pgstattuple - Returns the percentage of dead tuples in a table; this indicates whether a vacuum is required.
++seg - Type representing laboratory measurements as floating-point intervals
++spi - PostgreSQL Server Programming Interface; 4 examples of its use:
++autoinc - A function for implementing AUTOINCREMENT/IDENTITY
++insert_username - function for inserting user names
++moddatetime - Update modification timestamps
++refint - Functions for implementing referential integrity (foreign keys). Note that this is now superseded by built-in referential integrity.
++timetravel - Re-implements in user code the time travel feature that was removed in 6.3.
++tips - Micro HOWTOs
++tsearch2 - Searchable text data type supporting indexed access
++user_locks - User-level long-term locks
++vacuumlo - Vacuum deleted large objects
++xml2 - Manipulate XML documents in the database
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql7.4
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-devel.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-devel.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-devel.hint	2006-08-12 18:44:28.218750000 +0000
+@@ -0,0 +1,12 @@
++sdesc: "development files for PostgreSQL 7.4 server-side programming"
++ldesc: "Header files for compiling SSI code to link into PostgreSQL's backend; for
++example, for C functions to be called from SQL.
++.
++This package also contains the Makefiles necessary for building add-on
++modules of PostgreSQL, which would otherwise have to be built in the
++PostgreSQL source-code tree. (slony, postgis, ...)
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Devel Database
++requires: libpq3-devel libecpg4-devel openssl-devel crypt libintl3 zlib
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-doc.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-doc.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-doc.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-doc.hint	2006-08-12 18:44:38.312500000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "documentation for the PostgreSQL database management system"
++ldesc: "This package contains all README files, user manual, and examples for
++PostgreSQL 7.4. The manual is in HTML format.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-java.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-java.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-java.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-java.hint	2006-08-19 12:47:44.234375000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "JDBC driver for PostgreSQL 7.4"
++category: Database
++requires: postgresql7.4
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plperl.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plperl.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plperl.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plperl.hint	2006-08-12 18:44:50.406250000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "PL/Perl procedural language for PostgreSQL 7.4"
++ldesc: "PL/Perl enables an SQL developer to write procedural language functions
++for PostgreSQL 7.4 in Perl. You need this package if you have any
++PostgreSQL 7.4 functions that use the languages plperl or plperlu.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql7.4 perl
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plpython.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plpython.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plpython.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4-plpython.hint	2006-08-12 18:45:02.781250000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "PL/Python procedural language for PostgreSQL 7.4"
++ldesc: "PL/Python enables an SQL developer to write procedural language functions
++for PostgreSQL 7.4 in Python. You need this package if you have any
++PostgreSQL 7.4 functions that use the languages plpython or plpythonu.
++.
++PostgreSQL is an object-relational SQL database management system."
++category: Database
++requires: postgresql7.4 python
++external-source: postgresql7.4
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.hint src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.hint
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.hint	2006-08-12 18:40:05.109375000 +0000
+@@ -0,0 +1,14 @@
++sdesc: "PostgreSQL 7.4 Data Base Management System"
++ldesc: "PostgreSQL is a fully featured object-relational database management
++system. It supports a large part of the SQL standard and is designed
++to be extensible by users in many aspects. Some of the features are:
++ACID transactions, foreign keys, views, sequences, subqueries,
++triggers, user-defined types and functions, outer joins, multiversion
++concurrency control. Graphical user interfaces and bindings for many
++programming languages are available as well.
++.
++This package provides the database server for PostgreSQL 7.4, which 
++can be installed side-by-side with postgresql, the current 8.x package."
++category: Database
++requires: postgresql7.4-client libpq3 libpgtypes1 libecpg4 crypt libintl3 openssl zlib
++
+diff -urN origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.initd src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.initd
+--- origsrc/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.initd	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/CYGWIN-PATCHES/postgresql7.4.initd	2006-08-19 14:14:42.203125000 +0000
+@@ -0,0 +1,170 @@
++#! /bin/sh
++#
++# crond   Start/Stop/Install the PostgreSQL postmaster daemon.
++# v1.0 2005-09-21 20:28:39 rurban@x-ray.at
++#
++# chkconfig: 2345 90 60
++# description: PostgreSQL is an advanced Object-Relational database management system.
++# processname: postmaster
++# config: /usr/share/postgresql7.4/data/postgresql.conf
++# pidfile: /usr/share/postgresql7.4/data/postgresql.pid
++
++PREFIX=/usr
++BINDIR=${PREFIX}/lib/postgresql7.4/bin
++PGDATA=${PREFIX}/share/postgresql7.4/data
++CONFIG=$PGDATA/postgresql.conf
++PIDFILE=$PGDATA/postgresql.pid
++LOGFILE=/var/log/postgresql7.4.log
++SOCKETDIR=/tmp
++PATH=${BINDIR}:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++name="PostgreSQL 7.4"
++prog="postmaster"
++DAEMON="${BINDIR}/${prog}"
++POSTMASTER_ARGS="-D $PGDATA -k $SOCKETDIR -i"
++INITDB_ARGS="-E SQL_ASCII --locale=C -D $PGDATA"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++set -x
++
++start() {
++        echo -n $"Starting $name: "
++        check_cygserver
++	# check if cygrunsrv process
++        cygrunsrv --start "$name"
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++	if [ $RETVAL -ne 0 ]; then 
++	    echo "ERROR service start FAILED"; 
++	    tail $LOGFILE; 
++	fi
++        return $RETVAL
++}
++
++startlocal() {
++	echo -n $"Starting $DAEMON locally: "
++	chmod u+rw $LOGFILE $PIDFILE
++	${BINDIR}/pg_ctl start -D $PGDATA -o "-i" -l $LOGFILE
++	RETVAL=$?
++	[ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $name: "
++	cygrunsrv --stop "$name"
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q "$name"
++}
++
++restart() {
++        echo -n $"Restarting $name: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++initdb() {
++	${BINDIR}/initdb -U SYSTEM ${INITDB_ARGS} && echo "done."
++	mkdir ${SOCKETDIR}
++	chmod -R g+rw $PGDATA
++	chgrp -R 18 $PGDATA
++}
++
++install() {
++        check_cygserver
++        echo -n $"Installing $name daemon: "
++	touch $LOGFILE $PIDFILE
++	chmod g+rw $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	cygrunsrv --install "$name" --path $DAEMON \
++	    --args "${POSTMASTER_ARGS}" -e CYGWIN=server \
++	    --disp "CYGWIN `$DAEMON --version`" \
++	    --dep cygserver --termsig INT --shutdown
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove "$name"
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. Try $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++check_cygserver() {
++    # Check for running cygserver processes first. 
++    if ps -ef | grep -v grep | grep -q cygserver
++    then
++        echo -n "- cygserver OK - " 
++        # echo "OK cygserver running"
++    else
++  	echo "ERROR cygserver must be started"
++  	echo cygrunsrv -S cygserver
++	exit 1
++    fi
++    # check for CYGWIN containing server
++    if [ -n "${CYGWIN%server}" ] 
++    then
++  	echo "ERROR CYGWIN must contain server for cygserver to work properly"
++	exit 1
++    fi
++}
++
++case "$1" in
++  start) 	start  ;;
++  startlocal)   startlocal ;;
++  stop)         stop  ;;
++  restart)      restart  ;;
++  reload)       reload   ;;
++  initdb)       initdb   ;;
++  install)      install  ;;
++  uninstall)    uninstall ;;
++  status)       rhstatus  ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|initdb|install|uninstall|startlocal|restart|condrestart}"
++        exit 1
++esac
++
++exit $?

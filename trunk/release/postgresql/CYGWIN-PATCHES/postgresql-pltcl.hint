@@ -1,0 +1,9 @@
+sdesc: "PL/TCL procedural language for PostgreSQL 8.2"
+ldesc: "PL/TCL enables an SQL developer to write procedural language functions
+for PostgreSQL 8.2 in TCL. You need this package if you have any
+PostgreSQL 8.2 functions that use the languages pltcl or pltclu.
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Database
+requires: postgresql tcltk
+external-source: postgresql

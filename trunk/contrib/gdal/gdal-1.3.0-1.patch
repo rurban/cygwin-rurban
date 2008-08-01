@@ -1,0 +1,309 @@
+--- gdal-1.3.0/CYGWIN-PATCHES/README.orig	1970-01-01 02:00:00.000000000 +0200
++++ gdal-1.3.0/CYGWIN-PATCHES/README	2004-10-10 16:06:57.734142800 +0200
+@@ -0,0 +1,181 @@
++gdal-1.2.3
++------------------------------------------
++Translator library for raster gdalpatial data formats.
++Contains multiple support libaries also. (libgeotiff, ogr)
++Loads cygproj-0.dll dynamically if found.
++Required by PostGIS and mapserver.
++
++Runtime requirements:
++  crypt-1.1-1
++  cygwin-1.5.11-1
++  jasper-1.701.0-1
++  libiconv2-1.9.2-1
++  libintl3-0.14.1-1
++  libjpeg62-6b-11
++  libpng12-1.2.5-4
++  libtiff4-3.6.0-5
++  openssl-0.9.7d-2
++  zlib-1.2.1-2
++
++  proj-4.4.x 	(optionally)
++
++Build requirements: (additionally)
++  gcc-core-3.3.x        or newer
++  libtool-devel-1.5.10  plus charles no-relink patch
++  binutils-20040725-2   or newer
++  make-3.80-1           or newer
++  ash-20040127-1        or newer
++  fileutils-4.1         or newer
++  sed-4.1.2-1           or newer
++  m4-1.4-1
++
++  doxygen               (only if you want to build the docs also)
++
++Canonical homepage:
++  http://www.gdal.org/
++
++Canonical download:
++  http://www.gdal.org/dl
++
++------------------------------------
++
++Build instructions:
++  unpack gdal-<VER>-<REL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./gdal-<VER>-<REL>.sh all
++
++  Dependent on your libtool/autotool versions you will run 
++  into major problems:
++  * .dll can only be uses as .exe.
++  * only static linking possible
++  * ogr binaries without .exe extension.
++  * .la files will be messy. (manual cleanup)
++  * python extensions will only be static.
++
++This will create:
++  /usr/src/gdal-<VER>-<REL>.tar.bz2
++  /usr/src/gdal-<VER>-<REL>-src.tar.bz2
++
++Or use './gdal-<VER>-<REL>.sh prep' to get a patched source directory
++
++-------------------------------------------
++
++Files included in the binary distribution:
++
++  /usr/bin/cyggdal-1.exe
++  /usr/bin/epsg_tr.py
++  /usr/bin/gcps2wld.py
++  /usr/bin/gdal-config
++  /usr/bin/gdal2xyz.py
++  /usr/bin/gdaladdo.exe
++  /usr/bin/gdalchksum.py
++  /usr/bin/gdalimport.py
++  /usr/bin/gdalinfo.exe
++  /usr/bin/gdaltindex.exe
++  /usr/bin/gdalwarp.exe
++  /usr/bin/gdal_contour.exe
++  /usr/bin/gdal_merge.py
++  /usr/bin/gdal_translate.exe
++  /usr/bin/ogr2ogr.exe
++  /usr/bin/ogrinfo.exe
++  /usr/bin/ogrtindex.exe
++  /usr/bin/pct2rgb.py
++  /usr/bin/rgb2pct.py
++  /usr/include/cpl_config.h
++  /usr/include/cpl_conv.h
++  /usr/include/cpl_csv.h
++  /usr/include/cpl_error.h
++  /usr/include/cpl_list.h
++  /usr/include/cpl_minixml.h
++  /usr/include/cpl_multiproc.h
++  /usr/include/cpl_odbc.h
++  /usr/include/cpl_port.h
++  /usr/include/cpl_string.h
++  /usr/include/cpl_vsi.h
++  /usr/include/gdal.h
++  /usr/include/gdalwarper.h
++  /usr/include/gdal_alg.h
++  /usr/include/gdal_frmts.h
++  /usr/include/gdal_priv.h
++  /usr/include/gvgcpfit.h
++  /usr/include/ogrsf_frmts.h
++  /usr/include/ogr_api.h
++  /usr/include/ogr_core.h
++  /usr/include/ogr_feature.h
++  /usr/include/ogr_featurestyle.h
++  /usr/include/ogr_geometry.h
++  /usr/include/ogr_p.h
++  /usr/include/ogr_spatialref.h
++  /usr/include/ogr_srs_api.h
++  /usr/lib/libgdal.a
++  /usr/lib/libgdal.dll.a
++  /usr/lib/libgdal.la
++  /usr/lib/python2.3/site-packages/gdal.py
++  /usr/lib/python2.3/site-packages/gdalconst.py
++  /usr/lib/python2.3/site-packages/gdalnumeric.py
++  /usr/lib/python2.3/site-packages/ogr.py
++  /usr/lib/python2.3/site-packages/osr.py
++  /usr/lib/python2.3/site-packages/_gdalmodule.a
++  /usr/lib/python2.3/site-packages/_gdalmodule.la
++  /usr/share/doc/Cygwin/gdal-1.2.3.README
++  /usr/share/doc/gdal-1.2.3/ChangeLog
++  /usr/share/doc/gdal-1.2.3/HOWTO-RELEASE
++  /usr/share/doc/gdal-1.2.3/NEWS
++  /usr/share/doc/gdal-1.2.3/VERSION
++  /usr/share/gdal/cubewerx_extra.wkt
++  /usr/share/gdal/ecw_cs.dat
++  /usr/share/gdal/ellipsoid.csv
++  /usr/share/gdal/epsg.wkt
++  /usr/share/gdal/esri_extra.wkt
++  /usr/share/gdal/gcs.csv
++  /usr/share/gdal/gdalicon.png
++  /usr/share/gdal/gdal_datum.csv
++  /usr/share/gdal/pcs.csv
++  /usr/share/gdal/prime_meridian.csv
++  /usr/share/gdal/projop_wparm.csv
++  /usr/share/gdal/s57attributes.csv
++  /usr/share/gdal/s57expectedinput.csv
++  /usr/share/gdal/s57objectclasses.csv
++  /usr/share/gdal/seed_2d.dgn
++  /usr/share/gdal/seed_3d.dgn
++  /usr/share/gdal/stateplane.csv
++  /usr/share/gdal/unit_of_measure.csv
++  /usr/share/man/man1/gdal-config.1
++  /usr/share/man/man1/gdaladdo.1
++  /usr/share/man/man1/gdalinfo.1
++  /usr/share/man/man1/gdaltindex.1
++  /usr/share/man/man1/gdalwarp.1
++  /usr/share/man/man1/gdal_merge.py.1
++  /usr/share/man/man1/gdal_translate.1
++  /usr/share/man/man1/gdal_utilities.1
++  /usr/share/man/man1/ogr2ogr.1
++  /usr/share/man/man1/ogrinfo.1
++  /usr/share/man/man1/ogrtindex.1
++  /usr/share/man/man1/ogr_utilities.1
++  /usr/share/man/man1/rgb2pct.py.1
++
++------------------
++
++Port Notes:
++
++----------  gdal-1.2.3-2 -----------
++
++- applied charles libtool no-relink patch
++- fixed python .m4
++
++----------  gdal-1.2.3-1 -----------
++
++- first official gdal package, 
++  previously handled upstream by Norman Vine
++
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please report problems, suggestions, etc. dependent on their 
++nature to one of the following:
++
++    http://208.24.120.44/enter_bug.cgi?product=GDAL
++    http://remotesensing.org/mailman/listinfo/gdal-dev/
++    cygwin@cygwin.com
++
+--- gdal-1.3.0/CYGWIN-PATCHES/setup.hint.orig	1970-01-01 02:00:00.000000000 +0200
++++ gdal-1.3.0/CYGWIN-PATCHES/setup.hint	2004-10-10 16:31:20.856039600 +0200
+@@ -0,0 +1,8 @@
++sdesc: "Geospatial Data Abstraction Library"
++ldesc: "GDAL is a translator library for raster geospatial data formats
++that is released under an X/MIT style Open Source license. As a
++library, it presents a single abstract data model to the calling
++application for all supported formats. Also includes OGR (vector data) 
++and libgeotiff. Loads cygproj-0.dll dynamically if present."
++category: Libs Gis 
++requires: crypt cygwin jasper libiconv2 libintl3 libjpeg62 libpng12 openssl zlib
+--- gdal-1.3.0/GDALmake.opt.in.orig	2004-10-08 19:28:06.661500800 +0200
++++ gdal-1.3.0/GDALmake.opt.in	2004-10-09 18:41:29.635457600 +0200
+@@ -46,14 +46,15 @@
+ 
+ prefix		=	@prefix@
+ exec_prefix	=	@exec_prefix@
+-INST_PREFIX	=	@exec_prefix@
+-INST_INCLUDE	=	@includedir@
+-INST_DATA 	=	@datadir@
+-INST_LIB	=	@libdir@
+-INST_BIN	=	@bindir@
+-INST_PYMOD      =       @pymoddir@
+-INST_DOCS	=	@exec_prefix@/doc
+-INST_MAN	=	@mandir@
++DESTDIR         =
++INST_PREFIX	=	${DESTDIR}@exec_prefix@
++INST_INCLUDE	=	${DESTDIR}@includedir@
++INST_DATA 	=	${DESTDIR}@datadir@
++INST_LIB	=	${DESTDIR}@libdir@
++INST_BIN	=	${DESTDIR}@bindir@
++INST_PYMOD      =       ${DESTDIR}@pymoddir@
++INST_DOCS	=	${DESTDIR}@exec_prefix@/doc
++INST_MAN	=	${DESTDIR}@mandir@
+ 
+ #
+ #	Whether we use debug flags, or optimization is determined by
+--- gdal-1.3.0/GNUmakefile.orig	2004-09-01 21:19:10.000000000 +0200
++++ gdal-1.3.0/GNUmakefile	2004-10-08 19:31:01.018644000 +0200
+@@ -41,6 +41,7 @@
+ 
+ $(LIBGDAL):	$(GDAL_OBJ:.o=.lo)
+ 	$(LD) $(LIBS) -o $@ $(GDAL_OBJ:.o=.lo) \
++	    -Wl,--enable-runtime-pseudo-reloc \
+ 	    -rpath $(INST_LIB) \
+ 	    -no-undefined \
+ 	    -version-info $(LIBGDAL_CURRENT):$(LIBGDAL_REVISION):$(LIBGDAL_AGE)
+--- gdal-1.3.0/aclocal.m4.orig	2004-02-23 23:45:18.000000000 +0200
++++ gdal-1.3.0/aclocal.m4	2004-10-10 15:57:57.084813200 +0200
+@@ -482,7 +482,7 @@
+     if test ! -z "`uname -a | grep CYGWIN`" ; then 
+       PYTHON_LIBS="`$PYTHON -c '
+ import sys
+-print \"-L%s/lib/python%s/config -lpython%s.dll\" % (sys.prefix, sys.version[:3], sys.version[:3])'`"
++print \"-L%s/lib/python%s/config -lpython%s\" % (sys.prefix, sys.version[:3], sys.version[:3])'`"
+     fi 
+     py_makefile="`$PYTHON -c '
+ import sys
+--- gdal-1.3.0/configure.in.orig	2004-09-25 17:56:48.000000000 +0200
++++ gdal-1.3.0/configure.in	2004-10-08 21:10:28.895379200 +0200
+@@ -1327,6 +1327,8 @@
+ 
+   PROJ_STATIC=no
+   AC_MSG_RESULT([link dynamically.])
++  PROJ_LIB="-lproj"
++  LDFLAGS="$LDFLAGS -Wl,--enable-runtime-pseudo-reloc"
+ 
+ else
+ 
+--- gdal-1.3.0/ltmain.sh.orig	2004-09-22 08:50:51.001000000 +0200
++++ gdal-1.3.0/ltmain.sh	2004-10-10 15:19:24.098794800 +0200
+@@ -2414,10 +2414,19 @@
+ 	link_static=no # Whether the deplib will be linked statically
+ 	if test -n "$library_names" &&
+ 	   { test "$prefer_static_libs" = no || test -z "$old_library"; }; then
++	    case $host in
++	    *cygwin* | *mingw*)
++		# No point in relinking DLLs because paths are not encoded
++		notinst_deplibs="$notinst_deplibs $lib"
++		need_relink=no
++	      ;;
++	    *)
+ 	  if test "$installed" = no; then
+ 	    notinst_deplibs="$notinst_deplibs $lib"
+ 	    need_relink=yes
+ 	  fi
++	    ;;
++	    esac
+ 	  # This is a shared library
+ 
+ 	  # Warn about portability, can't link against -module's on
+@@ -4499,7 +4508,20 @@
+ 	finalize_command=`$echo "X$finalize_command" | $Xsed -e "s% @SYMFILE@%%"`
+       fi
+ 
++      wrappers_required=yes
++      case $host in
++      *cygwin* | *mingw* )
++        if test "$build_libtool_libs" != yes; then
++          wrappers_required=no
++        fi
++        ;;
++      *)
+       if test "$need_relink" = no || test "$build_libtool_libs" != yes; then
++          wrappers_required=no
++        fi
++        ;;
++      esac
++      if test "$wrappers_required" = no; then
+ 	# Replace the output file specification.
+ 	compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
+ 	link_command="$compile_command$compile_rpath"
+--- gdal-1.3.0/ogr/ogrct.cpp.orig	2004-09-23 17:05:27.000000000 +0200
++++ gdal-1.3.0/ogr/ogrct.cpp	2004-10-08 22:44:54.979102400 +0200
+@@ -141,7 +141,9 @@
+ static char        *(*pfn_pj_get_def)(projPJ,int) = NULL;
+ static void         (*pfn_pj_dalloc)(void *) = NULL;
+ 
+-#ifdef WIN32
++#if defined(__CYGWIN__)
++#  define LIBNAME      "cygproj-0.dll"
++#elif defined(WIN32)
+ #  define LIBNAME      "proj.dll"
+ #else
+ #  define LIBNAME      "libproj.so"

@@ -1,0 +1,32 @@
+difforig src/parrot-0.6.0/config
+
+2008-03-19 17:48:31  <rurban@x-ray.at>
+
+diff -ub  src/parrot-0.6.0/config/gen/makefiles/dynpmc_pl.in.orig
+--- src/parrot-0.6.0/config/gen/makefiles/dynpmc_pl.in.orig	2008-02-23 19:27:33.000000000 +0100
++++ src/parrot-0.6.0/config/gen/makefiles/dynpmc_pl.in	2008-03-19 17:44:11.218750000 +0100
+@@ -92,6 +92,8 @@
+     }
+     else {
+         $liblist = join( ' ', map { "-l$_" } keys %$libs );
++        my $extraLibs = '@libs@ @icu_shared@';
++        $liblist .= ' ' . $extraLibs;
+     }
+ 
+     return
+diff -ub  src/parrot-0.6.0/config/inter/make.pm.orig
+--- src/parrot-0.6.0/config/inter/make.pm.orig	2008-02-23 19:27:31.000000000 +0100
++++ src/parrot-0.6.0/config/inter/make.pm	2008-03-19 17:40:02.421875000 +0100
+@@ -42,10 +42,10 @@
+ 
+     # check the candidates for a 'make' program in this order:
+     # environment ; option ; probe ; ask ; default
+-    # first pick wins.
++    # first pick wins. On cygwin prefer make over nmake.
+     $prog ||= $ENV{ uc($util) };
+     $prog ||= $conf->options->get($util);
+-    $prog ||= check_progs( ['gmake', 'mingw32-make', 'nmake', 'make'], $verbose );
++    $prog ||= check_progs( $^O eq 'cygwin' ? ['gmake', 'make'] : ['gmake', 'mingw32-make', 'nmake', 'make'], $verbose );
+     if ( !$prog ) {
+         $prog = ( $conf->options->get('ask') )
+             ? prompt( $prompt, $prog ? $prog : $conf->data->get($util) )

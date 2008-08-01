@@ -1,0 +1,59 @@
+# -*- sh -*-
+DESCRIPTION="library of hash algorithms"
+HOMEPAGE="http://mhash.sourceforge.net/"
+SRC_URI="http://mesh.dl.sourceforge.net/sourceforge/mhash/${PN}-${PV}.tar.bz2"
+#CVS_URI="pserver:anonymous@cvs.mhash.sourceforge.net:/cvsroot/mhash"
+
+MAKEOPTS="${MAKEOPTS} -j1"
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+CFLAGS="${CFLAGS} -O3"
+LDFLAGS="${LDFLAGS} -shared -Wl,--enable-auto-image-base"
+CYGCONF_ARGS=""
+
+PKG_NAMES="${PN} ${PN}-devel"
+PKG_HINTS="${PKG_NAMES}"
+
+# mhash
+PKG_CONTENTS[0]=" \
+usr/bin/cygmhash-2.dll \
+usr/share"
+
+# mhash-devel
+PKG_CONTENTS[1]=" \
+--exclude=usr/bin/cygmhash-2.dll \
+--exclude=usr/share \
+usr"
+
+_lndirs() {
+	FROM=${S}/include/mutils
+	TO=${B}/include/mutils
+	if check_prog lndir
+	then
+		mkdir -p ${TO}
+		lndir -silent ${FROM} ${TO} || error "lndir failed"
+	else
+		cd ${FROM}
+		local d f
+		for d in $(find . -type d)
+		do
+			mkdir -p ${TO}/${d}
+		done
+		for f in $(find . ! -type d)
+		do
+			ln -sf ${FROM}/${f} ${TO}/${f}
+		done
+	fi
+}
+
+src_compile() {
+	cd ${S}
+	cygautoreconf
+	cd ${B}
+
+	# mhash just copies mhash_config.h into include/mutils/
+	_lndirs
+
+	cygconf
+	cygmake
+}
+

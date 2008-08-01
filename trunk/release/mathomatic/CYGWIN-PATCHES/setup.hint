@@ -1,0 +1,9 @@
+sdesc: "Computer Algebra System"
+ldesc: "Mathomatic is a highly portable,general purpose symbolic math program
+that can solve, simplify, combine, differentiate, integrate, and
+compare algebraic equations. It can do standard, complex number, and
+polynomial arithmetic. It is designed to be as general as possible,
+with few options. It is a console mode application that compiles and
+installs easily. License: LPGL 2.1"
+category: Math
+requires: libreadline6 libncurses8 cygwin

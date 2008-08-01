@@ -1,0 +1,39 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/htmldoc-1.8.26/Makedefs.in src/htmldoc-1.8.26/Makedefs.in
+--- origsrc/htmldoc-1.8.26/Makedefs.in	2005-10-28 22:32:59.000000000 +0200
++++ src/htmldoc-1.8.26/Makedefs.in	2006-07-31 14:02:12.468750000 +0200
+@@ -47,21 +47,21 @@
+ # Directories...
+ #
+ 
+-bindir		=	@bindir@
+-datadir		=	@datadir@
+-exec_prefix	=	@exec_prefix@
+-includedir	=	@includedir@
+-infodir		=	@infodir@
+-libdir		=	@libdir@
+-libexecdir	=	@libexecdir@
+-localstatedir	=	@localstatedir@
+-mandir		=	@mandir@
+-oldincludedir	=	@oldincludedir@
+-prefix		=	@prefix@
+-sbindir		=	@sbindir@
+-sharedstatedir	=	@sharedstatedir@
++bindir		=	${DESTDIR}@bindir@
++datadir		=	${DESTDIR}@datadir@
++exec_prefix	=	${DESTDIR}@exec_prefix@
++includedir	=	${DESTDIR}@includedir@
++infodir		=	${DESTDIR}@infodir@
++libdir		=	${DESTDIR}@libdir@
++libexecdir	=	${DESTDIR}@libexecdir@
++localstatedir	=	${DESTDIR}@localstatedir@
++mandir		=	${DESTDIR}@mandir@
++oldincludedir	=	${DESTDIR}@oldincludedir@
++prefix		=	${DESTDIR}@prefix@
++sbindir		=	${DESTDIR}@sbindir@
++sharedstatedir	=	${DESTDIR}@sharedstatedir@
+ srcdir		=	@srcdir@
+-sysconfdir	=	@sysconfdir@
++sysconfdir	=	${DESTDIR}@sysconfdir@
+ top_srcdir	=	@top_srcdir@
+ 
+ #

@@ -1,0 +1,759 @@
+# -*- shell-script -*-
+# /usr/src/perl/build_common contains common bash functions 
+# for the cygwin perl build scripts. By rurban@cpan.org
+
+## M$ sucks
+unset LIB
+unset INCLUDE
+export CYGWIN=server
+
+## cfg
+if [ -z "$prefix" ];     then prefix=/usr; fi
+if [ -z "$shortver" ];   then shortver=$(echo "${ver}${release}" | sed 's/-.*//'); fi
+if [ -z "$longver" ];    then longver="${shortver}"; fi
+if [ -z "$major" ];      then major=5; fi
+if [ -z "$minor" ];      then minor="`echo ${shortver:2:5}|sed 's/\..*//'`"; fi
+if [ -z "$subversion" ]; then subversion=0; fi
+if [ -z "$usethreads" ]; then usethreads=yes; fi
+if [ -z "$rebasebase" ]; then rebasebase=0x52000000; fi
+if [ -z "$srcdir" ];     then srcdir=${dir}/${pkg_ver}; fi
+CONF_ARGS="-de"
+
+## functions
+rebase_all() {
+    echo "## rebase_all at $rebasebase"
+    echo "./perl.exe" > $dir/rebase.lst
+    find -type f -name \*.exe | grep -v "perl.exe" >> $dir/rebase.lst
+    find -type f -name \*.dll >> $dir/rebase.lst
+    cat $dir/rebase.lst | rebase -v -b $rebasebase -T -
+    true
+}
+
+__stage() {
+    echo -e "\e[1;32m# stage_${1}\e[0;0m";
+}
+__substage() {
+    echo -e "\e[1;39m## stage_${1}\e[0;0m";
+}
+
+faclfixdir() {
+  d="$1"
+  # cygwin facl wrong if default inherited, which will cause some write tests to fail.
+  cat > ${dir}/facl.dir <<EOF
+# file: .
+# owner: $USER
+# group: root
+user::rwx
+group::r-x
+mask:rwx
+other:r-x
+EOF
+  echo "faclfixdir $d"
+  find "$d" -type d -exec /usr/bin/setfacl -f ${dir}/facl.dir '{}' \;
+}
+
+faclmkdir() {
+  d="$1"
+  echo "mkdir -p $d"
+  mkdir -p "$d"
+  faclfixdir "$d"
+}
+
+stage_cpan() {
+  if [ -n "$stage_cpan" ]; then
+    stage_cpan_vendorprep
+  fi
+}
+
+stage_cpan_vendorprep() {
+  if [ -n "$stage_vendorprep" -o -n "$stage_cpan" ]; then
+    __substage "cpan_vendorprep"
+    mycpan="cpan"
+    if [ -e "/usr/local/bin/perl${longver}" -a -e "/usr/local/bin/cpan${longver}" ]; then
+	mycpan="cpan${longver}"
+    else
+	if [ -e "/usr/local/bin/perl${longver}" ]; then
+	    mycpan="perl${longver} -MCPAN -e'install "
+	    echo $mycpan $modules
+	    $mycpan $modules "'"
+	fi
+    fi
+    echo $mycpan $modules
+    $mycpan $modules
+  fi
+}
+
+stage_pre_vendorprep() {
+  __substage "pre_vendorprep"
+  cd $dir
+  #$ for p in Test-Reporter-1.38 ; do loc=$(grep "localfile:" /home/rurban/.cpan/build/$p-*.yml | cut -d' ' -f4); ln -s $loc; ln -s $loc ../; done 
+  for i in $exts; do
+    if [ ! -e $i.tar.gz ]; then
+        # try to find it below
+        if [ -e ../$i.tar.gz ]; then
+	    echo "ln -s ../$i.tar.gz"
+     	    ln -s ../$i.tar.gz
+        else
+	    # try to find in the cpan archive
+	    x=`ls ~/.cpan/build/$i-*.yml 2>/dev/nul`
+	    if [ -n "$x" ]; then
+		echo preq $i.tar.gz not found. But found $x:
+		echo `grep -h "localfile: " $x | cut -c14-|head -n1`
+		cp `grep -h "localfile: " $x | cut -c14-|head -n1` .
+	    else
+		echo preq $i.tar.gz not found
+	    fi
+	fi
+    fi
+  done
+}
+
+stage_vendorprep() {
+  if [ -n "$stage_vendorprep" ]; then
+    __stage "vendorprep"
+    stage_pre_vendorprep
+    cd $dir
+    for i in $exts; do test -e $i.tar.gz || exit; done
+  fi
+}
+
+stage_post_prep_hook() {
+    echo -n ""
+}
+stage_prep() {
+  if [ -n "$stage_prep" ]; then
+    __stage "prep"
+    stage_pre_prep
+    stage_prep_unpack
+    stage_prep_patch
+    stage_post_prep_hook
+  fi
+}
+
+stage_pre_prep() {
+  if [ -n "$stage_prep" ]; then
+
+    __substage "pre_prep"
+    cd ${dir}
+    if [ ! -d ${builddir} ]; then 
+	faclmkdir ${builddir};
+    fi
+    if [ ! -d ${instdir} ]; then 
+	faclmkdir ${instdir}; 
+    fi
+    ## checkout builddir
+    if [ -e ${builddir}/GNUMakefile -a -z "$make_all" ]; then
+	cd ${builddir}
+	echo "make clean"
+	make clean
+	if [ -n "$stage_configure" ]; then
+	    echo "rm config.sh config.h Policy.sh"
+	    rm config.sh config.h Policy.sh 2>/dev/null
+	fi
+	cd ${dir}
+    else
+	# if 
+	echo "rm -rf ${builddir}/*"
+	rm -rf ${builddir}/*
+	sleep 1
+        faclfixdir ${builddir}
+	# mkdir -p -m 777 ${builddir}
+	stage_configure=1
+    fi
+  fi
+}
+
+stage_prep_unpack() {
+  if [ -n "$stage_prep" ]; then
+    __substage "prep_unpack"
+    log=${dir}/log.prep${exesuffix}
+    cd ${dir}
+    rm ${log} 2>/dev/null
+    ## unpack or rsync for blead
+    test -e ${srcdir} && echo "difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch"
+    test -e ${srcdir} && difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch
+    if [ "$pkg_ver" = "perl-current" ]; then
+	echo "rsync -acvz --force --delete rsync://public.activestate.com/perl-current/ ${pkg_ver}"
+	rsync -acvz --force --delete rsync://public.activestate.com/perl-current/ ${pkg_ver} \
+	    | tee -a ${log}
+    else
+	echo "rm -rf ${srcdir}/*"
+	rm -rf ${srcdir}/* 2>/dev/null | tee -a ${log}
+        faclfixdir ${srcdir}
+	sleep 2
+	if [ -e ${pkg_ver}.tar.bz2 ]; then
+	    echo "tar xfj ${pkg_ver}.tar.bz2"
+	    tar xfj ${pkg_ver}.tar.bz2 | tee -a ${log}
+	else    
+	    echo "tar xfz ${pkg_ver}.tar.gz"
+	    tar xfz ${pkg_ver}.tar.gz | tee -a ${log}
+        fi
+    fi
+  fi
+}
+
+__stage_empty() {
+  echo -n ""
+}
+
+stage_prep_patch() {
+  if [ -n "$stage_prep" ]; then
+    __substage "prep_patch"
+    log=${dir}/log.prep${exesuffix}
+    cd ${dir}
+    for p in pl-*.patch; do
+	(cd ${srcdir}
+	__substage "patch $p"
+	if patch -N -s --binary --dry-run  -p1 -i ../$p &> /dev/null
+	then
+	    patch -N --binary -b -p1 -i ../$p
+	else
+	    patch -N --binary -b -p1 -i ../$p
+	    echo "patch $p failed"
+	    exit 1
+        fi
+	cd -) | tee -a ${log}
+    done
+    # patch bug: chmod .orig 0000 => 0444; chmod curr 0444 => 0644
+    cd ${srcdir}
+    find . -name \*.orig -exec chmod 0444 \{\} \;
+    find . -name \*.orig -print | sed 's,.orig,,' | xargs chmod u+rw
+    cd ${dir}
+  fi
+}
+
+stage_configure_policy() {
+    __substage "configure_policy"
+    if [ "$shortver" = "5.10" ]; then
+	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+    fi
+    if [ "$shortver" = "5.11" ]; then
+	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+    fi
+    if [ "$shortver" = "5.12" ]; then
+	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.11:/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+    fi
+}
+stage_post_configure_hook() {
+    echo -n ""
+}
+stage_configure() {
+  if [ -n "$stage_configure" ]; then
+    __stage "configure"
+    if [ -z "$stage_prep" ]; then
+	if [ ! -d ${builddir} ]; then 
+	    faclmkdir ${builddir};
+	fi
+    fi
+    # check debug, usethreads
+    ## configure perl
+    cd ${builddir}
+    log=${dir}/log.configure${exesuffix}
+
+    echo "cd ${builddir}; rm config.sh config.h Policy.sh *.o *.exe *.dll *.a" |\
+	tee ${log}
+    rm config.sh config.h Policy.sh *.o *.exe *.dll *.a 2>/dev/null
+    echo "find ext -name Makefile -delete" | tee -a ${log}
+    find ext -name Makefile -delete
+    make -C ext/Time/HiRes clean || rm ext/Time/HiRes/xdefine ext/Time/HiRes/pm_to_blib 
+
+    echo "cat \> Policy.sh" | tee -a ${log}
+    cat > ${builddir}/Policy.sh <<EOF
+#!/bin/sh
+# Auto-generated cygwin Policy file for ${pkg}-${ver}${release}
+# ${archname}
+
+# Where things will be.
+prefix='${prefix}'
+siteprefix='${prefix}'
+vendorprefix='${prefix}'
+vendorman1dir='${prefix}/share/man/man1'
+vendorman3dir='${prefix}/share/man/man3'
+html1dir='${prefix}/share/doc/${pkg}-${ver}/html/html1'
+html3dir='${prefix}/share/doc/${pkg}-${ver}/html/html3'
+sitehtml1dir='${prefix}/share/doc/${pkg}-${ver}/html/html1'
+sitehtml3dir='${prefix}/share/doc/${pkg}-${ver}/html/html3'
+vendorhtml1dir='${prefix}/share/doc/${pkg}-${ver}/html/html1'
+vendorhtml3dir='${prefix}/share/doc/${pkg}-${ver}/html/html3'
+
+privlib='${prefix}/lib/perl5/${shortver}'
+sitelib='${prefix}/lib/perl5/site_perl/${shortver}'
+vendorlib='${prefix}/lib/perl5/vendor_perl/${shortver}'
+archlib='${prefix}/lib/perl5/${shortver}/${archname}'
+sitearch='${prefix}/lib/perl5/site_perl/${shortver}/${archname}'
+vendorarch='${prefix}/lib/perl5/vendor_perl/${shortver}/${archname}'
+
+sitebin='/usr/local/bin'
+sitescript='/usr/local/bin'
+
+# The maintainer.
+mydomain='.x-ray.at'
+#myhostname='reini'
+perladmin='rurban@x-ray.at'
+cf_by='rurban'
+cf_email='cygwin@cygwin.com'
+
+EOF
+    stage_configure_policy
+    if [ -z "$make_all" ]; then
+	test -s ../Policy.local && cat ../Policy.local >> Policy.sh
+	test -s ../conf_args.local && . ../conf_args.local
+    fi
+    #echo "inc_version_list='5.8'" >> Policy.sh
+    if [ -z "$CONF_no_mksymlinks" ]; then 
+	CONF_ARGS="$CONF_ARGS -Dmksymlinks"
+    fi
+    if [ "$usethreads" = "no" ]; then 
+	CONF_ARGS="$CONF_ARGS -Uusethreads"
+    else
+	CONF_ARGS="$CONF_ARGS -Dusethreads"
+    fi
+    if [ $minor -gt 9 ] ; then
+	CONF_ARGS="$CONF_ARGS -Dmad=y"
+    fi
+    if [ -z "$make_all" -a -n "$make_debug" ]; then
+	CONF_ARGS="$CONF_ARGS -Dusedevel"
+	echo "installbin='/usr/local/bin'" >> Policy.sh
+	echo "installscript='/usr/local/bin'" >> Policy.sh
+    else
+        if [ "${pkg_ver}" = "perl-current" ]; then
+	    CONF_ARGS="$CONF_ARGS -Dusedevel"
+	    echo "installbin='/usr/local/bin'" >> Policy.sh
+	    echo "installscript='/usr/local/bin'" >> Policy.sh
+        fi
+    fi
+    if [ -n "$make_debug" ]; then
+	CONF_ARGS="$CONF_ARGS -DDEBUGGING -Doptimize=-O0"
+    fi
+    echo "sh ${srcdir}/Configure $CONF_ARGS" |\
+	tee ${log}
+    sh ${srcdir}/Configure $CONF_ARGS 2>&1 |\
+	tee ${log}
+
+    # cygwin facl still wrong, which will cause some write tests to fail.
+    faclfixdir "${builddir}"
+    cd ${dir}
+    stage_post_configure_hook
+  fi
+}
+stage_post_make_hook() {
+    echo -n ""
+}
+stage_make() {
+  if [ -n "$stage_make" ]; then
+    __stage "make"
+    cd ${builddir}
+    ( make -j1 all libperl.a 2>&1 | tee ${dir}/log.make${exesuffix} ) && \
+	test -f ${builddir}/perl.exe && \
+	rebase_all && \
+	cd ${dir} && \
+	stage_post_make_hook
+    test -f ${builddir}/perl.exe || exit
+  fi
+}
+stage_post_check_hook() {
+    echo -n ""
+}
+stage_check() {
+  if [ -n "$stage_check" ]; then
+    __stage "check"
+    cd ${builddir}
+    test -f perl.exe || exit
+    ## make the tests
+    export PERLIO=perlio
+    make -j1 test 2>&1 | tee ${dir}/log.test${exesuffix}
+    grep '\.\.skip' ${dir}/log.test > ${dir}/log.test.skipped${exesuffix}
+    egrep -i '(\.#|\..FAIL| Fail)' ${dir}/log.test > ${dir}/log.test.failed${exesuffix}
+    if test -s ${dir}/log.test.failed${exesuffix}; then
+	(cd t; ./perl harness) 2>&1 | tee ${dir}/log.harness${exesuffix}
+    fi
+    cd ${dir}
+    stage_post_check_hook
+  fi
+}
+
+stage_post_install_hook() {
+    echo -n ""
+}
+
+stage_post_install_fixups() {
+    __substage "post_install_fixups"
+    find ${instdir} -name .packlist -exec sed -i -e"s,${instdir},," \{\} \;
+    chmod -R g-w ${instdir}${prefix}/bin ${instdir}${prefix}/lib/perl5
+    if [ -n "$exesuffix" ]; then
+	cp ${instdir}${prefix}/bin/perl${longver}.exe ${instdir}${prefix}/bin/perl${longver}${exesuffix}.exe
+    fi
+    pushd ${instdir}${prefix}/bin
+    if [ -e scandeps.pl ]; then mv scandeps.pl scandeps; fi
+    if [ -e "a2p${longver}.exe" -a ! -e "a2p.exe" ]; then # installperl -v (usedevel)
+	for f in $(ls | grep -v "${shortver}"); do
+	    /usr/bin/mv $f $f${longver}
+	done
+	for x in $(ls *$ver); do r=$(basename $x $ver); ln -s $x $r; done
+	for x in $(ls *$ver.exe); do r=$(basename $x $ver); cp $x $r; done
+    fi
+    popd
+}
+
+stage_install() {
+  if [ -n "$stage_install" ]; then
+    __stage "install"
+    # versiononly will not install lib
+    cd ${builddir}
+    test -f perl.exe || exit
+    rm -rf ${instdir}
+    faclmkdir ${instdir}
+    rm -rf ${instdir}-unstripped
+
+    ( make -j1 install DESTDIR=${instdir} 2>&1 | tee ${dir}/log.install${exesuffix} ) || exit
+
+    # add documentation
+    cd ${dir}
+    mkdir -p ${instdir}/usr/share/doc/${pkg}-${ver}
+    mkdir -p ${instdir}${prefix}/share/doc/Cygwin
+
+    cd ${srcdir}
+    /bin/install -m 644 Artistic Copying README ${instdir}${prefix}/share/doc/${pkg}-${ver}
+    /bin/install -m 644 INSTALL Changes* ${instdir}${prefix}/share/doc/${pkg}-${ver}
+
+    cd ${dir}
+    /bin/install -m 644 README ${instdir}${prefix}/share/doc/Cygwin/${pkg}-${shortver}.README 
+
+    stage_post_install_hook
+    stage_post_install_fixups
+  fi
+}
+
+stage_installvendor() {
+  if [ -n "$stage_installvendor" ]; then
+    __stage "installvendor"
+    cd ${dir}
+    if [ -e ${instdir}/usr/bin/perl${longver} ]; then
+	PERL=${instdir}/usr/bin/perl${longver}
+    fi
+    if [ -z "$PERL" -a -n "$exesuffix" ]; then
+	PERL=${instdir}/usr/bin/perl${longver}${exesuffix}
+    fi
+    if [ -z "$PERL" ]; then
+      if [ -e ${instdir}/usr/bin/perl.exe ]; then
+	PERL=${instdir}/usr/bin/perl.exe
+      else
+	PERL=`ls --color=no ${instdir}/usr/bin/perl*.exe`
+      fi
+    fi
+    if [ -z "$PERL" ]; then PERL=perl${longver}; fi
+    echo "install_vendor with $PERL"
+    cd ${dir}
+    logmake=${dir}/log.make_vendor${exesuffix}
+    loginstall=${dir}/log.install_vendor${exesuffix}
+    rm $logmake $loginstall 2> /dev/null
+
+    # BIG TODO: Config.pm must be absolute here. And we need the currently rebases files, not the old ones.
+    # So we overwrite the previous archlib installation without backup
+    mkdir -p ${prefix}/lib/perl5/${shortver}/${archname}
+    echo "cp -rpf ${instdir}${prefix}/lib/perl5/${shortver}/${archname}/* ${prefix}/lib/perl5/${shortver}/${archname}/"
+    cp -rpf ${instdir}${prefix}/lib/perl5/${shortver}/${archname}/* ${prefix}/lib/perl5/${shortver}/${archname}/
+
+    PERL_I="$PERL -I${prefix}/lib/perl5/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/${shortver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${shortver}"
+    # CPAN, libXML and more
+    for i in $exts
+    do rm -rf ${i};
+	(tar xzf ${i}.tar.gz 2>&1 || exit) | tee -a $logmake
+	cd ${dir}/${i}
+	if test -f ${dir}/$i.patch; then
+	    __substage "${i}: patch -b -f -p1 ../$i.patch"
+	    patch -b -f -p1 < ${dir}/$i.patch 2>&1 | tee -a $logmake
+	    find -name \*.orig -exec chmod 0444 \{\} \;
+	fi
+#       if test -f ppport.h; then
+#	    mv ppport.h ppport.h.orig && ${builddir}/perl -I${builddir}/ext -MDevel::PPPort -e Devel::PPPort::WriteFile
+#           cd ${dir}; mv -fb $i.patch $i.patch~; difforig $i > $i.patch; cd ${dir}/${i}
+#       fi
+	__substage "${i}: $PERL Makefile.PL"
+        #PERL="$PERL_I" 
+	PATH="${instdir}${prefix}/bin:$PATH" $PERL_I Makefile.PL 2>&1 | tee -a $logmake
+	__substage "${i}: make"
+	make -j1 2>&1 | tee -a $logmake
+	__substage "${i}: make install_vendor DESTDIR=${instdir}"
+	make -j1 install_vendor DESTDIR=${instdir} 2>&1 | tee -a $loginstall
+	cd ${dir}
+	rm -rf ${dir}/${i}
+    done
+    find ${instdir} -name .packlist -exec sed -i -e"s,${instdir},," \{\} \;
+
+    #for taint
+    chmod -R g-w ${instdir}/usr/bin ${instdir}/usr/lib/perl5/vendor_perl/
+
+    pushd ${instdir}${prefix}/bin > /dev/null
+    if [ -e scandeps.pl ]; then mv scandeps.pl scandeps; fi
+    popd
+
+    ## rebase again with all dlls
+    find ${instdir} -name \*.dll -exec chmod u+w \{\} \;
+    cd ${instdir}
+    rebase_all
+    cd $dir
+
+  fi
+}
+
+stage_spkg_hook() {
+    echo -n ""
+}
+stage_pkg_hook() {
+    echo -n ""
+}
+
+stage_pkg() {
+  if [ -n "$stage_pkg" ]; then
+    __stage "pkg"
+    # src
+    cd $dir
+    # check if to be updated or created anew
+    if [ ! -d ${pkg}-${ver}${release} ]; then
+	rm ${pkg}-${ver}${release}-src.tar.bz2 2>/dev/nul
+	rm -rf ${pkg}-${ver}${release}
+	sleep 2
+	mkdir ${pkg}-${ver}${release}
+	cp ${pkg}-${ver}.tar.gz ${pkg}-${ver}${release}/
+    fi
+    cp -p README pl-*.patch build build_common modules ${pkg}-${ver}${release}/
+    for i in $exts; do 
+	cp $i.tar.gz $i.patch ${pkg}-${ver}${release}/ 2>/dev/null
+    done
+    for i in log.*${exesuffix}; do cp ${i} ${pkg}-${ver}${release}/${i}.rel; done
+    stage_spkg_hook
+    echo "## spkg ${pkg}-${ver}${release}-src.tar.bz2"
+    tar cjf ${pkg}-${ver}${release}-src.tar.bz2 ${pkg}-${ver}${release}
+
+    # bin
+    files=${dir}/pkg.files
+    cd ${instdir}
+    find usr/share/man -type f -print > ${files}.manpages
+    find usr/bin usr/lib usr/share/doc \( -type f -o -type l \) -print > ${files}.perl
+    echo usr/lib/perl5/site_perl >>${files}.perl
+
+    ## then strip and pack it up
+    cd ${instdir}
+    tar -c -T ${files}.manpages | bzip2 -9 > ${dir}/${pkg}_manpages-${ver}${release}.tar.bz2
+    echo "## pkg ${pkg}_manpages-${ver}${release}.tar.bz2"
+    tar tfj ${dir}/${pkg}_manpages-${ver}${release}.tar.bz2 > ${dir}/${pkg}_manpages-${ver}${release}.lst
+
+    if [ -z "$stage_install" -a -d "${dir}/inst-unstripped" ]; then
+	echo ""
+    else
+	# only for the first time, after installation
+	mkdir ${dir}/inst-unstripped
+	cp -fr ${instdir}/* ${dir}/inst-unstripped/
+	rm -rf ${dir}/inst-unstripped/usr/share/man
+	cd ${dir}/inst-unstripped
+	echo "## pkg ${pkg}_unstripped-${ver}${release}.tar.bz2"
+	tar -c -T ${files}.perl | bzip2 -9 > ${dir}/${pkg}_unstripped-${ver}${release}.tar.bz2
+    fi
+    
+    cd ${instdir}
+    if [ -n "$stage_install" ]; then
+	find usr/bin -path usr/lib/perl5 -prune -o -type f \( -name \*.exe -o -name \*.dll \) \
+	    -exec strip \{\} \;
+    fi
+    stage_pkg_hook
+    echo "## pkg ${pkg}-${ver}${release}.tar.bz2"
+    tar -c -T ${files}.perl | bzip2 -9 > ${dir}/${pkg}-${ver}${release}.tar.bz2
+    cd ${dir}
+    echo "## pkg ${pkg}-${ver}${release}.lst"
+    tar tfj ${pkg}-${ver}${release}.tar.bz2 > ${pkg}-${ver}${release}.lst
+    cd ${dir}
+    
+  fi
+}
+
+## stages
+stages="cpan vendorprep prep configure make check install installvendor pkg"
+enable_stage() {
+    if  [ -z "$enable_stage" ]; then
+	for stage in $stages; do unset stage_${stage}; done
+	enable_stage=1
+    fi
+    while test -n "$1" ; do
+	let "stage_${1}=1"
+	shift
+    done
+}
+
+help() {
+    echo "$0 [OPTIONS] [stages...]"
+    echo "OPTIONS: --help|--version|--nothreads|--debug"
+    echo    "STAGES: all almostall"
+    echo -n "       "
+    for stage in $stages; do echo -n " ${stage}"; done
+    echo ""
+}
+
+version() {
+    echo pkg_ver=$pkg_ver
+    echo "ver=$ver	release=$release"
+    echo "shortver=$shortver	longver=$longver"
+    echo "major=$major		minor=$minor"
+    echo usethreads=$usethreads
+    echo archname=$archname
+}
+
+while test -n "$1" ; do
+  case $1 in
+    help|--help)	help; exit ;;
+    version|--version)	version; exit ;;
+    -D*|-U*)
+	# pass to Configure
+	CONF_ARGS="$CONF_ARGS $1"
+	;;
+    -A*)
+	# pass also next arg to Configure, -A prepend:libswanted='cl pthread ', -A ccflags=-DSOME_MACRO 
+	CONF_ARGS="$CONF_ARGS $1 $2"
+	shift
+	;;
+    --nopatch|-np)
+	# no platform patches, plain smoking
+	__substage "prep_patch skipped"
+	stage_prep_patch=__stage_empty
+	;;
+    --nothreads|--no-threads|-nt)
+	usethreads="no"
+	#archname="i686-nothreads-cygwin" 
+	#builddir=${dir}/buildnothreads
+	#instdir=${dir}/instnothreads
+	;;
+    --debug|--debugging|-d)
+	make_debug=1
+	#archname="i686-debug-cygwin" 
+	#builddir=${dir}/builddebug
+	#instdir=${dir}/instdebug
+	;;
+    --no-mksymlinks|--no-s|-ns)
+	CONF_no_mksymlinks=1
+        ;;
+    all)
+	make_all=1
+	#make_debug=
+	stage_vendorprep=
+	stage_prep=1
+	stage_configure=1
+	stage_make=1
+	stage_check=1
+	stage_install=1
+	stage_installvendor=1
+	stage_pkg=1
+        ;;
+    almostall)
+	make_debug=
+	stage_vendorprep=
+	stage_prep=
+	stage_configure=1
+	stage_make=1
+	stage_check=1
+	stage_install=1
+	stage_installvendor=1
+	stage_pkg=
+        ;;
+    undopatch)  
+	enable_stage 1
+	find ${srcdir} -type f -name '*.orig' -print | /usr/bin/sort | while read FILE
+	do
+	    NEW="`dirname $FILE`/`basename $FILE .orig`"
+	    echo "$NEW" 1>&2
+	    mv -f $FILE $NEW
+	done 
+	exit
+	;;
+    patch)
+	enable_stage prep
+	test -e ${srcdir} && echo "difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch"
+	test -e ${srcdir} && difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch
+	stage_prep_patch
+	__substage "patch forces exit"
+	exit
+	;;
+    cpan)       
+	enable_stage cpan 
+	;;
+    vprep|vendorprep) 
+	enable_stage vendorprep 
+	;;
+    prep)
+	enable_stage prep 
+	;;
+    cfg|conf|configure)	
+	enable_stage configure 
+	;;
+    build|make)	
+	enable_stage make 
+	;;
+    test|check)
+	enable_stage check 
+	;;
+    install|inst|i) 
+	enable_stage install 
+	;;
+    installvendor|instvend|iv) 
+	enable_stage installvendor 
+	;;
+    package|pkg)
+	enable_stage pkg 
+	;;
+    *)	
+	echo "Invalid argument: $1"; 
+	help 
+	;;
+  esac
+  shift
+done
+
+################################################################################
+
+if [ -z "$builddir" ];   then 
+    if [ "$usethreads" = "no" ]; then
+	if [ -z "$make_debug" ]; then builddir=${dir}/buildnothreads
+	else builddir=${dir}/buildntdebug
+	fi
+    else
+	if [ -z "$make_debug" ]; then builddir=${dir}/buildperl
+	else builddir=${dir}/builddebug
+	fi
+    fi
+fi
+if [ -z "$instdir" ];    then 
+    if [ "$usethreads" = "no" ]; then
+	if [ -z "$make_debug" ]; then instdir=${dir}/instnothreads
+	else instdir=${dir}/instntdebug
+	fi
+    else
+	if [ -z "$make_debug" ]; then instdir=${dir}/inst
+	else instdir=${dir}/instdebug
+	fi
+    fi
+fi
+archname="i686-cygwin"
+if [ "$usethreads" = "no" ]; then
+	if [ -n "$make_debug" ]; then archname="i686-nothreads-debug-cygwin"
+	else archname="i686-nothreads-cygwin"
+	fi
+else
+	if [ -n "$make_debug" ]; then archname="i686-debug-cygwin"; fi
+fi
+if [ -n "$make_debug" ]; then
+  if [ "$usethreads" = "no" ]; then
+    exesuffix=d-nt
+  else
+    exesuffix=d
+  fi
+else
+  if [ "$usethreads" = "no" ]; then
+    exesuffix=-nt
+  else
+    exesuffix=
+  fi
+fi
+if [ -n "$make_all" ]; then
+  libperl="cygperl5_${minor}${exesuffix}.dll"
+else
+  libperl="cygperl5_${minor}_${subversion}${exesuffix}.dll"
+fi

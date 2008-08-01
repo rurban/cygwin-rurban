@@ -1,0 +1,13 @@
+DESCRIPTION="Console mode tetris clone"
+HOMEPAGE="http://hackl.dhs.org/ctris/"
+SRC_URI="http://hackl.dhs.org/data/download/download.php?file=${PN}-${PV}.tar.bz2"
+# SRC_ORIG_PKG_NAME=ctris-0.41.tar.bz2
+
+MAKEOPTS="-j1"
+USE_DESTDIR=1
+
+src_compile() {
+  lndirs
+  cd ${B}
+  cygmake
+}

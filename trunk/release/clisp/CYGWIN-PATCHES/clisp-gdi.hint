@@ -1,0 +1,6 @@
+sdesc: "The GDI module linkset for clisp"
+category: Interpreters
+requires: clisp
+ldesc: "This is the linkset base+gdi with the experimental 
+GDI module (native Win32 GDI)."
+external-source: clisp

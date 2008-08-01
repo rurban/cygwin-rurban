@@ -1,0 +1,205 @@
+#!/bin/sh
+# find out where the build script is located
+tdir=`echo "$0" | sed 's%[\\/][^\\/][^\\/]*$%%'`
+test "x$tdir" = "x$0" && tdir=.
+scriptdir=`cd $tdir; pwd`
+# find src directory.  
+# If scriptdir ends in SPECS, then topdir is $scriptdir/.. 
+# If scriptdir ends in CYGWIN-PATCHES, then topdir is $scriptdir/../..
+# Otherwise, we assume that topdir = scriptdir
+topdir1=`echo ${scriptdir} | sed 's%/SPECS$%%'`
+topdir2=`echo ${scriptdir} | sed 's%/CYGWIN-PATCHES$%%'`
+if [ "x$topdir1" != "x$scriptdir" ] ; then # SPECS
+  topdir=`cd ${scriptdir}/..; pwd`
+else
+  if [ "x$topdir2" != "x$scriptdir" ] ; then # CYGWIN-PATCHES
+    topdir=`cd ${scriptdir}/../..; pwd`
+  else
+    topdir=`cd ${scriptdir}; pwd`
+  fi
+fi
+
+cd ${topdir}
+
+tscriptname=`basename $0 .sh`
+export PKG=`echo $tscriptname | sed -e 's/\-[^\-]*\-[^\-]*$//'`
+export VER=`echo $tscriptname | sed -e "s/${PKG}\-//" -e 's/\-[^\-]*$//'`
+export REL=`echo $tscriptname | sed -e "s/${PKG}\-${VER}\-//"`
+export FULLPKG=${PKG}-${VER}-${REL}
+
+export ORIG_PKG=`echo $PKG | sed -e 's/^perl-//'`
+
+# determine correct decompression option and tarball filename
+if [ -e ${ORIG_PKG}-${VER}.tar.gz ] ; then
+  export opt_decomp=z
+  export src_orig_pkg_ext=gz
+elif [ -e ${ORIG_PKG}-${VER}.tar.bz2 ] ; then
+  export opt_decomp=j
+  export src_orig_pkg_ext=bz2
+fi
+
+export src_orig_pkg_name=${ORIG_PKG}-${VER}.tar.${src_orig_pkg_ext}
+export src_pkg_name=${FULLPKG}-src.tar.bz2
+export src_patch_name=${FULLPKG}.patch
+export bin_pkg_name=${FULLPKG}.tar.bz2
+
+export src_orig_pkg=${topdir}/${src_orig_pkg_name}
+export src_pkg=${topdir}/${src_pkg_name}
+export src_patch=${topdir}/${src_patch_name}
+export bin_pkg=${topdir}/${bin_pkg_name}
+export srcdir=${topdir}/${PKG}-${VER}
+export objdir=${srcdir}/.build
+export instdir=${srcdir}/.inst
+export srcinstdir=${srcdir}/.sinst
+export checkfile=${topdir}/${FULLPKG}.check
+# run on
+host=i686-pc-cygwin
+# if this package creates binaries, they run on
+target=i686-pc-cygwin
+prefix=/usr
+sysconfdir=/etc
+
+mkdirs() {
+  (cd ${topdir} && \
+  rm -fr ${objdir} ${instdir} ${srcinstdir} && \
+  mkdir -p ${objdir} && \
+  mkdir -p ${instdir} && \
+  mkdir -p ${srcinstdir} )
+}
+prep() {
+  (cd ${topdir} && \
+  tar xv${opt_decomp}f ${src_orig_pkg} && \
+  mv ${ORIG_PKG}-${VER} ${PKG}-${VER} ; \
+  cd ${topdir} && \
+  patch -p0 < ${src_patch} 
+  && mkdirs )
+}
+conf() {
+  (cd ${srcdir} && \
+  perl Makefile.PL INSTALLDIRS=site PREFIX=${instdir}/usr/)
+}
+build() {
+  (cd ${srcdir} && make all manifypods)
+}
+check() {
+  (cd ${srcdir} && \
+  make test | tee ${checkfile} 2>&1 )
+}
+clean() {
+  (cd ${srcdir} && \
+  if test -f Makefile; then \
+    make realclean; \
+  elif test -f Makefile.old; then \
+    make -f Makefile.old realclean; \
+  fi )
+}
+install() {
+  rm -rf ${instdir}/*; \
+  (cd ${srcdir} && \
+  make pure_install INSTALLMAN1DIR=${instdir}/usr/share/man/man1 \
+  	INSTALLMAN3DIR=${instdir}/usr/share/man/man3 && \
+  find ${instdir} \( -name '.packlist' -o -name 'perllocal.pod' \) -exec rm -f {} \; && \
+  find ${instdir}/usr/share/man -name '*.3pm' -type f -exec gzip -9 {} \; && \
+  for d in ${prefix}/share/doc/${PKG}-${VER} ${prefix}/share/doc/Cygwin ; do \
+    if [ ! -d ${instdir}${d} ] ; then \
+      mkdir -p ${instdir}${d} ;\
+    fi ;\
+  done &&\
+  doclist="`find . \( \
+  	    -ipath '*/doc/*' \
+  	-or -ipath '*/docs/*' \
+  	-or -ipath '*/eg/*' \
+  	-or -ipath '*/ex/*' \
+  	-or -ipath '*/sample*/*' \
+  	-or -iregex '.*/\(ANNOUNCE\|Changes\|INSTALL\|KNOWNBUG\|LICENSE\|README\|TODO\|COPYING\)' \
+	-or -name '*.t' \
+	-or \( -name '*.pl' -not -path '*/hints/*' \) \
+        -or \( -name '*.bat' -not -iname 'install.bat' \) \
+  \) -not -ipath '*/CVS/*' -not -ipath '*/.inst/*' -not -ipath '*/CYGWIN-PATCHES/*' | \
+  sed -e 's|^./||'`" && \
+  if [ ! "x$doclist" = "x" ]; then \
+    for i in $doclist; do \
+      d=`dirname $i` ;\
+      d_dest=`echo $d | sed -e 's|/t/|/tests/|' -e 's|/t$|/tests|'`; \
+      i_dest=`echo $i | sed -e 's|/t/|/tests/|' -e 's|/t$|/tests|' -e 's|\.t$|.pl|'`; \
+      /usr/bin/install -d ${instdir}${prefix}/share/doc/${PKG}-${VER}/$d_dest ;\
+      if [ -d $i ]; then \
+        /usr/bin/install -d ${instdir}${prefix}/share/doc/${PKG}-${VER}/$i_dest ;\
+      else \
+        /usr/bin/install -m 644 $i ${instdir}${prefix}/share/doc/${PKG}-${VER}/$i_dest ;\
+      fi; \
+    done; \
+  fi && \
+  /usr/bin/install -m 644 ${srcdir}/OLE/lib/Win32/OLE/NEWS.pod ${instdir}${prefix}/share/doc/${PKG}-${VER}/OLE/NEWS.pod ;\
+  /usr/bin/install -m 644 ${srcdir}/OLE/lib/Win32/OLE/TPJ.pod  ${instdir}${prefix}/share/doc/${PKG}-${VER}/OLE/TPJ.pod ;\
+  if [ -f ${srcdir}/CYGWIN-PATCHES/${PKG}.README ]; then \
+    /usr/bin/install -m 644 ${srcdir}/CYGWIN-PATCHES/${PKG}.README \
+      ${instdir}${prefix}/share/doc/Cygwin/${PKG}-${VER}.README ; \
+  else \
+    if [ -f ${srcdir}/CYGWIN-PATCHES/README ]; then \
+      /usr/bin/install -m 644 ${srcdir}/CYGWIN-PATCHES/README \
+        ${instdir}${prefix}/share/doc/Cygwin/${PKG}-${VER}.README ; \
+    fi ;\
+  fi ;\
+  if [ -f ${srcdir}/CYGWIN-PATCHES/postinstall.sh ] ; then \
+  /usr/bin/install -m 755 ${srcdir}/CYGWIN-PATCHES/postinstall.sh \
+      ${instdir}${sysconfdir}/postinstall/${PKG}.sh; \
+  fi )
+}
+strip() {
+  (cd ${instdir} && \
+  find . -name "*.dll" | xargs strip > /dev/null 2>&1
+  find . -name "*.exe" | xargs strip > /dev/null 2>&1
+  true )
+}
+list() {
+  (cd ${instdir} && \
+  find . -name "*" ! -type d | sed 's/\.\/\(.*\)/\1/'
+  true )
+}
+pkg() {
+  (cd ${instdir} && \
+  tar cvjf ${bin_pkg} * )
+}
+mkpatch() {
+  clean && \
+  (cd ${topdir} && \
+  tar x${opt_decomp}f ${src_orig_pkg} && \
+  diff --strip-trailing-cr -aruN -x '.build' -x '.inst' -x '.sinst' -x 'CVS' \
+    -x '*.sw?' -x '.cvsignore' -I ' $Id: ' \
+    ${ORIG_PKG}-${VER} ${PKG}-${VER} > \
+    ${srcinstdir}/${src_patch_name} ; \
+  rm -rf ${ORIG_PKG}-${VER} )
+}
+spkg() {
+  (mkpatch && \
+  cp ${src_orig_pkg} ${srcinstdir}/${src_orig_pkg_name} && \
+  cp $0 ${srcinstdir}/`basename $0` && \
+  cd ${srcinstdir} && \
+  tar --exclude='CVS*' -cjf ${src_pkg} * )
+}
+finish() {
+#  rm -rf ${srcdir} 
+}
+case $1 in
+  prep)	prep ; STATUS=$? ;;
+  mkdirs)	mkdirs; STATUS=$? ;;
+  conf)	conf ; STATUS=$? ;;
+  build)	build ; STATUS=$? ;;
+  check)	check ; STATUS=$? ;;
+  clean)	clean ; STATUS=$? ;;
+  install)	install ; STATUS=$? ;;
+  list)	list ; STATUS=$? ;;
+  strip)	strip ; STATUS=$? ;;
+  package)	pkg ; STATUS=$? ;;
+  pkg)	pkg ; STATUS=$? ;;
+  mkpatch)	mkpatch ; STATUS=$? ;;
+  src-package)	spkg ; STATUS=$? ;;
+  spkg)	spkg ; STATUS=$? ;;
+  finish) finish ; STATUS=$? ;;
+  all) prep && conf && build && install && \
+     strip && pkg && spkg && finish ; \
+	  STATUS=$? ;;
+  *) echo "Error: bad arguments" ; exit 1 ;;
+esac
+exit ${STATUS}

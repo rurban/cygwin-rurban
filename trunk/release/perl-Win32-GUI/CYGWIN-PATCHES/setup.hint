@@ -1,0 +1,10 @@
+sdesc: "Perl Win32-GUI module"
+ldesc: "Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
+Basically, it's an XS implementation of most of the functions found in 
+user32.dll and gdi32.dll, with an object oriented perl interface and an 
+event-based dialog model that mimic the functionality of visual basic."
+category: Perl
+requires: perl cygwin
+test: 1.06-2
+curr: 1.06-1
+prev: 1.05-1

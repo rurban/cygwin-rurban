@@ -1,0 +1,382 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/clamav-config.h.in src/clamav-0.91.2/clamav-config.h.in
+--- origsrc/clamav-0.91.2/clamav-config.h.in	2007-07-10 20:01:12.000000000 +0000
++++ src/clamav-0.91.2/clamav-config.h.in	2007-09-21 05:25:21.187500000 +0000
+@@ -84,6 +84,9 @@
+ /* "default FD_SETSIZE value" */
+ #undef DEFAULT_FD_SETSIZE
+ 
++/* Define if your struct dirent doesn't contain d_ino */
++#undef DIRENT_MISSING_D_INO
++
+ /* file i/o buffer size */
+ #undef FILEBUFF
+ 
+@@ -96,6 +99,9 @@
+ /* access rights in msghdr */
+ #undef HAVE_ACCRIGHTS_IN_MSGHDR
+ 
++/* Define to 1 if you have the <arpa/nameser.h> header file. */
++#undef HAVE_ARPA_NAMESER_H
++
+ /* attrib aligned */
+ #undef HAVE_ATTRIB_ALIGNED
+ 
+@@ -186,6 +192,12 @@
+ /* Define to 1 if you have the <ndir.h> header file. */
+ #undef HAVE_NDIR_H
+ 
++/* Define to 1 if you have the <netdb.h> header file. */
++#undef HAVE_NETDB_H
++
++/* Define to 1 if you have the <netinet/in.h> header file. */
++#undef HAVE_NETINET_IN_H
++
+ /* Define to 1 if you have the `poll' function. */
+ #undef HAVE_POLL
+ 
+@@ -213,7 +225,7 @@
+ /* Define to 1 if you have the <regex.h> header file. */
+ #undef HAVE_REGEX_H
+ 
+-/* have resolv.h */
++/* Define to 1 if you have the <resolv.h> header file. */
+ #undef HAVE_RESOLV_H
+ 
+ /* Define signed right shift implementation */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/clamscan/treewalk.c src/clamav-0.91.2/clamscan/treewalk.c
+--- origsrc/clamav-0.91.2/clamscan/treewalk.c	2007-03-31 19:01:13.000000000 +0000
++++ src/clamav-0.91.2/clamscan/treewalk.c	2007-09-21 05:24:26.046875000 +0000
+@@ -109,7 +109,7 @@
+ 
+     if((dd = opendir(dirname)) != NULL) {
+ 	while((dent = readdir(dd))) {
+-#if !defined(C_INTERIX) && !defined(C_WINDOWS) && !defined(C_CYGWIN)
++#ifndef DIRENT_MISSING_D_INO
+ 	    if(dent->d_ino)
+ #endif
+ 	    {
+@@ -213,7 +213,7 @@
+ 
+     if((dd = opendir(dirname)) != NULL) {
+ 	while((dent = readdir(dd))) {
+-#if !defined(C_INTERIX) && !defined(C_WINDOWS) && !defined(C_CYGWIN)
++#ifndef DIRENT_MISSING_D_INO
+ 	    if(dent->d_ino)
+ #endif
+ 	    {
+@@ -259,7 +259,7 @@
+ 
+     if((dd = opendir(dirname)) != NULL) {
+ 	while((dent = readdir(dd))) {
+-#if !defined(C_INTERIX) && !defined(C_WINDOWS) && !defined(C_CYGWIN)
++#ifndef DIRENT_MISSING_D_INO
+ 	    if(dent->d_ino)
+ #endif
+ 	    {
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/configure.in src/clamav-0.91.2/configure.in
+--- origsrc/clamav-0.91.2/configure.in	2007-08-20 22:58:17.000000000 +0000
++++ src/clamav-0.91.2/configure.in	2007-09-21 05:24:26.046875000 +0000
+@@ -66,6 +66,26 @@
+ AC_FUNC_MMAP
+ AC_FUNC_FSEEKO
+ 
++dnl Check for broken cygwin-1.5.19 without d_ino or INTERIX (code by David Rothenberger <daveroth*acm.org>)
++AC_MSG_CHECKING([whether struct dirent contains d_ino])
++AC_RUN_IFELSE(
++	[AC_LANG_SOURCE([[
++#include <sys/types.h>
++#include <dirent.h>
++int main(void){struct dirent d;exit(sizeof(d.d_ino)>=0);}
++	]])],
++	[AC_MSG_RESULT(yes)],
++	[
++		AC_MSG_RESULT(no)
++		AC_DEFINE(DIRENT_MISSING_D_INO, 1,
++			[Define if your struct dirent doesn't contain d_ino])
++	],
++	[
++		AC_MSG_WARN([cross compiling: assuming DIRENT_MISSING_D_INO])
++		AC_DEFINE(DIRENT_MISSING_D_INO)
++	]
++)
++
+ dnl Check for broken snprintf (code by Phil Oleson <oz*nixil.net>)
+ if test "x$ac_cv_func_snprintf" = "xyes" ; then
+         AC_MSG_CHECKING([whether snprintf correctly terminates long strings])
+@@ -177,11 +197,13 @@
+     if test -z "$resolv_lib"; then
+ 	AC_CHECK_LIB(resolv, dn_expand, resolv_lib="-lresolv",)
+     fi
+-    AC_CHECK_HEADER(resolv.h,[FRESHCLAM_LIBS="$FRESHCLAM_LIBS $resolv_lib"; CLAMAV_MILTER_LIBS="$CLAMAV_MILTER_LIBS $resolv_lib"; AC_DEFINE(HAVE_RESOLV_H,1,have resolv.h)], AC_MSG_WARN([****** DNS support disabled]), [
+-#include <sys/types.h>
+-#include <netinet/in.h>
+-#include <arpa/nameser.h>
+-])
++    AC_HEADER_RESOLV
++    if test $ac_cv_header_resolv_h = yes; then
++	FRESHCLAM_LIBS="$FRESHCLAM_LIBS $resolv_lib"
++	CLAMAV_MILTER_LIBS="$CLAMAV_MILTER_LIBS $resolv_lib"
++    else
++	AC_MSG_WARN([****** DNS support disabled])
++    fi
+ fi
+ 
+ AC_ARG_ENABLE(clamuko,
+@@ -385,6 +407,7 @@
+ 	AC_DEFINE(CL_THREAD_SAFE,1,[thread safe])
+ 	AC_DEFINE(_REENTRANT,1,[thread safe])
+     fi
++    AC_DEFINE(BUILD_CLAMD, 1, "build clamd")
+     use_gethostbyname_r="no"
+     ;;
+ solaris*)
+@@ -613,7 +636,7 @@
+     ])
+ fi
+ 
+-AM_CONDITIONAL(BUILD_CLAMD, test "$have_pthreads" = "yes")
++AM_CONDITIONAL(BUILD_CLAMD, test "$have_pthreads" = "yes" -o "$target_os" = "cygwin")
+ AM_CONDITIONAL(HAVE_MILTER, test "$have_milter" = "yes")
+ 
+ if test "$have_pthreads" = "yes"
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/contrib/init/Cygwin/clamd src/clamav-0.91.2/contrib/init/Cygwin/clamd
+--- origsrc/clamav-0.91.2/contrib/init/Cygwin/clamd	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.91.2/contrib/init/Cygwin/clamd	2007-09-21 05:24:26.062500000 +0000
+@@ -0,0 +1,152 @@
++#! /bin/bash
++#
++# crond   Start/Stop the clam antivirus daemon. 0.8x series
++# v1.0 2004-10-18 Reini Urban rurban@x-ray.at
++#
++# chkconfig: 2345 90 60
++# description: clamd is a standard UNIX program that scans for Viruses.
++# processname: clamd
++# config: /etc/clamd.conf
++# pidfile: /var/run/clamd.pid
++
++PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PREFIX=/usr
++CONFIG=/etc/clamd.conf
++PIDFILE=/var/run/clamd.pid
++LOGFILE=/var/log/clamd.log
++SOCKET=/var/run/clamd.sock
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++prog="clamd"
++progdir="/usr/sbin"
++DAEMON="$progdir/$prog.exe"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++start() {
++        echo -n $"Starting $prog: "
++	# check if cygrunsrv process
++        cygrunsrv --start $prog
++        RETVAL=$?
++        echo
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $prog: "
++	cygrunsrv --stop $prog
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE $SOCKET && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q $prog
++        # connect(): No such file or directory
++	/usr/bin/clamdscan /usr/sbin/clamd.exe
++	#status clamd
++}
++
++restart() {
++        echo -n $"Restarting $prog: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++installcron() {
++    ( crontab -l | grep freshclam >/dev/null 2>&1 ) || ( \
++	echo "add something like this to your cronjob:"
++	echo
++	echo "*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1"
++	echo "#*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1" >> /var/cron/tabs/$USER
++	kill -s HUP `cat /var/run/cron.pid`
++	crontab -e )
++}
++install() {
++        freshclam
++        echo -n $"Installing $prog daemon: "
++	# some safety measures
++	touch $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	chmod g+w $LOGFILE $PIDFILE
++	rm -f $SOCKET
++	#it was compiled with uid=18
++	cygrunsrv --install $prog --path $DAEMON -e CYGWIN="$CYGWIN" --disp "CYGWIN `$DAEMON --version`"
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove $prog
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++case "$1" in
++  start)
++        start
++        ;;
++  stop)
++        stop
++        ;;
++  restart)
++        restart
++        ;;
++  reload)
++        reload
++        ;;
++  install)
++        install
++        ;;
++  installcron)
++        installcron
++        ;;
++  uninstall)
++        uninstall
++        ;;
++  status)
++        rhstatus
++        ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|install|uninstall|installcron|restart|condrestart}"
++        exit 1
++esac
++
++exit $?
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/sigtool/sigtool.c src/clamav-0.91.2/sigtool/sigtool.c
+--- origsrc/clamav-0.91.2/sigtool/sigtool.c	2007-08-20 20:45:12.000000000 +0000
++++ src/clamav-0.91.2/sigtool/sigtool.c	2007-09-21 05:24:26.078125000 +0000
+@@ -1037,7 +1037,7 @@
+     }
+ 
+     while((dent = readdir(dd))) {
+-#ifndef C_INTERIX
++#ifndef DIRENT_MISSING_D_INO
+ 	if(dent->d_ino)
+ #endif
+ 	{
+@@ -1572,7 +1572,7 @@
+     }
+ 
+     while((dent = readdir(dd))) {
+-#ifndef C_INTERIX
++#ifndef DIRENT_MISSING_D_INO
+ 	if(dent->d_ino)
+ #endif
+ 	{
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/sigtool/vba.c src/clamav-0.91.2/sigtool/vba.c
+--- origsrc/clamav-0.91.2/sigtool/vba.c	2007-03-05 19:30:21.000000000 +0000
++++ src/clamav-0.91.2/sigtool/vba.c	2007-09-21 05:24:26.078125000 +0000
+@@ -963,7 +963,10 @@
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino)
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fname = (char *) cli_calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));
+@@ -1120,7 +1123,10 @@
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino) 
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fname = calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/test/negative.expected src/clamav-0.91.2/test/negative.expected
+--- origsrc/clamav-0.91.2/test/negative.expected	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.91.2/test/negative.expected	2007-09-21 05:24:26.093750000 +0000
+@@ -0,0 +1,6 @@
++clam-error.rar: RAR module failure
++clam.cab: ClamAV-Test-File FOUND
++clam.exe: ClamAV-Test-File FOUND
++clam.exe.bz2: ClamAV-Test-File FOUND
++clam.rar: ClamAV-Test-File FOUND
++clam.zip: ClamAV-Test-File FOUND
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/test/positive.expected src/clamav-0.91.2/test/positive.expected
+--- origsrc/clamav-0.91.2/test/positive.expected	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.91.2/test/positive.expected	2007-09-21 05:24:26.093750000 +0000
+@@ -0,0 +1,7 @@
++test: ClamAV-Test-Signature FOUND
++test-failure.rar: RAR module failure
++test-zip-noext: ClamAV-Test-Signature FOUND
++test.bz2: ClamAV-Test-Signature FOUND
++test.msc: ClamAV-Test-Signature FOUND
++test.rar: ClamAV-Test-Signature FOUND
++test.zip: ClamAV-Test-Signature FOUND
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/test/positive.result src/clamav-0.91.2/test/positive.result
+--- origsrc/clamav-0.91.2/test/positive.result	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.91.2/test/positive.result	2007-09-21 05:38:46.843750000 +0000
+@@ -0,0 +1 @@
++test: ClamAV-Test-Signature FOUND
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/clamav-0.91.2/test/test src/clamav-0.91.2/test/test
+--- origsrc/clamav-0.91.2/test/test	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.91.2/test/test	2007-09-21 05:24:26.109375000 +0000
+@@ -0,0 +1 @@
++$CEliacmaTrESTuScikgsn$FREE-TEST-SIGNATURE$EEEEE$
+Files origsrc/clamav-0.91.2/test/test-failure.rar and src/clamav-0.91.2/test/test-failure.rar differ
+Files origsrc/clamav-0.91.2/test/test-zip-noext and src/clamav-0.91.2/test/test-zip-noext differ
+Files origsrc/clamav-0.91.2/test/test.bz2 and src/clamav-0.91.2/test/test.bz2 differ
+Files origsrc/clamav-0.91.2/test/test.msc and src/clamav-0.91.2/test/test.msc differ
+Files origsrc/clamav-0.91.2/test/test.rar and src/clamav-0.91.2/test/test.rar differ
+Files origsrc/clamav-0.91.2/test/test.zip and src/clamav-0.91.2/test/test.zip differ

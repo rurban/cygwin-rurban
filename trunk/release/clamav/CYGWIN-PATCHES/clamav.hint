@@ -1,0 +1,9 @@
+sdesc: "A GPL virus scanner"
+ldesc: "Clam AntiVirus is a GPL anti-virus toolkit for UNIX, featuring
+command-line scanner, fast, multi-threaded daemon, database updater
+with support for digital signatures, virus scanner C library,
+detection of over 20000 viruses, worms and trojans, built-in support
+for RAR (2.0), Zip, Gzip, Bzip2, built-in support for Mbox, Maildir
+and raw mail files"
+category: Utils
+requires: libclamav4 zlib minires bash libcurl3 clamav-db

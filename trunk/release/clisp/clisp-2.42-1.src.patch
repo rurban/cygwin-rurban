@@ -1,0 +1,384 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.41/modules/bindings/win32/win32.lisp src/clisp-2.41/modules/bindings/win32/win32.lisp
+--- origsrc/clisp-2.42/modules/bindings/win32/win32.lisp	2006-06-15 09:11:32.000000000 +0100
++++ src/clisp-2.42/modules/bindings/win32/win32.lisp	2007-04-04 13:52:28.000000000 +0100
+@@ -34,51 +34,51 @@
+ (defconstant user32          ; (ext:string-concat system32 "user32.dll")
+   "user32.dll")
+ 
+-(def-call-out GetCommandLineA (:library kernel32)
++(def-call-out GetCommandLineA (:library "kernel32.dll")
+   (:arguments) (:return-type c-string))
+ 
+-(def-call-out GetLastError (:library kernel32)
++(def-call-out GetLastError (:library "kernel32.dll")
+   (:arguments) (:return-type dword))
+ 
+-(def-call-out GetCurrentProcess (:library kernel32)
++(def-call-out GetCurrentProcess (:library "kernel32.dll")
+   (:arguments) (:return-type handle))
+ 
+-(def-call-out GetCurrentThread (:library kernel32)
++(def-call-out GetCurrentThread (:library "kernel32.dll")
+   (:arguments) (:return-type handle))
+ 
+-(def-call-out GetCurrentProcessId (:library kernel32)
++(def-call-out GetCurrentProcessId (:library "kernel32.dll")
+   (:arguments) (:return-type dword))
+ 
+-(def-call-out GetProcessVersion (:library kernel32)
++(def-call-out GetProcessVersion (:library "kernel32.dll")
+   (:arguments (pid dword)) (:return-type dword))
+ 
+ ;;; longhorn
+-(def-call-out GetProcessId (:library kernel32)
++(def-call-out GetProcessId (:library "kernel32.dll")
+   (:arguments (hProcess handle)) (:return-type dword))
+ 
+-(def-call-out GetCurrentThreadId (:library kernel32)
++(def-call-out GetCurrentThreadId (:library "kernel32.dll")
+   (:arguments) (:return-type dword))
+ 
+ ;;; longhorn
+-(def-call-out GetProcessIdOfThread (:library kernel32)
++(def-call-out GetProcessIdOfThread (:library "kernel32.dll")
+   (:arguments (hThread handle)) (:return-type dword))
+ 
+ ;;; longhorn
+-(def-call-out GetThreadId (:library kernel32)
++(def-call-out GetThreadId (:library "kernel32.dll")
+   (:arguments (hThread handle)) (:return-type dword))
+ 
+-(def-call-out GetThreadPriority (:library kernel32)
++(def-call-out GetThreadPriority (:library "kernel32.dll")
+   (:arguments (hThread handle)) (:return-type int))
+ 
+-(def-call-out GetThreadPriorityBoost (:library kernel32)
++(def-call-out GetThreadPriorityBoost (:library "kernel32.dll")
+   (:arguments (hThread handle) (no-boost (c-ptr boolean) :out))
+   (:return-type boolean))
+ 
+-(def-call-out GetProcessPriorityBoost (:library kernel32)
++(def-call-out GetProcessPriorityBoost (:library "kernel32.dll")
+   (:arguments (hProcess handle) (no-boost (c-ptr boolean) :out))
+   (:return-type boolean))
+ 
+-(def-call-out CloseHandle (:library kernel32)
++(def-call-out CloseHandle (:library "kernel32.dll")
+   (:arguments (handle handle)) (:return-type boolean))
+ 
+ (defmacro with-handle ((handle form) &body forms)
+@@ -115,7 +115,7 @@
+   (PROCESS_ALL_ACCESS
+    #.(cl:logior STANDARD_RIGHTS_REQUIRED SYNCHRONIZE #xFFF)))
+ 
+-(def-call-out OpenProcess (:library kernel32)
++(def-call-out OpenProcess (:library "kernel32.dll")
+   (:arguments (access-flag dword) ; PROCESS
+               (inherit-handle boolean)
+               (pid dword))
+@@ -129,13 +129,13 @@
+   (EWX_FORCE            #x4)
+   (EWX_POWEROFF         #x8)
+   (EWX_FORCEIFHUNG     #x10))
+-(def-call-out ExitWindowsEx (:library user32)
++(def-call-out ExitWindowsEx (:library "user32.dll")
+   (:arguments (flags uint)      ; EWX
+               (reserved dword))
+   (:return-type boolean))
+ 
+ (def-c-enum GR_OBJECTS GR_GDIOBJECTS GR_USEROBJECTS)
+-(def-call-out GetGuiResources (:library user32)
++(def-call-out GetGuiResources (:library "user32.dll")
+   (:arguments (process handle)
+               (flags dword))    ; GR_OBJECTS
+   (:return-type dword))
+@@ -156,14 +156,14 @@
+   (LR_CREATEDIBSECTION 8192)
+   (LR_COPYFROMRESOURCE #x4000)
+   (LR_SHARED 32768))
+-(def-call-out LoadImageA (:library user32)
++(def-call-out LoadImageA (:library "user32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/winui/winui/windowsuserinterface/resources/introductiontoresources/resourcereference/resourcefunctions/loadimage.asp")
+   (:arguments (application-instance-handle handle)
+               (image-name c-string)
+               (type uint) (width int) (height int)
+               (options int))    ; load_options
+   (:return-type handle))
+-(def-call-out DestroyIcon (:library user32)
++(def-call-out DestroyIcon (:library "user32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/winui/winui/windowsuserinterface/resources/icons/iconreference/iconfunctions/destroyicon.asp")
+   (:arguments (hIcon handle))
+   (:return-type boolean))
+@@ -223,7 +223,7 @@
+ (defconstant IDTRYAGAIN 10 "Try Again button was selected.")
+ (defconstant IDYES 6 "Yes button was selected.")
+ 
+-(def-call-out MessageBoxA (:library user32)
++(def-call-out MessageBoxA (:library "user32.dll")
+   (:arguments (parent handle) (text c-string) (caption c-string) (type uint))
+   (:documentation "http://msdn.microsoft.com/library/en-us/winui/winui/windowsuserinterface/windowing/dialogboxes/dialogboxreference/dialogboxfunctions/messagebox.asp")
+   (:return-type int))
+@@ -237,28 +237,28 @@
+   (defconstant BUFSIZ 4096)     ; <stdio.h>
+   (defconstant MAX_PATH 260))   ; <windef.h>
+ 
+-(def-call-out GetModuleFileNameA (:library kernel32)
++(def-call-out GetModuleFileNameA (:library "kernel32.dll")
+   (:arguments (application-instance-handle handle)
+               (name (c-ptr (c-array-max character #.MAX_PATH)) :out :alloca)
+               (size dword))  ; always pass MAX_PATH as the second argument
+   (:return-type dword))
+ 
+-(def-call-out GetModuleHandleA (:library kernel32)
++(def-call-out GetModuleHandleA (:library "kernel32.dll")
+   (:arguments (name c-string))
+   (:return-type handle))
+ 
+ ;; (c-lines "#include <winicon.h>~%")
+ 
+-(def-call-out GetConsoleTitleA (:library kernel32)
++(def-call-out GetConsoleTitleA (:library "kernel32.dll")
+   (:arguments (buffer (c-ptr (c-array-max character #.BUFSIZ)) :out :alloca)
+               (size dword))  ; always pass BUFSIZ as the only argument
+   (:return-type dword))
+ 
+-(def-call-out SetConsoleTitleA (:library kernel32)
++(def-call-out SetConsoleTitleA (:library "kernel32.dll")
+   (:arguments (title c-string))
+   (:return-type boolean))
+ 
+-(def-call-out GetConsoleWindow (:library kernel32)
++(def-call-out GetConsoleWindow (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/getconsolescreenbufferinfo.asp")
+   (:arguments) (:return-type handle))
+ 
+@@ -268,32 +268,32 @@
+   (dwSize COORD) (dwCursorPosition COORD)
+   (wAttributes word) (srWindow SMALL_RECT) (dwMaximumWindowSize COORD))
+ 
+-(def-call-out GetConsoleScreenBufferInfo (:library kernel32)
++(def-call-out GetConsoleScreenBufferInfo (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/getconsolescreenbufferinfo.asp")
+   (:arguments (StdHandle handle)
+               (csbiInfo (c-ptr CONSOLE_SCREEN_BUFFER_INFO) :out :alloca))
+   (:return-type boolean))
+ 
+ ;; system information
+-(def-call-out GetSystemDirectoryA (:library kernel32)
++(def-call-out GetSystemDirectoryA (:library "kernel32.dll")
+   (:arguments (buffer (c-ptr (c-array-max character #.MAX_PATH)) :out :alloca)
+               (size uint)) ; pass MAX_PATH
+   (:return-type uint))
+-(def-call-out GetWindowsDirectoryA (:library kernel32)
++(def-call-out GetWindowsDirectoryA (:library "kernel32.dll")
+   (:arguments (buffer (c-ptr (c-array-max character #.MAX_PATH)) :out :alloca)
+               (size uint)) ; pass MAX_PATH
+   (:return-type uint))
+-(def-call-out GetCurrentDirectoryA (:library kernel32)
++(def-call-out GetCurrentDirectoryA (:library "kernel32.dll")
+   (:arguments (size dword) ; pass MAX_PATH
+               (buffer (c-ptr (c-array-max character #.MAX_PATH)) :out :alloca))
+   (:return-type dword))
+-(def-call-out GetVersion (:library kernel32)
++(def-call-out GetVersion (:library "kernel32.dll")
+   (:arguments) (:return-type dword))
+ 
+ ;; user name
+ (eval-when (compile eval load)
+   (defconstant UNLEN 256)) ; <lmcons.h>
+-(def-call-out GetUserNameA (:library advapi32)
++(def-call-out GetUserNameA (:library "advapi32.dll")
+   (:arguments (buffer (c-ptr (c-array-max character #.UNLEN)) :out :alloca)
+               (size (c-ptr dword) :in-out)) ; pass UNLEN
+   (:return-type boolean))
+@@ -309,12 +309,12 @@
+   (NameUserPrincipal 8)
+   (NameCanonicalEx 9)
+   (NameServicePrincipal 10))
+-(def-call-out GetUserNameExA (:library secur32)
++(def-call-out GetUserNameExA (:library "secur32.dll")
+   (:arguments (name-format EXTENDED_NAME_FORMAT)
+               (buffer (c-ptr (c-array-max character #.UNLEN)) :out :alloca)
+               (size (c-ptr ulong) :in-out)) ; pass UNLEN
+   (:return-type boolean))
+-(def-call-out GetComputerObjectNameA (:library secur32)
++(def-call-out GetComputerObjectNameA (:library "secur32.dll")
+   (:arguments (name-format EXTENDED_NAME_FORMAT)
+               (buffer (c-ptr (c-array-max character #.UNLEN)) :out :alloca)
+               (size (c-ptr ulong) :in-out)) ; pass UNLEN
+@@ -324,7 +324,7 @@
+ (eval-when (compile eval load)
+   (defconstant MAX_COMPUTERNAME_LENGTH 16)) ; <winbase.h>
+ 
+-(def-call-out GetComputerNameA (:library kernel32)
++(def-call-out GetComputerNameA (:library "kernel32.dll")
+   (:arguments (buffer (c-ptr (c-array-max character #.MAX_COMPUTERNAME_LENGTH))
+                       :out :alloca)
+               (size (c-ptr dword) :in-out)) ; pass MAX_COMPUTERNAME_LENGTH
+@@ -341,7 +341,7 @@
+   ComputerNamePhysicalDnsFullyQualified
+   ComputerNameMax)
+ 
+-(def-call-out GetComputerNameExA (:library kernel32)
++(def-call-out GetComputerNameExA (:library "kernel32.dll")
+   (:arguments (type-name COMPUTER_NAME_FORMAT)
+               (buffer (c-ptr (c-array-max character #.MAX_COMPUTERNAME_LENGTH))
+                       :out :alloca)
+@@ -377,16 +377,16 @@
+   (SW_SHOWDEFAULT 10)
+   (SW_FORCEMINIMIZE 11)
+   (SW_MAX 11))
+-(def-call-out ShellExecuteA (:library shell32)
++(def-call-out ShellExecuteA (:library "shell32.dll")
+   (:arguments (parent handle) (operation c-string) (file c-string)
+               (parameters c-string) (directory c-string) (show SHOW_COMMAND))
+   (:return-type int))
+ 
+ ;;; i/o
+-(def-call-out GetStdHandle (:library kernel32)
++(def-call-out GetStdHandle (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/getstdhandle.asp")
+   (:arguments (nStdHandle dword)) (:return-type handle))
+-(def-call-out SetStdHandle (:library kernel32)
++(def-call-out SetStdHandle (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/setstdhandle.asp")
+   (:arguments (nStdHandle dword) (hHandle handle))
+   (:return-type boolean))
+@@ -404,7 +404,7 @@
+   "Handle to the standard error device.
+ Initially, this is a handle to the active console screen buffer, CONOUT$.")
+ 
+-(def-call-out ReadFile (:library kernel32)
++(def-call-out ReadFile (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/fileio/fs/readfile.asp")
+   (:arguments (hFile handle)
+               (lpBuffer c-pointer)
+@@ -413,7 +413,7 @@
+ 	      (lpOverlapped c-pointer))
+   (:return-type boolean))
+ 
+-(def-call-out WriteFile (:library kernel32)
++(def-call-out WriteFile (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/fileio/fs/writefile.asp")
+   (:arguments (hFile handle)
+               (lpBuffer c-pointer)
+@@ -422,7 +422,7 @@
+ 	      (lpOverlapped c-pointer))
+   (:return-type boolean))
+ 
+-(def-call-out ReadConsoleA (:library kernel32)
++(def-call-out ReadConsoleA (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/readconsole.asp")
+   (:arguments (hConsoleInput handle)
+               (lpBuffer c-pointer)
+@@ -431,7 +431,7 @@
+               (lpReserved c-pointer))
+   (:return-type boolean))
+ 
+-(def-call-out WriteConsoleA (:library kernel32)
++(def-call-out WriteConsoleA (:library "kernel32.dll")
+   (:documentation "http://msdn.microsoft.com/library/en-us/dllproc/base/writeconsole.asp")
+   (:arguments (hConsoleOutput handle)
+               (lpBuffer c-pointer)
+@@ -441,41 +441,41 @@
+   (:return-type boolean))
+ 
+ ;; http://msdn.microsoft.com/library/en-us/winui/winui/windowsuserinterface/dataexchange/clipboard/clipboardreference/clipboardfunctions/getclipboarddata.asp
+-(def-call-out OpenClipboard (:library user32)
++(def-call-out OpenClipboard (:library "user32.dll")
+   (:arguments (hWndNewOwner handle)) (:return-type boolean))
+-(def-call-out CloseClipboard (:library user32)
++(def-call-out CloseClipboard (:library "user32.dll")
+   (:arguments) (:return-type boolean))
+-(def-call-out EmptyClipboard (:library user32)
++(def-call-out EmptyClipboard (:library "user32.dll")
+   (:arguments) (:return-type boolean))
+-(def-call-out EnumClipboardFormats (:library user32)
++(def-call-out EnumClipboardFormats (:library "user32.dll")
+   (:arguments (format uint)) (:return-type uint))
+-(def-call-out GetClipboardData (:library user32)
++(def-call-out GetClipboardData (:library "user32.dll")
+   (:arguments (format uint)) (:return-type handle))
+-(def-call-out GetClipboardFormatNameA (:library user32)
++(def-call-out GetClipboardFormatNameA (:library "user32.dll")
+   (:arguments (format uint)
+               (buffer (c-ptr (c-array-max character #.BUFSIZ)) :out :alloca)
+               (size int)) ; always pass BUFSIZ as the second argument
+   (:return-type int))
+-(def-call-out GetClipboardOwner (:library user32)
++(def-call-out GetClipboardOwner (:library "user32.dll")
+   (:arguments) (:return-type handle))
+-(def-call-out GetClipboardSequenceNumber (:library user32)
++(def-call-out GetClipboardSequenceNumber (:library "user32.dll")
+   (:arguments) (:return-type dword))
+-(def-call-out GetClipboardViewer (:library user32)
++(def-call-out GetClipboardViewer (:library "user32.dll")
+   (:arguments) (:return-type handle))
+-(def-call-out GetOpenClipboardWindow (:library user32)
++(def-call-out GetOpenClipboardWindow (:library "user32.dll")
+   (:arguments) (:return-type handle))
+-(def-call-out GetPriorityClipboardFormat (:library user32)
++(def-call-out GetPriorityClipboardFormat (:library "user32.dll")
+   (:arguments (formats (c-array-max uint #.BUFSIZ)) (size int))
+   (:return-type int))
+-(def-call-out IsClipboardFormatAvailable (:library user32)
++(def-call-out IsClipboardFormatAvailable (:library "user32.dll")
+   (:arguments (format uint)) (:return-type boolean))
+-(def-call-out RegisterClipboardFormat (:library user32)
++(def-call-out RegisterClipboardFormat (:library "user32.dll")
+   (:arguments (format c-string)) (:return-type uint))
+-(def-call-out RemoveClipboardFormatListener (:library user32)
++(def-call-out RemoveClipboardFormatListener (:library "user32.dll")
+   (:arguments (hwnd handle)) (:return-type boolean))
+-(def-call-out SetClipboardData (:library user32)
++(def-call-out SetClipboardData (:library "user32.dll")
+   (:arguments (format uint) (data handle)) (:return-type handle))
+-(def-call-out SetClipboardViewer (:library user32)
++(def-call-out SetClipboardViewer (:library "user32.dll")
+   (:arguments (hwnd handle)) (:return-type handle))
+ 
+ ;; ==========================================================================
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.41/modules/fastcgi/fastcgi.lisp src/clisp-2.41/modules/fastcgi/fastcgi.lisp
+--- origsrc/clisp-2.42/modules/fastcgi/fastcgi.lisp	2006-10-13 04:02:24.000000000 +0100
++++ src/clisp-2.42/modules/fastcgi/fastcgi.lisp	2007-04-04 13:52:28.000000000 +0100
+@@ -146,7 +146,7 @@
+ 
+ 
+ ; --------------   "C" functions
+-;(c-lines "#include \"fastcgi.h\"~%"); completely wrapped
++(c-lines "#include \"fastcgi.h\"~%"); completely wrapped
+ 
+ ; Our wrappers
+ (def-call-out fcgi_getenv       (:arguments (var c-string))               (:return-type c-string))
+
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.41/modules/syscalls/calls.c src/clisp-2.41/modules/syscalls/calls.c
+--- origsrc/clisp-2.42/modules/syscalls/calls.c	2006-07-23 17:38:34.000000000 +0100
++++ src/clisp-2.42/modules/syscalls/calls.c	2007-04-04 13:52:28.000000000 +0100
+@@ -3924,6 +3924,7 @@
+         fehler(file_error,GETTEXT("~S: StgOpenStorageEx() failed on file ~S"));
+     }
+   }
++#ifndef __CYGWIN__
+   if (eq(STACK_(iset),`:USER-DEFINED`))
+     fmtid = (REFFMTID)&FMTID_UserDefinedProperties;
+   else if (eq(STACK_(iset),`:BUILT-IN`))
+@@ -3933,6 +3934,7 @@
+     pushSTACK(TheSubr(subr_self)->name);
+     fehler(file_error,GETTEXT("~S: invalid property set specifier ~S"));
+   }
++#endif
+   begin_system_call();
+   hres = ppropsetstg->lpVtbl->Open(ppropsetstg, fmtid,
+                                    ((npropwr||use_wpn)?STGM_READWRITE:STGM_READ)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.41/src/encoding.d src/clisp-2.41/src/encoding.d
+--- origsrc/clisp-2.42/src/encoding.d	2006-06-22 09:11:55.000000000 +0100
++++ src/clisp-2.42/src/encoding.d	2007-04-03 10:33:55.281250000 +0100
+@@ -2568,7 +2568,7 @@
+   unused name; unused context;
+   pushSTACK(unbound);           /* :charset */
+  #endif /* UNICODE */
+- #if defined(WIN32) || (defined(UNIX) && (O_BINARY != 0))
++ #if defined(WIN32) && !defined(__CYGWIN__)
+   pushSTACK(S(Kdos));           /* :line-terminator */
+  #else
+   pushSTACK(S(Kunix));          /* :line-terminator */

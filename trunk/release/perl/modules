@@ -1,0 +1,47 @@
+# only CPAN dependant and libxml modules
+modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage Test::Pod::Coverage \
+	Compress::Raw::Bzip2 IO::Compress::Bzip2 Compress::Bzip2 \
+        IO::String \
+        File::Temp Archive::Zip \
+	Math::BigInt::FastCalc \
+	Term::ReadKey Term::ReadLine::Perl Term::ReadLine::Gnu Term::ReadLine \
+        XML::NamespaceSupport XML::SAX XML::LibXML::Common XML::LibXML \
+	XML::Parser \
+	Proc::ProcessTable \
+	YAML \
+	Config::Tiny File::Copy::Recursive IPC::Run3 Probe::Perl  \
+    	Tee IO::CaptureOutput File::pushd File::HomeDir \
+	Digest::SHA \
+	Module::Signature \
+        URI HTML::Tagset HTML::Parser LWP \
+	CPAN \
+	Net::DNS Test::Reporter CPAN::Reporter \
+	Net::Telnet \
+	Module::ScanDeps PAR::Dist \
+	B::Generate PadWalker Alias"
+
+exts="Pod-Escapes-1.04 Pod-Simple-3.05 Test-Pod-1.26 \
+	Devel-Symdump-2.08 Pod-Coverage-0.19 Test-Pod-Coverage-1.08 \
+	Compress-Raw-Bzip2-2.011 IO-Compress-Bzip2-2.011 Compress-Bzip2-2.09 \
+        IO-String-1.08	\
+        File-Temp-0.20 Archive-Zip-1.23 \
+	Math-BigInt-FastCalc-0.19 \
+	TermReadKey-2.30 Term-ReadLine-Perl-1.0302 Term-ReadLine-Gnu-1.17 \
+        XML-NamespaceSupport-1.09 XML-SAX-0.16 XML-LibXML-Common-0.13 XML-LibXML-1.66 \
+	XML-Parser-2.36 \
+	Proc-ProcessTable-0.42 \
+	YAML-0.66 \
+	Config-Tiny-2.12 File-Copy-Recursive-0.36 IPC-Run3-0.040 Probe-Perl-0.01 \
+        PathTools-3.2701 \
+    	Tee-0.13 IO-CaptureOutput-1.0801 File-pushd-1.00 File-HomeDir-0.80 \
+	Digest-SHA-5.47 \
+	Module-Signature-0.55 \
+        URI-1.36 HTML-Tagset-3.20 HTML-Parser-3.56 libwww-perl-5.813 \
+	CPAN-1.9205 \
+	Net-DNS-0.63 Test-Reporter-1.4002 CPAN-Reporter-1.13 \
+	Net-Telnet-3.03 \
+	Module-ScanDeps-0.82 PAR-Dist-0.29 \
+	B-Generate-1.12_09 PadWalker-1.7 Alias-2.32"
+# File-Temp-0.19 now in CORE
+# PAR not because of /usr/bin/pp
+# Algorithm-Diff-1.1902 Text-Diff-0.35 not needed because we removed usr/bin/ptardiff

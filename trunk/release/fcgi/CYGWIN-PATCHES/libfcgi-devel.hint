@@ -1,0 +1,4 @@
+sdesc: "Headers and Libraries for FastCGI (fcgi)"
+category: Devel Web
+requires: libfcgi0
+external-source: fcgi

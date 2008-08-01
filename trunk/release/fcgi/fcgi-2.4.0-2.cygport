@@ -1,0 +1,100 @@
+DESCRIPTION="FastCGI"
+HOMEPAGE="http://fastcgi.com/"
+SRC_URI="http://fastcgi.com/dist/fcgi-${PV}.tar.gz"
+
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+MAKEOPTS="${MAKEOPTS} -j1"
+DOCS="LICENSE.TERMS"
+HTMLDOCS="doc/*.html doc/*.htm doc/*.gif"
+
+PKG_NAMES="fcgi lib${PN}0 lib${PN}-devel"
+PKG_HINTS="${PKG_NAMES}"
+
+PATH=/usr/bin:/usr/local/bin:/usr/lib/cygport/bin
+export PATH
+
+src_compile() {
+	cd ${S}
+	cygautoreconf
+	# this viral behaviour makes me angry...
+	rm COPYING
+	cd ${B}
+	cygconf
+	cygmake
+}
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	cd ${S}
+	insinto /usr/share/doc/${P}/examples
+	doins examples/*.c examples/*.cpp
+
+	docinto images
+	dodoc images/*
+	docinto html/fastcgi-prog-guide 
+	dodoc doc/fastcgi-prog-guide/*
+	docinto html/fastcgi-whitepaper 
+	dodoc doc/fastcgi-whitepaper/*
+
+	doman doc/cgi-fcgi.1
+	doman doc/*.3
+
+	cd ${B}
+	exeinto /usr/lib/fcgi/examples
+	doexe \
+examples/authorizer.exe \
+examples/echo.exe \
+examples/echo-cpp.exe \
+examples/echo-x.exe \
+examples/log-dump.exe \
+examples/size.exe \
+examples/threaded.exe
+}
+
+# fcgi
+PKG_CONTENTS[0]=" \
+usr/bin/*.exe \
+usr/lib/fcgi/examples \
+usr/share"
+# libfcgi0
+PKG_CONTENTS[1]=" \
+usr/bin/*.dll"
+# libfcgi-devel
+PKG_CONTENTS[2]=" \
+--exclude=usr/lib/fcgi/examples \
+usr/lib \
+usr/include"
+
+# http://search.rpmseek.com/search.html?cs=fcgi:PN
+# 1. 	fcgi 			21 	FastCGI development kit - shared libraries
+# 2. 	fcgi-devel 		2 	FastCGI development kit
+# 3. 	fcgi-static 		2 	FastCGI static library
+# 4. 	apache-mod_fcgid-debug 	2 	Debug information for package apache-mod_fcgid
+# 5. 	apache-mod_fcgid 	14 	Mod_fcgid is a DSO module for the apache web server
+# 6. 	apache2-mod_fcgid-debuginfo 	2 	Debug information for package apache2-mod_fcgid
+# 7. 	apache2-mod_fcgid 	10 	Alternative FastCGI module for Apache2
+# 8. 	lib64fcgi0-devel 	3 	Development headers and libraries for fcgi
+# 9. 	lib64fcgi0-static-devel 3 	Development static libraries for fcgi
+# 10. 	lib64fcgi0 		3 	Libraries for fcgi
+# 11. 	libapache2-mod-fcgid 	2 	an alternative module compat with mod_fastcgi
+# 12. 	libfcgi-dev 		1 	Header files of FastCGI
+# 13. 	libfcgi-devel 		1 	FastCGI library
+# 14. 	libfcgi-perl 		3 	FastCGI Perl module
+# 15. 	libfcgi-ruby1.6 	1 	FastCGI library for Ruby
+# 16. 	libfcgi-ruby1.8 	1 	FastCGI library for Ruby
+# 17. 	libfcgi 		3 	FastCGI library
+# 18. 	libfcgi0-devel 		5 	Development headers and libraries for fcgi
+# 19. 	libfcgi0-static-devel 	7 	Development static libraries for fcgi
+# 20. 	libfcgi0 		8 	Libraries for fcgi
+# 21. 	perl-CGI-FCGI 		1 	Simple Common Gateway Interface class for Perl (FastCGI)
+# 22. 	perl-FCGI-debug 	2 	Debug information for package perl-FCGI
+# 23. 	perl-FCGI 		63 	FCGI perl module
+# 24. 	php-fcgi 		9 	PHP5 CGI interface with FastCGI support
+# 25. 	php4-fcgi 		1 	php4 as FastCGI program
+# 26. 	php5-fcgi 		1 	PHP5 CGI interface with FastCGI support
+# 27. 	python-fcgi-debuginfo 	2 	Debug information for package python-fcgi
+# 28. 	python-fcgi 		10 	Python FastCGI Module
+# 29. 	ruby-fcgi 		2 	Ruby FastCGI Library
+# 30. 	spawn-fcgi 		2 	Spawn fcgi-process directly

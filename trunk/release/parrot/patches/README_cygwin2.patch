@@ -1,0 +1,111 @@
+Index: README_cygwin.pod
+===================================================================
+--- README_cygwin.pod	(revision 29483)
++++ README_cygwin.pod	(working copy)
+@@ -6,37 +6,66 @@
+ 
+ =head1 SYNOPSIS
+ 
+-Parrot builds out of the box under Cygwin.  Some tweaks are needed for
+-different names of dynamic loading of some dll's.
++Parrot builds out of the box under Cygwin. 
++Some tweaks are needed for different names for the ffi to some dll's.
++See L</loadlib DLL versioning>
+ 
++There are official cygwin parrot packages in preparation. 
++See L<http://cygwin.com/ml/cygwin-apps/2008-07/msg00016.html>
++
++  parrot, libparrot0, libparrot-devel, parrot-perl6, parrot-languages
++
+ =head1 Packages
+ 
+-You'll need the following Cygwin packages to build Parrot.
++You'll need the following Cygwin packages to run and build Parrot.
+ 
+-=over 4
++Runtime requirements:
+ 
+-=item gcc
++  libreadline6 ncurses libintl8 libicu38 libgmp3 libgdbm4
+ 
+-=item make
++Optional requirements:
+ 
+-=item perl
++  libglut3 xorg-x11-base xorg-x11-bin-dlls libpq5 openssl
+ 
+-=item subversion
++Build requirements:
+ 
++  gcc make perl parrot readline libncurses-devel libgmp-devel
++  libgdbm-devel pcre-devel libglut-devel
++
++Optional build requirements:
++
++  libicu-devel openssl-devel 
++
++CPAN packages:
++
++  L<Test::TAP::HTMLMatrix> if you want to run the language smoke tests
++  with C<make languages-smoke>.
++
++  L<Test::Base> for some APL language tests.
++
++=over 4
++
++=item Cygwin subversion and perl
++
+ If you use SVN to get a copy of Parrot, you should use the Cygwin SVN
+ and not the TortoiseSVN client to avoid build errors.  Similarly you will
+ need Cygwin Perl rather than ActiveState or Strawberry Perl.
+ 
+-=item ICU
++=item icu
+ 
+-This is no official Cygwin package yet.  However, icu4c-3_8 builds out of the
+-box on Cygwin.
+-
+-  http://download.icu-project.org/files/icu4c/3.8/icu4c-3_8-src.tgz
+-
+ Note that ICU is now optional, you can build Parrot without it,
+ by not installing it or asking Parrot to ignore it (C<--without-icu>).
+ 
++=item SDL
++
++SDL references F<cygSDL-1-2-0.dll>, which is only in cygports
++L<http://cygwinports.dotsrc.org/>
++
++=item aio
++
++libaio-devel "Linux-native asynchronous I/O access" is not available
++for cygwin, and as the name says will never be :)
++
+ =back
+ 
+ =head1 BUILD
+@@ -53,14 +82,12 @@
+ 
+ =item Makefile tuning
+ 
+-rename libparrot.dll to cygparrot.dll, create an interim libparrot.dll.a
++rename libparrot.dll to cygparrot-0-6.dll and create an interim libparrot.dll.a
+ 
+-fix the blib/lib PATH issue
++=item loadlib DLL versioning
+ 
+-=item DLL versioning
++Use cyg*-1.1.dll instead of lib*.so.1.1 names for loadlib, the FFI.
+ 
+-cyg*-1.1.dll instead of lib*.so.1.1
+-
+ Thanks to the L<Windows DLL Hell / http://> and the impossibility of file
+ hardlinks, windows dll names are versioned, so the loadlib function or the
+ various pir's needs more logic.
+@@ -89,6 +116,6 @@
+ 
+ =head1 HISTORY
+ 
+-Last updated: 1 June 2008
++Last updated: 15 July 2008
+ 
+ =cut

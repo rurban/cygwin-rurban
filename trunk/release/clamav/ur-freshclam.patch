@@ -1,0 +1,155 @@
+2004-11-01  Reini Urban  <rurban@x-ray.at>
+
+	* freshclam\manager.c: added If-Modified-Since support,
+          (Rfc2822DateTime) new
+
+--- freshclam/manager.c.orig	2004-10-17 18:50:56.000000000 +0200
++++ freshclam/manager.c	2004-11-01 15:33:58.897309100 +0200
+@@ -49,7 +49,6 @@
+ #include "../libclamav/str.h" /* cli_strtok */
+ #include "dns.h"
+ 
+-
+ int downloadmanager(const struct cfgstruct *copt, const struct optstruct *opt, const char *hostname)
+ {
+ 	time_t currtime;
+@@ -444,6 +443,16 @@
+     return -2;
+ }
+ 
++/* "Sun, 06 Nov 1994 08:49:37 GMT" */
++int Rfc2822DateTime (char *buf, int stime) {
++  struct tm *time;
++  time_t t;
++
++  t = (time_t) stime;
++  time = gmtime(&t);
++  return strftime(buf, 36, "%a, %d %b %Y %X GMT", time);
++}
++
+ /* njh@bandsman.co.uk: added proxy support */
+ /* TODO: use a HEAD instruction to see if the file has been changed */
+ struct cl_cvd *remote_cvdhead(const char *file, int socketfd, const char *hostname, const char *proxy, const char *user, const char *pass)
+@@ -452,6 +461,7 @@
+ 	int i, j, bread, cnt;
+ 	char *remotename = NULL, *authorization = NULL;
+ 	struct cl_cvd *cvd;
++	char last_modified[36];
+ 
+     if(proxy) {
+         remotename = mmalloc(strlen(hostname) + 8);
+@@ -472,6 +482,8 @@
+     }
+ 
+     mprintf("Reading CVD header (%s): ", file);
++    cvd = cl_cvdhead(file);
++    Rfc2822DateTime(last_modified, cvd->stime);
+ 
+ #ifdef	NO_SNPRINTF
+     sprintf(cmd, "GET %s/%s HTTP/1.1\r\n"
+@@ -480,7 +492,9 @@
+ 	"Cache-Control: no-cache\r\n"
+ 	"Connection: close\r\n"
+ 	"Range: bytes=0-511\r\n"
+-	"\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"");
++	"If-Modified-Since: %s\r\n"
++	    "\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"",
++	    last_modified);
+ #else
+     snprintf(cmd, sizeof(cmd), "GET %s/%s HTTP/1.1\r\n"
+ 	"Host: %s\r\n%s"
+@@ -488,7 +502,9 @@
+ 	"Cache-Control: no-cache\r\n"
+ 	"Connection: close\r\n"
+ 	"Range: bytes=0-511\r\n"
+-	"\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"");
++	"If-Modified-Since: %s\r\n"
++	     "\r\n", (remotename != NULL)?remotename:"", file, hostname, (authorization != NULL)?authorization:"",
++	     last_modified);
+ #endif
+     write(socketfd, cmd, strlen(cmd));
+ 
+@@ -512,6 +528,11 @@
+       mprintf("@CVD file not found on remote server\n");
+       return NULL;
+     }
++    /* check whether the resource is up-to-date */
++    if ((strstr(buffer, "HTTP/1.1 304")) != NULL) { 
++      mprintf("@CVD is already up-to-date\n");
++      return NULL;
++    }
+ 
+     ch = buffer;
+     i = 0;
+@@ -551,7 +572,8 @@
+ 	int bread, fd, i, rot = 0;
+ 	char *remotename = NULL, *authorization = NULL;
+ 	const char *rotation = "|/-\\";
+-
++	char last_modified[36];
++	struct cl_cvd *cvd;
+ 
+     if(proxy) {
+         remotename = mmalloc(strlen(hostname) + 8);
+@@ -571,6 +593,9 @@
+         }
+     }
+ 
++    cvd = cl_cvdhead(dbfile);
++    Rfc2822DateTime(last_modified, cvd->stime);
++
+ #ifdef C_CYGWIN
+     if((fd = open(file, O_WRONLY|O_CREAT|O_EXCL|O_BINARY, 0644)) == -1) {
+ #else
+@@ -590,6 +615,7 @@
+ 	     "User-Agent: "PACKAGE"/"VERSION"\r\n"
+ 	     "Cache-Control: no-cache\r\n"
+ 	     "Connection: close\r\n"
++	    "If-Modified-Since: %s\r\n"
+ 	     "\r\n", (remotename != NULL)?remotename:"", dbfile, hostname, (authorization != NULL)?authorization:"");
+ #else
+     snprintf(cmd, sizeof(cmd), "GET %s/%s HTTP/1.1\r\n"
+@@ -597,6 +623,7 @@
+ 	     "User-Agent: "PACKAGE"/"VERSION"\r\n"
+ 	     "Cache-Control: no-cache\r\n"
+ 	     "Connection: close\r\n"
++	     "If-Modified-Since: %s\r\n"
+ 	     "\r\n", (remotename != NULL)?remotename:"", dbfile, hostname, (authorization != NULL)?authorization:"");
+ #endif
+     write(socketfd, cmd, strlen(cmd));
+@@ -628,7 +655,6 @@
+     }
+ 
+     /* check whether the resource actually existed or not */
+-
+     if ((strstr(buffer, "HTTP/1.1 404")) != NULL) { 
+       mprintf("@%s not found on remote server\n", dbfile);
+       close(fd);
+@@ -636,9 +662,16 @@
+       return 58;
+     }
+ 
+-    /* receive body and write it to disk */
++    /* check whether the resource is up-to-date */
++    if ((strstr(buffer, "HTTP/1.1 304")) != NULL) { 
++      mprintf("@%s is already up-to-date\n", dbfile);
++      close(fd);
++      unlink(file);
++      return 58;
++    }
+ 
++    /* receive body and write it to disk */
+     while((bread = read(socketfd, buffer, FILEBUFF))) {
+ 	write(fd, buffer, bread);
+ 	mprintf("Downloading %s [%c]\r", dbfile, rotation[rot]);
+--- freshclam/manager.h.orig	2004-09-01 01:56:48.000000000 +0200
++++ freshclam/manager.h	2004-11-01 15:29:24.944184100 +0200
+@@ -28,6 +28,8 @@
+ 
+ int wwwconnect(const char *server, const char *proxy, int pport, char *ip);
+ 
++int Rfc2822DateTime (char *buf, int stime);
++
+ struct cl_cvd *remote_cvdhead(const char *file, int socketfd, const char *hostname, const char *proxy, const char *user, const char *pass);
+ 
+ int get_database(const char *dbfile, int socketfd, const char *file, const char *hostname, const char *proxy, const char *user, const char *pass);

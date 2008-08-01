@@ -1,0 +1,72 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/mathomatic-12.5.21/list.c src/mathomatic-12.5.21/list.c
+--- origsrc/mathomatic-12.5.21/list.c	2006-07-20 17:36:08.000000000 +0000
++++ src/mathomatic-12.5.21/list.c	2006-07-22 13:28:08.420681100 +0000
+@@ -103,7 +103,7 @@
+ 		fprintf(gfp, ";");
+ 	}
+ 	if (high_prec) {
+-#if	CYGWIN
++#if	WIN32
+ 		fprintf(gfp, "\r\n");
+ #else
+ 		fprintf(gfp, "\n");
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/mathomatic-12.5.21/makefile.cygwin src/mathomatic-12.5.21/makefile.cygwin
+--- origsrc/mathomatic-12.5.21/makefile.cygwin	2006-04-11 16:10:33.000000000 +0000
++++ src/mathomatic-12.5.21/makefile.cygwin	2006-07-22 13:28:08.420681100 +0000
+@@ -1,18 +1,25 @@
+ # Makefile for compiling and testing Mathomatic with CygWin for Windows.
+ 
+ VERSION		= `cat VERSION`
+-CFLAGS		= -O -DCYGWIN -DVERSION=\"$(VERSION)\"
++CFLAGS		= -O2 -DCYGWIN -DVERSION=\"$(VERSION)\"
+ LDFLAGS		= -s
+ LIBS		= -lm
+ 
+ CFLAGS		+= -DREADLINE
+ LIBS		+= -lreadline -lcurses
+ 
+-AOUT	=mathomatic
+-OBJECTS	=main.o globals.o am.o solve.o help.o parse.o cmds.o simplify.o factor.o super.o \
+-	 unfactor.o poly.o diff.o integrate.o complex.o complex_lib.o list.o gcd.o factor_int.o
++DESTDIR		=
++prefix		= /usr/local
++bindir		= $(prefix)/bin
++mandir		= $(prefix)/share/man
++docdir		= $(prefix)/share/doc
++
++AOUT    = mathomatic.exe
++BINS	= mathomatic.exe mathomatic_secure.exe
++OBJECTS	= main.o globals.o am.o solve.o help.o parse.o cmds.o simplify.o factor.o super.o \
++	  unfactor.o poly.o diff.o integrate.o complex.o complex_lib.o list.o gcd.o factor_int.o
+ 
+-all: $(AOUT)
++all: $(BINS)
+ 	@echo Make completed.
+ 
+ check: test
+@@ -27,7 +34,24 @@
+ $(OBJECTS): includes.h am.h externs.h complex.h proto.h VERSION
+ 
+ $(AOUT): $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(AOUT)
++	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
++
++mathomatic_secure.exe: $(OBJECTS)
++	make clean
++	$(CC) -c -DSECURE -DTIMEOUT_SECONDS=3600 $(CFLAGS) *.c
++	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
++	make clean
++
++install: $(AOUT)
++	install -d $(DESTDIR)$(prefix)/bin/
++	install -d $(DESTDIR)$(mandir)/man1
++	install -d $(DESTDIR)$(docdir)/mathomatic-$(VERSION)
++	install -m 0755 $(BINS) $(DESTDIR)$(prefix)/bin/
++	install -m 0644 mathomatic.1 $(DESTDIR)$(mandir)/man1
++	install -m 0644 doc/* $(DESTDIR)$(docdir)/mathomatic-$(VERSION)
++	install -m 0644 mathomatic.ico $(DESTDIR)$(docdir)/mathomatic-$(VERSION)
++	install -m 0644 *.txt $(DESTDIR)$(docdir)/mathomatic-$(VERSION)
++	@echo Install completed.
+ 
+ clean:
+ 	rm -f *.o

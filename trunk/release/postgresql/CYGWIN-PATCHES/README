@@ -1,0 +1,183 @@
+postgresql-8.3.x
+------------------------------------------
+PostgreSQL is an advanced Object-Relational database management system
+(DBMS) that supports almost all SQL constructs (including transactions,
+subselects and user-defined types and functions).
+
+Admin binaries are now in /usr/sbin/
+Contrib binaries in /usr/lib/postgreql/bin
+cygrunsrv is not required anymore, pg_ctl has now the service functions 
+included. 
+cygserver must run as service. The environment CYGWIN must contain "server".
+Build via cygport.
+
+Runtime requirements:
+  crypt-1.1-1		or newer
+  cygwin-1.5.18-1	or newer
+  libiconv2-1.9.2-2	or newer
+  libintl3-0.14.5-1	or newer
+  libreadline8
+  openssl-0.9.8a-1	or newer
+  zlib-1.2.3-1		or newer
+  perl-5.8.8  	        (optional, for plperl. only this version!)
+  python-2.5.x    	(optional, for plpython. every 2.5 version will work)
+
+Build requirements: (additionally)
+  cygport
+  gcc-core 3.3.x        or newer (libtool-devel-1.5.10 not required)
+  binutils-20040725-2   or newer
+  make-3.80-1           or newer
+  fileutils-4.1         or newer
+  sed-4.1.2-1           or newer
+  m4-1.4-1
+
+  OpenSP-1.5.1-1        (for man rebuilding)
+  docbook-xml42	 	(for man rebuilding)
+  cpan SGMLSpm          (for man rebuilding)
+  docbook2X      	(for man rebuilding)
+  docbook2man-sgmlspl   (for man rebuilding)
+  Sun JDK 1.4.x         (optional, for pgjava only)
+  Ant 1.5		(?)
+
+Canonical homepage:
+  http://www.postgresql.org
+
+Canonical download:
+  ftp://ftp.postgresql.org
+
+------------------------------------
+
+Build instructions:
+  cygport postgresql-<VER>-<REL>.cygport prep compile install check package finish
+
+This will create:
+  /usr/src/postgresql-<VER>-<REL>-src.tar.bz2
+  /usr/src/postgresql-<VER>-<REL>.tar.bz2
+
+Or use 'cygport postgresql-<VER>-<REL>.cygport prep' to get a patched source directory
+
+------------------
+Files:
+
+Package layout see postgresql-<VER>-<REL>.cygport
+
+-----------------------------------------------------------
+
+Port Notes:
+
+----------  postgresql-8.3.3-1 ------------ 
+no changes
+----------  postgresql-8.3.0-1 (not uploaded) ------- 
+failed attempt to fix backend/libpq/auth.c: ENABLE_GSSAPI
+added --with-ldap --with-libxml --with-libxslt
+not yet ok: --with-gssapi --with-krb5 --with-tcl --with-java  --with-ossp-uuid
+----------  postgresql-8.2.9-1 ------------ 
+update to perl-5.10.0-4 
+----------  postgresql-8.2.6-1 (not uploaded) ------- 
+removed dll versioning: cygpq.dll
+----------  postgresql-8.2.5-1 ------------ 
+perl-5.8.8 and python-2.5
+----------  postgresql-8.2.4-1 ------------ 
+no changes
+----------  postgresql-8.2.0-1 (not uploaded) ------------ 
+libpq5: started dll versioning, cyg$(NAME)$(SO_MAJOR_VERSION).dll
+
+----------  postgresql-8.2beta2-1 (not uploaded) ---------
+no changes
+----------  postgresql-8.1.5-0 (not uploaded) ------------ 
+no changes
+----------  postgresql-8.1.4-2 (not uploaded) ------------ 
+added make -j1
+fixed missing and duplicate files
+
+----------  postgresql-8.1.4-1 (not uploaded) ----- 
+small improvements in .cygport funcs, 
+no autoreconf not to #undef const (fails in flex)
+see below in 8.1.3-2
+
+----------  postgresql-8.1.3-2 (not uploaded) ----- 
+split into seperate packages as in debian
+changed buildmethod from gbs to cygport
+changed SOCKETDIR back to /tmp in init.d script
+  problems with clients on socket connections
+
+----------  postgresql-8.1.3-1 + 8.0.7-1 -----------
+none
+
+----------  postgresql-8.1.2-1 + 8.0.6-1 -----------
+fixed cp backend/libpostgres.a in gbs
+
+----------  postgresql-8.0.3-1 + 8.1beta1-1 -----------
+Fixed IPC problems. 
+Moved pg_dumpall back to /bin for pg_dump to work.
+Added /usr/lib/libpostgres.a manually.
+Added init.d script:
+  SOCKETDIR=/tmp/postgresql
+
+----------  postgresql-8.0.0-1  ----------- (NEVER RELEASED)
+Still IPC problems
+
+----------  postgresql-8.0.0beta5-1  ----------- (NEVER RELEASED)
+Builds OOTB, all patches accepted upstream.
+Still IPC problems
+
+----------  postgresql-8.0.0beta4-1 ----------- (NEVER RELEASED)
+- pg_ctl register fixed.
+- unsolvable concurrency problems since beta3, which are 
+  probably related to cygserver bugs?
+
+----------  postgresql-8.0.0cvs-2 ----------- (NEVER RELEASED)
+- Removed broken postinstall and preremove scripts.
+  Save and restore will have to be done manually.
+- Layout: Seperated admin (/usr/sbin) from user applications (/usr/bin) 
+  and contrib bins (usr/lib/postgresql/bin)
+- plperl and tablespace was fixed upstream
+
+----------  postgresql-8.0.0cvs-1 -----------
+Maintainership changed from Jason Tishler to Reini Urban.
+nls and charset translation support (not only -E Latin1). Building via gbs.
+Improved IPC and signals handling. Up to 50 max_connections 
+possible, but 5 are still recommended. max 63 hardlimit on cygwin.
+Added new postinstall and preremove recipes to save and restore the 
+old databases into /var/tmp/db.out.gz.
+Added contrib binaries, libs, data and docs. (Wrong. was in 7.4.5 also)
+
+TODO: add /usr/lib/postgresql/ to the postmaster service path.
+      add init.d service installer/uninstaller as with clamav.
+      fix tablespace breakage. (symlink => hardlink)
+
+----------  postgresql-7.4.5-1 -----------
+First cygserver release, ipc-daemon2 not supported anymore.
+Note: If you haven't uninstalled ipc-daemon2, it will be built against it, 
+and will therefore fail when cygserver is running.
+
+
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Please report problems, suggestions, etc. dependent on their nature to one of
+the following:
+
+    pgsql-cygwin@postgresql.org
+    cygwin@cygwin.com
+
+======================================================================
+
+Installation:
+
+For the impatient: install as service (hard)
+
+    # save old database (optional)
+    pg_dumpall -g /tmp/$$pgdump-globals.sql
+    pg_dumpall > /tmp/$$pgdump.sql
+    # adjust the settings in /etc/rc.d/init.d/postgresql
+    nano /etc/rc.d/init.d/postgresql	
+    sysbash # /etc/rc.d/init.d/postgresql initdb
+    /etc/rc.d/init.d/postgresql install
+    /etc/rc.d/init.d/postgresql start
+
+For the impatient: install as user (easy)
+
+    cygrunsrv -S cygserver
+    initdb -D /usr/share/postgresql/data
+    pg_ctl start -D /usr/share/postgresql/data -l /var/log/postgresql.log
+    createdb
+    psql

@@ -1,0 +1,8 @@
+sdesc: "library of hash algorithms"
+ldesc: "The mhash-devel package contains the header files and libraries needed
+to develop programs that use the mhash library.
+
+Install the mhash-devel package if you want to develop applications that
+will use the libmhash library."
+category: Libs
+requires: cygwin mhash

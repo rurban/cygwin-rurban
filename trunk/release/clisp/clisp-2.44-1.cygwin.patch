@@ -1,0 +1,352 @@
+diff -urN origsrc/clisp-2.44/CYGWIN-PATCHES/README src/clisp-2.44/CYGWIN-PATCHES/README
+--- origsrc/clisp-2.44/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/clisp-2.44/CYGWIN-PATCHES/README	2008-02-04 21:15:14.180875000 +0000
+@@ -0,0 +1,303 @@
++CLISP: an ANSI Common Lisp implementation
++
++ANSI Common Lisp is a high-level, general-purpose programming language.
++GNU CLISP is a Common Lisp implementation by Bruno Haible of Karlsruhe
++University and Michael Stoll of Munich University, both in Germany.
++It mostly supports the Lisp described in the ANSI Common Lisp standard.
++It runs on most GNU and Unix systems (GNU/Linux, FreeBSD, NetBSD, OpenBSD,
++Solaris, Tru64, HP-UX, BeOS, NeXTstep, IRIX, AIX and others) and on
++other systems (Windows NT/2000/XP, Windows 95/98/ME) and needs only
++4 MB of RAM.
++It is Free Software and may be distributed under the terms of GNU GPL,
++while it is possible to distribute commercial proprietary applications
++compiled with GNU CLISP.
++The user interface comes in English, German, French, Spanish, Dutch,
++Russian and Danish, and can be changed at run time.
++GNU CLISP includes an interpreter, a compiler, a debugger, CLOS, MOP,
++a foreign language interface, sockets, i18n, fast bignums and more.
++An X11 interface is optionally available through CLX, Garnet, CLUE/CLIO.
++GNU CLISP runs Maxima, ACL2 and many other Common Lisp packages.
++
++Runtime requirements:
++  crypt
++  cygwin
++  libiconv2
++  libintl8
++  libncurses8
++  libpcre0
++  libreadline6
++  ffcall
++
++Runtime recommendations: (-k full)
++  fgci
++  libdb4.5
++  libgdbm4
++  libpq4
++
++Build requirements:
++  libsigsegv 
++  and the usual build tools
++
++Canonical homepage:
++  http://clisp.cons.org/
++
++  More info also at:
++    http://www.clisp.org/
++    http://www.gnu.org/software/clisp/
++    http://clisp.sourceforge.net/
++
++Canonical download:
++  http://prdownload.sourceforge.net/sourceforge/clisp/clisp-${PV}.tar.bz2
++  Sources and selected binaries are available by anonymous ftp from
++    <ftp://ftp.gnu.org/pub/gnu/clisp/>
++  and its mirrors.
++
++------------------------------------
++
++Builds "out of the box" on cygwin:
++
++./configure --fsstnd=redhat \
++	--with-module=rawsock --with-module=dirkey --with-module=bindings/win32 \
++	--with-module=berkeley-db --with-module=pcre --with-module=postgresql \
++	--with-module=fastcgi --with-module=libsvm --with-module=gdbm --with-module=zlib \
++	--prefix=/usr --build build
++will configure, build and install CLISP.
++See unix/INSTALL for details.
++
++cygport build instructions:
++  tar xfj clisp-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport clisp-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/clisp-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/clisp-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport clisp-<VERSION>-<CYGREL>.cygport prep' 
++to get a patched source directory 
++
++------------------------------------
++
++Files included in the 'clisp' distribution:
++
++  /usr/bin/clisp.exe
++  /usr/lib/clisp-2.44/base/calls.o
++  /usr/lib/clisp-2.44/base/gettext.o
++  /usr/lib/clisp-2.44/base/libavcall.a
++  /usr/lib/clisp-2.44/base/libcallback.a
++  /usr/lib/clisp-2.44/base/libnoreadline.a
++  /usr/lib/clisp-2.44/base/lisp.a
++  /usr/lib/clisp-2.44/base/lisp.exe
++  /usr/lib/clisp-2.44/base/lispinit.mem
++  /usr/lib/clisp-2.44/base/localcharset.o
++  /usr/lib/clisp-2.44/base/makevars
++  /usr/lib/clisp-2.44/base/modules.h
++  /usr/lib/clisp-2.44/base/modules.o
++  /usr/lib/clisp-2.44/base/readline.o
++  /usr/lib/clisp-2.44/base/regex.o
++  /usr/lib/clisp-2.44/base/regexi.o
++  /usr/lib/clisp-2.44/base/regexp.dvi
++  /usr/lib/clisp-2.44/base/uniname.o
++  /usr/lib/clisp-2.44/base/width.o
++  /usr/lib/clisp-2.44/clisp-link
++  /usr/lib/clisp-2.44/data/Symbol-Table.text
++  /usr/lib/clisp-2.44/data/UnicodeDataFull.txt
++  /usr/lib/clisp-2.44/full/bdb.o
++  /usr/lib/clisp-2.44/full/calls.o
++  /usr/lib/clisp-2.44/full/cpcre.o
++  /usr/lib/clisp-2.44/full/dirkey.o
++  /usr/lib/clisp-2.44/full/fastcgi.o
++  /usr/lib/clisp-2.44/full/fastcgi_wrappers.o
++  /usr/lib/clisp-2.44/full/gdbm.o
++  /usr/lib/clisp-2.44/full/gettext.o
++  /usr/lib/clisp-2.44/full/libavcall.a
++  /usr/lib/clisp-2.44/full/libcallback.a
++  /usr/lib/clisp-2.44/full/libnoreadline.a
++  /usr/lib/clisp-2.44/full/lisp.a
++  /usr/lib/clisp-2.44/full/lisp.exe
++  /usr/lib/clisp-2.44/full/lispinit.mem
++  /usr/lib/clisp-2.44/full/localcharset.o
++  /usr/lib/clisp-2.44/full/makevars
++  /usr/lib/clisp-2.44/full/modules.h
++  /usr/lib/clisp-2.44/full/modules.o
++  /usr/lib/clisp-2.44/full/postgresql.o
++  /usr/lib/clisp-2.44/full/rawsock.o
++  /usr/lib/clisp-2.44/full/readline.o
++  /usr/lib/clisp-2.44/full/regex.o
++  /usr/lib/clisp-2.44/full/regexi.o
++  /usr/lib/clisp-2.44/full/regexp.dvi
++  /usr/lib/clisp-2.44/full/svm.so
++  /usr/lib/clisp-2.44/full/uniname.o
++  /usr/lib/clisp-2.44/full/width.o
++  /usr/lib/clisp-2.44/full/zlib.o
++  /usr/lib/clisp-2.44/linkkit/clisp.h
++  /usr/lib/clisp-2.44/linkkit/modprep.lisp
++  /usr/lib/clisp-2.44/linkkit/modules.c
++  /usr/lib/clisp-2.44/linkkit/modules.d
++  /usr/share/doc/Cygwin/clisp-2.44.README
++  /usr/share/doc/clisp-2.44/ANNOUNCE
++  /usr/share/doc/clisp-2.44/COPYRIGHT
++  /usr/share/doc/clisp-2.44/GNU-GPL
++  /usr/share/doc/clisp-2.44/INSTALL
++  /usr/share/doc/clisp-2.44/MAGIC.add
++  /usr/share/doc/clisp-2.44/NEWS
++  /usr/share/doc/clisp-2.44/README
++  /usr/share/doc/clisp-2.44/README.de
++  /usr/share/doc/clisp-2.44/README.es
++  /usr/share/doc/clisp-2.44/SUMMARY
++  /usr/share/doc/clisp-2.44/cygwin.README
++  /usr/share/doc/clisp-2.44/doc/CLOS-guide.txt
++  /usr/share/doc/clisp-2.44/doc/LISP-tutorial.txt
++  /usr/share/doc/clisp-2.44/doc/clisp.1
++  /usr/share/doc/clisp-2.44/doc/clisp.dvi
++  /usr/share/doc/clisp-2.44/doc/clisp.html
++  /usr/share/doc/clisp-2.44/doc/clisp.pdf
++  /usr/share/doc/clisp-2.44/doc/clisp.png
++  /usr/share/doc/clisp-2.44/doc/clisp.ps
++  /usr/share/doc/clisp-2.44/doc/editors.txt
++  /usr/share/doc/clisp-2.44/doc/impnotes.css
++  /usr/share/doc/clisp-2.44/doc/impnotes.html
++  /usr/share/emacs/site-lisp/clhs.el
++  /usr/share/emacs/site-lisp/clisp-coding.el
++  /usr/share/emacs/site-lisp/clisp-ffi.el
++  /usr/share/emacs/site-lisp/clisp-indent.el
++  /usr/share/emacs/site-lisp/clisp-indent.lisp
++  /usr/share/locale/da/LC_MESSAGES/clisp.mo
++  /usr/share/locale/da/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/de/LC_MESSAGES/clisp.mo
++  /usr/share/locale/de/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/en/LC_MESSAGES/clisp.mo
++  /usr/share/locale/en/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/es/LC_MESSAGES/clisp.mo
++  /usr/share/locale/es/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/fr/LC_MESSAGES/clisp.mo
++  /usr/share/locale/fr/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/nl/LC_MESSAGES/clisp.mo
++  /usr/share/locale/nl/LC_MESSAGES/clisplow.mo
++  /usr/share/locale/ru/LC_MESSAGES/clisp.mo
++  /usr/share/locale/ru/LC_MESSAGES/clisplow.mo
++  /usr/share/man/man1/clisp.1.gz
++  /usr/share/vim/vimfiles/after/syntax/lisp.vim
++
++Files included in the 'clisp-clx' distribution:
++  /usr/lib/clisp-2.44/full+new-clx/bdb.o
++  /usr/lib/clisp-2.44/full+new-clx/calls.o
++  /usr/lib/clisp-2.44/full+new-clx/clx.o
++  /usr/lib/clisp-2.44/full+new-clx/cpcre.o
++  /usr/lib/clisp-2.44/full+new-clx/dirkey.o
++  /usr/lib/clisp-2.44/full+new-clx/fastcgi.o
++  /usr/lib/clisp-2.44/full+new-clx/fastcgi_wrappers.o
++  /usr/lib/clisp-2.44/full+new-clx/gdbm.o
++  /usr/lib/clisp-2.44/full+new-clx/gettext.o
++  /usr/lib/clisp-2.44/full+new-clx/libavcall.a
++  /usr/lib/clisp-2.44/full+new-clx/libcallback.a
++  /usr/lib/clisp-2.44/full+new-clx/libnoreadline.a
++  /usr/lib/clisp-2.44/full+new-clx/lisp.exe
++  /usr/lib/clisp-2.44/full+new-clx/lispinit.mem
++  /usr/lib/clisp-2.44/full+new-clx/localcharset.o
++  /usr/lib/clisp-2.44/full+new-clx/modules.h
++  /usr/lib/clisp-2.44/full+new-clx/modules.o
++  /usr/lib/clisp-2.44/full+new-clx/postgresql.o
++  /usr/lib/clisp-2.44/full+new-clx/rawsock.o
++  /usr/lib/clisp-2.44/full+new-clx/readline.o
++  /usr/lib/clisp-2.44/full+new-clx/regex.o
++  /usr/lib/clisp-2.44/full+new-clx/regexi.o
++  /usr/lib/clisp-2.44/full+new-clx/regexp.dvi
++  /usr/lib/clisp-2.44/full+new-clx/svm.so
++  /usr/lib/clisp-2.44/full+new-clx/uniname.o
++  /usr/lib/clisp-2.44/full+new-clx/width.o
++  /usr/lib/clisp-2.44/full+new-clx/zlib.o
++
++Files included in the 'clisp-gtk2' distribution:
++  /usr/lib/clisp-2.44/full+gtk2/bdb.o
++  /usr/lib/clisp-2.44/full+gtk2/calls.o
++  /usr/lib/clisp-2.44/full+gtk2/cpcre.o
++  /usr/lib/clisp-2.44/full+gtk2/dirkey.o
++  /usr/lib/clisp-2.44/full+gtk2/fastcgi.o
++  /usr/lib/clisp-2.44/full+gtk2/fastcgi_wrappers.o
++  /usr/lib/clisp-2.44/full+gtk2/gdbm.o
++  /usr/lib/clisp-2.44/full+gtk2/gettext.o
++  /usr/lib/clisp-2.44/full+gtk2/gtk.o
++  /usr/lib/clisp-2.44/full+gtk2/libavcall.a
++  /usr/lib/clisp-2.44/full+gtk2/libcallback.a
++  /usr/lib/clisp-2.44/full+gtk2/libnoreadline.a
++  /usr/lib/clisp-2.44/full+gtk2/lisp.exe
++  /usr/lib/clisp-2.44/full+gtk2/lispinit.mem
++  /usr/lib/clisp-2.44/full+gtk2/localcharset.o
++  /usr/lib/clisp-2.44/full+gtk2/makevars
++  /usr/lib/clisp-2.44/full+gtk2/modules.h
++  /usr/lib/clisp-2.44/full+gtk2/modules.o
++  /usr/lib/clisp-2.44/full+gtk2/postgresql.o
++  /usr/lib/clisp-2.44/full+gtk2/rawsock.o
++  /usr/lib/clisp-2.44/full+gtk2/readline.o
++  /usr/lib/clisp-2.44/full+gtk2/regex.o
++  /usr/lib/clisp-2.44/full+gtk2/regexi.o
++  /usr/lib/clisp-2.44/full+gtk2/regexp.dvi
++  /usr/lib/clisp-2.44/full+gtk2/svm.so
++  /usr/lib/clisp-2.44/full+gtk2/uniname.o
++  /usr/lib/clisp-2.44/full+gtk2/width.o
++  /usr/lib/clisp-2.44/full+gtk2/zlib.o
++
++Files included in the 'clisp-gdi' distribution:
++  /usr/lib/clisp-2.44/full+gdi/bdb.o
++  /usr/lib/clisp-2.44/full+gdi/calls.o
++  /usr/lib/clisp-2.44/full+gdi/cpcre.o
++  /usr/lib/clisp-2.44/full+gdi/dirkey.o
++  /usr/lib/clisp-2.44/full+gdi/fastcgi.o
++  /usr/lib/clisp-2.44/full+gdi/fastcgi_wrappers.o
++  /usr/lib/clisp-2.44/full+gdi/gdbm.o
++  /usr/lib/clisp-2.44/full+gdi/gdi-preload.lisp
++  /usr/lib/clisp-2.44/full+gdi/gdi.o
++  /usr/lib/clisp-2.44/full+gdi/gettext.o
++  /usr/lib/clisp-2.44/full+gdi/libavcall.a
++  /usr/lib/clisp-2.44/full+gdi/libcallback.a
++  /usr/lib/clisp-2.44/full+gdi/libnoreadline.a
++  /usr/lib/clisp-2.44/full+gdi/lisp.exe
++  /usr/lib/clisp-2.44/full+gdi/lispinit.mem
++  /usr/lib/clisp-2.44/full+gdi/localcharset.o
++  /usr/lib/clisp-2.44/full+gdi/makevars
++  /usr/lib/clisp-2.44/full+gdi/modules.h
++  /usr/lib/clisp-2.44/full+gdi/modules.o
++  /usr/lib/clisp-2.44/full+gdi/postgresql.o
++  /usr/lib/clisp-2.44/full+gdi/rawsock.o
++  /usr/lib/clisp-2.44/full+gdi/readline.o
++  /usr/lib/clisp-2.44/full+gdi/regex.o
++  /usr/lib/clisp-2.44/full+gdi/regexi.o
++  /usr/lib/clisp-2.44/full+gdi/regexp.dvi
++  /usr/lib/clisp-2.44/full+gdi/svm.so
++  /usr/lib/clisp-2.44/full+gdi/uniname.o
++  /usr/lib/clisp-2.44/full+gdi/width.o
++  /usr/lib/clisp-2.44/full+gdi/zlib.o
++
++------------------------------------
++
++Port Changes
++
++2.44-1
++* more cygport tuning and fixes
++* replace full+$m/lisp.a by links to full/
++* do not export GDI:WINDING
++2.43-2
++* --with-dynamic-modules disabled. This was too big.
++* added libsvm
++* prepared extra packages: clisp-clx clisp-gtk2 clisp-gdi
++* strip objects
++2.43-1
++* see 2.41-2
++* modules now loaded dynamically. fixed --with-dynamic-modules
++* increased stack size to 8MB
++* removed the GDI module to a seperate clisp-gdi package 
++* added gdbm
++* prepare for another new seperate clisp-x package with the new-clx and gtk2 modules
++2.42-1
++* see 2.41-2
++2.41-2
++* removed the constant ERROR from GDI (for swank)
++* fixed building syscalls by removing the FMTID properties 
++  from POSIX::FILE-PROPERTIES
++* added libsvm
++* fixed constants in bindings/win32.lisp
++* changed default :line-terminator encoding from CRLF-aware to understand 
++  only LF, because of *TERMINAL-ENCODING*
+diff -urN origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-clx.hint src/clisp-2.44/CYGWIN-PATCHES/clisp-clx.hint
+--- origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-clx.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clisp-2.44/CYGWIN-PATCHES/clisp-clx.hint	2008-02-04 16:29:53.024625000 +0000
+@@ -0,0 +1,5 @@
++sdesc: "The new-clx module linkset for clisp"
++category: Interpreters
++requires: clisp xorg-x11-bin-dlls
++ldesc: "This is the linkset full+new-clx."
++external-source: clisp
+diff -urN origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-gdi.hint src/clisp-2.44/CYGWIN-PATCHES/clisp-gdi.hint
+--- origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-gdi.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clisp-2.44/CYGWIN-PATCHES/clisp-gdi.hint	2008-02-04 16:29:53.040250000 +0000
+@@ -0,0 +1,6 @@
++sdesc: "The GDI module linkset for clisp"
++category: Interpreters
++requires: clisp
++ldesc: "This is the linkset base+gdi with the experimental 
++GDI module (native Win32 GDI)."
++external-source: clisp
+diff -urN origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-gtk2.hint src/clisp-2.44/CYGWIN-PATCHES/clisp-gtk2.hint
+--- origsrc/clisp-2.44/CYGWIN-PATCHES/clisp-gtk2.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clisp-2.44/CYGWIN-PATCHES/clisp-gtk2.hint	2008-02-04 16:29:53.040250000 +0000
+@@ -0,0 +1,5 @@
++sdesc: "The GTK2 Module linkset for clisp"
++category: Interpreters
++requires: clisp xorg-x11-bin-dlls gtk2-x11-runtime
++ldesc: "This is the linkset full+gtk2 for Xorg."
++external-source: clisp
+diff -urN origsrc/clisp-2.44/CYGWIN-PATCHES/clisp.hint src/clisp-2.44/CYGWIN-PATCHES/clisp.hint
+--- origsrc/clisp-2.44/CYGWIN-PATCHES/clisp.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clisp-2.44/CYGWIN-PATCHES/clisp.hint	2008-02-04 16:29:53.055875000 +0000
+@@ -0,0 +1,13 @@
++sdesc: "an ANSI Common Lisp implementation"
++category: Devel Interpreters Math Shells
++ldesc: "ANSI Common Lisp is a high-level, general-purpose programming language.
++GNU CLISP is a Common Lisp implementation by Bruno Haible of Karlsruhe
++University and Michael Stoll of Munich University, both in Germany.
++It mostly supports the Lisp described in the ANSI Common Lisp standard.
++GNU CLISP includes an interpreter, a compiler, a debugger, CLOS, MOP,
++a foreign language interface, sockets, i18n, fast bignums and more.
++An X11 interface is available through CLX, Garnet, CLUE/CLIO.
++GNU CLISP runs Maxima, ACL2 and many other Common Lisp packages.
++This binary distribution was built with the following modules:
++ rawsock dirkey bindings/win32 berkeley-db zlib pcre fastcgi postgresql libsvm gdbm"
++requires: libiconv2 libintl3 libncurses8 libreadline6 crypt libpq4 libpcre0 libdb4.5 ffcall

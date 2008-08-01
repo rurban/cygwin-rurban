@@ -1,0 +1,71 @@
+htmldoc
+-------------------------------
+HTML processor that generates indexed HTML, PS, and PDF
+
+HTMLDOC is a program for writing documentation in HTML and producing indexed
+HTML, PostScript, or PDF output (with tables of contents). It supports most HTML
+3.2 and some HTML 4.0 syntax, as well as GIF, JPEG, and PNG images.
+
+Runtime requirements: (versions given or later)
+  cygwin-1.5.x
+  libpng12
+  libjpeg62
+  
+Build requirements: (versions given or later)
+  cygwin-1.5.x
+  mingw-runtime-3.9-2
+  openssl-0.9.x
+  libtool
+  gcc-core
+  gcc-g++
+  binutils
+  make
+  bash
+  fileutils
+  sed
+  zlib-1.2.x (optional)
+  libpng12 (optional)
+  libjpeg62 (optional)
+
+Canonical homepage:
+  http://www.htmldoc.org/
+
+Canonical download:
+  http://ftp.easysw.com/pub/htmldoc/
+
+-------------------------------------------------------------------------------
+
+Build instructions:
+  If you use setup to install this src package, it will be
+  unpacked under /usr/src automatically.
+  Otherwise do:
+    tar xfvj htmldoc-<VER>-<CYGREL>-src.tar.bz2
+
+  cd /usr/src
+  cygport ./htmldoc-<VER>-<CYGREL>.cygport almostall
+
+This will create:
+  /usr/src/htmldoc-<VER>-<CYGREL>.tar.bz2
+  /usr/src/htmldoc-<VER>-<CYGREL>-src.tar.bz2
+
+Or use 'cygport htmldoc-<VER>-<CYGREL>.cygport prep' to get a patched 
+source directory 
+
+-------------------------------------------------------------------------------
+
+Files included in this package:
+
+
+-------------------------------------------------------------------------------
+
+Port Notes:
+
+----- version 1.9.x_r1514-1 (test) -----
+renamed package name from htmldoc-1.9.x-r1514 to htmldoc-1.9.x_r1514
+
+----- version 1.8.26-1 -----
+Initial release
+
+Builds out of the box.
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Cygwin port questions to the mailinglist <cygwin@cygwin.com>

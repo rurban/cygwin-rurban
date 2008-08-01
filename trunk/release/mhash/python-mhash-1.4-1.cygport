@@ -1,0 +1,14 @@
+# -*- sh -*-
+DESCRIPTION="mhash python binding"
+HOMEPAGE="http://labix.org/python-mhash"
+SRC_URI="http://labix.org/download/python-mhash/${PN}-${PV}.tar.gz"
+#CVS_URI="..."
+
+MAKEOPTS="${MAKEOPTS} -j1"
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+CFLAGS="${CFLAGS} -O3"
+LDFLAGS="${LDFLAGS} -Wl,--enable-auto-image-base -no-undefined"
+CYGCONF_ARGS=""
+
+#PKG_NAMES="${PN}"
+#PKG_HINTS="${PKG_NAMES}"

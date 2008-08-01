@@ -1,0 +1,34 @@
+Index: README_cygwin.pod
+===================================================================
+--- README_cygwin.pod	(revision 26958)
++++ README_cygwin.pod	(working copy)
+@@ -53,9 +53,7 @@
+ 
+ rename libparrot.dll to cygparrot.dll, create an interim libparrot.dll.a
+ 
+-for make test:
+-blib/lib must be added to the PATH, or link blib/lib/libparrot.dll to the parrot root.
+-  ln blib/lib/libparrot.dll libparrot.dll
++fix the blib/lib PATH issue
+ 
+ =item DLL versioning
+ 
+@@ -69,10 +67,6 @@
+ POSIX versions within get_path(), or add an optional version argument to 
+ loadlib for win32. Or just fix all the pir's.
+ 
+-=item Configure
+-
+-nmake detection probably wrong. replace by make.
+-
+ =item Features
+ 
+ Threads, Events, and Signals are missing. 
+@@ -93,6 +87,6 @@
+ 
+ =head1 HISTORY 
+ 
+-Last updated: 2 March 2008
++Last updated: 13 April 2008
+ 
+ =cut

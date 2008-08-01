@@ -1,0 +1,16 @@
+DESCRIPTION="Simple Web Indexing System for Humans: C++ version"
+HOMEPAGE="http://swishplusplus.sourceforge.net/"
+SRC_URI="http://puzzle.dl.sourceforge.net/sourceforge/swishplusplus/swishplusplus-${PV}.tar.gz"
+
+MAKEOPTS="-j1"
+
+src_compile() {
+   lndirs
+   cd ${B}
+   cygmake
+}
+
+src_install() {
+   cd ${B}
+   cyginstall WIN32=1
+}

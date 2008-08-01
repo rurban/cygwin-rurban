@@ -1,0 +1,674 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/contrib/dbase/Makefile src/postgresql-7.4.13/contrib/dbase/Makefile
+--- origsrc/postgresql-7.4.13/contrib/dbase/Makefile	2001-12-21 05:29:46.000000000 +0000
++++ src/postgresql-7.4.13/contrib/dbase/Makefile	2006-08-19 14:43:33.921875000 +0000
+@@ -10,10 +10,10 @@
+ PG_LIBS = $(libpq)
+ 
+ # Uncomment this to provide charset translation
+-#PG_CPPFLAGS += -DHAVE_ICONV_H
++PG_CPPFLAGS += -DHAVE_ICONV_H
+ # You might need to uncomment this too, if libiconv is a separate
+ # library on your platform
+-#PG_LIBS += -liconv
++PG_LIBS += -liconv 
+ 
+ DOCS = README.dbf2pg
+ MAN = dbf2pg.1			# XXX not implemented
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/contrib/dbmirror/DBMirror.pl src/postgresql-7.4.13/contrib/dbmirror/DBMirror.pl
+--- origsrc/postgresql-7.4.13/contrib/dbmirror/DBMirror.pl	2006-05-21 19:57:06.000000000 +0000
++++ src/postgresql-7.4.13/contrib/dbmirror/DBMirror.pl	2006-08-19 14:43:33.921875000 +0000
+@@ -852,7 +852,8 @@
+ 	$matchString = $1;
+ 	$value .= substr $matchString,0,length($matchString)-1;
+ 
+-	if($matchString =~ m/(\'$)/s) {
++	# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=375744
++	if($matchString =~ m/(\'$)/s and (substr $dataField,length($matchString),1) ne "'") {
+ 	  # $1 runs to the end of the field value.
+ 	    $dataField = substr $dataField,length($matchString)+1;
+ 	    last;
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/doc/FAQ_MSWIN src/postgresql-7.4.13/doc/FAQ_MSWIN
+--- origsrc/postgresql-7.4.13/doc/FAQ_MSWIN	2004-03-05 19:57:20.000000000 +0000
++++ src/postgresql-7.4.13/doc/FAQ_MSWIN	2006-08-19 14:43:33.937500000 +0000
+@@ -1,10 +1,21 @@
+-How to install PostgreSQL on Windows
+-====================================
++How to install PostgreSQL on Windows (Cygwin)
++=============================================
+ 
+-$Date: 2004/03/05 19:57:20 $
++$Date: 2006-08-13 16:42:34 rurban $
+ 
+-PostgreSQL requires the appropriate subset of Cygwin DLLs to be
+-installed in order that it functions under Windows.
++It's very easy to install, but we don't recommend using the
++cygwin version of PostgreSQL for "Production" quality databases, nor
++high load levels. The cygwin emulation layer introduces a few
++limitations, namely the lack of being able to tune PostgreSQL to the
++same performance levels of a Unix system or the new Native WinNT built, 
++and we're also not sure how well the data integrity features of 
++Windows + cygwin + PostgreSQL work in the event of a system crash, 
++hardware failure, etc.
++
++It should be suitable for development usage however.
++
++PostgreSQL requires a working Cygwin installation with cygserver 
++running as service. ipc-daemon2 may not be used anymore!
+ 
+ This document assumes that you do not have Cygwin already installed
+ on your system.  If that is not the case, then you will need to
+@@ -21,78 +32,257 @@
+     appropriately for your configuration.
+ 
+     When you come to the point of choosing which packages to install,
+-    expand the 'Database' section and click 'Skip' next to PostgreSQL
+-    to change it to the latest version of PostgreSQL available for
++    expand the 'Database' section and click 'Skip' next to PostgreSQL7.4
++    to change it to the latest version of PostgreSQL7.4 available for
+     Cygwin.
++    Note that the current PostgreSQL version is 8.1.x, but the older 
++    PostgreSQL7.4 package can be installed side-by-side together with the 
++    current 8.x version.
+ 
+ 3.  Once the download and install process is complete, open a Cygwin
+     shell and do the following for a basic installation:
+ 
+-    3a.  Start ipc-daemon2 for shared memory support.  To do this,
+-         enter the command "ipc-daemon2 &".  This program
+-         needs to be running anytime you start the PostgreSQL server
+-         (postmaster) or initialize a database (initdb).
++    There's a helper in /etc/rc.d/init.d/postgresql7.4
++
++3a. For the impatient: install as service (hard)
++
++    Requires: sysbash, Google for "cygwin sysbash"
++    i.e. bash running as user SYSTEM
++
++    # save old database (optional)
++    PATH=/usr/lib/postgresql7.4/bin:$PATH
++    export PATH
++    pg_dumpall -g /tmp/$$pgdump-globals.sql
++    pg_dumpall > /tmp/$$pgdump.sql
++    # adjust the settings in /etc/rc.d/init.d/postgresql7.4
++    nano /etc/rc.d/init.d/postgresql7.4
++
++    sysbash # /etc/rc.d/init.d/postgresql7.4 initdb
++
++    /etc/rc.d/init.d/postgresql7.4 install
++    /etc/rc.d/init.d/postgresql7.4 start
++
++3b. For the impatient: install as user (easy)
++
++    PATH=/usr/lib/postgresql7.4/bin:$PATH
++    export PATH
++    cygrunsrv -S cygserver
++    initdb -D /usr/share/postgresql7.4/data
++    pg_ctl start -D /usr/share/postgresql7.4/data -l /var/log/postgresql7.4.log
++    createdb
++    psql
++
++3c. Verbose steps
++
++There are two types of Cygwin PostgreSQL installations -- basic and NT
++services.  The basic installation is good for casual use on any version of
++Windows, but required on Windows 9x/Me.  The NT services installation is
++good for a more production environment, but is only available on Windows
++NT/2000/XP.  Note that this installation type is very similar to the normal
++Unix installation with just some Cygwin/Windows variations.  You should
++choose the type which best meets your needs and/or is constrained by your
++platform.
++
++Regardless of the installation type, the first step is to add "server" to
++your CYGWIN environment variable setting and start cygserver.  See the
++cygserver README:
++
++    /usr/share/doc/cygwin/cygserver.README
++
++for more details.  If the CYGWIN variable is not set correctly and/or
++cygserver is not running then initdb and postmaster will fail to run
++properly.
++
++The following is the basic Cygwin PostgreSQL installation procedure (skip if
++using the NT services installation below):
++
++1. Install and configure cygserver:
++
++    $ cygserver-config
++
++2. Start cygserver:
++
++    $ cygserver &
++
++3. Initialize PostgreSQL:
++
++    $ /usr/lib/postgresql7.4/bin/initdb
++
++4. Start the PostgreSQL postmaster:
++
++    $ /usr/lib/postgresql7.4/bin/postmaster &
++
++5. Connect to PostgreSQL:
++
++    $ /usr/lib/postgresql7.4/bin/psql template1
++
++The following is the NT services Cygwin PostgreSQL installation procedure
++(with footnotes designated by "[n]"):
++
++1. Install and configure cygserver as a NT service:
++
++    # cygserver-config
++
++2. Create the "postgres" user account:
++
++    # net user postgres $password /add /fullname:postgres /comment:'PostgreSQL user account' /homedir:"$(cygpath -w /home/postgres)" # [11]
++    # mkpasswd -l -u postgres >>/etc/passwd
++
++3. Grant the "postgres" user the "Log on as a service" user right:
++
++    # cmd /c secpol.msc # [3] [4] [5] [12]
++
++4. Install postgresql7.4 as a NT service:
++
++    # cygrunsrv --install postgresql7.4 --path /usr/lib/postgresql7.4/bin/postmaster --args "-D /usr/share/postgresql7.4/data -i" --dep cygserver --termsig INT --user postgres --shutdown # [6]
++
++5. Create the PostgreSQL data directory:
++
++    # mkdir -p /usr/share/postgresql7.4/data
++
++6. Change ownership of the PostgreSQL data directory:
++
++    # chown postgres /usr/share/postgresql7.4/data
++
++7. Start cygserver:
++
++    # cygrunsrv -S cygserver # [7]
++
++8. Initialize PostgreSQL (*when running under the "postgres" account*):
++
++    $ /usr/lib/postgresql7.4/bin/initdb -D /usr/share/postgresql7.4/data
++
++9. Start postmaster:
++
++    # cygrunsrv -S postgresql7.4 # [7]
++
++10. Verify postmaster is running:
++
++    # cygrunsrv -Q postgresql7.4  [13]
++
++11. Connect to PostgreSQL:
++
++    # /usr/lib/postgresql7.4/bin/psql -U postgres template1 # [8] [9]
++
++The following are the notes to the above:
++
++[1] The "#" prompt indicates running as a user which is a member of the
++    Local Administrators group under bash.
++[2] The "$" prompt indicates running as the "postgres" user under bash.
++    Log in as "postgres" or use ssh to emulate Unix's "su" command.
++[3] Sorry, but I don't know of a generally available command line way of
++    setting user rights.
++[4] On Windows 2000 and XP Pro, this starts the "Local Security Settings"
++    applet.  On Windows NT 4.0, start User Manager, select Policies, and then
++    select User Rights...
++[5] See http://support.microsoft.com/default.aspx?scid=KB;en-us;q259733 for
++    a Microsoft KB article explaining how to configure user rights.
++[6] Clean postmaster shutdown will only work with a post Cygwin 1.3.2
++    snapshot from 2001-Jul-28 or later.
++[7] Cygwin's bin directory (e.g., C:\Cygwin\bin) must be added to the
++    Windows NT/2000's system PATH and the machine rebooted for the SCM
++    to find cygwin1.dll.
++[8] Actually, psql can run under any user account.
++[9] One can use PostgreSQL's createuser command or set PGUSER to obviate
++    the need to specify "-U postgres" on the psql command line.
++[11] $password is the password for the postgres user account.
++[12] On Windows XP Home, there is no built in way to assign user rights --
++     use editrights instead:
++
++         $ editrights -u postgres -a SeServiceLogonRight
++
++[13] If postmaster fails to start, then examine /var/log/postmaster.log
++     and/or the NT Event Log.
++
++Building from Source:
++
++As configured, the PostgreSQL source builds OOTB under Cygwin.
++Some build patches are needed to support side-by-side 
++installations together with 8.x.
++
++This distribution has been configured as follows: 
++  Note: P=postgresql7.4-<VER>-<REL>, PN=postgresql7.4
++
++  ./configure --enable-integer-datetimes --enable-nls --enable-multibyte \
++    --with-python --with-perl --without-java --with-CXX --with-openssl \
++    --with-pgport=15432 \
++    --prefix=/usr --bindir=/usr/lib/${PN}/bin --libdir=/usr/lib/${PN}/lib \
++    --libexecdir=/usr/lib/${PN}/bin --includedir=/usr/include/postgresql/7.4 \
++    --datadir=/usr/share/${PN}/data --sysconfdir=/etc/${PN} \
++    --docdir=/usr/share/doc/${P} --mandir=/usr/share/${PN}/man
+ 
+-    3b.  Use the initdb command to create a new database cluster.  An
+-         example command would be:
++See postgresql7.4-<VER>-<REL>.cygport in the source package for 
++the exact build recipe for configuring, making, and packaging this distribution.
+ 
+-            initdb -D /usr/local/pgsql/data -W -E LATIN1
++Test:
+ 
+-         Which will create a cluster in the /usr/local/pgsql/data
+-         directory, will prompt for a superuser password and will
+-         set the default database encoding to LATIN1.
++On NT/2000/XP, Cygwin PostgreSQL passes all other regression tests
++with the serial_schedule and parallel_schedule. postgresql-7.4 will
++work with typically 25 max_connections determined automatically by
++initdb, maximal with 63. This is an internal cygwin limitation.
++7.4 is slower than 8.1 and not recommended for production!
+ 
+-    3c.  Start up the postmaster.  Use a command similar to the
+-         following:
++On 9X/ME, it has been reported that Cygwin PostgreSQL hangs at random
++places during the regression test.  Unfortunately, at the time of this
++writing, no one has tracked down the root cause of these hangs. 
++(cygserver most likely)
+ 
+-            postmaster -D /usr/local/pgsql/data
++Issues:
+ 
+-         This will start the postmaster, and if successful you will
+-         see some initial log entries, and an entry "LOG: database
+-         system is ready".
++1. make check can generate spurious regression test failures due to
++overflowing the listen() backlog queue which generates connection
++refused errors.  One can workaround this (Winsock) limitation, by running
++the regression test as follows:
+ 
+-4.  You are now running a PostgreSQL server on your Windows machine.
++    $ make MAX_CONNECTIONS=10 check
+ 
+-5.  It is possible to install ipc-daemon2 and the postmaster as
+-    Windows NT services.  For information on how to do this, please
+-    refer to the README document included with Cygwin PostgreSQL.  It
+-    is installed in the /usr/share/doc/Cygwin directory.
++2. Cygwin PostgreSQL only supports the "C" locale because Cygwin itself
++does not fully support locales.  This implies the LANG environment variable
++must be unset or set to "C". Otherwise, initdb will fail.
+ 
+-Building from source
+---------------------
++3. Cygwin PostgreSQL can fail to start or not function properly if certain
++files and directories have incorrect permissions.  The following usually
++solves these kinds of problems:
+ 
+-There are some points that are only relevant if you are building Cygwin
+-PostgreSQL from source:
++    $ chmod a+rwx /tmp
++    $ chmod a+rx /usr/bin /usr/bin/*
++    $ chmod a+rw /var/log # could adversely affect other daemons
+ 
+-1.  Set your path to use the Cygwin bin directory before the Windows
+-    utilities.  This will help prevent problems with compilation.
++4. Problems starting as service?  
++This is a common problem typically related to wrong file permissions 
++to the PGDATA dir /usr/share/postgresql7.4/data, 
++the pidfile /usr/share/postgresql7.4/postgresql.pid and 
++the logfile /var/log/postgresql7.4.log.
++See /etc/rc.d/init.d/postgresql7.4, the logfile, start a sysbash 
++and examine the permissions there.
++Google for "cygwin sysbash"
+ 
+-2.  Proceed according to the INSTALL file (i.e., ./configure; make; etc.)
+-    noting the following Cygwin specific differences:
++5. It may be necessary to increase cygserver's system wide maximum number of
++semaphores (SEMMNS).  This change is affected by editing /etc/cygserver.conf,
++setting the following parameter:
+ 
+-        o The GNU make command is called "make" not "gmake".
+-        o The adduser command is not supported -- use the appropriate
+-          user management application on Windows NT, 2000, or XP.
+-          Otherwise, skip this step.
+-        o The su command is not supported -- use ssh to simulate su
+-          on Windows NT, 2000, or XP. Otherwise, skip this step.
++    kern.ipc.semmns 100
+ 
+-    Alternatively, proceed according to the README file supplied with
+-    the Cygwin PostgreSQL package.
++and restarting cygserver.  Otherwise, PostgreSQL can fail to operate properly.
++For example, initdb will fail if postmaster is already running.
+ 
+-Known issues
+-------------
++6. For correct a service shutdown on system shutdown it is recommended to 
++use the settings from /etc/rc.d/init.d/postgresql7.4 
++i.e. adding --termsig INT --shutdown to cygrunsrv --install.
++The TERM signal does a smart shutodown, which waits for all client to disconnect.
++The INT signal does a forced shutdown, which closes all client connections.
+ 
+-1.  Cygwin's AF_UNIX sockets are really implemented as AF_INET sockets
+-    so they are inherently insecure.
++7. Cygwin's AF_UNIX sockets are really implemented as AF_INET sockets
++so they are inherently insecure.
+ 
+-2.  "make check" can generate spurious regression test failures due to
+-    overflowing the listen() backlog queue which causes connection
+-    refused errors or hangs. You can limit the number of connections
+-    using the MAX_CONNECTIONS option thus:
+ 
+-       make MAX_CONNECTIONS=5 check
++Cygwin port maintained now by: Reini Urban <rurban@x-ray.at>, 
++taken over from Jason Tishler.
++Please report problems, suggestions, etc. dependent on their nature to one of
++the following:
+ 
+-    (On some systems you can have up to about 10 simultaneous connections).
++    cygwin@cygwin.com
++    pgsql-cygwin@postgresql.org
+ 
+-Problem reports can be sent to pgsql-cygwin@postgresql.org.
++--
++Reini Urban - cygwin maintainer for postgresql7.4 and 8.x
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/Makefile.global.in src/postgresql-7.4.13/src/Makefile.global.in
+--- origsrc/postgresql-7.4.13/src/Makefile.global.in	2003-12-19 23:29:29.000000000 +0000
++++ src/postgresql-7.4.13/src/Makefile.global.in	2006-08-19 14:43:33.937500000 +0000
+@@ -65,39 +65,39 @@
+ libexecdir := @libexecdir@
+ ifeq "$(findstring pgsql, $(libexecdir))" ""
+ ifeq "$(findstring postgres, $(libexecdir))" ""
+-override libexecdir := $(libexecdir)/postgresql
++override libexecdir := $(libexecdir)/postgresql7.4
+ endif
+ endif
+ 
+ datadir := @datadir@
+ ifeq "$(findstring pgsql, $(datadir))" ""
+ ifeq "$(findstring postgres, $(datadir))" ""
+-override datadir := $(datadir)/postgresql
++override datadir := $(datadir)/postgresql7.4
+ endif
+ endif
+ 
+ sysconfdir := @sysconfdir@
+ ifeq "$(findstring pgsql, $(sysconfdir))" ""
+ ifeq "$(findstring postgres, $(sysconfdir))" ""
+-override sysconfdir := $(sysconfdir)/postgresql
++override sysconfdir := $(sysconfdir)/postgresql7.4
+ endif
+ endif
+ 
+-libdir := @libdir@
++libdir := @prefix@/lib/postgresql7.4/lib
+ pkglibdir = $(libdir)
+-ifeq "$(findstring pgsql, $(pkglibdir))" ""
+-ifeq "$(findstring postgres, $(pkglibdir))" ""
+-override pkglibdir := $(pkglibdir)/postgresql
+-endif
+-endif
++#ifeq "$(findstring pgsql, $(pkglibdir))" ""
++#ifeq "$(findstring postgres, $(pkglibdir))" ""
++#override pkglibdir := $(pkglibdir)/postgresql7.4/lib
++#endif
++#endif
+ 
+ includedir := @includedir@
+ pkgincludedir = $(includedir)
+-ifeq "$(findstring pgsql, $(pkgincludedir))" ""
+-ifeq "$(findstring postgres, $(pkgincludedir))" ""
+-override pkgincludedir := $(pkgincludedir)/postgresql
+-endif
+-endif
++#ifeq "$(findstring pgsql, $(pkgincludedir))" ""
++#ifeq "$(findstring postgres, $(pkgincludedir))" ""
++#override pkgincludedir := $(pkgincludedir)/postgresql
++#endif
++#endif
+ includedir_server = $(pkgincludedir)/server
+ includedir_internal = $(pkgincludedir)/internal
+ 
+@@ -107,7 +107,7 @@
+ docdir := @docdir@
+ ifeq "$(findstring pgsql, $(docdir))" ""
+ ifeq "$(findstring postgres, $(docdir))" ""
+-override docdir := $(docdir)/postgresql
++override docdir := $(docdir)/postgresql7.4
+ endif
+ endif
+ 
+@@ -345,7 +345,7 @@
+ LIBOBJS = @LIBOBJS@ path.o sprompt.o thread.o
+ 
+ ifneq (,$(LIBOBJS))
+-LIBS += -lpgport
++LIBS := -lpgport $(LIBS)
+ LDFLAGS := -L$(top_builddir)/src/port $(LDFLAGS)
+ endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/backend/main/main.c src/postgresql-7.4.13/src/backend/main/main.c
+--- origsrc/postgresql-7.4.13/src/backend/main/main.c	2006-01-05 00:55:23.000000000 +0000
++++ src/postgresql-7.4.13/src/backend/main/main.c	2006-08-19 14:43:33.953125000 +0000
+@@ -153,8 +153,8 @@
+ 	unsetenv("LC_ALL");
+ 
+ #ifdef ENABLE_NLS
+-	bindtextdomain("postgres", LOCALEDIR);
+-	textdomain("postgres");
++	bindtextdomain("postgres-7.4", LOCALEDIR);
++	textdomain("postgres-7.4");
+ #endif
+ 
+ 	/*
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/pg_controldata/pg_controldata.c src/postgresql-7.4.13/src/bin/pg_controldata/pg_controldata.c
+--- origsrc/postgresql-7.4.13/src/bin/pg_controldata/pg_controldata.c	2003-08-04 00:43:27.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/pg_controldata/pg_controldata.c	2006-08-19 14:43:33.953125000 +0000
+@@ -78,8 +78,8 @@
+ 
+ 	setlocale(LC_ALL, "");
+ #ifdef ENABLE_NLS
+-	bindtextdomain("pg_controldata", LOCALEDIR);
+-	textdomain("pg_controldata");
++	bindtextdomain("pg_controldata-7.4", LOCALEDIR);
++	textdomain("pg_controldata-7.4");
+ #endif
+ 
+ 	progname = get_progname(argv[0]);
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_dump.c src/postgresql-7.4.13/src/bin/pg_dump/pg_dump.c
+--- origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_dump.c	2006-05-21 19:57:07.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/pg_dump/pg_dump.c	2006-08-19 14:43:33.968750000 +0000
+@@ -223,8 +223,8 @@
+ 
+ #ifdef ENABLE_NLS
+ 	setlocale(LC_ALL, "");
+-	bindtextdomain("pg_dump", LOCALEDIR);
+-	textdomain("pg_dump");
++	bindtextdomain("pg_dump-7.4", LOCALEDIR);
++	textdomain("pg_dump-7.4");
+ #endif
+ 
+ 	g_verbose = false;
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_dumpall.c src/postgresql-7.4.13/src/bin/pg_dump/pg_dumpall.c
+--- origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_dumpall.c	2004-01-22 19:09:48.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/pg_dump/pg_dumpall.c	2006-08-19 14:43:33.984375000 +0000
+@@ -101,8 +101,8 @@
+ 
+ #ifdef ENABLE_NLS
+ 	setlocale(LC_ALL, "");
+-	bindtextdomain("pg_dump", LOCALEDIR);
+-	textdomain("pg_dump");
++	bindtextdomain("pg_dump-7.4", LOCALEDIR);
++	textdomain("pg_dump-7.4");
+ #endif
+ 
+ 	progname = get_progname(argv[0]);
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_restore.c src/postgresql-7.4.13/src/bin/pg_dump/pg_restore.c
+--- origsrc/postgresql-7.4.13/src/bin/pg_dump/pg_restore.c	2005-04-30 08:00:55.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/pg_dump/pg_restore.c	2006-08-19 14:43:33.984375000 +0000
+@@ -125,8 +125,8 @@
+ 
+ #ifdef ENABLE_NLS
+ 	setlocale(LC_ALL, "");
+-	bindtextdomain("pg_dump", LOCALEDIR);
+-	textdomain("pg_dump");
++	bindtextdomain("pg_dump-7.4", LOCALEDIR);
++	textdomain("pg_dump-7.4");
+ #endif
+ 
+ 	opts = NewRestoreOptions();
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/pg_resetxlog/pg_resetxlog.c src/postgresql-7.4.13/src/bin/pg_resetxlog/pg_resetxlog.c
+--- origsrc/postgresql-7.4.13/src/bin/pg_resetxlog/pg_resetxlog.c	2003-09-07 03:43:53.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/pg_resetxlog/pg_resetxlog.c	2006-08-19 14:43:34.000000000 +0000
+@@ -102,8 +102,8 @@
+ 
+ 	setlocale(LC_ALL, "");
+ #ifdef ENABLE_NLS
+-	bindtextdomain("pg_resetxlog", LOCALEDIR);
+-	textdomain("pg_resetxlog");
++	bindtextdomain("pg_resetxlog-7.4", LOCALEDIR);
++	textdomain("pg_resetxlog-7.4");
+ #endif
+ 
+ 	progname = get_progname(argv[0]);
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/psql/startup.c src/postgresql-7.4.13/src/bin/psql/startup.c
+--- origsrc/postgresql-7.4.13/src/bin/psql/startup.c	2003-09-29 18:21:33.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/psql/startup.c	2006-08-19 14:43:34.000000000 +0000
+@@ -102,8 +102,8 @@
+ 
+ 	setlocale(LC_ALL, "");
+ #ifdef ENABLE_NLS
+-	bindtextdomain("psql", LOCALEDIR);
+-	textdomain("psql");
++	bindtextdomain("psql-7.4", LOCALEDIR);
++	textdomain("psql-7.4");
+ #endif
+ 
+ 	pset.progname = get_progname(argv[0]);
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/bin/scripts/common.c src/postgresql-7.4.13/src/bin/scripts/common.c
+--- origsrc/postgresql-7.4.13/src/bin/scripts/common.c	2003-09-07 03:43:55.000000000 +0000
++++ src/postgresql-7.4.13/src/bin/scripts/common.c	2006-08-19 14:43:34.000000000 +0000
+@@ -50,8 +50,8 @@
+ {
+ #ifdef ENABLE_NLS
+ 	setlocale(LC_ALL, "");
+-	bindtextdomain("pgscripts", LOCALEDIR);
+-	textdomain("pgscripts");
++	bindtextdomain("pgscripts-7.4", LOCALEDIR);
++	textdomain("pgscripts-7.4");
+ #endif
+ }
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/interfaces/jdbc/Makefile src/postgresql-7.4.13/src/interfaces/jdbc/Makefile
+--- origsrc/postgresql-7.4.13/src/interfaces/jdbc/Makefile	2003-02-12 06:13:04.000000000 +0000
++++ src/postgresql-7.4.13/src/interfaces/jdbc/Makefile	2006-08-19 14:43:34.015625000 +0000
+@@ -14,6 +14,7 @@
+ 
+ majorversion:= $(shell echo $(VERSION) | sed 's/^\([0-9][0-9]*\)\..*$$/\1/')
+ minorversion:= $(shell echo $(VERSION) | sed 's/^[0-9][0-9]*\.\([0-9][0-9]*\).*$$/\1/')
++build_xml   := $(shell cygpath -w "$(srcdir)/build.xml")
+ 
+ build.properties: $(top_builddir)/src/Makefile.global
+ 	@echo "# This file was created by 'make build.properties'." > build.properties
+@@ -24,21 +25,22 @@
+ 	@echo enable_debug=$(enable_debug) >> build.properties
+ 
+ all: build.properties
+-	$(ANT) -buildfile $(srcdir)/build.xml all
++	cp build.properties $(srcdir)/build.properties
++	$(ANT) -buildfile "$(build_xml)" all
+ 
+ install: installdirs build.properties
+-	$(ANT) -buildfile $(srcdir)/build.xml install \
++	$(ANT) -buildfile "$(build_xml)" install \
+ 	  -Dinstall.directory=$(javadir)
+ 
+ installdirs:
+ 	$(mkinstalldirs) $(javadir) 
+ 
+ uninstall:
+-	$(ANT) -buildfile $(srcdir)/build.xml uninstall \
++	$(ANT) -buildfile "$(build_xml)" uninstall \
+ 	  -Dinstall.directory=$(javadir)
+ 
+ clean distclean maintainer-clean:
+-	$(ANT) -buildfile $(srcdir)/build.xml clean_all
++	$(ANT) -buildfile "$(build_xml)" clean_all
+ 
+ check: build.properties
+-	$(ANT) -buildfile $(srcdir)/build.xml test
++	$(ANT) -buildfile "$(build_xml)" test
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/interfaces/jdbc/build.properties src/postgresql-7.4.13/src/interfaces/jdbc/build.properties
+--- origsrc/postgresql-7.4.13/src/interfaces/jdbc/build.properties	1970-01-01 00:00:00.000000000 +0000
++++ src/postgresql-7.4.13/src/interfaces/jdbc/build.properties	2006-08-19 15:02:07.484375000 +0000
+@@ -0,0 +1,6 @@
++# This file was created by 'make build.properties'.
++major=7
++minor=4
++fullversion=7.4.13
++def_pgport=15432
++enable_debug=no
+Files origsrc/postgresql-7.4.13/src/interfaces/jdbc/jars/postgresql-examples.jar and src/postgresql-7.4.13/src/interfaces/jdbc/jars/postgresql-examples.jar differ
+Files origsrc/postgresql-7.4.13/src/interfaces/jdbc/jars/postgresql.jar and src/postgresql-7.4.13/src/interfaces/jdbc/jars/postgresql.jar differ
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/interfaces/libpq/fe-misc.c src/postgresql-7.4.13/src/interfaces/libpq/fe-misc.c
+--- origsrc/postgresql-7.4.13/src/interfaces/libpq/fe-misc.c	2005-07-08 15:25:19.000000000 +0000
++++ src/postgresql-7.4.13/src/interfaces/libpq/fe-misc.c	2006-08-19 14:43:34.031250000 +0000
+@@ -1124,7 +1124,7 @@
+ 		int		save_errno = errno;
+ 
+ 		already_bound = 1;
+-		bindtextdomain("libpq", LOCALEDIR);
++		bindtextdomain("libpq-7.4", LOCALEDIR);
+ #ifdef WIN32
+ 		SetLastError(save_errno);
+ #else
+@@ -1132,7 +1132,7 @@
+ #endif
+ 	}
+ 
+-	return dgettext("libpq", msgid);
++	return dgettext("libpq-7.4", msgid);
+ }
+ 
+ #endif   /* ENABLE_NLS */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/nls-global.mk src/postgresql-7.4.13/src/nls-global.mk
+--- origsrc/postgresql-7.4.13/src/nls-global.mk	2003-09-14 22:40:38.000000000 +0000
++++ src/postgresql-7.4.13/src/nls-global.mk	2006-08-19 14:43:34.031250000 +0000
+@@ -65,7 +65,7 @@
+ install-po: all-po installdirs-po
+ ifneq (,$(LANGUAGES))
+ 	for lang in $(LANGUAGES); do \
+-	  $(INSTALL_DATA) po/$$lang.mo $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$(CATALOG_NAME).mo || exit 1; \
++	  $(INSTALL_DATA) po/$$lang.mo $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$(CATALOG_NAME)-7.4.mo || exit 1; \
+ 	done
+ endif
+ 
+@@ -73,7 +73,7 @@
+ 	$(mkinstalldirs) $(foreach lang, $(LANGUAGES), $(DESTDIR)$(localedir)/$(lang)/LC_MESSAGES)
+ 
+ uninstall-po:
+-	rm -f $(foreach lang, $(LANGUAGES), $(DESTDIR)$(localedir)/$(lang)/LC_MESSAGES/$(CATALOG_NAME).mo)
++	rm -f $(foreach lang, $(LANGUAGES), $(DESTDIR)$(localedir)/$(lang)/LC_MESSAGES/$(CATALOG_NAME)-7.4.mo)
+ 
+ 
+ clean-po:
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/pl/tcl/Makefile src/postgresql-7.4.13/src/pl/tcl/Makefile
+--- origsrc/postgresql-7.4.13/src/pl/tcl/Makefile	2004-01-21 19:25:11.000000000 +0000
++++ src/postgresql-7.4.13/src/pl/tcl/Makefile	2006-08-19 14:43:34.031250000 +0000
+@@ -29,7 +29,7 @@
+ endif
+ 
+ 
+-SHLIB_LINK = $(BE_DLLLIBS) $(TCL_LIB_SPEC) $(TCL_LIBS) -lc
++SHLIB_LINK = $(TCL_LIB_SPEC) $(TCL_LIBS) $(BE_DLLLIBS)
+ 
+ NAME = pltcl
+ SO_MAJOR_VERSION = 2
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x '*.java' -x '*.class' origsrc/postgresql-7.4.13/src/pl/tcl/pltcl.c src/postgresql-7.4.13/src/pl/tcl/pltcl.c
+--- origsrc/postgresql-7.4.13/src/pl/tcl/pltcl.c	2004-01-24 23:06:41.000000000 +0000
++++ src/postgresql-7.4.13/src/pl/tcl/pltcl.c	2006-08-19 14:43:34.046875000 +0000
+@@ -213,6 +213,11 @@
+ 	if (pltcl_pm_init_done)
+ 		return;
+ 
++#ifdef WIN32
++	/* Required on win32 to prevent error loading init.tcl */
++	Tcl_FindExecutable("");
++#endif
++
+ 	/************************************************************
+ 	 * Create the dummy hold interpreter to prevent close of
+ 	 * stdout and stderr on DeleteInterp

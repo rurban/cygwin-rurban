@@ -1,0 +1,7 @@
+DESCRIPTION="GNU portable threads"
+HOMEPAGE="http://www.gnu.org/software/pth/"
+SRC_URI="ftp://ftp.gnu.org/gnu/pth/${P}.tar.gz"
+
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+MAKEOPTS="${MAKEOPTS} -j1"
+DOCS="HISTORY PORTING SUPPORT TESTS USERS pthread.ps rse-pmt.ps"
