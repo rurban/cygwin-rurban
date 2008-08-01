@@ -1,0 +1,882 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/ChangeLog src/libtextcat-2.2/ChangeLog
+--- origsrc/libtextcat-2.2/ChangeLog	2003-12-05 16:53:15.000000000 +0000
++++ src/libtextcat-2.2/ChangeLog	2007-08-13 16:29:00.531250000 +0000
+@@ -1,3 +1,12 @@
++2007-08-13 13:23:05 Reini Urban (rurban@x-ray.at)
++	* Changed layout (automake): default /etc/libtextcat.conf and
++	  /usr/lib/libtextcat/*.lm
++	* Improved sample binary testtextcat, installed as /usr/bin/textcat
++
++2006-08-17 17:55:08 Reini Urban (rurban@x-ray.at)
++	* Various c++ fixes: remove extern, warp around extern "C" { },
++	  proper c++ casts
++	* Install textcat.h
+ 
+ Fri Dec  5 2003 Frank Scheelen (fscheelen@wise-guys.nl)
+ 	* Released 2.2
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/Makefile.am src/libtextcat-2.2/Makefile.am
+--- origsrc/libtextcat-2.2/Makefile.am	2003-05-22 10:52:47.000000000 +0000
++++ src/libtextcat-2.2/Makefile.am	2007-08-13 16:29:00.156250000 +0000
+@@ -1,5 +1,6 @@
+ AUTOMAKE_OPTIONS = 1.4 foreign
+ 
+-EXTRA_DIST = ChangeLog LICENSE README TODO langclass
++docdir   = $(datadir)/doc/$(distdir)
++doc_DATA = ChangeLog LICENSE README TODO
+ 
+-SUBDIRS = src # langclass
++SUBDIRS = src langclass
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/configure.ac src/libtextcat-2.2/configure.ac
+--- origsrc/libtextcat-2.2/configure.ac	2003-05-22 10:52:47.000000000 +0000
++++ src/libtextcat-2.2/configure.ac	2007-08-13 16:29:00.156250000 +0000
+@@ -1,19 +1,28 @@
+-dnl Process this file with autoconf to produce a configure script.
+-AC_INIT(libtextcat, 2.2)
++#                                               -*- Autoconf -*-
++# Process this file with autoconf to produce a configure script.
++
++AC_PREREQ(2.59)
++AC_INIT(libtextcat, 2.2, cygwin@cygwin.com)
+ AC_CANONICAL_TARGET
+ AM_INIT_AUTOMAKE
+-AM_CONFIG_HEADER([src/config.h])
++AC_CONFIG_SRCDIR([src/common.c])
++AC_CONFIG_HEADER([config.h])
+ 
+-dnl Checks for programs.
++# Checks for programs.
++AC_PROG_CXX
+ AC_PROG_CC
++AC_PROG_CPP
+ AC_PROG_INSTALL
+ AC_PROG_LN_S
+ AC_PROG_LIBTOOL
++AC_PROG_MAKE_SET
++
++# Checks for libraries.
+ 
+-dnl Checks for headers
++# Checks for header files.
+ AC_FUNC_ALLOCA
+ AC_HEADER_STDC
+-AC_CHECK_HEADERS([inttypes.h limits.h stdlib.h string.h sys/time.h])
++AC_CHECK_HEADERS([inttypes.h limits.h stdint.h stdlib.h string.h strings.h sys/time.h])
+ 
+ dnl Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST
+@@ -22,12 +31,14 @@
+ AC_HEADER_TIME
+ AC_STRUCT_TM
+ 
+-dnl Checks for functions
++# Checks for library functions.
+ AC_FUNC_MALLOC
+ AC_FUNC_REALLOC
+ AC_FUNC_VPRINTF
+-AC_CHECK_FUNCS([gettimeofday memset strchr strdup strpbrk])
+-
+-dnl Checks for libraries
++AC_CHECK_FUNCS([gettimeofday strchr strdup strpbrk])
+ 
+-AC_OUTPUT(Makefile src/Makefile)
++AC_CONFIG_FILES([Makefile
++                 src/Makefile
++                 langclass/Makefile
++                 langclass/ShortTexts/Makefile])
++AC_OUTPUT
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/langclass/Makefile.am src/libtextcat-2.2/langclass/Makefile.am
+--- origsrc/libtextcat-2.2/langclass/Makefile.am	1970-01-01 00:00:00.000000000 +0000
++++ src/libtextcat-2.2/langclass/Makefile.am	2007-08-13 16:29:00.171875000 +0000
+@@ -0,0 +1,14 @@
++langclassdir = $(pkgdatadir)
++confdir = $(sysconfdir)
++conf_DATA = libtextcat.conf
++srcLM = $(wildcard $(srcdir)/LM/*.lm)
++langclass_DATA = $(notdir $(srcLM))
++
++libtextcat.conf: $(srcdir)/conf.txt
++	cat $(srcdir)/conf.txt | sed -es,^LM/,$(langclassdir)/, > $@
++
++$(langclass_DATA) : $(srcLM)
++	cp $(srcLM) .
++
++CLEANFILES = $(langclass_DATA) libtextcat.conf
++SUBDIRS = ShortTexts
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/langclass/ShortTexts/Makefile.am src/libtextcat-2.2/langclass/ShortTexts/Makefile.am
+--- origsrc/libtextcat-2.2/langclass/ShortTexts/Makefile.am	1970-01-01 00:00:00.000000000 +0000
++++ src/libtextcat-2.2/langclass/ShortTexts/Makefile.am	2007-08-13 16:29:00.203125000 +0000
+@@ -0,0 +1,4 @@
++shorttextsdir = $(pkgdatadir)/ShortTexts
++shorttexts_DATA = $(notdir $(wildcard $(srcdir)/*.txt))
++
++CLEANFILES = $(shorttexts_DATA)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/langclass/conf.txt src/libtextcat-2.2/langclass/conf.txt
+--- origsrc/libtextcat-2.2/langclass/conf.txt	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/langclass/conf.txt	2007-08-13 16:29:00.218750000 +0000
+@@ -11,6 +11,11 @@
+ # improves performance, because this will raise the threshold for
+ # likely candidates more quickly.
+ #
++LM/english.lm			english
++LM/german.lm			german
++LM/spanish.lm			spanish
++LM/french.lm			french
++LM/italian.lm			italian
+ LM/afrikaans.lm			afrikaans
+ LM/albanian.lm			albanian
+ LM/amharic-utf.lm		amharic-utf
+@@ -30,14 +35,11 @@
+ LM/danish.lm			danish
+ LM/drents.lm			drents   # Dutch dialect
+ LM/dutch.lm			dutch
+-LM/english.lm			english
+ LM/esperanto.lm			esperanto
+ LM/estonian.lm			estonian
+ LM/finnish.lm			finnish
+-LM/french.lm			french
+ LM/frisian.lm			frisian
+ LM/georgian.lm			georgian
+-LM/german.lm			german
+ LM/greek-iso8859-7.lm		greek-iso8859-7
+ LM/hebrew-iso8859_8.lm		hebrew-iso8859_8
+ LM/hindi.lm			hindi
+@@ -45,7 +47,6 @@
+ LM/icelandic.lm			icelandic
+ LM/indonesian.lm		indonesian
+ LM/irish.lm			irish
+-LM/italian.lm			italian
+ LM/japanese-euc_jp.lm		japanese-euc_jp
+ LM/japanese-shift_jis.lm	japanese-shift_jis
+ LM/korean.lm			korean
+@@ -76,7 +77,6 @@
+ LM/slovak-windows1250.lm	slovak-windows1250
+ LM/slovenian-ascii.lm		slovenian-ascii
+ LM/slovenian-iso8859_2.lm	slovenian-iso8859_2
+-LM/spanish.lm			spanish
+ LM/swahili.lm			swahili
+ LM/swedish.lm			swedish
+ LM/tagalog.lm			tagalog
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/Makefile.am src/libtextcat-2.2/src/Makefile.am
+--- origsrc/libtextcat-2.2/src/Makefile.am	2003-05-22 10:58:52.000000000 +0000
++++ src/libtextcat-2.2/src/Makefile.am	2007-08-13 16:29:00.218750000 +0000
+@@ -5,19 +5,51 @@
+ FLAGS =		-g -O3 -funroll-loops -D_THREAD_SAFE -D_GNU_SOURCE
+ VERBOSE	=	-DVERBOSE
+ AM_CFLAGS =	$(IFLAGS) $(VERBOSE) $(WARNS) $(FLAGS)
+-AM_LDFLAGS =	-g
++AM_LDFLAGS =	-no-undefined
+ 
+ noinst_HEADERS = \
+-	common.h constants.h fingerprint.h textcat.h wg_mempool.h
++	common.h constants.h fingerprint.h wg_mempool.h
++include_HEADERS = textcat.h
+ 
+ lib_LTLIBRARIES =	libtextcat.la
+ libtextcat_la_SOURCES = \
+ 	common.c fingerprint.c textcat.c wg_mempool.c
+ 
+-bin_PROGRAMS =		createfp
++bin_PROGRAMS     =	createfp textcat
+ createfp_SOURCES =	createfp.c
+-createfp_LDADD =	libtextcat.la
++createfp_LDADD   =	libtextcat.la
+ 
+-noinst_PROGRAMS =	testtextcat
+-testtextcat_SOURCES =	testtextcat.c
+-testtextcat_LDADD =	libtextcat.la
++textcat_SOURCES  =	testtextcat.c
++textcat_LDADD    =	libtextcat.la
++
++check:	
++	echo "$(top_srcdir)/langclass/LM/english.lm	english"   > tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/french.lm	french"   >> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/german.lm	german"   >> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/dutch.lm	dutch"    >> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/estonian.lm	estonian" >> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/esperanto.lm	esperanto">> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/finnish.lm	finnish"  >> tmpconf.txt
++	echo "$(top_srcdir)/langclass/LM/drents.lm	drents"   >> tmpconf.txt
++	echo "[english]" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/english.txt | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "[dutch]" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/dutch.txt   | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "[french]" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/french.txt  | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "[german]" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/german.txt  | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "[french][dutch][english][esperanto][german]" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/breton.txt  | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "UNKNOWN" > exp.txt
++	cat $(top_srcdir)/langclass/ShortTexts/chinese-big5.txt  | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	echo "SHORT" > exp.txt
++	echo "dsa dsajND" | \
++		./textcat tmpconf.txt | cmp - exp.txt
++	rm tmpconf.txt exp.txt
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/common.c src/libtextcat-2.2/src/common.c
+--- origsrc/libtextcat-2.2/src/common.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/common.c	2007-08-13 16:29:00.234375000 +0000
+@@ -47,7 +47,11 @@
+ #include <ctype.h>
+ #include "common.h"
+ 
+-extern void wgmem_error( const char *fmt, ... )
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++void wgmem_error( const char *fmt, ... )
+ {
+         va_list ap;
+ 
+@@ -60,7 +64,7 @@
+ }
+ 
+ 
+-extern void *wg_malloc( size_t size )
++void *wg_malloc( size_t size )
+ {
+ 	void *result;
+ 	if ( !size ) {
+@@ -75,7 +79,7 @@
+ 	return result;
+ }
+ 
+-extern void *wg_calloc( size_t nmemb, size_t size )
++void *wg_calloc( size_t nmemb, size_t size )
+ {
+ 	void *result;
+ 	if ( !size || !nmemb ) {
+@@ -90,7 +94,7 @@
+ 	return result;
+ }
+ 
+-extern void *wg_zalloc( size_t size )
++void *wg_zalloc( size_t size )
+ {
+ 	void *result;
+ 
+@@ -106,7 +110,7 @@
+ 	return result;
+ }
+ 
+-extern char* wg_strdup( const char *s )
++char* wg_strdup( const char *s )
+ {
+ 	char *result = strdup( s );
+ 
+@@ -117,7 +121,7 @@
+ 	return( result ); 
+ }
+ 
+-extern void* wg_realloc( void *ptr, size_t size ) 
++void* wg_realloc( void *ptr, size_t size ) 
+ { 
+ 	void *result;
+ 
+@@ -134,14 +138,14 @@
+ 	return( result ); 
+ }
+ 
+-extern void wg_free( void *mem )
++void wg_free( void *mem )
+ {
+         if ( mem ) {
+                 free(mem);
+         }
+ }
+ 
+-extern char *wg_getline( char *line, int size, FILE *fp )
++char *wg_getline( char *line, int size, FILE *fp )
+ {
+         char *p;
+ 
+@@ -292,7 +296,7 @@
+ }
+ 
+ 
+-extern void wg_timerstart(wgtimer_t *t)
++void wg_timerstart(wgtimer_t *t)
+ {
+ #ifdef HAVE_GETTIMEOFDAY
+         gettimeofday( &(t->start), NULL );
+@@ -300,7 +304,7 @@
+ }
+ 
+ 
+-extern uint4 wg_timerstop(wgtimer_t *t)
++uint4 wg_timerstop(wgtimer_t *t)
+ {
+ #ifdef HAVE_GETTIMEOFDAY
+ 	uint4 result;
+@@ -388,3 +392,6 @@
+ 	return dest;
+ }
+ 
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/common.h src/libtextcat-2.2/src/common.h
+--- origsrc/libtextcat-2.2/src/common.h	2003-05-22 13:02:29.000000000 +0000
++++ src/libtextcat-2.2/src/common.h	2007-08-13 16:29:00.234375000 +0000
+@@ -91,23 +91,29 @@
+         struct timeval stop;
+ } wgtimer_t;
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+-extern void *wg_malloc( size_t size );
+-extern void *wg_calloc( size_t nmemb, size_t size );
+-extern void *wg_zalloc( size_t size );
+-extern char* wg_strdup( const char *s );
+-extern void* wg_realloc( void *ptr, size_t size ) ;
+-extern void wg_free( void *mem );
+-
+-extern char *wg_getline( char *line, int size, FILE *fp );
+-
+-extern void wg_timerstart(wgtimer_t *t);
+-extern uint4 wg_timerstop(wgtimer_t *t);
+-
+-extern unsigned int wg_split( char **result, char *dest, char *src, int maxsegments );
+-extern char *wg_strgmov( char *dest, const char *src, const char *destlimit );
+-extern char *wg_trim( char *dest, const char *src );
++void *wg_malloc( size_t size );
++void *wg_calloc( size_t nmemb, size_t size );
++void *wg_zalloc( size_t size );
++char* wg_strdup( const char *s );
++void* wg_realloc( void *ptr, size_t size ) ;
++void wg_free( void *mem );
++
++char *wg_getline( char *line, int size, FILE *fp );
++
++void wg_timerstart(wgtimer_t *t);
++uint4 wg_timerstop(wgtimer_t *t);
++
++unsigned int wg_split( char **result, char *dest, char *src, int maxsegments );
++char *wg_strgmov( char *dest, const char *src, const char *destlimit );
++char *wg_trim( char *dest, const char *src );
+ 
++#ifdef __cplusplus
++}
++#endif
+       
+ #endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/createfp.c src/libtextcat-2.2/src/createfp.c
+--- origsrc/libtextcat-2.2/src/createfp.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/createfp.c	2007-08-13 16:29:00.234375000 +0000
+@@ -43,6 +43,10 @@
+ #include <stdlib.h>
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ #include "fingerprint.h"
+ #include "common.h"
+ 
+@@ -90,3 +94,8 @@
+ 
+ 	return 0;
+ }
++
++
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/fingerprint.c src/libtextcat-2.2/src/fingerprint.c
+--- origsrc/libtextcat-2.2/src/fingerprint.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/fingerprint.c	2007-08-13 16:29:00.250000000 +0000
+@@ -80,6 +80,9 @@
+ #include "wg_mempool.h"
+ #include "constants.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+ #define TABLESIZE  (1<<TABLEPOW)
+ #define TABLEMASK  ((TABLESIZE)-1)
+@@ -168,7 +171,7 @@
+ 	}
+ 
+ 	/*** Not found, so create ***/
+-	entry = wgmempool_alloc( t->pool, sizeof(entry_t) );
++	entry = (entry_t*)wgmempool_alloc( t->pool, sizeof(entry_t) );
+ 	strcpy( entry->str, p );
+ 	entry->cnt = 1;
+ 
+@@ -289,7 +292,7 @@
+ }
+ 
+ 
+-extern int heapextract( table_t *t, entry_t *item )
++int heapextract( table_t *t, entry_t *item )
+ {
+ 	entry_t *p;
+ 
+@@ -350,8 +353,7 @@
+ 	wg_free(t);	
+ }
+ 
+-
+-extern void *fp_Init(const char *name)
++void *fp_Init(const char *name)
+ {
+ 	fp_t *h = (fp_t *)wg_zalloc( sizeof(fp_t) );
+ 	
+@@ -363,7 +365,7 @@
+ }
+ 
+ 
+-extern void fp_Done( void *handle )
++void fp_Done( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 
+@@ -377,7 +379,7 @@
+ 	wg_free( h );
+ }
+ 
+-extern const char *fp_Name( void *handle )
++const char *fp_Name( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	return  h->name;
+@@ -532,7 +534,7 @@
+  * - take the most frequent n-grams
+  * - sort them alphabetically, recording their relative rank
+  */
+-extern int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams )
++int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams )
+ {
+ 	sint4 i = 0;
+ 	fp_t *h = NULL;
+@@ -582,7 +584,7 @@
+ 	return 1;
+ }
+ 
+-extern void fp_Debug( void *handle )
++void fp_Debug( void *handle )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	uint4 i;
+@@ -594,7 +596,7 @@
+ 
+ }
+ 
+-extern int fp_Read( void *handle, const char *fname, int maxngrams )
++int fp_Read( void *handle, const char *fname, int maxngrams )
+ {
+ 	fp_t *h = (fp_t *)handle;
+ 	FILE *fp;
+@@ -644,11 +646,11 @@
+ 
+ 
+ 
+-extern void fp_Print( void *handle, FILE *fp )
++void fp_Print( void *handle, FILE *fp )
+ {
+ 	uint4 i;
+ 	fp_t *h = (fp_t *)handle;
+-	ngram_t *tmp = wg_malloc( sizeof(ngram_t) * h->size );
++	ngram_t *tmp = (ngram_t *)wg_malloc( sizeof(ngram_t) * h->size );
+ 	
+ 	/*** Make a temporary and sort it on rank ***/
+ 	memcpy( tmp, h->fprint, h->size * sizeof(ngram_t) );
+@@ -662,7 +664,7 @@
+ 
+ 
+ 
+-extern sint4 fp_Compare( void *cat, void *unknown, int cutoff )
++sint4 fp_Compare( void *cat, void *unknown, int cutoff )
+ {
+ 	fp_t *c = (fp_t *)cat;
+ 	fp_t *u = (fp_t *)unknown;
+@@ -708,4 +710,7 @@
+ 	       	
+ }
+ 
++#ifdef __cplusplus
++}
++#endif
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/fingerprint.h src/libtextcat-2.2/src/fingerprint.h
+--- origsrc/libtextcat-2.2/src/fingerprint.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/fingerprint.h	2007-08-13 16:29:00.250000000 +0000
+@@ -35,13 +35,20 @@
+  */
+ #include "common.h"
+ 
+-extern void *fp_Init(const char *name);
+-extern void fp_Done( void *handle );
+-extern int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams );
+-extern int fp_Read( void *handle, const char *fname, int maxngrams );
+-extern sint4 fp_Compare( void *cat, void *unknown, int cutoff );
+-extern void fp_Show( void *handle );
+-extern const char *fp_Name( void *handle );
+-extern void fp_Print( void *handle, FILE *fp );
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++void *fp_Init(const char *name);
++void fp_Done( void *handle );
++int fp_Create( void *handle, const char *buffer, uint4 bufsize, uint4 maxngrams );
++int fp_Read( void *handle, const char *fname, int maxngrams );
++sint4 fp_Compare( void *cat, void *unknown, int cutoff );
++void fp_Show( void *handle );
++const char *fp_Name( void *handle );
++void fp_Print( void *handle, FILE *fp );
+ 
++#ifdef __cplusplus
++}
++#endif
+ #endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/testtextcat.c src/libtextcat-2.2/src/testtextcat.c
+--- origsrc/libtextcat-2.2/src/testtextcat.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/testtextcat.c	2007-08-13 16:29:00.265625000 +0000
+@@ -3,6 +3,7 @@
+  * standard in and it will feed you a classification on standard out.
+  *
+  * Copyright (C) 2003 WiseGuys Internet B.V.
++ * Copyright (C) 2007 Reini Urban
+  *
+  * THE BSD LICENSE
+  * 
+@@ -33,6 +34,12 @@
+  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ *
++ * REVISION HISTORY
++ *
++ * Mar 27, 2003 frank@wise-guys.nl -- created
++ * 2007-08-13 14:50:40 urbanr -- args: -v -b bufsize, default /etc/libtextcat.conf
++ *				 compiled as /usr/bin/textcat
+  */
+ 
+ #include "config.h"
+@@ -81,25 +88,41 @@
+ 	char *result;
+ 	wgtimer_t tm;
+ 	char *buf;
++	int verbose = 0;
++	int bufsize = 1024;
+ 
+-	printf("%s\n", textcat_Version());
++	if ((argc > 1) && (strcmp(argv[1], "-v") == 0)) {
++		verbose = 1;
++		if (argc > 2) {
++			printf("conf: %s\n", argv[2]);
++			strcpy(argv[1], argv[2]);
++		}
++		argc--;
++		printf("textcat [-v] [-b bufsize] [/etc/libtextcat.conf] %s\n", 
++		       textcat_Version());
++	}
++	if ((argc > 2) && (strcmp(argv[1], "-b") == 0)) {
++	    bufsize = atoi(argv[2]);
++	    argc--; argc--;
++	}
+ 
+-	h = textcat_Init( argc>1?argv[1]:"conf.txt" );
++	h = textcat_Init( argc > 1 ? argv[1] : "/etc/libtextcat.conf" );
+ 	if ( !h ) {
+ 		printf("Unable to init. Aborting.\n");
+ 		exit(-1);
+ 	}
+ 
+ 	buf = myread(stdin);
+-
+-	wg_timerstart(&tm);
++	if (verbose)
++		wg_timerstart(&tm);
+ 
+ 	/*** We only need a little text to determine the language ***/
+-	buf[1024] = '\0';
++	buf[bufsize] = '\0';
+ 	result = textcat_Classify( h, buf, strlen(buf)+1 );
+-	printf("Result == %s\n", result);
++	printf("%s\n", result);
+ 	
+-	fprintf(stderr, "That took %u ms.\n", wg_timerstop(&tm)/1000);
++	if (verbose)
++		fprintf(stderr, "That took %u ms.\n", wg_timerstop(&tm)/1000);
+ 
+ 	textcat_Done(h);
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/textcat.c src/libtextcat-2.2/src/textcat.c
+--- origsrc/libtextcat-2.2/src/textcat.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/textcat.c	2007-08-13 16:29:00.265625000 +0000
+@@ -2,6 +2,7 @@
+  * textcat.c -- routines for categorizing text
+  *
+  * Copyright (C) 2003 WiseGuys Internet B.V.
++ * Copyright (C) 2007 Reini Urban
+  *
+  * THE BSD LICENSE
+  * 
+@@ -42,6 +43,7 @@
+  * REVISION HISTORY
+  *
+  * Mar 27, 2003 frank@wise-guys.nl -- created
++ * 2007-08-13 14:50:40 urbanr -- default /etc/libtextcat.conf
+  *
+  * IMPROVEMENTS:
+  * - If two n-grams have the same frequency count, choose the shortest
+@@ -65,6 +67,10 @@
+ #include <alloca.h>
+ #endif
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ #include "common.h"
+ #include "fingerprint.h"
+ #include "textcat.h"
+@@ -103,7 +109,7 @@
+ }
+ 
+ 
+-extern void textcat_Done( void *handle )
++void textcat_Done( void *handle )
+ {
+ 	textcat_t *h = (textcat_t *)handle;
+ 	uint4 i;
+@@ -116,13 +122,13 @@
+ 
+ }
+ 
+-extern void *textcat_Init( const char *conffile )
++void *textcat_Init( const char *conffile )
+ {
+ 	textcat_t *h;
+ 	char line[1024];
+ 	FILE *fp;
+ 
+-	fp = fopen( conffile, "r" );
++	fp = fopen( conffile ? conffile : "/etc/libtextcat.conf", "r" );
+ 	if ( !fp ) {
+ #ifdef VERBOSE
+ 		fprintf( stderr, "Failed to open config file '%s'\n", conffile);
+@@ -156,7 +162,7 @@
+ 		/*** Ensure enough space ***/
+ 		if ( h->size == h->maxsize ) {
+ 			h->maxsize *= 2;
+-			h->fprint = (void *)wg_realloc( h->fprint, sizeof(void*) * h->maxsize );
++			h->fprint = (void **)wg_realloc( h->fprint, sizeof(void*) * h->maxsize );
+ 		}
+ 
+ 		/*** Load data ***/
+@@ -180,7 +186,7 @@
+ }
+ 
+ 
+-extern char *textcat_Classify( void *handle, const char *buffer, size_t size )
++char *textcat_Classify( void *handle, const char *buffer, size_t size )
+ {
+ 	textcat_t *h = (textcat_t *)handle;
+ 	uint4 i, cnt = 0;
+@@ -255,7 +261,11 @@
+ }
+ 
+ 
+-extern char *textcat_Version()
++char *textcat_Version()
+ {
+ 	return "TextCat " PACKAGE_VERSION " (" DESCRIPTION ")";
+ }
++
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/textcat.h src/libtextcat-2.2/src/textcat.h
+--- origsrc/libtextcat-2.2/src/textcat.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/textcat.h	2007-08-13 16:29:00.281250000 +0000
+@@ -40,6 +40,9 @@
+ #define _TEXTCAT_RESULT_UNKOWN        "UNKNOWN"
+ #define _TEXTCAT_RESULT_SHORT         "SHORT"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+ /**
+  * textcat_Init() - Initialize the text classifier. The textfile
+@@ -52,12 +55,12 @@
+  * only way errors can occur, is when the library cannot read the
+  * conffile, or one of the fingerprint files listed in it.)
+  */
+-extern void *textcat_Init( const char *conffile );
++void *textcat_Init( const char *conffile );
+ 
+ /**
+  * textcat_Done() - Free up resources for handle
+  */
+-extern void textcat_Done( void *handle );
++void textcat_Done( void *handle );
+ 
+ /**
+  * textcat_Classify() - Give the most likely categories for buffer
+@@ -71,10 +74,15 @@
+  * for many uses it is not necessary to categorize the whole buffer.
+  * For language classification, a few hundred bytes will suffice.  
+  */
+-extern char *textcat_Classify( void *handle, const char *buffer, size_t size );
++char *textcat_Classify( void *handle, const char *buffer, size_t size );
+ 
+ /**
+  * textcat_Version() - Returns a string describing the version of this classifier.
+  */
+-extern char *textcat_Version();
++char *textcat_Version();
++
++#ifdef __cplusplus
++}
++#endif
++
+ #endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/wg_mempool.c src/libtextcat-2.2/src/wg_mempool.c
+--- origsrc/libtextcat-2.2/src/wg_mempool.c	2003-05-22 11:32:43.000000000 +0000
++++ src/libtextcat-2.2/src/wg_mempool.c	2007-08-13 16:29:00.281250000 +0000
+@@ -43,6 +43,10 @@
+ #endif
+ #include "common.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ typedef struct memblock_s {
+ 	char *pool;             
+ 	char *p;
+@@ -64,8 +68,10 @@
+ static void* wg_memset(void* s, int c, size_t n)
+ {
+ 	size_t	i;
++	char *p;
+ 
+-	for(i = 0; i < n; i++) s[i] = c;
++	p = (char *)s;
++	for(i = 0; i < n; i++) p[i] = c;
+ 
+ 	return s;
+ }
+@@ -94,7 +100,7 @@
+ }
+ 
+ 
+-extern void *wgmempool_Init(size_t blocksize, size_t maxstrsize)
++void *wgmempool_Init(size_t blocksize, size_t maxstrsize)
+ {
+ 	mempool_t *result = (mempool_t *)wg_malloc( sizeof(mempool_t) );
+ 	
+@@ -108,7 +114,7 @@
+ }
+ 
+ 
+-extern void wgmempool_Done( void *handle )
++void wgmempool_Done( void *handle )
+ {
+ 	mempool_t *h = (mempool_t *)handle;
+ 
+@@ -142,7 +148,7 @@
+ 	wg_free(h);
+ }
+ 
+-extern void wgmempool_Reset( void *handle )
++void wgmempool_Reset( void *handle )
+ {
+ 	mempool_t *h = (mempool_t *)handle;
+ 	memblock_t *p;
+@@ -167,7 +173,7 @@
+ }
+ 
+ 
+-extern void *wgmempool_alloc( void *handle, size_t size )
++void *wgmempool_alloc( void *handle, size_t size )
+ {
+ 	void *result;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -185,7 +191,7 @@
+ 
+ 
+ 
+-extern char *wgmempool_strdup( void *handle, const char *str )
++char *wgmempool_strdup( void *handle, const char *str )
+ {
+ 	char *w, *result;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -214,7 +220,7 @@
+ }
+ 
+ 
+-extern char *wgmempool_getline( void *handle, size_t size, FILE *fp )
++char *wgmempool_getline( void *handle, size_t size, FILE *fp )
+ {
+ 	char *result, *p;
+ 	mempool_t *h = (mempool_t *)handle;
+@@ -245,4 +251,6 @@
+ 	return result;
+ }
+ 
+-
++#ifdef __cplusplus
++}
++#endif
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/libtextcat-2.2/src/wg_mempool.h src/libtextcat-2.2/src/wg_mempool.h
+--- origsrc/libtextcat-2.2/src/wg_mempool.h	2003-05-19 12:16:31.000000000 +0000
++++ src/libtextcat-2.2/src/wg_mempool.h	2007-08-13 16:29:00.296875000 +0000
+@@ -86,13 +86,13 @@
+  * mempool handler on success, NULL on error.
+  * 
+  */
+-extern void *wgmempool_Init(uint4 blocksize, size_t maxstrsize);
++void *wgmempool_Init(uint4 blocksize, size_t maxstrsize);
+ 
+ 
+ /*
+  * wgmempool_Done() -- deallocate memory pool in its entirety
+  */
+-extern void wgmempool_Done( void *handle );
++void wgmempool_Done( void *handle );
+ 
+ 
+ /*
+@@ -101,7 +101,7 @@
+  * wgmempool_Reset() preserves already claimed memory for reuse, making
+  * it more time efficient than doing a wgmempool_Done() and wgmempool_Init().
+  */
+-extern void wgmempool_Reset( void *handle );
++void wgmempool_Reset( void *handle );
+ 
+ 
+ /*
+@@ -116,7 +116,7 @@
+  * - pointer to claimed memory on success
+  * - NULL on error
+  */
+-extern void *wgmempool_alloc( void *handle, size_t size );
++void *wgmempool_alloc( void *handle, size_t size );
+ 
+ 
+ /*
+@@ -132,7 +132,7 @@
+  * - pointer to duplicated string on success
+  * - NULL on error
+  */
+-extern char *wgmempool_strdup( void *handle, const char* str );
++char *wgmempool_strdup( void *handle, const char* str );
+ 
+ 
+ #ifdef __cplusplus

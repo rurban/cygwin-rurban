@@ -1,0 +1,353 @@
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/README src/clamav-0.93.3/CYGWIN-PATCHES/README
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/README	2008-07-07 21:14:56.137250000 +0000
+@@ -0,0 +1,283 @@
++clamav
++-------------------------------
++Clam AntiVirus - GPL anti-virus toolkit.
++This distribution was built without any Windows UI. 
++You might want to use clamwin.com (python wxWindows) instead.
++See /usr/share/doc/clamav-<VER>
++
++The freshclam cronjob and clamd have to be configured manually.
++
++Installation (as service):
++
++/etc/rc.d/init.d/clamd install
++/etc/rc.d/init.d/clamd installcron
++/etc/rc.d/init.d/clamd start
++
++Problems:
++
++* If the service doesn't start, check why the SYSTEM user may not run clamd. 
++  Most likely some file permission problems on the PID, SOCK, LOG or CONF file.
++  Search the cygwin mailinglist for "sysbash" - opening a bash under the SYSTEM 
++  account via AT.
++
++* If the service fails to restart (stop fails), may best suggestion so far 
++  is to reboot. :(
++  Check the cygwin mailing list archives for solutions.
++
++Runtime requirements: (versions given or later)
++
++  cygwin-1.5.21-2
++  gmp-4.1.4-2
++  libbz2_1-1.0.3-1
++  libcurl3
++  minires-1.00-1
++  zlib-1.2.3-1
++  
++Build requirements: (versions given or later)
++  cygwin-1.5.x
++  autoconf2.5-2.61
++  cygport-0.90 	(for the latest autoconf2.5)
++  libbz2-devel
++  libgmp-devel
++  zlib-1.2.x
++  minires
++  minires-devel
++  libtool-devel-1.9 (if GCC >= 3.3.3)
++  gcc-3.3.x
++  binutils
++  make
++  bash
++  fileutils
++  sed
++
++Canonical homepage:
++  http://clamav.net/
++virusdb update announcements (very frequent!)
++  http://news.gmane.org/gmane.comp.security.virus.clamav.virusdb
++
++Canonical download:
++  http://prdownloads.sourceforge.net/clamav/clamav-<VER>.tar.bz2?download
++
++Latest Changes:
++  /etc/clamav.conf renamed to /etc/clamd.conf
++  See http://cvs.sourceforge.net/viewcvs.py/clamav/clamav-devel/ChangeLog
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  tar xfvj clamav-<VER>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport clamav-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/clamav-<VER>-<CYGREL>.tar.bz2
++  /usr/src/clamav-<VER>-<CYGREL>-src.tar.bz2
++
++Or use './clamav-<VER>-<CYGREL>.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in the clamav package:
++
++  /etc/defaults/etc/clamd.conf
++  /etc/defaults/etc/freshclam.conf
++  /etc/rc.d/init.d/clamd
++  /etc/postinstall/clamav.sh
++  /etc/preremove/clamav.sh
++  /usr/bin/clamconf.exe
++  /usr/bin/clamdscan.exe
++  /usr/bin/clamscan.exe
++  /usr/bin/freshclam.exe
++  /usr/bin/sigtool.exe
++  /usr/sbin/clamd.exe
++  /usr/share/doc/clamav-<VER>/AUTHORS
++  /usr/share/doc/clamav-<VER>/BUGS
++  /usr/share/doc/clamav-<VER>/ChangeLog
++  /usr/share/doc/clamav-<VER>/COPYING
++  /usr/share/doc/clamav-<VER>/FAQ
++  /usr/share/doc/clamav-<VER>/INSTALL
++  /usr/share/doc/clamav-<VER>/NEWS
++  /usr/share/doc/clamav-<VER>/README
++  /usr/share/doc/clamav-<VER>/clamav-mirror-howto.pdf
++  /usr/share/doc/clamav-<VER>/clamdoc.pdf
++  /usr/share/doc/clamav-<VER>/phishsigs_howto.pdf
++  /usr/share/doc/clamav-<VER>/signatures.pdf
++  /usr/share/doc/clamav-<VER>/html/*
++  /usr/share/doc/Cygwin/clamav-<VER>-<CYGREL>.README
++  /usr/share/man/man1/clamconf.1.gz
++  /usr/share/man/man1/clamdscan.1.gz
++  /usr/share/man/man1/clamscan.1.gz
++  /usr/share/man/man1/freshclam.1.gz  
++  /usr/share/man/man1/sigtool.1.gz
++  /usr/share/man/man5/clamd.conf.5.gz
++  /usr/share/man/man5/freshclam.conf.5.gz
++  /usr/share/man/man8/clamd.8.gz
++
++Files included in the libclamav4 package:  
++
++  /usr/bin/cygclamav-4.dll
++  /usr/bin/cygclamunrar-4.dll
++  /usr/bin/cygclamunrar_iface-4.dll
++
++Files included in the libclamav-devel package:
++
++  /usr/bin/clamav-config
++  /usr/include/clamav.h
++  /usr/lib/libclamav.a
++  /usr/lib/libclamav.dll.a
++  /usr/lib/libclamav.la
++  /usr/lib/libclamunrar.a
++  /usr/lib/libclamunrar.dll.a
++  /usr/lib/libclamunrar.la
++  /usr/lib/libclamunrar_iface.a
++  /usr/lib/libclamunrar_iface.dll.a
++  /usr/lib/libclamunrar_iface.la
++  /usr/lib/pkgconfig/libclamav.pc
++
++Files included in the clamav-db package:
++
++  /usr/share/clamav/daily.cvd
++  /usr/share/clamav/main.cvd
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 0.93.3-1 -----
++added DIFF_EXCLUDES="test/Makefile"
++----- version 0.93.1-1 -----
++none
++----- version 0.93.1rc1-1 ----- TEST
++new package clamav-db
++added positive-tests.zip to src package
++----- version 0.93-1 -----
++libclamav4
++----- version 0.92.1-1 -----
++none
++----- version 0.92-1 -----
++cygclamunrar dll's and clamconf.exe added
++----- version 0.92rc2-1 -----
++libclamav3
++----- version 0.91.2-1 -----
++none
++----- version 0.91.1-2 -----
++removed references to libz.la and libbz2.la
++----- version 0.91.1-1 -----
++none
++----- version 0.91-1 -----
++remove untouched /etc files with preremove
++
++----- version 0.90.3-1 -----
++fixed mbox.c
++fixed BUILD_CLAMD in cygwin configure logic
++re-applied broken DIRENT_MISSING_D_INO patch
++
++----- version 0.90.1-2 (never uploaded) -----
++fixed BUILD_CLAMD in cygwin configure logic
++
++----- version 0.90.1-1 -----
++fixed treewalk.c patch (got upstream worse)
++change to libclamav2
++
++----- version 0.90-1 -----
++fixed AC_HEADER_RESOLV in configure.in
++added libgmp3, libcurl3 to requires
++added libbz2-devel, libgmp-devel to src reqs
++added lndirs for subdir include dirs
++
++----- version 0.88.3-3 -----
++layoutsplit: new libclamav1 and libclamav-devel packages
++fixed wrong init.d path
++
++----- version 0.88.3-2 -----
++fixed missing etc/*.conf files, move to etc/defaults/etc/
++fixed missing init.d script
++
++----- version 0.88.3-1 -----
++
++changed to cygport
++
++----- version 0.88.2-1 ----- 
++
++added BUILD_CLAMD to cygwin configure logic
++
++----- version 0.88.1-1 ----- 
++
++none
++
++----- version 0.88-2 ----- 
++
++removed bogus 0.88-1 xx/ files from patch
++removed -thread-safe which prevents from building the shared lib
++
++----- version 0.88-1 ----- 
++
++removed libtool.m4 (v1.4.2) from acinclude.m4 (again).
++added DIRENT_MISSING_D_INO check instead of C_INTERIX for cygwin-1.5.19,
++  code by David Rothenberger <daveroth*acm.org> from openssh
++  built without d_ino check, so it should work slower, but on cygwin-1.5.19 also.
++updated to most recent database
++
++----- version 0.87.1-2 ----- 
++
++-Wl,--enable-auto-image-base
++removed incorrect dependencies to /lib/libz.la and /lib/libbz2.la
++
++----- version 0.87.1-1 ----- 
++
++installed libtool-1.9 as alternatives and 
++use to set this package an updated daily.cvd
++
++----- version 0.85-1 ----- 
++
++simplified libtool patch: just replace ltmain.sh
++
++----- version 0.84-1 ----- NEVER RELEASED
++
++libtool problems rose again
++
++----- version 0.84rc1-1 -----
++
++check: clamscan results go to STDOUT
++
++----- version 0.83-1 -----
++
++fixed HAVE_RESOLV_H based on latest autoconf AC_HEADER_RESOLV
++Lots of ugly interim libtool hacks, which nobody should look at.
++
++----- version 0.80-3 ----- INTERNAL ONLY
++
++added freshclam If-Modified-Since header check against broken squid proxies.
++
++----- version 0.80-2 -----
++
++no changes in the binaries.
++just removed undeleted mkpatch leftovers from the src patch.
++
++----- version 0.80-1 ----- INTERNAL ONLY
++
++moved LIBTOOL sections from acinclude.m4 to aclocal.m4 to enable libtoolize
++added -Wl,--enable-runtime-pseudo-reloc
++freshclam.conf: uncomment Example, needs now a country mirror entry
++added tests: make check, re-added removed positive ClamAV-Test-Signature tests for make check
++moved init.d script to contrib/init/Cygwin/
++
++----- version 0.80rc3-1 ----- NOT RELEASED
++
++shared libclamav patch, thanks to Yaakok Selkowitz
++
++----- version 0.80rc2-1 ----- NOT RELEASED
++
++new preremove script to install existing service
++improved /etc/rc.d/init.d/clamd uninstall
++/etc/clamav.conf renamed to /etc/clamd.conf
++
++----- version 0.75.1-3 -----
++
++Initial release
++
++Builds out of the box. No contrib. init.d script added.
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/clamav-db.hint src/clamav-0.93.3/CYGWIN-PATCHES/clamav-db.hint
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/clamav-db.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/clamav-db.hint	2008-07-07 21:10:38.059125000 +0000
+@@ -0,0 +1,3 @@
++sdesc: "The clamav release database"
++category: Utils
++external-source: clamav
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/clamav.hint src/clamav-0.93.3/CYGWIN-PATCHES/clamav.hint
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/clamav.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/clamav.hint	2008-07-07 21:10:38.059125000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "A GPL virus scanner"
++ldesc: "Clam AntiVirus is a GPL anti-virus toolkit for UNIX, featuring
++command-line scanner, fast, multi-threaded daemon, database updater
++with support for digital signatures, virus scanner C library,
++detection of over 20000 viruses, worms and trojans, built-in support
++for RAR (2.0), Zip, Gzip, Bzip2, built-in support for Mbox, Maildir
++and raw mail files"
++category: Utils
++requires: libclamav4 zlib minires bash libcurl3 clamav-db
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/libclamav-devel.hint src/clamav-0.93.3/CYGWIN-PATCHES/libclamav-devel.hint
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/libclamav-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/libclamav-devel.hint	2008-07-07 21:10:38.059125000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "The clamav includes and libraries"
++category: Utils
++requires: clamav autoconf2.5 minires-devel libbz2-devel
++external-source: clamav
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/libclamav4.hint src/clamav-0.93.3/CYGWIN-PATCHES/libclamav4.hint
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/libclamav4.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/libclamav4.hint	2008-07-07 21:10:38.074750000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "The clamav dll since v0.93"
++category: Utils
++requires: zlib libbz2_1 libgmp3 libcurl3
++external-source: clamav
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/postinstall.sh src/clamav-0.93.3/CYGWIN-PATCHES/postinstall.sh
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/postinstall.sh	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/postinstall.sh	2008-07-07 21:10:38.090375000 +0000
+@@ -0,0 +1,11 @@
++#!/bin/sh
++
++for f in clamd freshclam; do
++  if [ ! -e /etc/$f.conf ]; then
++    cp etc/defaults/etc/$f.conf /etc/$f.conf
++  fi
++done
++
++# update the database (/usr/share/clamav/)
++# no: /etc/freshclam.conf needs now a database country specific mirror entry
++# /usr/bin/freshclam
+diff -urN origsrc/clamav-0.93.3/CYGWIN-PATCHES/preremove.sh src/clamav-0.93.3/CYGWIN-PATCHES/preremove.sh
+--- origsrc/clamav-0.93.3/CYGWIN-PATCHES/preremove.sh	1970-01-01 00:00:00.000000000 +0000
++++ src/clamav-0.93.3/CYGWIN-PATCHES/preremove.sh	2008-07-07 21:10:38.090375000 +0000
+@@ -0,0 +1,11 @@
++#!/bin/sh
++
++for f in clamd freshclam; do
++  if [ ! -e /etc/$f.conf ]; then
++    cmp -s /etc/$f.conf /etc/defaults/etc/$f.conf && rm /etc/$f.conf
++  fi
++done
++
++initd=/etc/rc.d/init.d/clamd
++# uninstall the service
++if [ -e $initd ]; then $initd uninstall; fi

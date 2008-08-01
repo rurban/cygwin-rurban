@@ -1,0 +1,24 @@
+DESCRIPTION="HTML processor that generates indexed HTML, PS, and PDF"
+HOMEPAGE="http://www.htmldoc.org/"
+SRC_URI="http://ftp.easysw.com/pub/htmldoc/snapshots/${PN}-${PV}.tar.bz2"
+
+CYGCONF_ARGS=""
+
+src_compile() {
+  lndirs
+  cd ${B}
+  cygconf
+  cygmake
+}
+
+src_install() {
+  cd ${B}
+  cyginstall
+
+  # rather fix docdir here, not to patch the src
+  cd ${D}
+  mkdir -p usr/share/doc/${P}/
+  mv usr/share/doc/htmldoc/* usr/share/doc/${P}/
+  rmdir usr/share/doc/htmldoc
+}
+

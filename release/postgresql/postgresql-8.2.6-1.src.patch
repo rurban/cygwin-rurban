@@ -1,0 +1,24 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.5/src/interfaces/libpq/libpq.rc src/postgresql-8.2.5/src/interfaces/libpq/libpq.rc
+--- origsrc/postgresql-8.2.6/src/interfaces/libpq/libpq.rc	2007-09-16 05:19:43.000000000 +0000
++++ src/postgresql-8.2.6/src/interfaces/libpq/libpq.rc	2007-11-19 20:56:01.375000000 +0000
+@@ -19,7 +19,7 @@
+             VALUE "InternalName", "libpq\0"
+             VALUE "LegalCopyright", "Copyright (C) 2005\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.2.5\0"
+         END
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/postgresql-8.2.5/src/interfaces/libpq/libpq.rc.in src/postgresql-8.2.5/src/interfaces/libpq/libpq.rc.in
+--- origsrc/postgresql-8.2.6/src/interfaces/libpq/libpq.rc.in	2007-09-11 17:37:29.000000000 +0000
++++ src/postgresql-8.2.6/src/interfaces/libpq/libpq.rc.in	2007-11-19 20:55:42.562500000 +0000
+@@ -19,7 +19,7 @@
+             VALUE "InternalName", "libpq\0"
+             VALUE "LegalCopyright", "Copyright (C) 2005\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.2.5\0"
+         END

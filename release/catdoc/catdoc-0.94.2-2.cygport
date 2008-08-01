@@ -1,0 +1,18 @@
+# -*- sh -*-
+DESCRIPTION="Dump Word, Excel and Powerpoint files contents"
+HOMEPAGE="http://www.45.free.net/~vitus/software/catdoc/"
+SRC_URI="http://ftp.45.free.net/pub/catdoc/${PN}-${PV}.tar.gz"
+
+MAKEOPTS="-j1"
+
+src_compile() {
+   cd ${S}
+   aclocal-1.4
+   autoconf
+   #cygautoreconf
+   cd ${B}
+   cygconf
+
+   cd ${B}/charsets; for s in ${S}/charsets/*; do ln -s $s; done
+   cygmake
+}

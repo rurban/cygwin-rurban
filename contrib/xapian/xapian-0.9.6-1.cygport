@@ -1,0 +1,49 @@
+DESCRIPTION="Xapian Probabilistic Information Retrieval library"
+HOMEPAGE="http://www.xapian.org/"
+SRC_URI="http://www.oligarchy.co.uk/xapian/${PV}/xapian-core-${PV}.tar.gz"
+SRC_DIR="xapian-core-${PV}"
+
+LICENSE="GPL-2"
+HTMLDOCS="docs/*.html"
+
+PKG_NAMES="${PN} lib${PN}11 lib${PN}-devel ${PN}-doc"
+PKG_HINTS="${PKG_NAMES}"
+
+src_compile() {
+  cd ${B}
+  cygconf
+  cygmake
+}
+
+src_install () {
+  cd ${B}
+  cyginstall
+
+  mv "${D}/usr/share/doc/xapian-core" "${D}/usr/share/doc/${P}"
+  rm ${D}/usr/share/doc/${P}/*.html
+  # dodoc AUTHORS HACKING PLATFORMS README
+}
+
+# xapian
+PKG_CONTENTS[0]=" \
+--exclude=usr/bin/cygxapian*.dll \
+--exclude=usr/include \
+--exclude=usr/lib \
+--exclude=usr/share/doc/${P}/apidoc* \
+--exclude=usr/share/aclocal/xapian.m4 \
+usr"
+
+# libxapian11
+PKG_CONTENTS[1]=" \
+usr/bin/cygxapian*.dll"
+
+# libxapian-devel
+PKG_CONTENTS[2]=" \
+usr/include \
+usr/lib \
+usr/share/aclocal/xapian.m4"
+
+# xapian-doc
+PKG_CONTENTS[3]=" \
+usr/share/doc/${P}/apidoc.ps \
+usr/share/doc/${P}/apidoc"

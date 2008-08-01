@@ -1,0 +1,11 @@
+--- clamav-0.80rc3/libclamav/Makefile.am.orig	2004-09-07 23:09:56.000000000 +0200
++++ clamav-0.80rc3/libclamav/Makefile.am	2004-09-28 23:01:28.826596400 +0200
+@@ -20,7 +20,7 @@
+ 
+ libclamav_la_LIBADD = @LIBCLAMAV_LIBS@
+ 
+-libclamav_la_LDFLAGS = @TH_SAFE@ -version-info @LIBCLAMAV_VERSION@
++libclamav_la_LDFLAGS = @TH_SAFE@ -version-info @LIBCLAMAV_VERSION@ -no-undefined
+ 
+ include_HEADERS = clamav.h
+ 

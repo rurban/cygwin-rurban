@@ -1,0 +1,6 @@
+sdesc: "Xapian Indexer and Web Interface (CGI)"
+ldesc: "Two index building utilities (omindex and scriptindex)
+and a CGI search application (omega).  These use the Xapian search library to
+provide a search over a collection of documents."
+category: Web
+requires: xapian libxapian15 unzip antiword catdoc

@@ -1,0 +1,415 @@
+diff -urN origsrc/scsh-0.6.7/CYGWIN-PATCHES/README src/scsh-0.6.7/CYGWIN-PATCHES/README
+--- origsrc/scsh-0.6.7/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/scsh-0.6.7/CYGWIN-PATCHES/README	2007-08-27 12:43:00.438596300 +0200
+@@ -0,0 +1,400 @@
++scsh
++-------------------------------
++Open-source Unix shell embedded within Scheme, running on all major Unix
++platforms
++
++Runtime requirements: (versions given or later)
++  cygwin-1.5.x
++  
++Build requirements: (versions given or later)
++  cygwin-1.5.x
++  gcc-core
++  binutils
++  make
++  bash
++  fileutils
++  sed
++
++Canonical homepage:
++  http://www.scsh.net/
++
++Canonical download:
++  ftp://ftp.scsh.net/pub/scsh/0.6/${PN}-${PV}.tar.gz
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++
++  cd /usr/src
++  tar xfvj scsh-<VER>-src.tar.bz2
++  cygport scsh-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/scsh-<VER>-<CYGREL>.tar.bz2
++  /usr/src/scsh-<VER>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport scsh-<VER>-<CYGREL>.cygport prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++Files included in this package:
++
++  /usr/bin/scsh.exe
++  /usr/include/scsh/scheme48.h
++  /usr/include/scsh/write-barrier.h
++  /usr/lib/scsh/big/array.scm
++  /usr/lib/scsh/big/big-util.scm
++  /usr/lib/scsh/big/bigbit.scm
++  /usr/lib/scsh/big/callback.scm
++  /usr/lib/scsh/big/compose-cont.scm
++  /usr/lib/scsh/big/defrecord.scm
++  /usr/lib/scsh/big/destructure.scm
++  /usr/lib/scsh/big/dump.scm
++  /usr/lib/scsh/big/either.scm
++  /usr/lib/scsh/big/enum-set.scm
++  /usr/lib/scsh/big/external.scm
++  /usr/lib/scsh/big/filename.scm
++  /usr/lib/scsh/big/finite-type.scm
++  /usr/lib/scsh/big/format.scm
++  /usr/lib/scsh/big/general-table.scm
++  /usr/lib/scsh/big/import-def.scm
++  /usr/lib/scsh/big/linked-queue.scm
++  /usr/lib/scsh/big/lu-decomp.scm
++  /usr/lib/scsh/big/more-port.scm
++  /usr/lib/scsh/big/pipe.scm
++  /usr/lib/scsh/big/placeholder.scm
++  /usr/lib/scsh/big/pp.scm
++  /usr/lib/scsh/big/queue.scm
++  /usr/lib/scsh/big/random.scm
++  /usr/lib/scsh/big/receive.scm
++  /usr/lib/scsh/big/search-tree.scm
++  /usr/lib/scsh/big/socket.scm
++  /usr/lib/scsh/big/strong.scm
++  /usr/lib/scsh/big/thread-fluid.scm
++  /usr/lib/scsh/env/assem.scm
++  /usr/lib/scsh/env/basic-command.scm
++  /usr/lib/scsh/env/build.scm
++  /usr/lib/scsh/env/command-level.scm
++  /usr/lib/scsh/env/command.scm
++  /usr/lib/scsh/env/debug.scm
++  /usr/lib/scsh/env/debuginfo.scm
++  /usr/lib/scsh/env/disasm.scm
++  /usr/lib/scsh/env/disclosers.scm
++  /usr/lib/scsh/env/dispcond.scm
++  /usr/lib/scsh/env/flatload.scm
++  /usr/lib/scsh/env/init-defpackage.scm
++  /usr/lib/scsh/env/inspect.scm
++  /usr/lib/scsh/env/jar-assem.scm
++  /usr/lib/scsh/env/list-interface.scm
++  /usr/lib/scsh/env/load-package.scm
++  /usr/lib/scsh/env/pacman.scm
++  /usr/lib/scsh/env/pedit.scm
++  /usr/lib/scsh/env/profile.scm
++  /usr/lib/scsh/env/read-command.scm
++  /usr/lib/scsh/env/shadow.scm
++  /usr/lib/scsh/env/space.scm
++  /usr/lib/scsh/env/start.scm
++  /usr/lib/scsh/env/traverse.scm
++  /usr/lib/scsh/env/version-info.scm
++  /usr/lib/scsh/libscsh.a
++  /usr/lib/scsh/libscshvm.a
++  /usr/lib/scsh/link/data.scm
++  /usr/lib/scsh/link/generate-c-header.scm
++  /usr/lib/scsh/link/generate-old-c-header.scm
++  /usr/lib/scsh/link/link.scm
++  /usr/lib/scsh/link/loadc.scm
++  /usr/lib/scsh/link/reify.scm
++  /usr/lib/scsh/link/transport.scm
++  /usr/lib/scsh/link/write-image.scm
++  /usr/lib/scsh/misc/annotate.scm
++  /usr/lib/scsh/misc/doodl.scm
++  /usr/lib/scsh/misc/either.scm
++  /usr/lib/scsh/misc/engine.scm
++  /usr/lib/scsh/misc/getenv.scm
++  /usr/lib/scsh/misc/hilbert.scm
++  /usr/lib/scsh/misc/ilength.scm
++  /usr/lib/scsh/misc/integertostring.scm
++  /usr/lib/scsh/misc/load-static.scm
++  /usr/lib/scsh/misc/mail.scm
++  /usr/lib/scsh/misc/packages.scm
++  /usr/lib/scsh/misc/pipe.scm
++  /usr/lib/scsh/misc/psd-s48.scm
++  /usr/lib/scsh/misc/remote.scm
++  /usr/lib/scsh/misc/require.scm
++  /usr/lib/scsh/misc/separate.scm
++  /usr/lib/scsh/misc/shift-reset.scm
++  /usr/lib/scsh/misc/sicp.scm
++  /usr/lib/scsh/misc/static.scm
++  /usr/lib/scsh/misc/syscall.scm
++  /usr/lib/scsh/misc/test-doodl.scm
++  /usr/lib/scsh/opt/analyze.scm
++  /usr/lib/scsh/opt/flatten.scm
++  /usr/lib/scsh/opt/inline.scm
++  /usr/lib/scsh/opt/sort.scm
++  /usr/lib/scsh/opt/tst.scm
++  /usr/lib/scsh/opt/usage.scm
++  /usr/lib/scsh/rts/bignum.scm
++  /usr/lib/scsh/rts/defenum.scm
++  /usr/lib/scsh/rts/floatnum.scm
++  /usr/lib/scsh/rts/innum.scm
++  /usr/lib/scsh/rts/jar-defrecord.scm
++  /usr/lib/scsh/rts/ratnum.scm
++  /usr/lib/scsh/rts/recnum.scm
++  /usr/lib/scsh/rts/xnum.scm
++  /usr/lib/scsh/scsh.image
++  /usr/lib/scsh/scsh/awk-test.scm
++  /usr/lib/scsh/scsh/awk.scm
++  /usr/lib/scsh/scsh/bitwise-ops-test.scm
++  /usr/lib/scsh/scsh/bufpol.scm
++  /usr/lib/scsh/scsh/bug-report-tests.scm
++  /usr/lib/scsh/scsh/ccp-pack.scm
++  /usr/lib/scsh/scsh/ccp.scm
++  /usr/lib/scsh/scsh/char-package.scm
++  /usr/lib/scsh/scsh/db.scm
++  /usr/lib/scsh/scsh/dbm.scm
++  /usr/lib/scsh/scsh/defrec.scm
++  /usr/lib/scsh/scsh/dot-locking.scm
++  /usr/lib/scsh/scsh/ekko.scm
++  /usr/lib/scsh/scsh/enumconst.scm
++  /usr/lib/scsh/scsh/env-test-add.scm
++  /usr/lib/scsh/scsh/env-test-code.scm
++  /usr/lib/scsh/scsh/errno.scm
++  /usr/lib/scsh/scsh/event.scm
++  /usr/lib/scsh/scsh/fdflags.scm
++  /usr/lib/scsh/scsh/fdports.scm
++  /usr/lib/scsh/scsh/file-name-manipulation-test.scm
++  /usr/lib/scsh/scsh/file-system-tests.scm
++  /usr/lib/scsh/scsh/fileinfo.scm
++  /usr/lib/scsh/scsh/filemtch.scm
++  /usr/lib/scsh/scsh/filesys.scm
++  /usr/lib/scsh/scsh/flock.scm
++  /usr/lib/scsh/scsh/fname.scm
++  /usr/lib/scsh/scsh/fr.scm
++  /usr/lib/scsh/scsh/generate-constants.scm
++  /usr/lib/scsh/scsh/glob.scm
++  /usr/lib/scsh/scsh/here.scm
++  /usr/lib/scsh/scsh/let-opt.scm
++  /usr/lib/scsh/scsh/lib-dirs.scm
++  /usr/lib/scsh/scsh/libscsh.scm
++  /usr/lib/scsh/scsh/low-interrupt.scm
++  /usr/lib/scsh/scsh/md5.scm
++  /usr/lib/scsh/scsh/meta-arg.scm
++  /usr/lib/scsh/scsh/ndbm.scm
++  /usr/lib/scsh/scsh/netconst.scm
++  /usr/lib/scsh/scsh/network.scm
++  /usr/lib/scsh/scsh/newports.scm
++  /usr/lib/scsh/scsh/odbc-constants.scm
++  /usr/lib/scsh/scsh/odbc-interfaces.scm
++  /usr/lib/scsh/scsh/odbc-packages.scm
++  /usr/lib/scsh/scsh/odbc-types.scm
++  /usr/lib/scsh/scsh/odbc.scm
++  /usr/lib/scsh/scsh/oldfuns.scm
++  /usr/lib/scsh/scsh/packages.scm
++  /usr/lib/scsh/scsh/parse.scm
++  /usr/lib/scsh/scsh/pattern-matching-test.scm
++  /usr/lib/scsh/scsh/posixstr.scm
++  /usr/lib/scsh/scsh/process-state-tests.scm
++  /usr/lib/scsh/scsh/procobj.scm
++  /usr/lib/scsh/scsh/pty.scm
++  /usr/lib/scsh/scsh/rdelim.scm
++  /usr/lib/scsh/scsh/re-fold.scm
++  /usr/lib/scsh/scsh/re-high.scm
++  /usr/lib/scsh/scsh/re-low.scm
++  /usr/lib/scsh/scsh/re-match-syntax.scm
++  /usr/lib/scsh/scsh/re-subst.scm
++  /usr/lib/scsh/scsh/re-syntax.scm
++  /usr/lib/scsh/scsh/re.scm
++  /usr/lib/scsh/scsh/read-delimited-strings.scm
++  /usr/lib/scsh/scsh/regexp.scm
++  /usr/lib/scsh/scsh/regress.scm
++  /usr/lib/scsh/scsh/rw.scm
++  /usr/lib/scsh/scsh/rx-lib.scm
++  /usr/lib/scsh/scsh/scsh-condition.scm
++  /usr/lib/scsh/scsh/scsh-interfaces.scm
++  /usr/lib/scsh/scsh/scsh-package.scm
++  /usr/lib/scsh/scsh/scsh-read.scm
++  /usr/lib/scsh/scsh/scsh-version.scm
++  /usr/lib/scsh/scsh/scsh.scm
++  /usr/lib/scsh/scsh/scshql.scm
++  /usr/lib/scsh/scsh/sighandlers.scm
++  /usr/lib/scsh/scsh/signals.scm
++  /usr/lib/scsh/scsh/simp.scm
++  /usr/lib/scsh/scsh/spencer.scm
++  /usr/lib/scsh/scsh/startup.scm
++  /usr/lib/scsh/scsh/stringcoll.scm
++  /usr/lib/scsh/scsh/strings-and-chars-test.scm
++  /usr/lib/scsh/scsh/syntax-helpers.scm
++  /usr/lib/scsh/scsh/syntax.scm
++  /usr/lib/scsh/scsh/syscalls.scm
++  /usr/lib/scsh/scsh/syslog.scm
++  /usr/lib/scsh/scsh/terminal-device-control-test.scm
++  /usr/lib/scsh/scsh/test-base.scm
++  /usr/lib/scsh/scsh/test-packages.scm
++  /usr/lib/scsh/scsh/test.scm
++  /usr/lib/scsh/scsh/threads.scm
++  /usr/lib/scsh/scsh/time-procedure-calls.scm
++  /usr/lib/scsh/scsh/time.scm
++  /usr/lib/scsh/scsh/time_dep.scm
++  /usr/lib/scsh/scsh/top.scm
++  /usr/lib/scsh/scsh/tty-consts.scm
++  /usr/lib/scsh/scsh/tty.scm
++  /usr/lib/scsh/scsh/user-and-group-db-access.scm
++  /usr/lib/scsh/scsh/utilities.scm
++  /usr/lib/scsh/scsh/waitcodes.scm
++  /usr/lib/scsh/scsh/weaktables.scm
++  /usr/lib/scsh/scshvm.exe
++  /usr/lib/scsh/srfi/srfi-1.scm
++  /usr/lib/scsh/srfi/srfi-11.scm
++  /usr/lib/scsh/srfi/srfi-13.scm
++  /usr/lib/scsh/srfi/srfi-14.scm
++  /usr/lib/scsh/srfi/srfi-16.scm
++  /usr/lib/scsh/srfi/srfi-17.scm
++  /usr/lib/scsh/srfi/srfi-19.scm
++  /usr/lib/scsh/srfi/srfi-2.scm
++  /usr/lib/scsh/srfi/srfi-25.scm
++  /usr/lib/scsh/srfi/srfi-26.scm
++  /usr/lib/scsh/srfi/srfi-27.scm
++  /usr/lib/scsh/srfi/srfi-28.scm
++  /usr/lib/scsh/srfi/srfi-31.scm
++  /usr/lib/scsh/srfi/srfi-37.scm
++  /usr/lib/scsh/srfi/srfi-42.scm
++  /usr/lib/scsh/srfi/srfi-5.scm
++  /usr/lib/scsh/srfi/srfi-7.scm
++  /usr/lib/scsh/stripped-scsh.image
++  /usr/share/doc/Cygwin/scsh-0.6.7.README
++  /usr/share/doc/scsh-0.6.7/COPYING
++  /usr/share/doc/scsh-0.6.7/INSTALL
++  /usr/share/doc/scsh-0.6.7/README
++  /usr/share/doc/scsh-0.6.7/cheat.txt
++  /usr/share/doc/scsh-0.6.7/hacking.txt
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_1.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_10.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_11.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_12.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_13.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_14.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_15.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_16.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_17.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_18.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_19.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_2.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_20.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_21.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_22.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_23.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_24.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_25.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_26.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_27.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_28.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_29.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_3.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_30.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_31.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_32.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_33.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_34.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_35.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_36.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_37.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_38.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_39.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_4.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_40.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_41.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_42.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_43.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_44.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_45.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_46.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_47.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_48.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_49.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_5.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_50.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_51.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_52.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_53.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_54.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_55.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_56.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_57.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_58.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_59.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_6.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_60.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_61.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_62.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_63.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_64.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_7.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_8.html
++  /usr/share/doc/scsh-0.6.7/html/s48-manual/s48manual_9.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-G-D-1.gif
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-1.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-10.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-11.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-12.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-13.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-2.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-3.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-4.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-5.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-6.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-7.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-8.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-H-9.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man-Z-S.css
++  /usr/share/doc/scsh-0.6.7/html/scsh-manual/man.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-1.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-10.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-11.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-12.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-13.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-14.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-15.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-16.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-17.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-18.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-2.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-3.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-4.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-5.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-6.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-7.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-8.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-H-9.html
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper-Z-S.css
++  /usr/share/doc/scsh-0.6.7/html/scsh-paper/scsh-paper.html
++  /usr/share/doc/scsh-0.6.7/install.txt
++  /usr/share/doc/scsh-0.6.7/io.txt
++  /usr/share/doc/scsh-0.6.7/meeting.ps
++  /usr/share/doc/scsh-0.6.7/news.txt
++  /usr/share/doc/scsh-0.6.7/no-leaf-env.txt
++  /usr/share/doc/scsh-0.6.7/porting.txt
++  /usr/share/doc/scsh-0.6.7/ps/s48-manual/manual.ps
++  /usr/share/doc/scsh-0.6.7/ps/scsh-manual/man.ps
++  /usr/share/doc/scsh-0.6.7/ps/scsh-paper/mitlogo.ps
++  /usr/share/doc/scsh-0.6.7/ps/scsh-paper/scsh-paper.ps
++  /usr/share/doc/scsh-0.6.7/threads.txt
++  /usr/share/doc/scsh-0.6.7/todo.txt
++  /usr/share/doc/scsh-0.6.7/type.txt
++  /usr/share/man/man1/scsh.1.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 0.6.7-2 ----- 
++socket patch
++--includedir=/usr/include/scsh
++cleaned of docinto: html, txt and ps
++
++----- version 0.6.7-1 ----- 
++First try, never uploaded.
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN origsrc/scsh-0.6.7/CYGWIN-PATCHES/setup.hint src/scsh-0.6.7/CYGWIN-PATCHES/setup.hint
+--- origsrc/scsh-0.6.7/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/scsh-0.6.7/CYGWIN-PATCHES/setup.hint	2007-08-27 10:14:41.524318800 +0200
+@@ -0,0 +1,7 @@
++sdesc: "Open-source Unix shell embedded within Scheme"
++ldesc: "Scsh is a variant of Scheme 48 (an R5RS compliant new-tech Scheme system) 
++Scsh is designed for writing real-life standalone Unix programs and shell scripts.
++Scsh spans a wide range of application, from script applications usually 
++handled with perl or sh, to more standard systems applications usually written 
++in C."
++requires: cygwin crypt

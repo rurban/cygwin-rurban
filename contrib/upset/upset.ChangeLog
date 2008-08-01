@@ -1,0 +1,26 @@
+2007-07-08 2005-11-06 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.6
+	* renamed Version to Cygwin::Setup::Version
+	* moved libs to /usr/src/setup
+
+2005-11-06 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.5
+	* mksetup: fix --noupset, avoid double invocation
+	* vendor_perl 5.8.5 => 5.8
+
+2004-11-14 Reini Urban <rurban@x-ray.at>
+
+	* version upset-1.0.4
+	* Cygwin/Setup/ByDir.pm: warn if md5 changed but version is not bumped. 
+	Will lead to downloads without updates.
+
+2004-10-28 Reini Urban <rurban@x-ray.at>
+
+	* upset, Cygwin/Setup.pm: enable Replaces: and more setup.ini features
+	* upset: allow -u setup.bz2, fix -u setup setup.exe conflict
+	* upset: --extnowarn or warn differently if refers to installed but not provided package
+	* Cygwin/Setup/ByDir.pm: ignore -log.tar.bz2 files
+	* Cygwin/Setup.pm: fatal on non-approved category
+

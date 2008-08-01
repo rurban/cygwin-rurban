@@ -1,0 +1,62 @@
+# -*- sh -*-
+DESCRIPTION="Parrot Virtual Machine"
+HOMEPAGE="http://www.parrotcode.org/"
+SRC_URI="http://search.cpan.org/CPAN/authors/id/B/BS/BSCHMAL/parrot-${PV}.tar.gz"
+# SRC_URI="http://search.cpan.org/dist/${PN}/${PN}-${PV}.tar.gz"
+# SRC_DIR="parrot-${PV}"
+
+LICENSE="GPL-2"
+
+PKG_NAMES="${PN} lib${PN}0 lib${PN}-devel ${PN}-perl6 ${PN}-languages"
+PKG_HINTS="${PKG_NAMES}"
+languages="parrot_compiler abc befunge bf cola lisp eclectus HQ9plus lazy-k lua m4 ook plumhead punie scheme tcl urm WMLScript"
+
+src_compile() {
+  cd ${S}
+  export PATH=${B}/blib/lib:$PATH
+  # grep -A6 ${PV} languages/LANGUAGES_STATUS.pod |grep "C<languages"|cut -c13-
+  perl Configure.pl --optimize --languages="perl6 $languages"
+  cd ${S}
+  cygmake
+  cygmake perl6.exe
+}
+
+src_install () {
+  cd ${S}
+  cygmake reallyinstall DESTDIR=${I}
+  dodoc CFLAGS CREDITS DONORS PBC_COMPAT PLATFORMS RESPONSIBLE_PARTIES TODO
+}
+
+_P=""
+_EX=""
+for l in $languages; do _P="${_P} usr/bin/${l}.exe"; done
+for l in $languages; do _EX="${_EX} --exclude=usr/bin/${l}.exe"; done
+
+# parrot
+PKG_CONTENTS[0]=" \
+--exclude=usr/bin/libparrot*.dll \
+--exclude=usr/include \
+--exclude=usr/lib \
+--exclude=usr/bin/perl6.exe \
+${_EX} \
+--exclude=usr/share/doc/${P}/*.html \
+usr \
+"
+
+# libparrot0
+PKG_CONTENTS[1]=" \
+usr/bin/libparrot*.dll"
+
+# libparrot-devel
+PKG_CONTENTS[2]=" \
+usr/include \
+usr/lib"
+
+# parrot-perl6
+PKG_CONTENTS[3]=" \
+usr/bin/perl6.exe"
+
+# parrot-languages
+PKG_CONTENTS[4]="$_P"
+unset $_P
+unset $_EX

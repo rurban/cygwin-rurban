@@ -1,0 +1,7 @@
+sdesc: "documentation for the PostgreSQL database management system"
+ldesc: "This package contains all README files, user manual, and examples for
+PostgreSQL 7.4. The manual is in HTML format.
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Database
+external-source: postgresql7.4

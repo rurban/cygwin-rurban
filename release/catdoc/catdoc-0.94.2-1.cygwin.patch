@@ -1,0 +1,129 @@
+diff -urN origsrc/catdoc-0.94.2/CYGWIN-PATCHES/README src/catdoc-0.94.2/CYGWIN-PATCHES/README
+--- origsrc/catdoc-0.94.2/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/catdoc-0.94.2/CYGWIN-PATCHES/README	2006-08-08 17:08:29.703125000 +0200
+@@ -0,0 +1,117 @@
++catdoc
++-------------------------------
++Dump Word, Excel and Powerpoint files contents
++
++Runtime requirements: (versions given or later)
++  cygwin-1.5.x
++  
++Build requirements: (versions given or later)
++  cygwin-1.5.x
++  gcc-core
++  binutils
++  make
++  bash
++  fileutils
++  sed
++
++Canonical homepage:
++  http://www.45.free.net/~vitus/software/catdoc/
++
++Canonical download:
++  http://ftp.45.free.net/pub/catdoc/${PN}-${PV}.tar.gz
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++
++  cd /usr/src
++  tar xfvj catdoc-<VER>-src.tar.bz2
++  cygport catdoc-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/catdoc-<VER>-<CYGREL>.tar.bz2
++  /usr/src/catdoc-<VER>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport catdoc-<VER>-<CYGREL>.cygport prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in this package:
++
++  /usr/bin/catdoc.exe
++  /usr/bin/catppt.exe
++  /usr/bin/wordview
++  /usr/bin/xls2csv.exe
++  /usr/share/catdoc/8859-1.txt
++  /usr/share/catdoc/8859-10.txt
++  /usr/share/catdoc/8859-11.txt
++  /usr/share/catdoc/8859-13.txt
++  /usr/share/catdoc/8859-14.txt
++  /usr/share/catdoc/8859-15.txt
++  /usr/share/catdoc/8859-2.txt
++  /usr/share/catdoc/8859-3.txt
++  /usr/share/catdoc/8859-4.txt
++  /usr/share/catdoc/8859-5.txt
++  /usr/share/catdoc/8859-6.txt
++  /usr/share/catdoc/8859-7.txt
++  /usr/share/catdoc/8859-8.txt
++  /usr/share/catdoc/8859-9.txt
++  /usr/share/catdoc/ascii.replchars
++  /usr/share/catdoc/ascii.specchars
++  /usr/share/catdoc/cp1250.txt
++  /usr/share/catdoc/cp1251.txt
++  /usr/share/catdoc/cp1252.txt
++  /usr/share/catdoc/cp1253.txt
++  /usr/share/catdoc/cp1254.txt
++  /usr/share/catdoc/cp1255.txt
++  /usr/share/catdoc/cp1256.txt
++  /usr/share/catdoc/cp1257.txt
++  /usr/share/catdoc/cp1258.txt
++  /usr/share/catdoc/cp437.txt
++  /usr/share/catdoc/cp850.txt
++  /usr/share/catdoc/cp852.txt
++  /usr/share/catdoc/cp855.txt
++  /usr/share/catdoc/cp857.txt
++  /usr/share/catdoc/cp860.txt
++  /usr/share/catdoc/cp861.txt
++  /usr/share/catdoc/cp862.txt
++  /usr/share/catdoc/cp863.txt
++  /usr/share/catdoc/cp864.txt
++  /usr/share/catdoc/cp865.txt
++  /usr/share/catdoc/cp866.txt
++  /usr/share/catdoc/cp869.txt
++  /usr/share/catdoc/cp874.txt
++  /usr/share/catdoc/koi8-r.txt
++  /usr/share/catdoc/koi8-u.txt
++  /usr/share/catdoc/mac-arabic.txt
++  /usr/share/catdoc/mac-centeuro.txt
++  /usr/share/catdoc/mac-cyrillic.txt
++  /usr/share/catdoc/mac-greek.txt
++  /usr/share/catdoc/mac-hebrew.txt
++  /usr/share/catdoc/mac-roman.txt
++  /usr/share/catdoc/tex.replchars
++  /usr/share/catdoc/tex.specchars
++  /usr/share/catdoc/us-ascii.txt
++  /usr/share/doc/Cygwin/catdoc-0.94.2.README
++  /usr/share/doc/catdoc-0.94.2/COPYING
++  /usr/share/doc/catdoc-0.94.2/CREDITS
++  /usr/share/doc/catdoc-0.94.2/INSTALL
++  /usr/share/doc/catdoc-0.94.2/NEWS
++  /usr/share/doc/catdoc-0.94.2/README
++  /usr/share/doc/catdoc-0.94.2/TODO
++  /usr/share/man/man1/catdoc.1.gz
++  /usr/share/man/man1/catppt.1.gz
++  /usr/share/man/man1/wordview.1.gz
++  /usr/share/man/man1/xls2csv.1.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 0.94.2-1 ----- 
++Initial release
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+\ No newline at end of file
+diff -urN origsrc/catdoc-0.94.2/CYGWIN-PATCHES/setup.hint src/catdoc-0.94.2/CYGWIN-PATCHES/setup.hint
+--- origsrc/catdoc-0.94.2/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/catdoc-0.94.2/CYGWIN-PATCHES/setup.hint	2006-08-08 17:11:22.671875000 +0200
+@@ -0,0 +1,3 @@
++sdesc: "Dump Word, Excel and Powerpoint files contents"
++ldesc: "catdoc, catppt, wordview and xls2csv"
++requires: cygwin

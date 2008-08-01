@@ -1,0 +1,66 @@
+# -*- sh -*-
+DESCRIPTION="International Components for Unicode"
+HOMEPAGE="http://www.icu-project.org/"
+SRC_URI="http://download.icu-project.org/files/icu4c/3.8/icu4c-3_8-src.tgz"
+SRC_DIR="icu"
+LICENSE="GPL-2"
+
+PKG_NAMES="${PN} lib${PN}38 lib${PN}-devel ${PN}-doc"
+PKG_HINTS="${PKG_NAMES}"
+# icu adds its own -O3 which contradict with our -O2
+CFLAGS="-pipe"
+CXXFLAGS="-pipe"
+DOCS="license.html readme.html unicode-license.txt packaging/PACKAGES"
+HTMLDOCS="${B}doc/html"
+
+src_compile() {
+  cd ${B}
+  confargs="--prefix=/usr --exec-prefix=/usr --bindir=/usr/bin \
+ --sbindir=/usr/sbin --libexecdir=/usr/sbin \
+ --localstatedir=/var --mandir=/usr/share/man --sysconfdir=/etc \
+ --disable-rpath --without-samples"
+  sh ${S}/source/runConfigureICU Cygwin $confargs
+  cygmake
+  cygmake doc
+}
+
+src_install() {
+  cd ${B}
+  cyginstall
+  cyginstall install-doc
+
+  # hack for broken install-library targets in icu
+  mv ${D}/usr/lib/cyg*.dll ${D}/usr/bin/
+
+  # fix the broken install links. until make check it is all okay.
+  rm -f ${D}/usr/bin/cygicu??.dll
+  cd ${D}/usr/lib
+  for f in libicu*.dll.a
+  do 
+    n=$(echo $f|sed -e's,38,,')
+    ln -s $f $n
+  done
+  cd ${B}
+}
+
+# icu
+PKG_CONTENTS[0]="usr/share/doc/Cygwin"
+
+# libicu38
+PKG_CONTENTS[1]=" \
+--exclude=usr/bin/cygicutu*.dll \
+usr/bin/cygicu*.dll"
+
+# libicu-devel
+PKG_CONTENTS[2]=" \
+usr/bin/*.exe \
+usr/bin/icu-config \
+usr/bin/cygicutu*.dll \
+usr/include \
+usr/lib \
+usr/sbin/*.exe \
+usr/share/man \
+usr/share/icu"
+
+# icu-doc
+PKG_CONTENTS[3]="usr/share/doc/icu-*"

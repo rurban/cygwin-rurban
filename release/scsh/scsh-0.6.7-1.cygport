@@ -1,0 +1,15 @@
+DESCRIPTION="Scsh is an open-source Unix shell embedded within Scheme"
+HOMEPAGE="http://www.scsh.net/"
+SRC_URI="ftp://ftp.scsh.net/pub/scsh/0.6/${PN}-${PV}.tar.gz"
+
+MAKEOPTS="-j1"
+DIFF_EXCLUDES="*.scm time_dep1.c libansi.c"
+
+xsrc_compile() {
+   lndirs
+   cd ${S}
+   cygautoreconf
+   cd ${B}
+   cygconf
+   cygmake
+}

@@ -1,0 +1,71 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x '*.scm' -x time_dep1.c -x libansi.c origsrc/scsh-0.6.7/c/sysdep.h.in src/scsh-0.6.7/c/sysdep.h.in
+--- origsrc/scsh-0.6.7/c/sysdep.h.in	2006-03-28 10:16:13.000000000 +0100
++++ src/scsh-0.6.7/c/sysdep.h.in	2007-04-02 10:46:32.828125000 +0100
+@@ -12,6 +12,10 @@
+ /* Define to 1 if you have the <crypt.h> header file. */
+ #undef HAVE_CRYPT_H
+ 
++/* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
++   */
++#undef HAVE_DECL_TZNAME
++
+ /* Define to 1 if the interface to the dynamic linker exists */
+ #undef HAVE_DLOPEN
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x '*.scm' -x time_dep1.c -x libansi.c origsrc/scsh-0.6.7/configure.in src/scsh-0.6.7/configure.in
+--- origsrc/scsh-0.6.7/configure.in	2006-03-29 14:22:28.000000000 +0100
++++ src/scsh-0.6.7/configure.in	2007-04-02 10:45:49.421875000 +0100
+@@ -85,7 +85,7 @@
+ ])dnl
+ dnl
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_TZNAME,[
++AC_DEFUN([SCSH_TZNAME],[
+   AC_MSG_CHECKING(for tzname)
+   AC_CACHE_VAL(scsh_cv_tzname,[
+     AC_TRY_COMPILE([#include <time.h>], 
+@@ -99,7 +99,7 @@
+ ])
+ 
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_ELF, [
++AC_DEFUN([SCSH_ELF], [
+   AC_MSG_CHECKING(for ELF)
+   AC_CACHE_VAL(scsh_cv_elf,[
+     touch conftest.c
+@@ -112,7 +112,7 @@
+   rm -f conftest.c a.out
+ ])
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_SIG_NRS, [
++AC_DEFUN([SCSH_SIG_NRS], [
+   AC_MSG_RESULT([defining signal constants])	
+   ${CC} -o scsh_aux ${srcdir}/scsh/scsh_aux.c
+   AC_DEFINE_UNQUOTED(SIGNR_1, `./scsh_aux 1`, [scsh interrupt for signal 1])
+@@ -149,7 +149,7 @@
+   rm -f scsh_aux scsh_aux.exe	
+ ])
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_LINUX_STATIC_DEBUG, [
++AC_DEFUN([SCSH_LINUX_STATIC_DEBUG], [
+   case "$host" in
+     *-*-linux* )
+     AC_MSG_CHECKING(for broken Linux that needs -static with -g)
+@@ -167,7 +167,7 @@
+ ])
+ 
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_CONST_SYS_ERRLIST,[
++AC_DEFUN([SCSH_CONST_SYS_ERRLIST],[
+   AC_MSG_CHECKING(for const sys_errlist)
+   AC_CACHE_VAL(scsh_cv_const_sys_errlist,[
+     AC_TRY_COMPILE([#include <errno.h>
+@@ -182,7 +182,7 @@
+ ])
+ 
+ dnl -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-AC_DEFUN(SCSH_SOCKLEN_T,[
++AC_DEFUN([SCSH_SOCKLEN_T],[
+      AC_MSG_CHECKING(for socklen_t)
+      AC_TRY_COMPILE([#include <sys/socket.h>
+                      socklen_t x;

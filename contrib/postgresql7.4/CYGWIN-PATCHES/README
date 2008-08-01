@@ -1,0 +1,106 @@
+postgresql7.4
+------------------------------------------
+PostgreSQL is an advanced Object-Relational database management system
+(DBMS) that supports almost all SQL constructs (including transactions,
+subselects and user-defined types and functions).
+
+postgresql7.4 ican be used in a side-by-side install with the current PostgreSQL-8.x
+Binaries are in /usr/lib/postgreql7.4/bin, which is typically NOT in the PATH!
+And it is recommended to keep it this way.
+cygserver must run as service, CYGWIN must contain server. 
+cygipc is not used, and if building from source cygipc must be uninstalled.
+Built via cygport.
+
+Runtime requirements:
+  crypt-1.1-1
+  cygwin-1.5.18-1
+  postgresql7.4-client
+  libpq3
+  libiconv2-1.9.2-2
+  libintl3-0.14.5-1
+  libreadline6-5.0-4
+  openssl-0.9.8a-1
+  zlib-1.2.3-1
+  perl-5.8.8	  (optional, for plperl. only this version!)
+  python-2.5.x    (optional, for plpython. every 2.4 version will work)
+
+Build requirements: (additionally)
+  cygport
+  gcc-core 3.3.x    or newer (libtool-devel-1.5.10 not required)
+  binutils-20040725-2   or newer
+  make-3.80-1           or newer
+  fileutils-4.1         or newer
+  sed-4.1.2-1           or newer
+  m4-1.4-1
+
+  Sun JDK 1.4.x         (optional, for pgjava only)
+  Ant 1.5		(optional, for pgjava only)
+  tk84, tcl84 		(optional, for pgtcl only)
+
+  OpenSP-1.5.1-1        (optional, for man rebuilding)
+  docbook-xml42	 	(optional, for man rebuilding)
+  cpan SGMLSpm          (optional, for man rebuilding)
+  docbook2X      	(optional, for man rebuilding)
+  docbook2man-sgmlspl   (optional, for man rebuilding)
+
+Canonical homepage:
+  http://www.postgresql.org
+
+Canonical download:
+  ftp://ftp.postgresql.org
+
+------------------------------------
+
+Build instructions:
+  cygport postgresql7.4-<VER>-<REL>.cygport almostall
+
+This will create:
+  /usr/src/postgresql7.4-<VER>-<REL>-src.tar.bz2
+  /usr/src/postgresql7.4-<VER>-<REL>.tar.bz2
+
+Or use 'cygport postgresql7.4-<VER>-<REL>.cygport prep' to 
+get a patched source directory.
+
+------------------
+Files:
+
+Package layout see postgresql7.4-<VER>-<REL>-pkg.log
+
+------------------
+
+Port Notes:
+
+----------  postgresql7.4-7.4.18-1 ------------ 
+previous DBMirror patch now included
+perl-5.8.8
+python-2.5
+----------  postgresql7.4-7.4.13-1 ------------ 
+New release.
+DBMirror: Applied fix for http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=375744
+Make system: fixed some run-time paths from postgresql to postgresql7.4
+changed default pgport from 5432 to 15432
+fixed LIBS := "-lpgport $(LIBS)" for contrib
+appended "-7.4" to all nls basenames in the src and the mo files.
+updated FAQ_MSWIN from parts of this README.
+fixed --with-java to build with cygwin and in a seperate build dir
+added Tcl_FindExecutable(""). Required to prevent error loading init.tcl (fix from 8.1.x)
+
+----------  postgresql-7.4.5-1 ------------ 
+Latest version which can only be used alone.
+
+======================================================================
+
+More documentation:
+
+See /usr/share/doc/postgresql7.4/FAQ_MSWIN
+
+======================================================================
+
+Cygwin port maintained now by: Reini Urban <rurban@x-ray.at>, 
+taken over from Jason Tishler.
+Please report problems, suggestions, etc. dependent on their nature to one of
+the following:
+
+    cygwin@cygwin.com
+    pgsql-cygwin@postgresql.org
+

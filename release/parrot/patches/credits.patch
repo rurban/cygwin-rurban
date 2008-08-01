@@ -1,0 +1,18 @@
+difforig parrot-svn/CREDITS
+
+2008-03-20 11:25:42  <rurban@x-ray.at>
+
+diff -ub parrot-svn/CREDITS.orig parrot-svn/CREDITS
+--- parrot-svn/CREDITS.orig	2008-03-16 19:46:54.000000000 +0100
++++ parrot-svn/CREDITS	2008-03-19 14:55:56.171875000 +0100
+@@ -514,6 +514,10 @@
+ E: pdcawley@bofh.org.uk
+ W: http://www.bofh.org.uk:8080/
+ 
++N: Reini Urban
++E: rurban@cpan.org
++D: cygwin fixes
++
+ N: Richard Tibbetts
+ D: Divide by zero exceptions in some PMCs
+ 

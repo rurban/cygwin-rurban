@@ -1,0 +1,14 @@
+difforig runtime/parrot/library/postgres.pir
+
+diff -u runtime/parrot/library/postgres.pir.orig runtime/parrot/library/postgres.pir
+--- runtime/parrot/library/postgres.pir.orig	2008-03-16 09:53:34.000000000 +0000
++++ runtime/parrot/library/postgres.pir	2008-07-19 09:18:52.906250000 +0000
+@@ -5,6 +5,8 @@
+ if $P1 goto has_lib
+ loadlib $P1, 'pq'
+ if $P1 goto has_lib
++loadlib $P1, 'cygpq'
++if $P1 goto has_lib
+ $P2 = new 'Exception'
+ $P2[0] = 'error loading libpg - loadlib failed'
+ throw $P2

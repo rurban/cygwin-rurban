@@ -1,0 +1,92 @@
+DESCRIPTION="Geospatial Data Abstraction Library"
+HOMEPAGE="http://www.gdal.org/"
+SRC_URI="http://www.gdal.org/dl/${P}.tar.gz"
+
+LDFLAGS="-Wl,--enable-auto-image-base"
+CYGCONF_ARGS="--with-sqlite --with-libtiff=internal --with-geotiff=internal"
+
+PKG_NAMES="gdal libgdal1 libgdal1-devel libgdal1-doc python-gdal"
+PKG_HINTS="${PKG_NAMES}"
+# gdal
+PKG_CONTENTS[0]="usr/bin"
+
+# libgdal1 
+PKG_CONTENTS[1]=" \
+usr/include/ \
+usr/lib/postgresql/pgxs/ \
+usr/lib/libpostgres.a"
+
+# libgdal1-devel 
+PKG_CONTENTS[2]=" \
+--exclude=usr/share/locale/*/LC_MESSAGES/initdb.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_controldata.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_ctl.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_resetxlog.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/postgres.mo \
+usr/bin/clusterdb.exe \
+usr/bin/createdb.exe \
+usr/bin/dropdb.exe \
+usr/bin/pg_dump.exe \
+usr/bin/pg_dumpall.exe \
+usr/bin/psql.exe \
+usr/bin/reindexdb.exe \
+usr/sbin/createlang.exe \
+usr/sbin/createuser.exe \
+usr/sbin/droplang.exe \
+usr/sbin/dropuser.exe \
+usr/sbin/pg_restore.exe \
+usr/sbin/vacuumdb.exe \
+usr/share/man/man1/clusterdb.1.gz \
+usr/share/man/man1/createdb.1.gz \
+usr/share/man/man1/createlang.1.gz \
+usr/share/man/man1/createuser.1.gz \
+usr/share/man/man1/dropdb.1.gz \
+usr/share/man/man1/droplang.1.gz \
+usr/share/man/man1/dropuser.1.gz \
+usr/share/man/man1/initdb.1.gz \
+usr/share/man/man1/ipcclean.1.gz \
+usr/share/man/man1/pg_controldata.1.gz \
+usr/share/man/man1/pg_ctl.1.gz \
+usr/share/man/man1/pg_dump.1.gz \
+usr/share/man/man1/pg_dumpall.1.gz \
+usr/share/man/man1/pg_restore.1.gz \
+usr/share/man/man1/postgres.1.gz \
+usr/share/man/man1/postmaster.1.gz \
+usr/share/man/man1/psql.1.gz \
+usr/share/man/man1/reindexdb.1.gz \
+usr/share/man/man1/vacuumdb.1.gz \
+usr/share/man/man7 \
+usr/share/postgresql/psqlrc.sample \
+usr/share/locale/*/LC_MESSAGES/"
+
+# libgdal1-doc 
+PKG_CONTENTS[3]=" \
+--exclude=usr/share/doc/${P}/contrib/ \
+usr/share/doc/${P}"
+
+# python-gdal
+PKG_CONTENTS[4]=""
+
+src_compile() {
+  cd ${S}
+  cygautoreconf
+  cd ${B}
+  INCLUDE_OGR_FRMTS=yes cygconf
+  cygmake
+}
+
+src_test() {
+  cd ${B}
+  make check
+}
+
+src_install() {
+  cd ${B}
+  cyginstall docdir=/usr/share/doc/${P}/
+  mv ${D}/usr/lib/*.dll ${D}/usr/bin/
+
+  #dodir /etc/rc.d/init.d
+  #cp ${S}/CYGWIN-PATCHES/postgresql.initd ${D}/etc/rc.d/init.d/postgresql
+
+  #cp -r ${S}/doc/src/FAQ ${D}/usr/share/doc/${P}/
+}

@@ -1,0 +1,12 @@
+sdesc: "development files for ECPG (Embedded PostgreSQL for C)"
+ldesc: "This package contains the necessary files to build ECPG (Embedded
+PostgreSQL for C) programs. It includes the development libraries
+and the preprocessor program ecpg.
+.
+PostgreSQL is an object-relational SQL database management system.
+.
+Install this package if you want to write C programs with SQL statements
+embedded in them (rather than run by an external process)."
+category: Devel Libs
+requires: libpq3-devel openssl-devel libecpg-compat1
+external-source: postgresql7.4

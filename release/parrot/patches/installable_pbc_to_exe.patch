@@ -1,0 +1,94 @@
+difforig languages/perl6/config/makefiles/root.in tools/dev/pbc_to_exe_gen.pl
+
+diff -u languages/perl6/config/makefiles/root.in.orig languages/perl6/config/makefiles/root.in
+--- languages/perl6/config/makefiles/root.in.orig	2008-07-11 06:47:06.000000000 +0000
++++ languages/perl6/config/makefiles/root.in	2008-07-21 20:14:57.250000000 +0000
+@@ -113,6 +113,9 @@
+ perl6.pbc: $(PARROT) $(SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) -o perl6.pbc perl6.pir
+ 
++installable_perl6$(EXE): perl6.pbc
++	$(PBC_TO_EXE) perl6.pbc --install
++
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
+ 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
+ 	    --output=src/gen_grammar.pir \
+diff -u tools/dev/pbc_to_exe_gen.pl.orig tools/dev/pbc_to_exe_gen.pl
+--- tools/dev/pbc_to_exe_gen.pl.orig	2008-07-19 08:18:54.671875000 +0000
++++ tools/dev/pbc_to_exe_gen.pl	2008-07-21 20:41:08.875000000 +0000
+@@ -54,8 +54,40 @@
+     argc = args
+ 
+     if argc == 2 goto proper_args
++    if argc == 3 goto check_install
+     .return ()
+ 
++check_install:
++    .local string infile, install
++
++    $P0    = shift args
++    infile = shift args
++    install = shift args
++    if install == '--install' goto proper_install
++    .return ()
++
++proper_install:
++    .local string cfile, objfile, obj, exefile, exe
++
++    $P0    = '_config'()
++    obj    = $P0['o']
++    exe    = $P0['exe']
++
++    .local int infile_len
++    infile_len  = length infile
++    infile_len -= 3
++
++    cfile       = substr infile, 0, infile_len
++    cfile      .= 'c'
++
++    dec infile_len
++    objfile     = substr infile, 0, infile_len
++    exefile     = 'installable_'
++    exefile    .= objfile
++    exefile    .= exe
++    objfile    .= obj
++    .return(infile, cfile, objfile, exefile)
++
+ proper_args:
+     .local string infile, cfile, objfile, obj, exefile, exe
+ 
+@@ -270,6 +302,7 @@
+ .sub 'compile_file'
+     .param string cfile
+     .param string objfile
++    .param int install :optional
+ 
+     $P0 = '_config'()
+     .local string cc, ccflags, cc_o_out, osname, build_dir, slash
+@@ -318,6 +351,7 @@
+ .sub 'link_file'
+     .param string objfile
+     .param string exefile
++    .param int install :optional
+ 
+     $P0 = '_config'()
+     .local string cc, ld, link_dynamic, linkflags, ld_out, libparrot, libs, o
+@@ -336,11 +370,17 @@
+     slash        = $P0['slash']
+     icushared    = $P0['icu_shared']
+ 
+-    .local string config, pathquote
++    .local string config, pathquote, exeprefix
++    exeprefix = substr exefile, 0, 12
+     config     = concat build_dir, slash
+     config    .= 'src'
+     config    .= slash
++    if exeprefix == 'installable_' goto config_install
+     config    .= 'parrot_config'
++    goto config_cont
++ config_install:
++    config    .= 'install_config'
++ config_cont:
+     config    .= o
+     pathquote  = ''
+     unless osname == 'MSWin32' goto not_windows

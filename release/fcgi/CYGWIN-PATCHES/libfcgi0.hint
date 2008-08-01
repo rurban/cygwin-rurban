@@ -1,0 +1,4 @@
+sdesc: "The FastCGI (fcgi) DLL"
+requires: cygwin
+category: Web
+external-source: fcgi

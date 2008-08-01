@@ -1,0 +1,7 @@
+sdesc: "Open-source Unix shell embedded within Scheme"
+ldesc: "Scsh is a variant of Scheme 48 (an R5RS compliant new-tech Scheme system) 
+Scsh is designed for writing real-life standalone Unix programs and shell scripts.
+Scsh spans a wide range of application, from script applications usually 
+handled with perl or sh, to more standard systems applications usually written 
+in C."
+requires: cygwin

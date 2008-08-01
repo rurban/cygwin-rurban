@@ -1,0 +1,60 @@
+diff -u  ./README_cygwin.pod.orig
+--- ./README_cygwin.pod.orig	2008-05-25 11:31:39.859375000 +0000
++++ ./README_cygwin.pod	2008-05-25 11:37:10.203125000 +0000
+@@ -24,7 +24,8 @@
+ =item subversion
+ 
+ If you use svn to get a copy of parrot, you should use the cygwin svn
+-and not the tortoiseSVN client to avoid build errors.
++and not the tortoiseSVN client to avoid build errors.  Similarly you will
++need cygwin Perl rather than ActiveState or Strawberry Perl.
+ 
+ =item ICU 
+ 
+diff -u  ./config/gen/makefiles/root.in.orig
+--- ./config/gen/makefiles/root.in.orig	2008-05-25 11:31:31.140625000 +0000
++++ ./config/gen/makefiles/root.in	2008-05-25 11:37:10.234375000 +0000
+@@ -757,7 +757,7 @@
+ 	$(PARROT) -o $@ runtime/parrot/library/parrotlib.pir
+ 
+ runtime/parrot/include/config.fpmc : myconfig config_lib.pasm $(MINIPARROT)
+-	@echo Invoking Parrot to generate runtime/parrot/include/config.fpmc --cross your fingers
++	@cygchkdll@ @echo Invoking Parrot to generate runtime/parrot/include/config.fpmc --cross your fingers
+ 	$(MINIPARROT) config_lib.pasm > $@
+ 
+ $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) CFLAGS \
+diff -u  ./config/init/defaults.pm.orig
+--- ./config/init/defaults.pm.orig	2008-03-22 00:42:27.790250000 +0000
++++ ./config/init/defaults.pm	2008-05-25 11:37:10.218750000 +0000
+@@ -197,6 +197,9 @@
+         make_set_make => $Config{make_set_make},
+         make_and      => '&&',
+ 
++	# for cygwin
++	cygchkdll => '',
++
+         # make_c: Command to emulate GNU make's C<-C directory> option:  chdir
+         # to C<directory> before executing $(MAKE)
+         make_c => '$(PERL) -e \'chdir shift @ARGV; system q{$(MAKE)}, @ARGV; exit $$? >> 8;\'',
+diff -u  ./config/init/hints/cygwin.pm.orig
+--- ./config/init/hints/cygwin.pm.orig	2008-03-15 22:01:20.515625000 +0000
++++ ./config/init/hints/cygwin.pm	2008-05-25 11:37:10.234375000 +0000
+@@ -33,7 +33,8 @@
+         has_dynamic_linking => 1,
+         parrot_is_shared    => 1,
+         sym_export          => '__declspec(dllexport)',
+-        sym_import          => '__declspec(dllimport)'
++        sym_import          => '__declspec(dllimport)',
++	cygchkdll           => "tools/build/cygchkdll.sh \$(MINIPARROT) \$(LIBPARROT)\n\t",
+     );
+ 
+     # inet_aton needs to be defined on Cygwin.
+diff -u  ./tools/build/cygchkdll.sh.orig
+--- ./tools/build/cygchkdll.sh.orig	2008-05-25 11:37:39.437500000 +0000
++++ ./tools/build/cygchkdll.sh	2008-05-19 19:15:50.000000000 +0000
+@@ -0,0 +1,5 @@
++libname=${2##*/}
++if cygcheck ./$1 | egrep "Error.*find.*$libname" >/dev/null ; then
++	echo "Could not find $2.  Guessing you need to add `pwd`/blib/lib to PATH."
++	exit 1
++fi

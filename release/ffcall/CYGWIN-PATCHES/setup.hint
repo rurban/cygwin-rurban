@@ -1,0 +1,4 @@
+sdesc: "Foreign function call libraries"
+ldesc: "This is a collection of four libraries which can be used to build
+foreign function call interfaces in embedded interpreters. Required by clisp."
+category: Libs

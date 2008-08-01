@@ -1,0 +1,123 @@
+2008-07-03 00:19:03 rurban
+
+	* rename src/disassemble.c to src/pbc_diassemble before
+	* config/gen/makefiles/root.in, tools/util/dump_pbc.pl:
+	Rename disassemble to pbc_diassemble. This is too generic.
+
+diff -u  src/parrot-0.6.3/config/gen/makefiles/root.in.orig
+--- src/parrot-0.6.3/config/gen/makefiles/root.in.orig	2008-06-16 13:06:01.000000000 +0000
++++ src/parrot-0.6.3/config/gen/makefiles/root.in	2008-07-02 22:14:43.765625000 +0000
+@@ -462,7 +462,7 @@
+ # Executables
+ PARROT              = $(CUR_DIR)/@test_prog@$(EXE)
+ MINIPARROT          = $(CUR_DIR)/miniparrot$(EXE)
+-DIS                 = $(CUR_DIR)/disassemble$(EXE)
++DIS                 = $(CUR_DIR)/pbc_disassemble$(EXE)
+ PDUMP               = $(CUR_DIR)/pdump$(EXE)
+ PINFO               = $(CUR_DIR)/pbc_info$(EXE)
+ PBCMERGE            = $(CUR_DIR)/pbc_merge$(EXE)
+@@ -474,7 +474,7 @@
+ 
+ # Installable executables
+ INSTALLABLEPARROT   = $(CUR_DIR)/installable_parrot$(EXE)
+-INSTALLABLEDIS      = $(CUR_DIR)/installable_disassemble$(EXE)
++INSTALLABLEDIS      = $(CUR_DIR)/installable_pbc_disassemble$(EXE)
+ INSTALLABLEPDUMP    = $(CUR_DIR)/installable_pdump$(EXE)
+ INSTALLABLEPINFO    = $(CUR_DIR)/installable_pbc_info$(EXE)
+ INSTALLABLEPBCMERGE = $(CUR_DIR)/installable_pbc_merge$(EXE)
+@@ -894,16 +894,16 @@
+ # Parrot Disassembler
+ #
+ 
+-$(SRC_DIR)/disassemble$(O) : $(GENERAL_H_FILES)
++$(SRC_DIR)/pbc_disassemble$(O) : $(GENERAL_H_FILES)
+ 
+-$(DIS) : $(SRC_DIR)/disassemble$(O) $(LIBPARROT)
++$(DIS) : $(SRC_DIR)/pbc_disassemble$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$@ \
+-    $(SRC_DIR)/disassemble$(O) \
++    $(SRC_DIR)/pbc_disassemble$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ 
+-$(INSTALLABLEDIS) : $(SRC_DIR)/disassemble$(O) $(LIBPARROT)
++$(INSTALLABLEDIS) : $(SRC_DIR)/pbc_disassemble$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$@ \
+-    $(SRC_DIR)/disassemble$(O) \
++    $(SRC_DIR)/pbc_disassemble$(O) \
+     $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ 
+ #
+@@ -1597,7 +1597,7 @@
+     $(SRC_DIR)/pbc_info$(O) $(PINFO) \
+     $(PDB) $(SRC_DIR)/pdb$(O) \
+     $(PBCMERGE) $(SRC_DIR)/pbc_merge$(O) \
+-    $(DIS) $(SRC_DIR)/disassemble$(O) \
++    $(DIS) $(SRC_DIR)/pbc_disassemble$(O) \
+     $(SRC_DIR)/main$(O) \
+     $(SRC_DIR)/null_config$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+@@ -1633,7 +1633,7 @@
+     $(SRC_DIR)/pbc_info$(O) $(PINFO) \
+     $(PDB) $(SRC_DIR)/pdb$(O) \
+     $(PBCMERGE) $(SRC_DIR)/pbc_merge$(O) \
+-    $(DIS) $(SRC_DIR)/disassemble$(O) \
++    $(DIS) $(SRC_DIR)/pbc_disassemble$(O) \
+     $(SRC_DIR)/null_config$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+     $(SRC_DIR)/install_config$(O) \
+diff -u  src/parrot-0.6.3/src/pbc_disassemble.c.orig
+--- src/parrot-0.6.3/src/pbc_disassemble.c.orig	2008-05-07 23:32:46.000000000 +0000
++++ src/parrot-0.6.3/src/pbc_disassemble.c	2008-07-02 22:29:44.703125000 +0000
+@@ -4,11 +4,11 @@
+ 
+ =head1 NAME
+ 
+-disassemble - Parrot disassembler
++pbc_disassemble - Parrot disassembler
+ 
+ =head1 SYNOPSIS
+ 
+-    disassemble file.pbc
++    pbc_disassemble file.pbc
+ 
+ =head1 DESCRIPTION
+ 
+@@ -61,7 +61,7 @@
+     interp->lo_var_ptr = &interp;
+ 
+     if (argc != 2) {
+-        fprintf(stderr, "Usage: disassemble programfile \n");
++        fprintf(stderr, "Usage: pbc_disassemble programfile \n");
+         Parrot_exit(interp, 1);
+     }
+ 
+@@ -111,6 +111,8 @@
+ Florian Ragwitz: Moved POD documentation that's not necessary to know how to
+ actually run the disassembler to normal C comments (Wed, 16 Nov 2005).
+ 
++Reini Urban: Renamed from disassemble to pbc_disassemble (2008-07-03).
++
+ =cut
+ 
+ */
+diff -u  src/parrot-0.6.3/tools/util/dump_pbc.pl.orig
+--- src/parrot-0.6.3/tools/util/dump_pbc.pl.orig	2008-06-04 22:29:37.000000000 +0000
++++ src/parrot-0.6.3/tools/util/dump_pbc.pl	2008-07-02 22:12:10.015625000 +0000
+@@ -13,7 +13,7 @@
+ 
+ =head1 DESCRIPTION
+ 
+-dump_pbc.pl uses Parrot's F<disassemble> program to disassemble the opcodes
++dump_pbc.pl uses Parrot's F<pbc_disassemble> program to disassemble the opcodes
+ in a PBC (Parrot ByteCode) file, then weaves the disassembly together with
+ the original PIR source file(s).  This makes it easier to see how the PIR
+ syntactic sugar is desugared into raw Parrot opcodes.
+@@ -45,7 +45,7 @@
+ use lib "$PARROT_ROOT/lib";
+ use Parrot::Config '%PConfig';
+ 
+-my $DISASSEMBLER = "$PConfig{build_dir}$PConfig{slash}disassemble$PConfig{exe}";
++my $DISASSEMBLER = "$PConfig{build_dir}$PConfig{slash}pbc_disassemble$PConfig{exe}";
+ 
+ go(@ARGV);
+ 

@@ -1,0 +1,125 @@
+--- perl-Win32-GUI-1.05/CYGWIN-PATCHES/README.orig	1970-01-01 00:00:00.000000000 +0000
++++ perl-Win32-GUI-1.05/CYGWIN-PATCHES/README	2007-12-26 17:06:21.250000000 +0000
+@@ -0,0 +1,71 @@
++perl-Win32-GUI
++------------------------------------------
++Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
++basically, it's an XS implementation of most of the functions found in 
++user32.dll and gdi32.dll, with an object oriented perl interface and an 
++event-based dialog model that mimic the functionality of visual basic. 
++
++Runtime requirements:
++  cygwin
++  perl-5.10.x
++  w32api
++
++Build requirements:
++  cygwin
++  cygutils
++  perl
++  gcc
++  make
++  w32api
++  gzip
++
++Project Homepages:
++  http://search.cpan.org/search?query=Win32::GUI
++
++------------------------------------
++
++Build instructions:
++  cpan Win32-GUI (it builds out of the box into sitedir)
++   or into vendordir:
++  unpack perl-Win32-GUI-1.05-2-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./perl-Win32-GUI-1.05-2.sh all
++
++This will create:
++  /usr/src/perl-Win32-GUI-1.05-2.tar.bz2
++  /usr/src/perl-Win32-GUI-1.05-2-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++The dll's must probably be rebased. If a remap error occurs run rebaseall from 
++the rebase package. The packaged version is already rebased to my personal settings.
++
++----- version 1.05-2 -----
++* for perl-5.10
++* fixed carp importing issues
++* added chmod +w GUI.rc samples/*
++* added chmod +x SciLexer.dll
++----- version 1.05-1 -----
++* none. last version for perl-5.8
++----- version 1.04-1 -----
++* added the ComboBox::SetEditSel patch from Uwe Kind
++----- version 1.03-1 -----
++* none
++----- version 1.02-1 -----
++* all cygwin patches accepted upstream
++
++----- version 1.0-2 -----
++* INSTALLDIRS=vendor
++
++----- version 1.0-1 ----- (NOT RELEASED)
++
++Initial Cygwin package, seperated from perl-libwin32-0.191.
++* Several new cygwin patches. Added missing itoa definition. 
++* Renamed ToolTip.xs to Tooltip.xs
++
++Cygwin port maintained by: Reini Urban  (rurban@x-ray.at)
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- perl-Win32-GUI-1.05/CYGWIN-PATCHES/setup.hint.orig	1970-01-01 00:00:00.000000000 +0000
++++ perl-Win32-GUI-1.05/CYGWIN-PATCHES/setup.hint	2007-12-25 14:22:50.843750000 +0000
+@@ -0,0 +1,10 @@
++sdesc: "Perl Win32-GUI module"
++ldesc: "Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
++Basically, it's an XS implementation of most of the functions found in 
++user32.dll and gdi32.dll, with an object oriented perl interface and an 
++event-based dialog model that mimic the functionality of visual basic."
++category: Libs
++requires: perl cygwin
++test: 1.05-2
++curr: 1.05-1
++prev: 1.04-1
+--- perl-Win32-GUI-1.05/GUI.pm.orig	2006-11-05 20:04:50.000000000 +0000
++++ perl-Win32-GUI-1.05/GUI.pm	2007-12-25 14:35:13.546875000 +0000
+@@ -421,9 +421,9 @@
+    my $direction = delete $options{-direction};
+ 
+    if(keys(%options) != 0) {
+-       require Carp;
+-       Carp::carp "Animate: Unrecognised options ".join(", ", keys(%options));
+-       return undef
++       eval { use Carp; };
++       carp("Animate: Unrecognised options ".join(", ", keys(%options)));
++       return undef;
+    }
+ 
+    $show      = 1      unless defined $show;
+--- perl-Win32-GUI-1.05/Makefile.PL.orig	2006-11-02 20:36:58.000000000 +0000
++++ perl-Win32-GUI-1.05/Makefile.PL	2007-12-26 17:01:29.031250000 +0000
+@@ -353,6 +353,7 @@
+ # -- Win32::GUI resource section --
+ 
+ GUI.res: GUI.rc
++	chmod u+w GUI.rc
+ 	windres -O coff -i GUI.rc -o GUI.res
+ 
+ RC_FRAG2
+--- perl-Win32-GUI-1.05/Win32-GUI-Constants/Constants.pm.orig	2006-10-31 22:21:50.000000000 +0000
++++ perl-Win32-GUI-1.05/Win32-GUI-Constants/Constants.pm	2007-12-25 14:44:45.859375000 +0000
+@@ -270,8 +270,8 @@
+ 
+     if($oops) {
+         # only require Carp if we need it
+-        require Carp;
+-        Carp::croak qq(Can't continue after import errors);
++        eval { use Carp; };
++        croak qq(Can't continue after import errors);
+     }
+ }
+ 

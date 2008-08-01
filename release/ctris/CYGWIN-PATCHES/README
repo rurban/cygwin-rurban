@@ -1,0 +1,71 @@
+This had be renamed to ctris.
+
+Runtime requirements:
+  cygwin-1.5.x              or newer
+  libncurses8               or newer  
+  
+Build requirements:
+  cygwin-1.5.x              or newer
+  gcc-3.3.1                 or newer
+  binutils-20030901         or newer
+  make-3.81                 or newer
+  ash-20031007              or newer
+  fileutils-4.1             or newer
+  sed-4.0.7                 or newer
+
+Canonical homepage:
+  http://hackl.dhs.org/ctris/
+
+Canonical download:
+  http://hackl.dhs.org/data/download/download.php?file=ctris-${PV}.tar.bz2
+
+-------------------------------------------------------------------------------
+
+Build instructions:
+  tar xfj ctris-<VERSION>-<CYGREL>-src.tar.bz2
+    if you use setup to install this src package, it will be
+	 unpacked under /usr/src automatically
+  cd /usr/src
+  cygport ctris-<VERSION>-<CYGREL>.cygport all
+
+This will create:
+  /usr/src/ctris-<VERSION>-<CYGREL>.tar.bz2
+  /usr/src/ctris-<VERSION>-<CYGREL>-src.tar.bz2
+
+Or use 'cygport ctris-<VERSION>-<CYGREL>.cygport prep' to get a patched 
+source directory 
+
+-------------------------------------------------------------------------------
+
+Files included in ctris:
+
+  /usr/bin/ctris.exe
+  /usr/share/doc/Cygwin/ctris-0.42.README
+  /usr/share/doc/ctris-0.42/AUTHORS
+  /usr/share/doc/ctris-0.42/COPYING
+  /usr/share/doc/ctris-0.42/INSTALL
+  /usr/share/doc/ctris-0.42/README
+  /usr/share/doc/ctris-0.42/TODO
+  /usr/share/man/man6/ctris.6.gz
+
+-------------------------------------------------------------------------------
+
+Port Notes:
+
+----- version ctris-0.42-1 -----
+
+hacked .cygport
+
+----- version ctris-0.41-1 -----
+
+Renamed from ctetris to ctris
+Converted to cygport
+Fixed make install
+
+----- version ctetris-0.29-1 -----
+
+Initial release
+
+Builds out of the box.
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Cygwin port questions to the mailinglist <cygwin@cygwin.com>

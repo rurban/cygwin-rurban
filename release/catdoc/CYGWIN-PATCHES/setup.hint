@@ -1,0 +1,9 @@
+sdesc: "Dump Word, Excel and Powerpoint files contents"
+ldesc: "catdoc, catppt and xls2csv. 
+CATDOC is a program which reads MS-Word file and prints readable 
+ASCII text to stdout, just like Unix cat command.
+It is also able to produce correct escape sequences if some UNICODE
+charachers have to be represented specially in your typesetting system
+such as (La)TeX."
+requires: cygwin tcltk
+category: Text

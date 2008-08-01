@@ -1,0 +1,140 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/Doxyfile.in src/icu/source/Doxyfile.in
+--- origsrc/icu/source/Doxyfile.in	2007-09-13 23:19:04.000000000 +0000
++++ src/icu/source/Doxyfile.in	2008-03-21 22:42:10.555875000 +0000
+@@ -192,7 +192,7 @@
+ # Configuration::additions related to external references   
+ #---------------------------------------------------------------------------
+ TAGFILES               = 
+-GENERATE_TAGFILE       =  "@srcdir@/doc/html/icudocs.tag"
++GENERATE_TAGFILE       =  "@builddir@/doc/html/icudocs.tag"
+ ALLEXTERNALS           = NO
+ EXTERNAL_GROUPS        = YES
+ PERL_PATH              = /usr/bin/perl
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/common/Makefile.in src/icu/source/common/Makefile.in
+--- origsrc/icu/source/common/Makefile.in	2007-09-13 23:18:00.000000000 +0000
++++ src/icu/source/common/Makefile.in	2008-03-21 23:53:36.602750000 +0000
+@@ -36,7 +36,8 @@
+ 
+ ifneq ($(ENABLE_SHARED),)
+ SO_TARGET = $(LIBDIR)/$(LIBICU)$(TARGET_STUBNAME)$(ICULIBSUFFIX).$(SO)
+-ALL_SO_TARGETS = $(SO_TARGET) $(MIDDLE_SO_TARGET) $(FINAL_SO_TARGET) $(SHARED_OBJECT)
++#ALL_SO_TARGETS = $(SO_TARGET) $(MIDDLE_SO_TARGET) $(FINAL_SO_TARGET) $(SHARED_OBJECT)
++ALL_SO_TARGETS = $(FINAL_SO_TARGET) $(SHARED_OBJECT)
+ 
+ ifeq ($(ENABLE_SO_VERSION_DATA),1)
+ SO_VERSION_DATA = common.res
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/config/mh-cygwin src/icu/source/config/mh-cygwin
+--- origsrc/icu/source/config/mh-cygwin	2007-09-13 23:18:10.000000000 +0000
++++ src/icu/source/config/mh-cygwin	2008-03-22 00:09:32.180875000 +0000
+@@ -30,8 +30,8 @@
+ #LINK.cc=      $(CXX) $(CXXFLAGS) $(LDFLAGS)
+ 
+ ## Commands to make a shared library
+-SHLIB.c=	$(CC) $(CFLAGS) $(LDFLAGS) -shared
+-SHLIB.cc=	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared
++SHLIB.c=	$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,--enable-auto-import -Wl,--out-implib=$(subst cyg,lib,$@).$(A)
++SHLIB.cc=	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared -Wl,--enable-auto-import -Wl,--out-implib=$(subst cyg,lib,$@).$(A)
+ 
+ ## Compiler switch to embed a runtime search path
+ LD_RPATH=	
+@@ -45,6 +45,8 @@
+ ## Non-shared intermediate object suffix
+ STATIC_O = ao
+ LIBICU = cyg$(ICUPREFIX)
++## To have an import library is better on Cygwin
++IMPORT_LIB_EXT = .dll.a
+ 
+ # Change the stubnames so that poorly working FAT disks and installation programs can work.
+ # This is also for backwards compatibility.
+@@ -77,9 +79,15 @@
+ ## Versioned target for a shared library.
+ ## Since symbolic links don't work the same way on Windows,
+ ## we only use the version major number.
++SO_TARGET = $(LIBDIR)/$(LIBICU)$(TARGET_STUBNAME)$(ICULIBSUFFIX).$(SO_TARGET_VERSION_MAJOR).$(SO)
+ #FINAL_SO_TARGET=$(basename $(SO_TARGET))$(SO_TARGET_VERSION).$(SO)
+ FINAL_SO_TARGET=$(basename $(SO_TARGET))$(SO_TARGET_VERSION_MAJOR).$(SO)
+ MIDDLE_SO_TARGET=$(FINAL_SO_TARGET)
++ALL_SO_TARGETS = $(FINAL_SO_TARGET) $(SHARED_OBJECT) $(FINAL_IMPORT_LIB)
++
++IMPORT_LIB = $(subst cyg,lib,$(FINAL_SO_TARGET)).$(A)
++MIDDLE_IMPORT_LIB = $(subst cyg,lib,$(basename $(SO_TARGET)))$(SO_TARGET_VERSION_MAJOR).$(SO).$(A)
++FINAL_IMPORT_LIB = $(subst cyg,lib,$(basename $(SO_TARGET)))$(SO_TARGET_VERSION_MAJOR).$(SO).$(A)
+ 
+ # The following is for Makefile.inc's use.
+ ICULIBSUFFIX_VERSION = $(LIB_VERSION_MAJOR)
+@@ -87,12 +95,18 @@
+ ## Versioned libraries rules
+ #%$(SO_TARGET_VERSION_MAJOR).$(SO): %$(SO_TARGET_VERSION).$(SO)
+ #	$(RM) $@ && cp ${<F} $@
++# No dll symlinks. Cygwin import libs are named lib*.dll.a pointing to cyg*.dll
++%.$(SO).$(A): %$(SO_TARGET_VERSION_MAJOR).$(SO).$(A)
++	$(RM) $@ && ln -s ${<F} $@
+ %.$(SO): %$(SO_TARGET_VERSION_MAJOR).$(SO)
+ 	$(RM) $@ && ln -s ${<F} $@
+ 
+ ## Install libraries as executable
+ INSTALL-L=$(INSTALL_PROGRAM)
+ 
++# For the docsubdir
++ICULIBDASHSUFFIX=-$(VERSION)
++
+ ##  Bind internal references
+ 
+ # LDflags that pkgdata will use
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/config/mh-cygwin-msvc src/icu/source/config/mh-cygwin-msvc
+--- origsrc/icu/source/config/mh-cygwin-msvc	2007-09-13 23:18:10.000000000 +0000
++++ src/icu/source/config/mh-cygwin-msvc	2008-03-21 22:42:10.571500000 +0000
+@@ -81,7 +81,7 @@
+ RANLIB = ls -s
+ AR_OUTOPT = /OUT:
+ 
+-## An import library is needed for z/OS and MSVC
++## An import library is needed for z/OS, MSVC and Cygwin
+ IMPORT_LIB_EXT = .lib
+ 
+ LIBPREFIX=
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/data/Makefile.in src/icu/source/data/Makefile.in
+--- origsrc/icu/source/data/Makefile.in	2007-09-13 23:19:00.000000000 +0000
++++ src/icu/source/data/Makefile.in	2008-03-21 22:42:10.571500000 +0000
+@@ -183,7 +183,7 @@
+ 	$(MKINSTALLDIRS) $(TMPDATADIR) $(DESTDIR)$(libdir)
+ 	$(INVOKE) $(PKGDATA) -s $(BUILDDIR)$(STUB_SUFFIX) -T $(OUTTMPDIR_390STUB) -p $(ICUDATA_NAME)$(STUB_SUFFIX) $(PKGDATA_LIBNAME)$(STUB_SUFFIX) -e $(ICUDATA_ENTRY_POINT) $(OS390LIST) -m dll $(PKGDATA_VERSIONING) -I $(DESTDIR)$(ICUPKGDATA_DIR)
+ ifeq ($(PKGDATA_MODE),dll)
+-	$(INSTALL-L) $(ICUPKGDATA_OUTDIR)/$(LIB_ICUDATA_NAME)$(STUB_SUFFIX)$(SO_TARGET_VERSION)$(IMPORT_LIB_EXT) $(DESTDIR)$(ICUPKGDATA_DIR)/$(LIB_ICUDATA_NAME)$(STUB_SUFFIX)$(SO_TARGET_VERSION)$(IMPORT_LIB_EXT)
++	$(INSTALL-L) $(ICUPKGDATA_OUTDIR)/$(FINAL_IMPORT_LIB) $(DESTDIR)$(ICUPKGDATA_DIR)/$(FINAL_IMPORT_LIB)
+ endif
+ 
+ #### $(LIB_ICUDATA_NAME)$(STUB_SUFFIX) is the subset data for batch mode
+@@ -501,7 +501,7 @@
+ ### TRANSLIT res
+ $(TRANSLITBLDDIR)/%.res: $(TRANSLITSRCDIR)/%.txt  $(BINDIR)/genrb$(EXEEXT) $(DAT_FILES)
+ 	$(INVOKE) $(BINDIR)/genrb $(GENRBOPTS) -i $(BUILDDIR) -s $(TRANSLITSRCDIR) -d $(TRANSLITBLDDIR) $(<F)
+-  
++
+ ### normal (locale) res
+ all-RES:  $(RES_FILES)
+ 
+@@ -563,7 +563,7 @@
+ uni-core-data: build-dir $(UNI_CORE_TARGET_DATA)
+ 	@echo Unicode .icu files built to $(BUILDDIR)
+ 	@echo Unicode .c source files built to $(OUTTMPDIR)
+-	
++
+ build-icu4j: all
+ 	$(MAKE) -C ../tools/genrb $@
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in origsrc/icu/source/tools/pkgdata/dllmode.c src/icu/source/tools/pkgdata/dllmode.c
+--- origsrc/icu/source/tools/pkgdata/dllmode.c	2007-09-13 23:18:04.000000000 +0000
++++ src/icu/source/tools/pkgdata/dllmode.c	2008-03-21 22:42:10.571500000 +0000
+@@ -257,7 +257,11 @@
+                                      "\t$(INSTALL-L) $(TARGETDIR)/$(FINAL_SO_TARGET) $(INSTALLTO)/$(FINAL_SO_TARGET)\n");
+     
+     T_FileStream_writeLine(makefile, "ifneq ($(IMPORT_LIB_EXT),)\n");
++#ifdef __CYGWIN__
++    T_FileStream_writeLine(makefile, "\t$(INSTALL-L) $(TARGETDIR)/$(basename $(FINAL_IMPORT_LIB)).a $(INSTALLTO)/$(basename $(FINAL_IMPORT_LIB)).a\n");
++#else
+     T_FileStream_writeLine(makefile, "\t$(INSTALL-L) $(TARGETDIR)/$(basename $(FINAL_SO_TARGET))$(IMPORT_LIB_EXT) $(INSTALLTO)/$(basename( $(FINAL_SO_TARGET))$(IMPORT_LIB_EXT)\n");
++#endif
+     T_FileStream_writeLine(makefile, "endif\n");
+     if (o->version) {
+         T_FileStream_writeLine(makefile, "ifneq ($(FINAL_SO_TARGET),$(SO_TARGET))\n");

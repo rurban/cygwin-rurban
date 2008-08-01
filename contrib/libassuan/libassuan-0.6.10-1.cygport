@@ -1,0 +1,11 @@
+DESCRIPTION="IPC library used by GnuPG"
+HOMEPAGE="http://www.gnupg.org/(en)/related_software/libassuan/"
+SRC_URI="http://ftp.gnupg.zone-h.org/alpha/libassuan/libassuan-0.6.10.tar.gz"
+
+DOCS="README.CVS"
+
+src_compile() {
+	cd ${B}
+	cygconf
+	cygmake
+}

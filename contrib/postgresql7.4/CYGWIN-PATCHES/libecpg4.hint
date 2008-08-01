@@ -1,0 +1,7 @@
+sdesc: "run-time library for ECPG programs"
+ldesc: "The libecpg shared library is used by programs built with ECPG
+(Embedded PostgreSQL for C).
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Libs
+external-source: postgresql7.4

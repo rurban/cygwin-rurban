@@ -1,0 +1,4 @@
+sdesc: "Perl manpages"
+ldesc: "Perl manpages at /usr/share/man/man{1,3}"
+category: Doc Perl
+test: 5.10.0-1

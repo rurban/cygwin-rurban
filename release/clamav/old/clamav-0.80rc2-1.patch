@@ -1,0 +1,354 @@
+--- clamav-0.80rc2/CYGWIN-PATCHES/README.orig	1970-01-01 01:00:00.000000000 +0100
++++ clamav-0.80rc2/CYGWIN-PATCHES/README	2004-09-21 23:03:12.434791200 +0100
+@@ -0,0 +1,127 @@
++See /usr/share/doc/clamav
++
++The freshclam cronjob and clamd have to be configured manually.
++
++Installation (as service):
++
++/etc/rc.d/init.d/clamd install
++/etc/rc.d/init.d/clamd installcron
++/etc/rc.d/init.d/clamd start
++
++Problems:
++
++* If the service doesn't start, check why the SYSTEM user may not run clamd. 
++  Most likely some file permission problems on the PID, SOCK, LOG or CONF file.
++
++* If the service fails to restart (stop fails), may best suggestion is 
++  to reboot. :(
++  Check the cygwin mailing list archives for solutions.
++
++Runtime requirements: (versions given or later)
++  curl-7.11.1-1
++  cygwin-1.5.11-1
++  gmp-4.1.2-1
++  libbz2_1-1.0.2-5
++  minires-0.97-1
++  openssl-0.9.7d-1
++  zlib-1.2.1-1
++  
++Build requirements: (versions given or later)
++  cygwin-1.5.11-1
++  gmp-4.1.2-1
++  libbz2_1-1.0.2-5
++  zlib-1.2.1-1
++  minires-0.97-1
++  openssl-0.9.7d-1
++  gcc-3.3.3-3
++  binutils-20040725-2
++  make-3.80
++  ash-20031007
++  fileutils-4.1-2
++  sed-4.1.2-1
++
++Canonical homepage:
++  http://clamav.net/
++virusdb update announcements (very frequent!)
++  http://news.gmane.org/gmane.comp.security.virus.clamav.virusdb
++
++Canonical download:
++  http://prdownloads.sourceforge.net/clamav/clamav-<VERSION>.tar.bz2?download
++
++Latest Changes:
++  security fixes, esp. with email handling.
++  /etc/clamav.conf renamed to /etc/clamd.conf
++  See http://cvs.sourceforge.net/viewcvs.py/clamav/clamav-devel/ChangeLog
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack clamav-<VERSION>.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./clamav-<VERSION>-<CYGREL>.sh all
++
++This will create:
++  /usr/src/clamav-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/clamav-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use './clamav-<VERSION>-<CYGREL>.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in this package:
++
++  /etc/clamd.conf-dist
++  /etc/freshclam.conf-dist
++  /etc/rc.d/init.d/clamd
++  /etc/postinstall/clamav.sh
++  /etc/preremove/clamav.sh
++  /usr/bin/clamav-config
++  /usr/bin/clamdscan.exe
++  /usr/bin/clamscan.exe
++  /usr/bin/freshclam.exe
++  /usr/bin/sigtool.exe
++  /usr/include/clamav.h
++  /usr/lib/libclamav.a
++  /usr/lib/libclamav.la
++  /usr/lib/pkgconfig/libclamav.pc
++  /usr/sbin/clamd.exe
++  /usr/share/clamav/daily.cvd
++  /usr/share/clamav/main.cvd
++  /usr/share/doc/clamav/AUTHORS
++  /usr/share/doc/clamav/ChangeLog
++  /usr/share/doc/clamav/COPYING
++  /usr/share/doc/clamav/FAQ
++  /usr/share/doc/clamav/INSTALL
++  /usr/share/doc/clamav/NEWS
++  /usr/share/doc/clamav/README
++  /usr/share/doc/clamav/TODO
++  /usr/share/doc/clamav/*.pdf
++  /usr/share/doc/clamav/html/*
++  /usr/share/doc/Cygwin/clamav--<VERSION>-<CYGREL>.README
++  /usr/share/man/man1/clamdscan.1.gz
++  /usr/share/man/man1/clamscan.1.gz
++  /usr/share/man/man1/freshclam.1.gz
++  /usr/share/man/man1/sigtool.1.gz
++  /usr/share/man/man5/clamd.conf.5.gz
++  /usr/share/man/man5/freshclam.conf.5.gz
++  /usr/share/man/man8/clamd.8.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version clamav-0.80rc2-1 -----
++
++new preremove script to install existing service
++improved /etc/rc.d/init.d/clamd uninstall
++/etc/clamav.conf renamed to /etc/clamd.conf
++
++----- version clamav-0.75.1-3 -----
++
++Initial release
++
++Builds out of the box. No contrib. init.d script added.
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- clamav-0.80rc2/CYGWIN-PATCHES/clamd.initd.orig	1970-01-01 01:00:00.000000000 +0100
++++ clamav-0.80rc2/CYGWIN-PATCHES/clamd.initd	2004-09-21 23:11:13.678631200 +0100
+@@ -0,0 +1,151 @@
++#! /bin/bash
++#
++# crond   Start/Stop the clam antivirus daemon. 0.8x series
++#
++# chkconfig: 2345 90 60
++# description: clamd is a standard UNIX program that scans for Viruses.
++# processname: clamd
++# config: /etc/clamd.conf
++# pidfile: /var/run/clamd.pid
++
++PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PREFIX=/usr
++CONFIG=/etc/clamd.conf
++PIDFILE=/var/run/clamd.pid
++LOGFILE=/var/log/clamd.log
++SOCKET=/tmp/clamd.sock
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++prog="clamd"
++progdir="/usr/sbin"
++DAEMON="$progdir/$prog.exe"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++start() {
++        echo -n $"Starting $prog: "
++	# check if cygrunsrv process
++        cygrunsrv --start $prog
++        RETVAL=$?
++        echo
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $prog: "
++	cygrunsrv --stop $prog
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE $SOCKET && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q $prog
++        # connect(): No such file or directory
++	/usr/bin/clamdscan /usr/sbin/clamd.exe
++	#status clamd
++}
++
++restart() {
++        echo -n $"Restarting $prog: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++installcron() {
++    ( crontab -l | grep freshclam >/dev/null 2>&1 ) || ( \
++	echo "add something like this to your cronjob:"
++	echo
++	echo "*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1"
++	echo "#*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1" >> /var/cron/tabs/$USER
++	kill -s HUP `cat /var/run/cron.pid`
++	crontab -e )
++}
++install() {
++        freshclam
++        echo -n $"Installing $prog daemon: "
++	# some safety measures
++	touch $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	chmod g+w $LOGFILE $PIDFILE
++	rm -f $SOCKET
++	#it was compiled with uid=18
++	cygrunsrv --install $prog --path $DAEMON -e CYGWIN="$CYGWIN" --disp "CYGWIN `$DAEMON --version`"
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove $prog
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++case "$1" in
++  start)
++        start
++        ;;
++  stop)
++        stop
++        ;;
++  restart)
++        restart
++        ;;
++  reload)
++        reload
++        ;;
++  install)
++        install
++        ;;
++  installcron)
++        installcron
++        ;;
++  uninstall)
++        uninstall
++        ;;
++  status)
++        rhstatus
++        ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|install|uninstall|installcron|restart|condrestart}"
++        exit 1
++esac
++
++exit $?
+--- clamav-0.80rc2/CYGWIN-PATCHES/postinstall.sh.orig	1970-01-01 01:00:00.000000000 +0100
++++ clamav-0.80rc2/CYGWIN-PATCHES/postinstall.sh	2004-09-17 22:50:57.000000000 +0100
+@@ -0,0 +1,8 @@
++#!/bin/sh
++
++for f in clamav freshclam; do
++  if [ ! -e /etc/$f.conf ]; then mv /etc/$f.conf-dist /etc/$f.conf; fi
++done
++
++# update the database (/usr/share/clamav/)
++/usr/bin/freshclam
+--- clamav-0.80rc2/CYGWIN-PATCHES/preremove.sh.orig	1970-01-01 01:00:00.000000000 +0100
++++ clamav-0.80rc2/CYGWIN-PATCHES/preremove.sh	2004-09-21 23:06:00.792011200 +0100
+@@ -0,0 +1,4 @@
++#!/bin/sh
++initd=/etc/rc.d/init.d/clamd
++# uninstall the service
++if [ -e $initd ]; then $initd uninstall; fi
+--- clamav-0.80rc2/etc/clamd.conf.orig	2004-09-19 00:47:24.000000000 +0100
++++ clamav-0.80rc2/etc/clamd.conf	2004-09-21 21:00:25.482214400 +0100
+@@ -10,7 +10,7 @@
+ # Uncomment this option to enable logging.
+ # LogFile must be writable for the user running the daemon.
+ # Full path is required.
+-#LogFile /tmp/clamd.log
++LogFile /var/log/clamd.log
+ 
+ # By default the log file is locked for writing - the lock protects against
+ # running clamd multiple times (if want to run another clamd, please
+@@ -27,7 +27,7 @@
+ #LogFileMaxSize 2M
+ 
+ # Log time with an each message.
+-#LogTime
++LogTime
+ 
+ # Log also clean files. May be useful in debugging but will drastically
+ # increase the log size.
+@@ -45,11 +45,11 @@
+ 
+ # This option allows you to save the process identifier of the listening
+ # daemon (main thread).
+-#PidFile /var/run/clamd.pid
++PidFile /var/run/clamd.pid
+ 
+ # Optional path to the global temporary directory.
+ # Default is system specific - usually /var/tmp or /tmp.
+-#TemporaryDirectory /var/tmp
++TemporaryDirectory /tmp
+ 
+ # Path to the database directory.
+ # Default is the hardcoded directory (mostly /usr/local/share/clamav,
+@@ -62,7 +62,7 @@
+ # Path to the local socket. The daemon doesn't change the mode of the
+ # created file (portability reasons). You may want to create it in a directory
+ # which is only accessible for a user running daemon.
+-LocalSocket /tmp/clamd
++LocalSocket /tmp/clamd.sock
+ 
+ # Remove stale socket after unclean shutdown.
+ FixStaleSocket
+@@ -74,7 +74,7 @@
+ # By default we bind to INADDR_ANY, probably not wise.
+ # Enable the following to provide some degree of protection
+ # from the outside world.
+-#TCPAddr 127.0.0.1
++TCPAddr 127.0.0.1
+ 
+ # Maximum length the queue of pending connections may grow to.
+ # Default is 15.

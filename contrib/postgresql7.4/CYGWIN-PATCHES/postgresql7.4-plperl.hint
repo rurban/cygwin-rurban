@@ -1,0 +1,9 @@
+sdesc: "PL/Perl procedural language for PostgreSQL 7.4"
+ldesc: "PL/Perl enables an SQL developer to write procedural language functions
+for PostgreSQL 7.4 in Perl. You need this package if you have any
+PostgreSQL 7.4 functions that use the languages plperl or plperlu.
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Database
+requires: postgresql7.4 perl
+external-source: postgresql7.4

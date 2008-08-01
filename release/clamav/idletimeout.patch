@@ -1,0 +1,11 @@
+--- server-th.c.orig	2005-01-28 15:57:49.848384200 -0800
++++ server-th.c	2005-01-28 15:58:37.828811900 -0800
+@@ -557,7 +557,7 @@
+ 	     */
+ 	    thrmgr_destroy(thr_pool);
+ 	    root = reload_db(root, copt, FALSE);
+-	    if((thr_pool=thrmgr_new(max_threads, 30, scanner_thread)) == NULL) {
++	    if((thr_pool=thrmgr_new(max_threads, idletimeout, scanner_thread)) == NULL) {
+ 		logg("!thrmgr_new failed\n");
+ 		pthread_mutex_unlock(&reload_mutex);
+ 		exit(-1);

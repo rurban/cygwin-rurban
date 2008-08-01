@@ -1,0 +1,5 @@
+sdesc: "The GTK2 Module linkset for clisp"
+category: Interpreters
+requires: clisp xorg-x11-bin-dlls gtk2-x11-runtime
+ldesc: "This is the linkset full+gtk2 for Xorg."
+external-source: clisp

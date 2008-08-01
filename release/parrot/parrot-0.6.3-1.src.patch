@@ -1,0 +1,1388 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/MANIFEST src/parrot-0.6.3/MANIFEST
+--- origsrc/parrot-0.6.3/MANIFEST	2008-06-17 11:59:17.000000000 +0000
++++ src/parrot-0.6.3/MANIFEST	2008-07-03 15:29:58.000000000 +0000
+@@ -2771,7 +2771,7 @@
+ src/cpu_dep.c                                               []
+ src/datatypes.c                                             []
+ src/debug.c                                                 []
+-src/disassemble.c                                           []
++src/pbc_disassemble.c                                       []
+ src/dynext.c                                                []
+ src/dynoplibs/README                                        []
+ src/dynoplibs/dan.ops                                       []
+@@ -2902,7 +2902,7 @@
+ src/packout.c                                               []
+ src/pbc_info.c                                              []
+ src/pbc_merge.c                                             []
+-src/pdb.c                                                   []
++src/parrot_pdb.c                                            []
+ src/pdump.c                                                 []
+ src/pic.c                                                   []
+ src/pic_jit.c                                               []
+@@ -3687,7 +3687,7 @@
+ t/tools/ops2pmutils/10-print_module.t                       []
+ t/tools/ops2pmutils/11-print_h.t                            []
+ t/tools/pbc_merge.t                                         []
+-t/tools/pdb.t                                               []
++t/tools/parrot_pdb.t                                        []
+ t/tools/pmc2c.t                                             []
+ t/tools/pmc2cutils/00-qualify.t                             []
+ t/tools/pmc2cutils/01-pmc2cutils.t                          []
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/config/gen/makefiles/root.in src/parrot-0.6.3/config/gen/makefiles/root.in
+--- origsrc/parrot-0.6.3/config/gen/makefiles/root.in	2008-06-16 13:06:01.000000000 +0000
++++ src/parrot-0.6.3/config/gen/makefiles/root.in	2008-07-03 11:53:14.937500000 +0000
+@@ -462,7 +462,7 @@
+ # Executables
+ PARROT              = $(CUR_DIR)/@test_prog@$(EXE)
+ MINIPARROT          = $(CUR_DIR)/miniparrot$(EXE)
+-DIS                 = $(CUR_DIR)/disassemble$(EXE)
++DIS                 = $(CUR_DIR)/pbc_disassemble$(EXE)
+ PDUMP               = $(CUR_DIR)/pdump$(EXE)
+ PINFO               = $(CUR_DIR)/pbc_info$(EXE)
+ PBCMERGE            = $(CUR_DIR)/pbc_merge$(EXE)
+@@ -474,7 +474,7 @@
+ 
+ # Installable executables
+ INSTALLABLEPARROT   = $(CUR_DIR)/installable_parrot$(EXE)
+-INSTALLABLEDIS      = $(CUR_DIR)/installable_disassemble$(EXE)
++INSTALLABLEDIS      = $(CUR_DIR)/installable_pbc_disassemble$(EXE)
+ INSTALLABLEPDUMP    = $(CUR_DIR)/installable_pdump$(EXE)
+ INSTALLABLEPINFO    = $(CUR_DIR)/installable_pbc_info$(EXE)
+ INSTALLABLEPBCMERGE = $(CUR_DIR)/installable_pbc_merge$(EXE)
+@@ -870,7 +870,8 @@
+ $(LIBPARROT_SHARED) : $(O_FILES)
+ 	$(MKPATH) @blib_dir@
+ 	$(LD) $(LD_SHARE_FLAGS) $(LDFLAGS) @ld_out@$@ @libparrot_soname@ \
+-    $(O_FILES) $(C_LIBS) $(ICU_SHARED)
++#CONDITIONED_LINE(cygchkdll):		-Wl,--out-implib=libparrot.dll.a \
++		$(O_FILES) $(C_LIBS) $(ICU_SHARED)
+ #CONDITIONED_LINE(libparrot_shared_alias):	( cd @blib_dir@ ; ln -sf @libparrot_shared@ @libparrot_shared_alias@ )
+ 
+ 
+@@ -894,16 +895,16 @@
+ # Parrot Disassembler
+ #
+ 
+-$(SRC_DIR)/disassemble$(O) : $(GENERAL_H_FILES)
++$(SRC_DIR)/pbc_disassemble$(O) : $(GENERAL_H_FILES)
+ 
+-$(DIS) : $(SRC_DIR)/disassemble$(O) $(LIBPARROT)
++$(DIS) : $(SRC_DIR)/pbc_disassemble$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$@ \
+-    $(SRC_DIR)/disassemble$(O) \
++    $(SRC_DIR)/pbc_disassemble$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ 
+-$(INSTALLABLEDIS) : $(SRC_DIR)/disassemble$(O) $(LIBPARROT)
++$(INSTALLABLEDIS) : $(SRC_DIR)/pbc_disassemble$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$@ \
+-    $(SRC_DIR)/disassemble$(O) \
++    $(SRC_DIR)/pbc_disassemble$(O) \
+     $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ 
+ #
+@@ -1597,7 +1598,7 @@
+     $(SRC_DIR)/pbc_info$(O) $(PINFO) \
+     $(PDB) $(SRC_DIR)/pdb$(O) \
+     $(PBCMERGE) $(SRC_DIR)/pbc_merge$(O) \
+-    $(DIS) $(SRC_DIR)/disassemble$(O) \
++    $(DIS) $(SRC_DIR)/pbc_disassemble$(O) \
+     $(SRC_DIR)/main$(O) \
+     $(SRC_DIR)/null_config$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+@@ -1633,7 +1634,7 @@
+     $(SRC_DIR)/pbc_info$(O) $(PINFO) \
+     $(PDB) $(SRC_DIR)/pdb$(O) \
+     $(PBCMERGE) $(SRC_DIR)/pbc_merge$(O) \
+-    $(DIS) $(SRC_DIR)/disassemble$(O) \
++    $(DIS) $(SRC_DIR)/pbc_disassemble$(O) \
+     $(SRC_DIR)/null_config$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+     $(SRC_DIR)/install_config$(O) \
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/docs/debug.pod src/parrot-0.6.3/docs/debug.pod
+--- origsrc/parrot-0.6.3/docs/debug.pod	2008-05-07 23:32:48.000000000 +0000
++++ src/parrot-0.6.3/docs/debug.pod	2008-07-03 15:01:54.843750000 +0000
+@@ -75,9 +75,9 @@
+ Let's say you have written (or generated) a huge .pasm or .pir file.  It's not
+ working. You'd like some help in figuring out why.
+ 
+-=head2 pdb
++=head2 parrot_pdb
+ 
+-One possible tool is C<pdb>, the Parrot Debugger. See F<docs/debugger.pod> for
++One possible tool is C<parrot_pdb>, the Parrot Debugger. See F<docs/debugger.pod> for
+ details on it.
+ 
+ =head2 stabs
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/docs/debugger.pod src/parrot-0.6.3/docs/debugger.pod
+--- origsrc/parrot-0.6.3/docs/debugger.pod	2008-05-07 23:32:48.000000000 +0000
++++ src/parrot-0.6.3/docs/debugger.pod	2008-07-03 15:01:28.406250000 +0000
+@@ -7,12 +7,12 @@
+ 
+ =head1 ABSTRACT
+ 
+-This document describes F<pdb>, the Parrot Debugger.
++This document describes F<parrot_pdb>, the Parrot Debugger.
+ 
+ =head1 DESCRIPTION
+ 
+ Starting from version 0.0.6 Parrot has its own debugger, which is modeled after
+-Perl's one. Its name is F<pdb>, and is an interactive environment that let you
++Perl's one. Its name is F<parrot_pdb>, and is an interactive environment that let you
+ step through bytecode, set breakpoints, evaluate assembly instructions and peek
+ at the interpreter status.
+ 
+@@ -29,17 +29,17 @@
+ 
+ (where C<make> is the same C<make> incarnation you used to build Parrot).
+ 
+-If everything goes well, you should come up with a F<pdb> executable in the
++If everything goes well, you should come up with a F<parrot_pdb> executable in the
+ same directory as the Parrot program.
+ 
+ =head1 THE DEBUGGER SHELL
+ 
+ To start the debugger type:
+ 
+-  pdb file.pbc
++  parrot_pdb file.pbc
+ 
+-That is, F<pdb> takes exactly one argument, which is the Parrot bytecode that
+-you're going to debug. F<pdb> will automatically load and disassemble the
++That is, F<parrot_pdb> takes exactly one argument, which is the Parrot bytecode that
++you're going to debug. F<parrot_pdb> will automatically load and disassemble the
+ bytecode file for you.
+ 
+ Note that you can't pass command line arguments to your program when you invoke
+@@ -49,7 +49,7 @@
+ 
+   (pdb)
+ 
+-F<pdb> is ready to receive commands and give output. To list the available
++F<parrot_pdb> is ready to receive commands and give output. To list the available
+ commands type 'h'. To quit the debugger type 'q'.
+ 
+ As with the Perl debugger, whenever it halts and shows you a line of code, it
+@@ -69,7 +69,7 @@
+ 
+ A blank line always repeats the last command entered.
+ 
+-Also note that at this point in its development, F<pdb> has very poor error
++Also note that at this point in its development, F<parrot_pdb> has very poor error
+ checking on commands and their arguments, so type carefully or something bad
+ will happen. Feel free to report bugs, or better yet patch the source code (see
+ L</FILES> below).
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/docs/parrot.pod src/parrot-0.6.3/docs/parrot.pod
+--- origsrc/parrot-0.6.3/docs/parrot.pod	2008-05-07 23:32:48.000000000 +0000
++++ src/parrot-0.6.3/docs/parrot.pod	2008-07-03 15:04:59.015625000 +0000
+@@ -112,7 +112,7 @@
+ 
+ =item F<debugger.pod>
+ 
+-Documentation for C<pdb>, the Parrot debugger.
++Documentation for C<parrot_pdb>, the Parrot debugger.
+ 
+ =back
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/src/disassemble.c src/parrot-0.6.3/src/disassemble.c
+--- origsrc/parrot-0.6.3/src/disassemble.c	2008-05-07 23:32:46.000000000 +0000
++++ src/parrot-0.6.3/src/disassemble.c	1970-01-01 00:00:00.000000000 +0000
+@@ -1,124 +0,0 @@
+-/*
+-Copyright (C) 2001-2003, The Perl Foundation.
+-$Id: disassemble.c 26465 2008-03-18 07:30:24Z chromatic $
+-
+-=head1 NAME
+-
+-disassemble - Parrot disassembler
+-
+-=head1 SYNOPSIS
+-
+-    disassemble file.pbc
+-
+-=head1 DESCRIPTION
+-
+-This uses the C<Parrot_disassemble()> function from F<src/embed.c>,
+-which in turn uses the C<PDB_disassemble()> function from
+-F<src/debug.c>.
+-
+-=head2 Functions
+-
+-=over 4
+-
+-=cut
+-
+-*/
+-
+-#include <parrot/parrot.h>
+-#include "parrot/embed.h"
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <ctype.h>
+-
+-static void do_dis(Parrot_Interp);
+-
+-/*
+-
+-=item C<int main(int argc, char *argv[])>
+-
+-The run-loop. Starts up an interpreter, loads the bytecode from the
+-command-line and disassembles it.
+-
+-=cut
+-
+-*/
+-
+-int
+-main(int argc, char *argv[])
+-{
+-    Parrot_Interp interp;
+-    char *filename;
+-    Parrot_PackFile pf;
+-
+-    interp = Parrot_new(NULL);
+-
+-    if (!interp) {
+-        return 1;
+-    }
+-
+-    /* set the top of the stack so GC can trace it for GC-able pointers
+-     * see trace_system_areas() in src/cpu_dep.c */
+-    interp->lo_var_ptr = &interp;
+-
+-    if (argc != 2) {
+-        fprintf(stderr, "Usage: disassemble programfile \n");
+-        Parrot_exit(interp, 1);
+-    }
+-
+-    filename = argv[1];
+-
+-    pf = Parrot_readbc(interp, filename);
+-
+-    if (!pf) {
+-        return 1;
+-    }
+-
+-    Parrot_loadbc(interp, pf);
+-
+-    do_dis(interp);
+-
+-    Parrot_exit(interp, 0);
+-}
+-
+-/*
+-
+-=item C<static void do_dis(Parrot_Interp interp)>
+-
+-Do the disassembling.
+-
+-=cut
+-
+-*/
+-
+-static void
+-do_dis(Parrot_Interp interp)
+-{
+-    Parrot_disassemble(interp);
+-}
+-
+-/*
+-
+-=back
+-
+-=head1 SEE ALSO
+-
+-F<src/embed.c> and F<src/debug.c>.
+-
+-=head1 HISTORY
+-
+-Initial version by Daniel Grunblatt on 2002.5.26.
+-
+-Florian Ragwitz: Moved POD documentation that's not necessary to know how to
+-actually run the disassembler to normal C comments (Wed, 16 Nov 2005).
+-
+-=cut
+-
+-*/
+-
+-
+-/*
+- * Local variables:
+- *   c-file-style: "parrot"
+- * End:
+- * vim: expandtab shiftwidth=4:
+- */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/src/parrot_pdb.c src/parrot-0.6.3/src/parrot_pdb.c
+--- origsrc/parrot-0.6.3/src/parrot_pdb.c	1970-01-01 00:00:00.000000000 +0000
++++ src/parrot-0.6.3/src/parrot_pdb.c	2008-07-03 15:32:32.187500000 +0000
+@@ -0,0 +1,307 @@
++/*
++Copyright (C) 2001-2008, The Perl Foundation.
++$Id: pdb.c 28280 2008-06-12 19:34:51Z Whiteknight $
++
++=head1 NAME
++
++parrot_pdb - The Parrot debugger
++
++=head1 SYNOPSIS
++
++ parrot_pdb programfile
++
++=head1 DESCRIPTION
++
++=head2 Commands
++
++=over 4
++
++=item C<disassemble>
++
++Disassemble the bytecode.
++
++Use this if you have a PBC file but not the PASM.
++
++=item C<load>
++
++Load a source code file.
++
++=item C<list> or C<l>
++
++List the source code file.
++
++=item C<run> or C<r>
++
++Run the program.
++
++=item C<break> or C<b>
++
++Add a breakpoint.
++
++=item C<watch> or C<w>
++
++Add a watchpoint.
++
++=item C<delete> or C<d>
++
++Delete a breakpoint.
++
++=item C<disable>
++
++Disable a breakpoint.
++
++=item C<enable>
++
++Reenable a disabled breakpoint.
++
++=item C<continue> or C<c>
++
++Continue the program execution.
++
++=item C<next> or C<n>
++
++Run the next instruction
++
++=item C<eval> or C<e>
++
++Run an instruction.
++
++=item C<trace> or C<t>
++
++Trace the next instruction.
++
++=item C<print> or C<p>
++
++Print the interpreter registers.
++
++=item C<stack> or C<s>
++
++Examine the stack.
++
++=item C<info>
++
++Print interpreter information.
++
++=item C<quit> or C<q>
++
++Exit the debugger.
++
++=item C<help> or C<h>
++
++Print the help.
++
++=back
++
++=head2 Debug Ops
++
++You can also debug Parrot code by using the C<debug_init>, C<debug_load>
++and C<debug_break> ops in F<ops/debug.ops>.
++
++=over 4
++
++=cut
++
++*/
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <ctype.h>
++#include "../compilers/imcc/imc.h"
++#include "../compilers/imcc/parser.h"
++#include "parrot/embed.h"
++
++static void PDB_printwelcome(void);
++static void PDB_run_code(Parrot_Interp interp, int argc, char *argv[]);
++
++/*
++
++=item C<int main(int argc, char *argv[])>
++
++Reads the PASM or PBC file from argv[1], loads it, and then calls
++Parrot_debug().
++
++=cut
++
++*/
++
++extern void imcc_init(Parrot_Interp interp);
++
++int
++main(int argc, char *argv[])
++{
++    Parrot_Interp     debugger = Parrot_new(NULL);
++    Parrot_Interp     interp   = Parrot_new(debugger);
++    PDB_t            *pdb      = mem_allocate_zeroed_typed(PDB_t);
++    const char       *filename;
++    char             *ext;
++    void             *yyscanner;
++
++    /*Parrot_set_config_hash();  TODO link with cfg */
++
++    /* attach pdb structure */
++    debugger->pdb    = pdb;
++    interp->debugger = debugger;
++    pdb->debugee     = interp;
++
++    Parrot_block_GC_mark(interp);
++    Parrot_block_GC_sweep(interp);
++    imcc_init(interp);
++
++    do_yylex_init(interp, &yyscanner);
++
++    if (argc < 2) {
++        fprintf(stderr, "Usage: parrot_pdb programfile [program-options]\n");
++        Parrot_exit(interp, 1);
++    }
++
++    filename = argv[1];
++    ext      = strrchr(filename, '.');
++
++    if (ext && STREQ(ext, ".pbc")) {
++        Parrot_PackFile pf = Parrot_readbc(interp, filename);
++
++        if (!pf)
++            return 1;
++
++        Parrot_loadbc(interp, pf);
++    }
++    else {
++        Parrot_PackFile pf        = PackFile_new(interp, 0);
++        int             pasm_file = 0;
++
++        Parrot_loadbc(interp, pf);
++
++        IMCC_push_parser_state(interp);
++        IMCC_INFO(interp)->state->file = filename;
++
++        if (!(imc_yyin_set(fopen(filename, "r"), yyscanner)))    {
++            IMCC_fatal_standalone(interp, E_IOError,
++                    "Error reading source file %s.\n",
++                    filename);
++        }
++
++        if (ext && STREQ(ext, ".pasm"))
++            pasm_file = 1;
++
++        emit_open(interp, 1, NULL);
++        IMCC_INFO(interp)->state->pasm_file = pasm_file;
++        yyparse(yyscanner, interp);
++        imc_compile_all_units(interp);
++
++        imc_cleanup(interp, yyscanner);
++
++        fclose(imc_yyin_get(yyscanner));
++        PackFile_fixup_subs(interp, PBC_POSTCOMP, NULL);
++    }
++
++    Parrot_unblock_GC_mark(interp);
++    Parrot_unblock_GC_sweep(interp);
++
++    PDB_printwelcome();
++
++    PDB_run_code(interp, argc - 1, argv + 1);
++
++
++    Parrot_exit(interp, 0);
++}
++
++/*
++
++=item C<static void PDB_add_exception_handler(Parrot_Interp)>
++
++Adds a default exception handler to PDB.
++
++*/
++
++static void
++PDB_run_code(Parrot_Interp interp, int argc, char *argv[])
++{
++    Parrot_exception exp;
++
++    if (setjmp(exp.destination)) {
++        char *msg = string_to_cstring(interp, interp->exceptions->msg);
++        fprintf(stderr, "Caught exception: %s\n", msg);
++        string_cstring_free(msg);
++        return;
++    }
++
++    push_new_c_exception_handler(interp, &exp);
++
++    Parrot_runcode(interp, argc - 1, argv + 1);
++}
++
++/*
++
++=item C<static void PDB_printwelcome(void)>
++
++Prints out the welcome string.
++
++=cut
++
++*/
++
++static void
++PDB_printwelcome(void)
++{
++    fprintf(stderr, "Parrot Debugger 0.6.x\n");
++    fprintf(stderr, "\nPlease note: ");
++    fprintf(stderr, "the debugger is currently under reconstruction\n");
++}
++
++/*
++
++=back
++
++=head1 SEE ALSO
++
++F<src/debug.c>, F<include/parrot/debug.h>.
++
++=head1 HISTORY
++
++=over 4
++
++=item * Initial version by Daniel Grunblatt on 2002.5.19.
++
++=item * Start of rewrite - leo 2005.02.16
++
++The debugger now uses it's own interpreter. User code is run in
++Interp* debugee. We have:
++
++  debug_interp->pdb->debugee->debugger
++    ^                            |
++    |                            v
++    +------------- := -----------+
++
++Debug commands are mostly run inside the C<debugger>. User code
++runs of course in the C<debugee>.
++
++=back
++
++=head1 TODO
++
++=over 4
++
++=item * Check the user input for bad commands, it's quite easy to make
++it bang now, try listing the source before loading or disassembling it.
++
++=item * Print the interpreter info.
++
++=item * Make the user interface better (add comands
++history/completion).
++
++=item * Some other things I don't remember now because it's late.
++
++
++=back
++
++=cut
++
++*/
++
++
++/*
++ * Local variables:
++ *   c-file-style: "parrot"
++ * End:
++ * vim: expandtab shiftwidth=4:
++ */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/src/pbc_disassemble.c src/parrot-0.6.3/src/pbc_disassemble.c
+--- origsrc/parrot-0.6.3/src/pbc_disassemble.c	1970-01-01 00:00:00.000000000 +0000
++++ src/parrot-0.6.3/src/pbc_disassemble.c	2008-07-03 07:46:47.500000000 +0000
+@@ -0,0 +1,126 @@
++/*
++Copyright (C) 2001-2003, The Perl Foundation.
++$Id: disassemble.c 26465 2008-03-18 07:30:24Z chromatic $
++
++=head1 NAME
++
++pbc_disassemble - Parrot disassembler
++
++=head1 SYNOPSIS
++
++    pbc_disassemble file.pbc
++
++=head1 DESCRIPTION
++
++This uses the C<Parrot_disassemble()> function from F<src/embed.c>,
++which in turn uses the C<PDB_disassemble()> function from
++F<src/debug.c>.
++
++=head2 Functions
++
++=over 4
++
++=cut
++
++*/
++
++#include <parrot/parrot.h>
++#include "parrot/embed.h"
++#include <stdio.h>
++#include <stdlib.h>
++#include <ctype.h>
++
++static void do_dis(Parrot_Interp);
++
++/*
++
++=item C<int main(int argc, char *argv[])>
++
++The run-loop. Starts up an interpreter, loads the bytecode from the
++command-line and disassembles it.
++
++=cut
++
++*/
++
++int
++main(int argc, char *argv[])
++{
++    Parrot_Interp interp;
++    char *filename;
++    Parrot_PackFile pf;
++
++    interp = Parrot_new(NULL);
++
++    if (!interp) {
++        return 1;
++    }
++
++    /* set the top of the stack so GC can trace it for GC-able pointers
++     * see trace_system_areas() in src/cpu_dep.c */
++    interp->lo_var_ptr = &interp;
++
++    if (argc != 2) {
++        fprintf(stderr, "Usage: pbc_disassemble programfile \n");
++        Parrot_exit(interp, 1);
++    }
++
++    filename = argv[1];
++
++    pf = Parrot_readbc(interp, filename);
++
++    if (!pf) {
++        return 1;
++    }
++
++    Parrot_loadbc(interp, pf);
++
++    do_dis(interp);
++
++    Parrot_exit(interp, 0);
++}
++
++/*
++
++=item C<static void do_dis(Parrot_Interp interp)>
++
++Do the disassembling.
++
++=cut
++
++*/
++
++static void
++do_dis(Parrot_Interp interp)
++{
++    Parrot_disassemble(interp);
++}
++
++/*
++
++=back
++
++=head1 SEE ALSO
++
++F<src/embed.c> and F<src/debug.c>.
++
++=head1 HISTORY
++
++Initial version by Daniel Grunblatt on 2002.5.26.
++
++Florian Ragwitz: Moved POD documentation that's not necessary to know how to
++actually run the disassembler to normal C comments (Wed, 16 Nov 2005).
++
++Reini Urban: Renamed from disassemble to pbc_disassemble (2008-07-03).
++
++=cut
++
++*/
++
++
++/*
++ * Local variables:
++ *   c-file-style: "parrot"
++ * End:
++ * vim: expandtab shiftwidth=4:
++ */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/src/pdb.c src/parrot-0.6.3/src/pdb.c
+--- origsrc/parrot-0.6.3/src/pdb.c	2008-06-13 08:40:54.000000000 +0000
++++ src/parrot-0.6.3/src/pdb.c	1970-01-01 00:00:00.000000000 +0000
+@@ -1,307 +0,0 @@
+-/*
+-Copyright (C) 2001-2008, The Perl Foundation.
+-$Id: pdb.c 28280 2008-06-12 19:34:51Z Whiteknight $
+-
+-=head1 NAME
+-
+-pdb - The Parrot debugger
+-
+-=head1 SYNOPSIS
+-
+- pdb programfile
+-
+-=head1 DESCRIPTION
+-
+-=head2 Commands
+-
+-=over 4
+-
+-=item C<disassemble>
+-
+-Disassemble the bytecode.
+-
+-Use this if you have a PBC file but not the PASM.
+-
+-=item C<load>
+-
+-Load a source code file.
+-
+-=item C<list> or C<l>
+-
+-List the source code file.
+-
+-=item C<run> or C<r>
+-
+-Run the program.
+-
+-=item C<break> or C<b>
+-
+-Add a breakpoint.
+-
+-=item C<watch> or C<w>
+-
+-Add a watchpoint.
+-
+-=item C<delete> or C<d>
+-
+-Delete a breakpoint.
+-
+-=item C<disable>
+-
+-Disable a breakpoint.
+-
+-=item C<enable>
+-
+-Reenable a disabled breakpoint.
+-
+-=item C<continue> or C<c>
+-
+-Continue the program execution.
+-
+-=item C<next> or C<n>
+-
+-Run the next instruction
+-
+-=item C<eval> or C<e>
+-
+-Run an instruction.
+-
+-=item C<trace> or C<t>
+-
+-Trace the next instruction.
+-
+-=item C<print> or C<p>
+-
+-Print the interpreter registers.
+-
+-=item C<stack> or C<s>
+-
+-Examine the stack.
+-
+-=item C<info>
+-
+-Print interpreter information.
+-
+-=item C<quit> or C<q>
+-
+-Exit the debugger.
+-
+-=item C<help> or C<h>
+-
+-Print the help.
+-
+-=back
+-
+-=head2 Debug Ops
+-
+-You can also debug Parrot code by using the C<debug_init>, C<debug_load>
+-and C<debug_break> ops in F<ops/debug.ops>.
+-
+-=over 4
+-
+-=cut
+-
+-*/
+-
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <ctype.h>
+-#include "../compilers/imcc/imc.h"
+-#include "../compilers/imcc/parser.h"
+-#include "parrot/embed.h"
+-
+-static void PDB_printwelcome(void);
+-static void PDB_run_code(Parrot_Interp interp, int argc, char *argv[]);
+-
+-/*
+-
+-=item C<int main(int argc, char *argv[])>
+-
+-Reads the PASM or PBC file from argv[1], loads it, and then calls
+-Parrot_debug().
+-
+-=cut
+-
+-*/
+-
+-extern void imcc_init(Parrot_Interp interp);
+-
+-int
+-main(int argc, char *argv[])
+-{
+-    Parrot_Interp     debugger = Parrot_new(NULL);
+-    Parrot_Interp     interp   = Parrot_new(debugger);
+-    PDB_t            *pdb      = mem_allocate_zeroed_typed(PDB_t);
+-    const char       *filename;
+-    char             *ext;
+-    void             *yyscanner;
+-
+-    /*Parrot_set_config_hash();  TODO link with cfg */
+-
+-    /* attach pdb structure */
+-    debugger->pdb    = pdb;
+-    interp->debugger = debugger;
+-    pdb->debugee     = interp;
+-
+-    Parrot_block_GC_mark(interp);
+-    Parrot_block_GC_sweep(interp);
+-    imcc_init(interp);
+-
+-    do_yylex_init(interp, &yyscanner);
+-
+-    if (argc < 2) {
+-        fprintf(stderr, "Usage: pdb programfile [program-options]\n");
+-        Parrot_exit(interp, 1);
+-    }
+-
+-    filename = argv[1];
+-    ext      = strrchr(filename, '.');
+-
+-    if (ext && STREQ(ext, ".pbc")) {
+-        Parrot_PackFile pf = Parrot_readbc(interp, filename);
+-
+-        if (!pf)
+-            return 1;
+-
+-        Parrot_loadbc(interp, pf);
+-    }
+-    else {
+-        Parrot_PackFile pf        = PackFile_new(interp, 0);
+-        int             pasm_file = 0;
+-
+-        Parrot_loadbc(interp, pf);
+-
+-        IMCC_push_parser_state(interp);
+-        IMCC_INFO(interp)->state->file = filename;
+-
+-        if (!(imc_yyin_set(fopen(filename, "r"), yyscanner)))    {
+-            IMCC_fatal_standalone(interp, E_IOError,
+-                    "Error reading source file %s.\n",
+-                    filename);
+-        }
+-
+-        if (ext && STREQ(ext, ".pasm"))
+-            pasm_file = 1;
+-
+-        emit_open(interp, 1, NULL);
+-        IMCC_INFO(interp)->state->pasm_file = pasm_file;
+-        yyparse(yyscanner, interp);
+-        imc_compile_all_units(interp);
+-
+-        imc_cleanup(interp, yyscanner);
+-
+-        fclose(imc_yyin_get(yyscanner));
+-        PackFile_fixup_subs(interp, PBC_POSTCOMP, NULL);
+-    }
+-
+-    Parrot_unblock_GC_mark(interp);
+-    Parrot_unblock_GC_sweep(interp);
+-
+-    PDB_printwelcome();
+-
+-    PDB_run_code(interp, argc - 1, argv + 1);
+-
+-
+-    Parrot_exit(interp, 0);
+-}
+-
+-/*
+-
+-=item C<static void PDB_add_exception_handler(Parrot_Interp)>
+-
+-Adds a default exception handler to PDB.
+-
+-*/
+-
+-static void
+-PDB_run_code(Parrot_Interp interp, int argc, char *argv[])
+-{
+-    Parrot_exception exp;
+-
+-    if (setjmp(exp.destination)) {
+-        char *msg = string_to_cstring(interp, interp->exceptions->msg);
+-        fprintf(stderr, "Caught exception: %s\n", msg);
+-        string_cstring_free(msg);
+-        return;
+-    }
+-
+-    push_new_c_exception_handler(interp, &exp);
+-
+-    Parrot_runcode(interp, argc - 1, argv + 1);
+-}
+-
+-/*
+-
+-=item C<static void PDB_printwelcome(void)>
+-
+-Prints out the welcome string.
+-
+-=cut
+-
+-*/
+-
+-static void
+-PDB_printwelcome(void)
+-{
+-    fprintf(stderr, "Parrot Debugger 0.4.x\n");
+-    fprintf(stderr, "\nPlease note: ");
+-    fprintf(stderr, "the debugger is currently under reconstruction\n");
+-}
+-
+-/*
+-
+-=back
+-
+-=head1 SEE ALSO
+-
+-F<src/debug.c>, F<include/parrot/debug.h>.
+-
+-=head1 HISTORY
+-
+-=over 4
+-
+-=item * Initial version by Daniel Grunblatt on 2002.5.19.
+-
+-=item * Start of rewrite - leo 2005.02.16
+-
+-The debugger now uses it's own interpreter. User code is run in
+-Interp* debugee. We have:
+-
+-  debug_interp->pdb->debugee->debugger
+-    ^                            |
+-    |                            v
+-    +------------- := -----------+
+-
+-Debug commands are mostly run inside the C<debugger>. User code
+-runs of course in the C<debugee>.
+-
+-=back
+-
+-=head1 TODO
+-
+-=over 4
+-
+-=item * Check the user input for bad commands, it's quite easy to make
+-it bang now, try listing the source before loading or disassembling it.
+-
+-=item * Print the interpreter info.
+-
+-=item * Make the user interface better (add comands
+-history/completion).
+-
+-=item * Some other things I don't remember now because it's late.
+-
+-
+-=back
+-
+-=cut
+-
+-*/
+-
+-
+-/*
+- * Local variables:
+- *   c-file-style: "parrot"
+- * End:
+- * vim: expandtab shiftwidth=4:
+- */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/t/tools/parrot_pdb.t src/parrot-0.6.3/t/tools/parrot_pdb.t
+--- origsrc/parrot-0.6.3/t/tools/parrot_pdb.t	1970-01-01 00:00:00.000000000 +0000
++++ src/parrot-0.6.3/t/tools/parrot_pdb.t	2008-07-03 15:32:32.187500000 +0000
+@@ -0,0 +1,123 @@
++#! perl
++# Copyright (C) 2007, The Perl Foundation.
++# $Id: pdb.t 21449 2007-09-21 09:32:00Z paultcochrane $
++
++=head1 NAME
++
++t/tools/parrot_pdb.t - test the Parrot Debugger
++
++=head1 SYNOPSIS
++
++    % prove t/tools/parrot_pdb.t
++
++
++=head1 DESCRIPTION
++
++Tests the C<parrot_pdb> tool by providing it with a number of source files,
++and running through it with various commands.
++
++We never actually check the *full* output of parrot_pdb.  We simply check
++several smaller components to avoid a test file that is far too
++unwieldy.
++
++
++=head1 REQUIREMENTS
++
++This test script requires you to build parrot_pdb, by typing "make parrot_pdb" (using
++a suitable make tool for your platform).  If this requirement has not
++been met, all tests will be skipped.
++
++=cut
++
++use strict;
++use warnings;
++use lib qw(lib);
++
++use Test::More;
++use IO::File;
++use Parrot::Config;
++use File::Spec;
++
++my $path_to_pdb;
++
++BEGIN {
++    $path_to_pdb = File::Spec->catfile( ".", "parrot_pdb" );
++    my $exefile = $path_to_pdb . $PConfig{exe};
++    unless ( -f $exefile ) {
++        plan skip_all => "parrot_pdb hasn't been built";
++        exit(0);
++    }
++}
++
++my $tests = 0;
++
++ok( pdb_output_like( <<PIR, "pir", "help", 'List of commands:' ), "help page" );
++.sub main :main
++    \$N3 = 3.14159
++    print \$N3
++    print "\\n"
++.end
++PIR
++ok( pdb_output_like( <<PIR, "pir", "r", '3\.14159' ), "running the program" );
++.sub main :main
++    \$N3 = 3.14159
++    print \$N3
++    print "\\n"
++.end
++PIR
++BEGIN { $tests += 2 }
++
++BEGIN { plan tests => $tests; }
++
++=head1 HELPER SUBROUTINES
++
++=head2 pdb_output_like
++
++    ok(pdb_output_like(<<PASM, "pasm", 'r', "some output"), "running $file");
++
++Takes 4 arguments: a file to run, the filename-extension of the file
++(probably "pir" or "pasm"), the command or commands to provide to pdb as
++input, and a regex string to match within pdb's output.
++
++=cut
++
++my $testno = 0;
++
++sub pdb_output_like {
++    my ( $file, $ext, $input, $check ) = @_;
++    $testno++;
++    my $codefn   = "$0.$testno.$ext";
++    my $stdinfn  = "$0.$testno.stdin";
++    my $stdoutfn = "$0.$testno.stdout";
++    my $f        = IO::File->new(">$codefn");
++    $f->print($file);
++    $f->close();
++    $f = IO::File->new(">$stdinfn");
++    $f->print($input);
++    $f->print("\nquit\n");
++    $f->close();
++    system("$path_to_pdb $codefn <$stdinfn >$stdoutfn 2>&1");
++    $f = IO::File->new($stdoutfn);
++    my $output = join( "", <$f> );
++    return $output =~ /$check/;
++}
++
++=head1 TODO
++
++=over 4
++
++=item
++
++Flesh it out.  This is a bare bones proof of concept.  Add tests for all of the
++commands.
++
++=back
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/t/tools/pdb.t src/parrot-0.6.3/t/tools/pdb.t
+--- origsrc/parrot-0.6.3/t/tools/pdb.t	2008-05-07 23:33:02.000000000 +0000
++++ src/parrot-0.6.3/t/tools/pdb.t	1970-01-01 00:00:00.000000000 +0000
+@@ -1,123 +0,0 @@
+-#! perl
+-# Copyright (C) 2007, The Perl Foundation.
+-# $Id: pdb.t 21449 2007-09-21 09:32:00Z paultcochrane $
+-
+-=head1 NAME
+-
+-t/tools/pdb.t - test the Parrot Debugger
+-
+-=head1 SYNOPSIS
+-
+-    % prove t/tools/pdb.t
+-
+-
+-=head1 DESCRIPTION
+-
+-Tests the C<pdb> tool by providing it with a number of source files,
+-and running through it with various commands.
+-
+-We never actually check the *full* output of pdb.  We simply check
+-several smaller components to avoid a test file that is far too
+-unwieldy.
+-
+-
+-=head1 REQUIREMENTS
+-
+-This test script requires you to build pdb, by typing "make pdb" (using
+-a suitable make tool for your platform).  If this requirement has not
+-been met, all tests will be skipped.
+-
+-=cut
+-
+-use strict;
+-use warnings;
+-use lib qw(lib);
+-
+-use Test::More;
+-use IO::File;
+-use Parrot::Config;
+-use File::Spec;
+-
+-my $path_to_pdb;
+-
+-BEGIN {
+-    $path_to_pdb = File::Spec->catfile( ".", "pdb" );
+-    my $exefile = $path_to_pdb . $PConfig{exe};
+-    unless ( -f $exefile ) {
+-        plan skip_all => "pdb hasn't been built";
+-        exit(0);
+-    }
+-}
+-
+-my $tests = 0;
+-
+-ok( pdb_output_like( <<PIR, "pir", "help", 'List of commands:' ), "help page" );
+-.sub main :main
+-    \$N3 = 3.14159
+-    print \$N3
+-    print "\\n"
+-.end
+-PIR
+-ok( pdb_output_like( <<PIR, "pir", "r", '3\.14159' ), "running the program" );
+-.sub main :main
+-    \$N3 = 3.14159
+-    print \$N3
+-    print "\\n"
+-.end
+-PIR
+-BEGIN { $tests += 2 }
+-
+-BEGIN { plan tests => $tests; }
+-
+-=head1 HELPER SUBROUTINES
+-
+-=head2 pdb_output_like
+-
+-    ok(pdb_output_like(<<PASM, "pasm", 'r', "some output"), "running $file");
+-
+-Takes 4 arguments: a file to run, the filename-extension of the file
+-(probably "pir" or "pasm"), the command or commands to provide to pdb as
+-input, and a regex string to match within pdb's output.
+-
+-=cut
+-
+-my $testno = 0;
+-
+-sub pdb_output_like {
+-    my ( $file, $ext, $input, $check ) = @_;
+-    $testno++;
+-    my $codefn   = "$0.$testno.$ext";
+-    my $stdinfn  = "$0.$testno.stdin";
+-    my $stdoutfn = "$0.$testno.stdout";
+-    my $f        = IO::File->new(">$codefn");
+-    $f->print($file);
+-    $f->close();
+-    $f = IO::File->new(">$stdinfn");
+-    $f->print($input);
+-    $f->print("\nquit\n");
+-    $f->close();
+-    system("$path_to_pdb $codefn <$stdinfn >$stdoutfn 2>&1");
+-    $f = IO::File->new($stdoutfn);
+-    my $output = join( "", <$f> );
+-    return $output =~ /$check/;
+-}
+-
+-=head1 TODO
+-
+-=over 4
+-
+-=item
+-
+-Flesh it out.  This is a bare bones proof of concept.  Add tests for all of the
+-commands.
+-
+-=back
+-
+-=cut
+-
+-# Local Variables:
+-#   mode: cperl
+-#   cperl-indent-level: 4
+-#   fill-column: 100
+-# End:
+-# vim: expandtab shiftwidth=4:
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/tools/dev/install_files.pl src/parrot-0.6.3/tools/dev/install_files.pl
+--- origsrc/parrot-0.6.3/tools/dev/install_files.pl	2008-05-18 16:44:14.000000000 +0000
++++ src/parrot-0.6.3/tools/dev/install_files.pl	2008-07-03 07:46:47.500000000 +0000
+@@ -126,7 +126,7 @@
+     bindir      => '/usr/bin',
+     libdir      => '/usr/lib',
+     includedir  => '/usr/include',
+-    docdir      => '/usr/share/doc',
++    docdir      => '/usr/share/doc/parrot',
+     'dry-run'   => 0,
+ );
+ 
+@@ -189,6 +189,7 @@
+     }
+     elsif ( $meta{include} ) {
+         $dest =~ s/^include//;
++        $dest =~ s/^src/parrot/;
+         $dest = File::Spec->catdir( $options{includedir}, $dest );
+     }
+     elsif ( $meta{doc} ) {
+@@ -197,13 +198,16 @@
+     elsif ( $meta{pkgconfig} ) {
+ 
+         # For the time being this is hardcoded as being installed under libdir
+-        # as it is typically donw with automake installed packages.  If there
++        # as it is typically done with automake installed packages.  If there
+         # is a use case to make this configurable we'll add a seperate
+         # --pkgconfigdir option.
+         $dest = File::Spec->catdir( $options{libdir}, 'pkgconfig', $dest );
+     }
+     else {
+-        $dest =~ s/^runtime/lib/ if /\[library]/;
++        $dest =~ s|^runtime/|lib/|; # if /\[library]/;
++        # $dest =~ s|^src/|src/parrot/|;
++        $dest =~ s|^src/|lib/parrot/src/|;
++	next if $dest =~ /compilers|config|language|tools/;
+         $dest = File::Spec->catdir( $options{prefix}, $dest );
+     }
+ 
+@@ -243,6 +247,7 @@
+     }
+     else {
+         next unless -e $src;
++        next if $^O eq 'cygwin' and -e "$src.exe"; # cygwin stat works, but copy not
+         copy( $src, $dest ) or die "copy $src to $dest: $!\n";
+         print "$dest\n";
+     }
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x build/Makefile origsrc/parrot-0.6.3/tools/util/dump_pbc.pl src/parrot-0.6.3/tools/util/dump_pbc.pl
+--- origsrc/parrot-0.6.3/tools/util/dump_pbc.pl	2008-06-04 22:29:37.000000000 +0000
++++ src/parrot-0.6.3/tools/util/dump_pbc.pl	2008-07-03 07:46:47.500000000 +0000
+@@ -13,7 +13,7 @@
+ 
+ =head1 DESCRIPTION
+ 
+-dump_pbc.pl uses Parrot's F<disassemble> program to disassemble the opcodes
++dump_pbc.pl uses Parrot's F<pbc_disassemble> program to disassemble the opcodes
+ in a PBC (Parrot ByteCode) file, then weaves the disassembly together with
+ the original PIR source file(s).  This makes it easier to see how the PIR
+ syntactic sugar is desugared into raw Parrot opcodes.
+@@ -45,7 +45,7 @@
+ use lib "$PARROT_ROOT/lib";
+ use Parrot::Config '%PConfig';
+ 
+-my $DISASSEMBLER = "$PConfig{build_dir}$PConfig{slash}disassemble$PConfig{exe}";
++my $DISASSEMBLER = "$PConfig{build_dir}$PConfig{slash}pbc_disassemble$PConfig{exe}";
+ 
+ go(@ARGV);
+ 

@@ -1,0 +1,275 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/acinclude.m4 src/fcgi-2.4.0/acinclude.m4
+--- origsrc/fcgi-2.4.0/acinclude.m4	2001-12-21 03:12:50.000000000 +0000
++++ src/fcgi-2.4.0/acinclude.m4	2006-08-06 18:27:05.292625000 +0000
+@@ -1,6 +1,6 @@
+ dnl     $Id: acinclude.m4,v 1.2 2001/12/21 03:12:50 robs Exp $
+ 
+-AC_DEFUN(FCGI_COMMON_CHECKS, [
++AC_DEFUN([FCGI_COMMON_CHECKS], [
+     AC_CHECK_TYPE([ssize_t], [int]) 
+ 
+     AC_MSG_CHECKING([for sun_len in sys/un.h])
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/cgi-fcgi/Makefile.am src/fcgi-2.4.0/cgi-fcgi/Makefile.am
+--- origsrc/fcgi-2.4.0/cgi-fcgi/Makefile.am	2001-12-22 03:16:22.000000000 +0000
++++ src/fcgi-2.4.0/cgi-fcgi/Makefile.am	2006-08-06 18:27:05.308250000 +0000
+@@ -2,7 +2,7 @@
+ bin_PROGRAMS     = cgi-fcgi
+ 
+ INCLUDEDIR  = ../include
+-CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
++AM_CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
+ 
+ INCLUDE_FILES   = $(INCLUDEDIR)/fastcgi.h  \
+ 		  $(INCLUDEDIR)/fcgiapp.h  \
+@@ -12,4 +12,5 @@
+ LIBFCGI     = $(LIBDIR)/libfcgi.la
+ 
+ LDADD = $(LIBFCGI)
++libfcgi_la_LDFLAGS = -no-undefined
+ cgi_fcgi_SOURCES = $(INCLUDE_FILES) cgi-fcgi.c
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/doc/cgi-fcgi.1 src/fcgi-2.4.0/doc/cgi-fcgi.1
+--- origsrc/fcgi-2.4.0/doc/cgi-fcgi.1	1997-09-16 15:36:26.000000000 +0000
++++ src/fcgi-2.4.0/doc/cgi-fcgi.1	2006-08-06 18:27:05.308250000 +0000
+@@ -89,7 +89,7 @@
+      The usual CGI ones, but they are not interpreted by cgi-fcgi.
+ 
+ SEE ALSO
+-     FGCI_accept(3)
++     FGCI_Accept(3)
+ 
+ BUGS
+      cgi-fcgi doesn't generate useful HTTP responses in case of error,
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/doc/fcgitest.lisp src/fcgi-2.4.0/doc/fcgitest.lisp
+--- origsrc/fcgi-2.4.0/doc/fcgitest.lisp	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/doc/fcgitest.lisp	2006-08-06 18:27:05.323875000 +0000
+@@ -0,0 +1,14 @@
++#!clisp -q -E 1:1 -L en_US -K full
++;; Copy this into /www
++(defun nl () (format nil "~%"))
++
++(do ((count 1 (1+ count)))
++    ((not (fastcgi:accept)) nil)
++
++    (fastcgi:out "Content-type: text/plain" (nl) (nl))
++    (fastcgi:out
++     "I am running in mode: " (if (fastcgi:is-cgi) "CGI" "FastCGI") (nl)
++     "This is execution no.: " count (nl)
++     "The browser string is '" (fastcgi:getenv "HTTP_USER_AGENT") "'" (nl))
++
++    (fastcgi:finish))
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/doc/lighttpd-clisp.txt src/fcgi-2.4.0/doc/lighttpd-clisp.txt
+--- origsrc/fcgi-2.4.0/doc/lighttpd-clisp.txt	1970-01-01 00:00:00.000000000 +0000
++++ src/fcgi-2.4.0/doc/lighttpd-clisp.txt	2006-08-06 18:27:05.323875000 +0000
+@@ -0,0 +1,41 @@
++lighttpd + clisp
++
++/etc/lighttpd/lighttpd.conf:
++  enable "mod_fastcgi" in server.modules and maybe "mod_cgi" also.
++
++  fastcgi.server = ( ".lisp" =>
++                     ( "localhost" =>
++                       (
++                         "socket" => "/tmp/clisp-fastcgi.socket",
++			 # :FASTCGI only in full, see *FEATURES*
++                         "bin-path" => "/usr/bin/clisp -q -E 1:1 -K full"
++                       )
++                     )
++
++Create a /www/fcgitest.lisp and/or /www/fcgitest.cgi:
++
++#!clisp -q -E 1:1 -L en_US -K full
++(defun nl () (format nil "~%"))
++(do ((count 1 (1+ count)))
++    ((not (fastcgi:accept)) nil)
++    (fastcgi:out "Content-type: text/plain" (nl) (nl))
++    (fastcgi:out
++     "I am running in mode: " (if (fastcgi:is-cgi) "CGI" "FastCGI") (nl)
++     "This is execution no.: " count (nl)
++     "The browser string is '" (fastcgi:getenv "HTTP_USER_AGENT") "'" (nl))
++    (fastcgi:finish))
++
++# Test from the shell if clisp is okay:
++$ /www/fcgitest.lisp
++Content-type: text/plain
++
++I am running in mode: CGI
++This is execution no.: 1
++The browser string is ''
++
++$ /usr/sbin/lighttpd -D /etc/lighttpd/lighttpd.conf &
++$ lwp-request -u -S -e http://localhost:81/fcgitest.lisp
++
++=> clisp-2.39-1 dumps core. It's under investigation.
++--
++Reini Urban
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/examples/Makefile.am src/fcgi-2.4.0/examples/Makefile.am
+--- origsrc/fcgi-2.4.0/examples/Makefile.am	2001-12-22 03:16:21.000000000 +0000
++++ src/fcgi-2.4.0/examples/Makefile.am	2006-08-06 18:27:05.323875000 +0000
+@@ -11,7 +11,7 @@
+ EXTRA_PROGRAMS = threaded echo-cpp
+ 
+ INCLUDEDIR  = ../include
+-CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
++AM_CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
+ 
+ INCLUDE_FILES   = $(INCLUDEDIR)/fastcgi.h    \
+                   $(INCLUDEDIR)/fcgiapp.h    \
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/fcgi_config.h.in src/fcgi-2.4.0/fcgi_config.h.in
+--- origsrc/fcgi-2.4.0/fcgi_config.h.in	2003-01-19 17:21:13.000000000 +0000
++++ src/fcgi-2.4.0/fcgi_config.h.in	2006-08-06 18:29:51.902000000 +0000
+@@ -1,9 +1,9 @@
+-/* fcgi_config.h.in.  Generated automatically from configure.in by autoheader.  */
++/* fcgi_config.h.in.  Generated from configure.in by autoheader.  */
+ 
+-/* Define if you have the <arpa/inet.h> header file. */
++/* Define to 1 if you have the <arpa/inet.h> header file. */
+ #undef HAVE_ARPA_INET_H
+ 
+-/* Define if you have the <dlfcn.h> header file. */
++/* Define to 1 if you have the <dlfcn.h> header file. */
+ #undef HAVE_DLFCN_H
+ 
+ /* Define if there's a fileno() prototype in stdio.h */
+@@ -12,28 +12,28 @@
+ /* Define if the fpos_t typedef is in stdio.h */
+ #undef HAVE_FPOS
+ 
+-/* Define if you have the <inttypes.h> header file. */
++/* Define to 1 if you have the <inttypes.h> header file. */
+ #undef HAVE_INTTYPES_H
+ 
+ /* Define if cin/cout/cerr has a streambuf assignment operator */
+ #undef HAVE_IOSTREAM_WITHASSIGN_STREAMBUF
+ 
+-/* Define if you have the `nsl' library (-lnsl). */
++/* Define to 1 if you have the `nsl' library (-lnsl). */
+ #undef HAVE_LIBNSL
+ 
+-/* Define if you have the `socket' library (-lsocket). */
++/* Define to 1 if you have the `socket' library (-lsocket). */
+ #undef HAVE_LIBSOCKET
+ 
+-/* Define if you have the <limits.h> header file. */
++/* Define to 1 if you have the <limits.h> header file. */
+ #undef HAVE_LIMITS_H
+ 
+-/* Define if you have the <memory.h> header file. */
++/* Define to 1 if you have the <memory.h> header file. */
+ #undef HAVE_MEMORY_H
+ 
+-/* Define if you have the <netdb.h> header file. */
++/* Define to 1 if you have the <netdb.h> header file. */
+ #undef HAVE_NETDB_H
+ 
+-/* Define if you have the <netinet/in.h> header file. */
++/* Define to 1 if you have the <netinet/in.h> header file. */
+ #undef HAVE_NETINET_IN_H
+ 
+ /* Define if you have POSIX threads libraries and header files. */
+@@ -45,40 +45,40 @@
+ /* Define if the socklen_t typedef is in sys/socket.h */
+ #undef HAVE_SOCKLEN
+ 
+-/* Define if you have the <stdint.h> header file. */
++/* Define to 1 if you have the <stdint.h> header file. */
+ #undef HAVE_STDINT_H
+ 
+-/* Define if you have the <stdlib.h> header file. */
++/* Define to 1 if you have the <stdlib.h> header file. */
+ #undef HAVE_STDLIB_H
+ 
+ /* Define if char_type is defined in the context of streambuf */
+ #undef HAVE_STREAMBUF_CHAR_TYPE
+ 
+-/* Define if you have the `strerror' function. */
++/* Define to 1 if you have the `strerror' function. */
+ #undef HAVE_STRERROR
+ 
+-/* Define if you have the <strings.h> header file. */
++/* Define to 1 if you have the <strings.h> header file. */
+ #undef HAVE_STRINGS_H
+ 
+-/* Define if you have the <string.h> header file. */
++/* Define to 1 if you have the <string.h> header file. */
+ #undef HAVE_STRING_H
+ 
+-/* Define if you have the <sys/param.h> header file. */
++/* Define to 1 if you have the <sys/param.h> header file. */
+ #undef HAVE_SYS_PARAM_H
+ 
+-/* Define if you have the <sys/socket.h> header file. */
++/* Define to 1 if you have the <sys/socket.h> header file. */
+ #undef HAVE_SYS_SOCKET_H
+ 
+-/* Define if you have the <sys/stat.h> header file. */
++/* Define to 1 if you have the <sys/stat.h> header file. */
+ #undef HAVE_SYS_STAT_H
+ 
+-/* Define if you have the <sys/time.h> header file. */
++/* Define to 1 if you have the <sys/time.h> header file. */
+ #undef HAVE_SYS_TIME_H
+ 
+-/* Define if you have the <sys/types.h> header file. */
++/* Define to 1 if you have the <sys/types.h> header file. */
+ #undef HAVE_SYS_TYPES_H
+ 
+-/* Define if you have the <unistd.h> header file. */
++/* Define to 1 if you have the <unistd.h> header file. */
+ #undef HAVE_UNISTD_H
+ 
+ /* Define if va_arg(arg, long double) crashes the compiler */
+@@ -87,11 +87,26 @@
+ /* Name of package */
+ #undef PACKAGE
+ 
++/* Define to the address where bug reports for this package should be sent. */
++#undef PACKAGE_BUGREPORT
++
++/* Define to the full name of this package. */
++#undef PACKAGE_NAME
++
++/* Define to the full name and version of this package. */
++#undef PACKAGE_STRING
++
++/* Define to the one symbol short name of this package. */
++#undef PACKAGE_TARNAME
++
++/* Define to the version of this package. */
++#undef PACKAGE_VERSION
++
+ /* Define to the necessary symbol if this constant uses a non-standard name on
+    your system. */
+ #undef PTHREAD_CREATE_JOINABLE
+ 
+-/* Define if you have the ANSI C header files. */
++/* Define to 1 if you have the ANSI C header files. */
+ #undef STDC_HEADERS
+ 
+ /* Define if cross-process locking is required by accept() */
+@@ -103,9 +118,11 @@
+ /* Define to empty if `const' does not conform to ANSI C. */
+ #undef const
+ 
+-/* Define as `__inline' if that's what the C compiler calls it, or to nothing
+-   if it is not supported. */
++/* Define to `__inline__' or `__inline' if that's what the C compiler
++   calls it, or to nothing if 'inline' is not supported under any name.  */
++#ifndef __cplusplus
+ #undef inline
++#endif
+ 
+ /* Define to `int' if <sys/types.h> does not define. */
+ #undef ssize_t
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x 'Makefile.in*' -x configure -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make origsrc/fcgi-2.4.0/libfcgi/Makefile.am src/fcgi-2.4.0/libfcgi/Makefile.am
+--- origsrc/fcgi-2.4.0/libfcgi/Makefile.am	2001-12-22 03:16:20.000000000 +0000
++++ src/fcgi-2.4.0/libfcgi/Makefile.am	2006-08-06 18:27:05.339500000 +0000
+@@ -1,7 +1,8 @@
+ # $Id: Makefile.am,v 1.9 2001/12/22 03:16:20 robs Exp $
+ 
+ INCLUDEDIR  = ../include
+-CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
++AM_CPPFLAGS    = @CPPFLAGS@ -I$(top_srcdir)/include
++AM_LDFLAGS = -no-undefined
+ 
+ INCLUDE_FILES = $(INCLUDEDIR)/fastcgi.h     \
+                 $(INCLUDEDIR)/fcgiapp.h     \

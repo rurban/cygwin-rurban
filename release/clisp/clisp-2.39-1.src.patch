@@ -1,0 +1,501 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/modules/berkeley-db/bdb.c src/clisp-2.39/modules/berkeley-db/bdb.c
+--- origsrc/clisp-2.39/modules/berkeley-db/bdb.c	2006-06-30 08:11:42.000000000 +0000
++++ src/clisp-2.39/modules/berkeley-db/bdb.c	2006-07-31 20:30:52.703125000 +0000
+@@ -98,7 +98,7 @@
+     pushSTACK(fixnum(DB_VERSION_PATCH)); pushSTACK(fixnum(patch));
+     fehler(warning,GETTEXT("Patch level mismatch: compile=~S link=~S"));
+   }
+-  value1 = asciz_to_string(version,GLO(misc_encoding));
++  value1 = asciz_to_string(version,SGLO(misc_encoding));
+   value2 = fixnum(major);
+   value3 = fixnum(minor);
+   value4 = fixnum(patch);
+@@ -184,10 +184,10 @@
+     pushSTACK(`"~S (~S): ~S: ~S"`);
+   else pushSTACK(`"~S (~S): ~S"`);
+   pushSTACK(TheSubr(subr_self)->name);
+-  pushSTACK(asciz_to_string(caller,GLO(misc_encoding)));
+-  pushSTACK(asciz_to_string(db_strerror(status),GLO(misc_encoding)));
++  pushSTACK(asciz_to_string(caller,SGLO(misc_encoding)));
++  pushSTACK(asciz_to_string(db_strerror(status),SGLO(misc_encoding)));
+   if (error_message) {
+-    pushSTACK(asciz_to_string(error_message,GLO(misc_encoding)));
++    pushSTACK(asciz_to_string(error_message,SGLO(misc_encoding)));
+     free(error_message); error_message = NULL;
+     funcall(L(error_of_type),8);
+   } else funcall(L(error_of_type),7);
+@@ -225,7 +225,7 @@
+   if (data && data->len) {
+     int ii;
+     for (ii=0; ii < data->len; ii++) {
+-      pushSTACK(asciz_to_string(data->msgs[ii],GLO(misc_encoding)));
++      pushSTACK(asciz_to_string(data->msgs[ii],SGLO(misc_encoding)));
+       free(data->msgs[ii]);
+     }
+     data->len = 0;
+@@ -333,7 +333,7 @@
+                                 gcv_object_t *o_password_) {
+   u_int32_t flags = dbe_encryption_check(*o_flags_);
+   *o_password_ = check_string(*o_password_);
+-  with_string_0(*o_password_,GLO(misc_encoding),password,
++  with_string_0(*o_password_,SGLO(misc_encoding),password,
+                 { SYSCALL(dbe->set_encrypt,(dbe,password,flags)); });
+ }
+ 
+@@ -355,7 +355,7 @@
+     if (uint_p(STACK_1)) cl_timeout = I_to_uint(STACK_1);
+    host_restart:
+     if (stringp(STACK_2)) {     /* string host */
+-      with_string_0(STACK_2,GLO(misc_encoding),hostz, {
++      with_string_0(STACK_2,SGLO(misc_encoding),hostz, {
+           begin_system_call();
+           status = dbe->set_rpc_server(dbe,NULL,hostz,cl_timeout,sv_timeout,0);
+           end_system_call();
+@@ -409,7 +409,7 @@
+  can trigger GC */
+ static FILE* my_fopen (object path) {
+   FILE *ret;
+-  with_string_0(path=physical_namestring(path),GLO(pathname_encoding),pathz,{
++  with_string_0(path=physical_namestring(path),SGLO(pathname_encoding),pathz,{
+       begin_system_call();
+       ret = fopen(pathz,"w");
+       if (ret == NULL) OS_file_error(path);
+@@ -510,9 +510,9 @@
+   DB_ENV *dbe = (DB_ENV*)bdb_handle(STACK_2,`BDB::DBE`,BH_VALID);
+   if (!nullp(STACK_2)) STACK_2 = check_string(STACK_0); /* DATABASE */
+   STACK_1 = physical_namestring(STACK_1);               /* FILE */
+-  with_string_0(STACK_1,GLO(pathname_encoding),file, {
++  with_string_0(STACK_1,SGLO(pathname_encoding),file, {
+       if (stringp(STACK_0)) {
+-        with_string_0(STACK_0,GLO(misc_encoding),database, {
++        with_string_0(STACK_0,SGLO(misc_encoding),database, {
+             SYSCALL(dbe->dbremove,(dbe,txn,file,database,flags));
+           });
+       } else SYSCALL(dbe->dbremove,(dbe,txn,file,NULL,flags));
+@@ -526,9 +526,9 @@
+   u_int32_t flags = bdb_ac_flags();
+   DB_TXN *txn = (DB_TXN*)bdb_handle(popSTACK(),`BDB::TXN`,BH_NIL_IS_NULL);
+   DB_ENV *dbe = (DB_ENV*)bdb_handle(STACK_3,`BDB::DBE`,BH_VALID);
+-  with_string_0(physical_namestring(STACK_2),GLO(pathname_encoding),file, {
+-      with_string_0(check_string(STACK_1),GLO(misc_encoding),database, {
+-          with_string_0(check_string(STACK_0),GLO(misc_encoding),newname, {
++  with_string_0(physical_namestring(STACK_2),SGLO(pathname_encoding),file, {
++      with_string_0(check_string(STACK_1),SGLO(misc_encoding),database, {
++          with_string_0(check_string(STACK_0),SGLO(misc_encoding),newname, {
+               SYSCALL(dbe->dbrename,(dbe,txn,file,database,newname,flags));
+             });
+         });
+@@ -553,7 +553,7 @@
+     | check_dbe_open_flags_from_list(popSTACK());
+   DB_ENV *dbe = (DB_ENV*)bdb_handle(STACK_1,`BDB::DBE`,BH_VALID);
+   if (!missingp(STACK_0)) {
+-    with_string_0(physical_namestring(STACK_0),GLO(pathname_encoding),home,
++    with_string_0(physical_namestring(STACK_0),SGLO(pathname_encoding),home,
+                   { SYSCALL(dbe->open,(dbe,home,flags,mode)); });
+   } else SYSCALL(dbe->open,(dbe,NULL,flags,mode));
+   VALUES0; skipSTACK(2);
+@@ -565,7 +565,7 @@
+   u_int32_t flags = dbe_remove_flags();
+   DB_ENV *dbe = (DB_ENV*)bdb_handle(STACK_1,`BDB::DBE`,BH_INVALIDATE);
+   if (!missingp(STACK_0)) {
+-    with_string_0(physical_namestring(STACK_0),GLO(pathname_encoding),home,
++    with_string_0(physical_namestring(STACK_0),SGLO(pathname_encoding),home,
+                   { SYSCALL(dbe->remove,(dbe,home,flags)); });
+   } else SYSCALL(dbe->remove,(dbe,NULL,flags));
+   VALUES0; skipSTACK(2);
+@@ -588,7 +588,7 @@
+   if (nullp(STACK_0)) {
+     begin_system_call(); dbe->set_errpfx(dbe,NULL); end_system_call();
+   } else
+-    with_string_0(check_string(STACK_0),GLO(misc_encoding), prefix, {
++    with_string_0(check_string(STACK_0),SGLO(misc_encoding), prefix, {
+         char *errpfx = (char*)my_malloc(prefix_bytelen+1);
+         strcpy(errpfx,prefix);
+         begin_system_call(); dbe->set_errpfx(dbe,errpfx); end_system_call();
+@@ -601,7 +601,7 @@
+   begin_system_call();
+   dbe->get_errpfx(dbe,&errpfx);
+   end_system_call();
+-  return asciz_to_string0(errpfx,GLO(misc_encoding));
++  return asciz_to_string0(errpfx,SGLO(misc_encoding));
+ }
+ /* define a flag checker */
+ #define FLAG_EXTRACTOR(name,type)                       \
+@@ -733,24 +733,24 @@
+   DBE_SET(lg_regionmax,u_int32_t,I_to_uint32(check_uint32(STACK_0)));
+   DBE_SET(lg_max,u_int32_t,I_to_uint32(check_uint32(STACK_0)));
+   if (!missingp(STACK_0)) {     /* LG_DIR */
+-    with_string_0(physical_namestring(popSTACK()),GLO(pathname_encoding),dirz,
++    with_string_0(physical_namestring(popSTACK()),SGLO(pathname_encoding),dirz,
+                   { SYSCALL(dbe->set_lg_dir,(dbe,dirz)); });
+   } else skipSTACK(1);
+   DBE_SET(lg_bsize,u_int32_t,I_to_uint32(check_uint32(STACK_0)));
+   if (!missingp(STACK_0)) {     /* TMP_DIR */
+-    with_string_0(physical_namestring(popSTACK()),GLO(pathname_encoding),tmpz,
++    with_string_0(physical_namestring(popSTACK()),SGLO(pathname_encoding),tmpz,
+                   { SYSCALL(dbe->set_tmp_dir,(dbe,tmpz)); });
+   } else skipSTACK(1);
+   if (!missingp(STACK_0)) {     /* DATA_DIR */
+     if (consp(STACK_0)) {
+       do {
+-        with_string_0(physical_namestring(Car(STACK_0)),GLO(pathname_encoding),
++        with_string_0(physical_namestring(Car(STACK_0)),SGLO(pathname_encoding),
+                       dataz, { SYSCALL(dbe->set_data_dir,(dbe,dataz)); });
+         STACK_0 = Cdr(STACK_0);
+       } while (consp(STACK_0));
+       skipSTACK(1);
+     } else
+-      with_string_0(physical_namestring(popSTACK()),GLO(pathname_encoding),
++      with_string_0(physical_namestring(popSTACK()),SGLO(pathname_encoding),
+                     dataz, { SYSCALL(dbe->set_data_dir,(dbe,dataz)); });
+   } else skipSTACK(1);
+   DBE_SET(tx_max,u_int32_t,I_to_uint32(check_uint32(STACK_0)));
+@@ -816,7 +816,7 @@
+   SYSCALL(dbe->get_data_dirs,(dbe,&dirs));
+   if (dirs) {
+     for (ii=0; dirs[ii]; ii++)
+-      pushSTACK(asciz_to_string(dirs[ii],GLO(pathname_encoding)));
++      pushSTACK(asciz_to_string(dirs[ii],SGLO(pathname_encoding)));
+     return listof(ii);
+   } else return NIL;
+ }
+@@ -834,7 +834,7 @@
+     error_message_reset(); return T;
+   }
+   if (home == NULL) return NIL;
+-  return asciz_to_string(home,GLO(pathname_encoding));
++  return asciz_to_string(home,SGLO(pathname_encoding));
+ }
+ /* get the DBE open flags
+    return T when DBE is not yet open and a list otherwise
+@@ -898,11 +898,11 @@
+ DEFINE_DBE_GETTER1(get_lk_max_objects,u_int32_t,UL_to_I(value))
+ DEFINE_DBE_GETTER1(get_lg_bsize,u_int32_t,UL_to_I(value))
+ DEFINE_DBE_GETTER1(get_lg_dir,const char *,
+-                   asciz_to_string0(value,GLO(pathname_encoding)))
++                   asciz_to_string0(value,SGLO(pathname_encoding)))
+ DEFINE_DBE_GETTER1(get_lg_max,u_int32_t,UL_to_I(value))
+ DEFINE_DBE_GETTER1(get_lg_regionmax,u_int32_t,UL_to_I(value))
+ DEFINE_DBE_GETTER1(get_tmp_dir,const char *,
+-                   asciz_to_string0(value,GLO(pathname_encoding)))
++                   asciz_to_string0(value,SGLO(pathname_encoding)))
+ DEFINE_DBE_GETTER1(get_tx_max,u_int32_t,UL_to_I(value))
+ DEFINE_DBE_GETTER1(get_tx_timestamp,time_t,convert_time_to_universal(&value))
+ 
+@@ -1222,7 +1222,7 @@
+     *(db_recno_t*)key->data = value;
+     return DBT_INTEGER;
+   } else if (stringp(obj)) {
+-    with_string_0(obj,GLO(misc_encoding),linez, {
++    with_string_0(obj,SGLO(misc_encoding),linez, {
+         key->ulen = key->size = linez_bytelen;
+         key->data = my_malloc(linez_bytelen);
+         begin_system_call();
+@@ -1286,7 +1286,7 @@
+     }
+     case DBT_STRING: {
+       object s = n_char_to_string((char*)p_dbt->data,p_dbt->size,
+-                                  GLO(misc_encoding));
++                                  SGLO(misc_encoding));
+       free_dbt(p_dbt);
+       return s;
+     }
+@@ -1518,11 +1518,11 @@
+   /* string is resolved by Berkeley-DB relative to data_dirs */
+   with_string_0((stringp(STACK_1) ? (object)STACK_1
+                  : physical_namestring(STACK_1)),
+-                GLO(pathname_encoding),file, {
++                SGLO(pathname_encoding),file, {
+       if (missingp(STACK_0)) {  /* no :DATABASE */
+         SYSCALL(db->open,(db,txn,file,NULL,db_type,flags,mode));
+       } else                    /* multiple databases in one file */
+-        with_string_0(check_string(STACK_0),GLO(misc_encoding),databse, {
++        with_string_0(check_string(STACK_0),SGLO(misc_encoding),databse, {
+             SYSCALL(db->open,(db,txn,file,databse,db_type,flags,mode));
+           });
+     });
+@@ -1551,7 +1551,7 @@
+ { /* Upgrade a database */
+   u_int32_t flags = (missingp(STACK_0) ? 0 : DB_DUPSORT);
+   DB *db = (DB*)bdb_handle(STACK_2,`BDB::DB`,BH_VALID);
+-  with_string_0(physical_namestring(STACK_1),GLO(pathname_encoding),file, {
++  with_string_0(physical_namestring(STACK_1),SGLO(pathname_encoding),file, {
+       SYSCALL(db->upgrade,(db,file,flags));
+     });
+   VALUES0; skipSTACK(3);
+@@ -1560,12 +1560,12 @@
+ DEFUN(BDB:DB-RENAME, db file database newname)
+ { /* Rename a database */
+   DB *db = (DB*)bdb_handle(STACK_3,`BDB::DB`,BH_VALID);
+-  with_string_0(physical_namestring(STACK_2),GLO(pathname_encoding),file, {
+-      with_string_0(check_string(STACK_0),GLO(misc_encoding),newname, {
++  with_string_0(physical_namestring(STACK_2),SGLO(pathname_encoding),file, {
++      with_string_0(check_string(STACK_0),SGLO(misc_encoding),newname, {
+           if (nullp(STACK_1))   /* database=NIL */
+             SYSCALL(db->rename,(db,file,NULL,newname,0));
+           else
+-            with_string_0(check_string(STACK_1),GLO(misc_encoding),database, {
++            with_string_0(check_string(STACK_1),SGLO(misc_encoding),database, {
+                 SYSCALL(db->rename,(db,file,database,newname,0));
+               });
+         });
+@@ -1576,8 +1576,8 @@
+ DEFUN(BDB:DB-REMOVE, db file database)
+ { /* Remove a database */
+   DB *db = (DB*)bdb_handle(STACK_2,`BDB::DB`,BH_VALID);
+-  with_string_0(physical_namestring(STACK_1),GLO(pathname_encoding),file, {
+-      with_string_0(check_string(STACK_0),GLO(misc_encoding),database, {
++  with_string_0(physical_namestring(STACK_1),SGLO(pathname_encoding),file, {
++      with_string_0(check_string(STACK_0),SGLO(misc_encoding),database, {
+           SYSCALL(db->remove,(db,file,database,0));
+         });
+     });
+@@ -1693,9 +1693,9 @@
+     STACK_1 = check_string(STACK_1);
+     flags |= DB_ORDERCHKONLY;
+   }
+-  with_string_0(STACK_2,GLO(pathname_encoding),file,{
++  with_string_0(STACK_2,SGLO(pathname_encoding),file,{
+       if (!missingp(STACK_1)) {
+-        with_string_0(STACK_1,GLO(misc_encoding),database,{
++        with_string_0(STACK_1,SGLO(misc_encoding),database,{
+             begin_system_call();
+             status = db->verify(db,file,database,outfile,flags);
+             if (outfile) fclose(outfile);
+@@ -1744,7 +1744,7 @@
+                                gcv_object_t *o_password_) {
+   u_int32_t flags = dbe_encryption_check(*o_flags_);
+   *o_password_ = check_string(*o_password_);
+-  with_string_0(*o_password_,GLO(misc_encoding),password,
++  with_string_0(*o_password_,SGLO(misc_encoding),password,
+                 { SYSCALL(db->set_encrypt,(db,password,flags)); });
+ }
+ /* get all flags as a list
+@@ -1817,7 +1817,7 @@
+     if (nullp(STACK_0))
+       SYSCALL(db->set_re_source,(db,NULL));
+     else
+-      with_string_0(check_string(STACK_0),GLO(pathname_encoding), re_source, {
++      with_string_0(check_string(STACK_0),SGLO(pathname_encoding), re_source, {
+           SYSCALL(db->set_re_source,(db,re_source));
+         });
+   }
+@@ -1931,8 +1931,8 @@
+     error_message_reset();
+     value1 = value2 = NIL;
+   } else {
+-    pushSTACK(asciz_to_string0(fname,GLO(pathname_encoding)));
+-    value2 = asciz_to_string0(dbname,GLO(misc_encoding));
++    pushSTACK(asciz_to_string0(fname,SGLO(pathname_encoding)));
++    value2 = asciz_to_string0(dbname,SGLO(misc_encoding));
+     value1 = popSTACK();
+   }
+ }
+@@ -1971,7 +1971,7 @@
+ DEFINE_DB_GETTER2(get_re_len,u_int32_t,UL_to_I(value))
+ DEFINE_DB_GETTER2(get_re_pad,int,L_to_I(value))
+ DEFINE_DB_GETTER2(get_re_source,const char*,
+-                  asciz_to_string0(value,GLO(pathname_encoding)))
++                  asciz_to_string0(value,SGLO(pathname_encoding)))
+ FLAG_EXTRACTOR(db_get_flags_num,DB*)
+ DEFUNR(BDB:DB-GET-OPTIONS, db &optional what)
+ { /* retrieve database options */
+@@ -2352,7 +2352,7 @@
+   if (list) {
+     int count = 0;
+     for (; *list; list++, count++)
+-      pushSTACK(asciz_to_string(*list,GLO(pathname_encoding)));
++      pushSTACK(asciz_to_string(*list,SGLO(pathname_encoding)));
+     begin_system_call(); free(list); end_system_call();
+     VALUES1(listof(count));
+   } else VALUES0;
+@@ -2373,7 +2373,7 @@
+   char path[BUFSIZ];
+   check_lsn(&STACK_0,&lsn);
+   SYSCALL(dbe->log_file,(dbe,&lsn,path,BUFSIZ));
+-  VALUES1(asciz_to_string(path,GLO(pathname_encoding)));
++  VALUES1(asciz_to_string(path,SGLO(pathname_encoding)));
+   skipSTACK(2);
+ }
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/modules/matlab/Makefile src/clisp-2.39/modules/matlab/Makefile
+--- origsrc/clisp-2.39/modules/matlab/Makefile	2005-05-15 01:03:41.000000000 +0000
++++ src/clisp-2.39/modules/matlab/Makefile	2006-07-31 21:28:58.906250000 +0000
+@@ -6,7 +6,8 @@
+ CFLAGS = -Wall -O2
+ INCLUDES = ..
+ # MATLAB = /usr/local/matlab/extern/include
+-MATLAB = d:/MATLAB7/extern/include
++# MATLAB = d:/MATLAB7/extern/include
++MATLAB = /cygdrive/w/MATLAB6p1/extern/include
+ CLISP = clisp -q -norc
+ 
+ LN = ln
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/modules/matlab/link.sh src/clisp-2.39/modules/matlab/link.sh
+--- origsrc/clisp-2.39/modules/matlab/link.sh	2005-04-07 01:33:09.000000000 +0000
++++ src/clisp-2.39/modules/matlab/link.sh	2006-07-31 21:25:29.312500000 +0000
+@@ -4,12 +4,13 @@
+   file_list="$file_list"' matlab.o'
+   mod_list="$mod_list"' matlab'
+ fi
++matlabroot=/cygdrive/w/MATLAB6p1
+ # matlab=/usr/local/matlab/extern/lib/
+-matlab=d:/MATLAB7/extern/lib/win32/microsoft/msvc60
++matlab=${matlabroot}/extern/lib/win32/microsoft/msvc60
+ 
+ make clisp-module \
+   CC="${CC}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" \
+-  INCLUDES="$absolute_linkkitdir"
++  INCLUDES="$absolute_linkkitdir -I${matlabroot}/extern/include"
+ NEW_FILES="$file_list"
+ NEW_LIBS="$file_list";
+ for lib in eng mat mex mx; do
+@@ -18,4 +19,4 @@
+ NEW_MODULES="$mod_list"
+ TO_LOAD='matlab wrap'
+ CLFLAGS="${CLFLAGS}" # -L${matlab}
+-PATH="${PATH}:/cygdrive/d/MATLAB7/bin/win32/"
++PATH="${PATH}:${matlabroot}/bin/win32"
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/modules/matlab/matlab.lisp src/clisp-2.39/modules/matlab/matlab.lisp
+--- origsrc/clisp-2.39/modules/matlab/matlab.lisp	2005-11-18 09:10:26.000000000 +0000
++++ src/clisp-2.39/modules/matlab/matlab.lisp	2006-07-31 21:58:49.390625000 +0000
+@@ -4,6 +4,10 @@
+ ;;; Copyright (C) 2004-2005 by Sam Steingold
+ ;;; This is Free Software, covered by the GNU GPL (v2)
+ ;;; See http://www.gnu.org/copyleft/gpl.html
++;;;
++;;; Note: for cygwin and MATLAB6p1 you need to patch include/tmwtypes.h
++;;; - typedef boolean_T bool;
++;;; + typedef boolean_T boolean;
+ 
+ (defpackage "MATLAB"
+   (:modern t)
+@@ -18,6 +22,9 @@
+ 
+ ;;; types and constants
+ 
++;; several 7.0 only functions disabled, to be backwards compatible with 6p1
++;; set *feature* MATLAB7 to get all functions
++(defconstant +VERSION+ 6.01f) ; or 6.51f, 7.0f
+ 
+ ;;; foreign function definitions
+ 
+@@ -40,9 +47,11 @@
+ 
+ (def-c-type mxArray c-pointer)
+ ;; mxArray *engGetVariable(Engine *ep, const char *name);
++#+MATLAB7
+ (def-call-out engGetVariable (:arguments (ep Engine) (name c-string))
+   (:return-type mxArray))
+ ;; int engPutVariable(Engine *ep, const char *name, const mxArray *mp);
++#+MATLAB7
+ (def-call-out engPutVariable
+     (:arguments (ep Engine) (name c-string) (mp mxArray))
+   (:return-type int))
+@@ -83,29 +92,36 @@
+ (def-call-out matGetFp (:arguments (mfp MATFile)) (:return-type c-pointer))
+ 
+ ;; mxArray *matGetNextVariable(MATFile *mfp, const char *name);
++#+MATLAB7
+ (def-call-out matGetNextVariable
+     (:arguments (mfp MATFile) (name (c-ptr c-string) :out))
+   (:return-type mxArray))
+ 
+ ;; mxArray *matGetNextVariableInfo(MATFile *mfp, const char *name);
++#+MATLAB7
+ (def-call-out matGetNextVariableInfo
+     (:arguments (mfp MATFile) (name (c-ptr c-string) :out))
+   (:return-type mxArray))
+ 
+ ;; mxArray *matGetVariable(MATFile *mfp, const char *name);
++#+MATLAB7
+ (def-call-out matGetVariable (:arguments (mfp MATFile) (name c-string))
+   (:return-type mxArray))
+ ;; mxArray *matGetVariableInfo(MATFile *mfp, const char *name);
++#+MATLAB7
+ (def-call-out matGetVariableInfo (:arguments (mfp MATFile) (name c-string))
+   (:return-type mxArray))
+ ;; int matPutVariable(MATFile *mfp, const char *name, const mxArray *mp);
++#+MATLAB7
+ (def-call-out matPutVariable
+     (:arguments (mfp MATFile) (name c-string) (mp mxArray))
+   (:return-type int))
+ ;; int matDeleteVariable(MATFile *mfp, const char *name);
++#+MATLAB7
+ (def-call-out matDeleteVariable (:arguments (mfp MATFile) (name c-string))
+   (:return-type int))
+ ;; int matPutVariableAsGlobal(MATFile*mfp, const char*name, const mxArray*mp);
++#+MATLAB7
+ (def-call-out matPutVariableAsGlobal
+     (:arguments (mfp MATFile) (name c-string) (mp mxArray))
+   (:return-type int))
+@@ -140,6 +156,7 @@
+ ;;    const char * err_msg,    /* printf-style format */
+ ;;    ...                      /* any additional arguments */
+ ;;    );
++#+MATLAB7
+ (def-call-out mexErrMsgIdAndTxt
+     (:arguments (identifier c-string) (err_msg c-string))
+   (:return-type nil))
+@@ -157,6 +174,7 @@
+ ;;     const char * warn_msg,      /* printf-style format */
+ ;;     ...                         /* any additional arguments */
+ ;;     );
++#+MATLAB7
+ (def-call-out mexWarnMsgIdAndTxt
+     (:arguments (identifier c-string) (warn_msg c-string))
+   (:return-type nil))
+@@ -195,11 +213,13 @@
+ ;; return a copy of the array value with the specified variable name in
+ ;; the specified workspace
+ ;; extern mxArray *mexGetVariable(const char *workspace, const char *name);
++#+MATLAB7
+ (def-call-out mexGetVariable (:arguments (workspace c-string) (name c-string))
+   (:return-type mxArray))
+ ;; return a pointer to the array value with the specified variable name
+ ;; in the specified workspace
+ ;; extern const mxArray *mexGetVariablePtr(const char *workspace, const char *name);
++#+MATLAB7
+ (def-call-out mexGetVariablePtr
+     (:arguments (workspace c-string) (name c-string))
+   (:return-type mxArray))
+@@ -238,6 +258,7 @@
+ ;; Place a copy of the array value into the specified workspace with the
+ ;; specified name
+ ;; extern int mexPutVariable(const char *workspace,const char *name,const mxArray *parray);
++#+MATLAB7
+ (def-call-out mexPutVariable
+     (:arguments (workspace c-string) (name c-string) (arr mxArray))
+   (:return-type int))
+@@ -270,6 +291,7 @@
+   (:arguments (array_ptr (c-pointer mxArray))))
+ 
+ ;; mxArray *mxCreateDoubleScalar(double value);
++#+MATLAB7
+ (def-call-out mxCreateDoubleScalar (:return-type (c-pointer mxArray))
+   (:arguments (value double-float)))
+ 
+@@ -375,6 +397,7 @@
+ (def-call-out mxIsLogical (:return-type boolean)
+   (:arguments (array_ptr (c-pointer mxArray))))
+ ;; bool mxIsLogicalScalarTrue(const mxArray *array_ptr);
++#+MATLAB7
+ (def-call-out mxIsLogicalScalarTrue (:return-type boolean)
+   (:arguments (array_ptr (c-pointer mxArray))))
+ ;; bool mxIsNumeric(const mxArray *array_ptr);
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.39/src/lispbibl.d src/clisp-2.39/src/lispbibl.d
+--- origsrc/clisp-2.39/src/lispbibl.d	2006-06-22 08:11:57.000000000 +0000
++++ src/clisp-2.39/src/lispbibl.d	2006-07-31 20:50:48.437500000 +0000
+@@ -10737,6 +10737,12 @@
+ #define O(name)  (object_tab.name)
+ %% /* FIXME: Difference between lispbibl.d and clisp.h */
+ %% puts("#define GLO(name)  (object_tab.name)");
++%% /* without-unicode simplify modules string encodings*/
++%% puts("#if CLISP_UNICODE");
++%% puts("#define SGLO(name) (object_tab.name)");
++%% puts("#else");
++%% puts("#define SGLO(name) (0)");
++%% puts("#endif");
+ 
+ #if defined(GENERATIONAL_GC) && defined(SPVW_MIXED)
+ # handle_fault_range(PROT_READ,start,end) makes an address range readable.

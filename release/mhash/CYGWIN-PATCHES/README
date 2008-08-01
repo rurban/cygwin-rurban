@@ -1,0 +1,93 @@
+mhash
+----------------------------------
+MHash - library of hash algorithms
+
+Runtime requirements:
+  cygwin-1.5.11-1	or newer
+  
+Build requirements:
+  cygwin-1.5.11-1       or newer
+  gcc-3.3.1             or newer (did it with 3.4.1)
+  binutils-20040725-2   or newer
+  libtool-devel-1.5.10-1
+  automake-devel-1.9.1-1
+  autoconf-devel-2.59-1
+  make-3.80-1           or newer
+  ash-20040127-1        or newer
+  fileutils-4.1         or newer
+  sed-4.1.2-1           or newer
+  m4-1.4-1
+  perl-5.x              (for automake)
+
+Canonical homepage:
+  http://mhash.sourceforge.net/
+
+Canonical download:
+  http://mhash.sourceforge.net/
+
+-------------------------------------------------------------------------------
+
+Build instructions:
+
+  cd /usr/src
+  cygport mhash-<VER>-<REL>.cygport prep compile install check package finish
+
+This will create:
+  /usr/src/mhash-<VER>-<REL>-src.tar.bz2
+  /usr/src/mhash-<VER>-<REL>.tar.bz2
+  /usr/src/mhash-devel-<VER>-<REL>.tar.bz2
+
+Or use 'cygport mhash-<VER>-<REL>.cygport prep' to get a patched source directory
+
+-------------------------------------------------------------------------------
+
+Files included in the binary distribution:
+
+  /usr/bin/cygmhash-2.dll
+  /usr/include/mutils/mglobal.h
+  /usr/include/mutils/mhash.h
+  /usr/include/mutils/mincludes.h
+  /usr/include/mutils/mtypes.h
+  /usr/include/mutils/mutils.h 
+  /usr/lib/libmhash.a
+  /usr/lib/libmhash.dll.a
+  /usr/lib/libmhash.la
+  /usr/share/doc/Cygwin/mhash-0.9.6.README (this file)
+  /usr/share/doc/mhash-0.9.6/AUTHORS
+  /usr/share/doc/mhash-0.9.6/ChangeLog
+  /usr/share/doc/mhash-0.9.6/COPYING
+  /usr/share/doc/mhash-0.9.6/INSTALL
+  /usr/share/doc/mhash-0.9.6/NEWS
+  /usr/share/doc/mhash-0.9.6/README
+  /usr/share/doc/mhash-0.9.6/THANKS
+  /usr/share/doc/mhash-0.9.6/TODO
+  /usr/share/man/man3/mhash.3.gz
+
+-------------------------------------------------------------------------------
+
+Port Notes:
+
+----- version mhash-0.9.6-1 -----
+
+changed from gbs to cygport
+fixed lndir build/include/mutils
+
+----- version mhash-0.9.4a-1 ----- (never released)
+
+fixed unpacking into correct mhash-0.9.4a
+removed autom4te.cache
+moved md5-rfc1321.txt, skid2-authentication into 
+  /usr/share/doc/mhash-0.9.4a/
+
+----- version mhash-0.9.2-1 -----
+ 
+All cygwin patches applied upstream. 
+Minor build script improvements.
+Reverted the dll main hack. 
+
+----- version mhash-0.9.1-1 -----
+
+Maintainer change. Fixed to be mingw independent. All tests PASS.
+
+Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>

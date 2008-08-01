@@ -1,0 +1,14 @@
+sdesc: "PostgreSQL 7.4 Data Base Management System"
+ldesc: "PostgreSQL is a fully featured object-relational database management
+system. It supports a large part of the SQL standard and is designed
+to be extensible by users in many aspects. Some of the features are:
+ACID transactions, foreign keys, views, sequences, subqueries,
+triggers, user-defined types and functions, outer joins, multiversion
+concurrency control. Graphical user interfaces and bindings for many
+programming languages are available as well.
+.
+This package provides the database server for PostgreSQL 7.4, which 
+can be installed side-by-side with postgresql, the current 8.x package."
+category: Database
+requires: postgresql7.4-client libpq3 libpgtypes1 libecpg4 crypt libintl3 openssl zlib
+

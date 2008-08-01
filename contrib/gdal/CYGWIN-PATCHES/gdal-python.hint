@@ -1,0 +1,5 @@
+sdesc: "GDAL python modules"
+ldesc: "Contains the python modules gdal, ogr and osr"
+external-source: gdal
+category: Libs Science
+requires: cygwin sqlite3 gdal python

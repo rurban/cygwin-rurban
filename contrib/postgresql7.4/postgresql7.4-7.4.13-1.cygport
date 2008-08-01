@@ -1,0 +1,249 @@
+# -*- sh -*-   seperated from 8.x into usr/lib/postgres7.4
+DESCRIPTION="PostgreSQL-7.4.x Database"
+HOMEPAGE="http://www.postgresql.org/"
+SRC_URI="ftp://ftp.de.postgresql.org/mirror/postgresql/source/v${PV}/postgresql-${PV}.tar.gz"
+SRC_DIR="postgresql-${PV}"
+
+MAKEOPTS="${MAKEOPTS} -j1"
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+DIFF_EXCLUDES="*.java *.class"
+#LDFLAGS="${LDFLAGS} -Wl,--enable-auto-image-base"
+
+# For --with-java you have to install and setup ant >= 1.5. with jikes it didn't work for me.
+#   You can get binaries also at http://jdbc.postgresql.org/
+#
+# For --with-tcl the tcl sources are needed, and some /usr/lib/t(k|cl)Config.sh fixes
+#   perl -pi.orig -e's|/cygnus/netrel/build|/usr/src|; s|/netrel/src|/usr/src|;'  /usr/lib/t{k,cl}Config.sh
+#   perl -pi.orig -e's|TK_LIBS=\' -lgdi32|TK_LIBS=\'-ltk84 -lgdi32|;'  /usr/lib/tkConfig.sh
+#   It fails with linking errors though.
+#
+CYGCONF_ARGS="--enable-integer-datetimes --enable-nls --enable-multibyte \
+    --with-python --with-perl --without-tcl --with-java --with-CXX --with-openssl \
+    --with-pgport=15432"
+
+PKG_NAMES="${PN} ${PN}-devel ${PN}-client ${PN}-contrib ${PN}-doc \
+  ${PN}-plperl ${PN}-plpython \
+  libpq3 libpq3-devel libpgtypes1 libecpg4 libecpg-compat libecpg4-devel \
+  ${PN}-java"
+# ${PN}-pltcl 
+PKG_HINTS="${PKG_NAMES}"
+
+# postgresql7.4 - the server
+PKG_CONTENTS[0]=" \
+etc \
+usr/lib/${PN}/bin/initdb \
+usr/lib/${PN}/bin/initlocation \
+usr/lib/${PN}/bin/ipcclean \
+usr/lib/${PN}/bin/pg_controldata.exe \
+usr/lib/${PN}/bin/pg_ctl \
+usr/lib/${PN}/bin/pg_resetxlog.exe \
+usr/lib/${PN}/bin/postgres.exe \
+usr/lib/${PN}/bin/postmaster \
+usr/lib/${PN}/lib/*_and_*.dll \
+usr/lib/${PN}/lib/plpgsql.dll \
+usr/share/locale/*/LC_MESSAGES/pg_controldata-7.4.mo \
+usr/share/locale/*/LC_MESSAGES/pg_resetxlog-7.4.mo \
+usr/share/locale/*/LC_MESSAGES/postgres-7.4.mo \
+usr/share/${PN}/man/man1/ipcclean.1.gz \
+usr/share/${PN}/man/man1/initdb.1.gz \
+usr/share/${PN}/man/man1/initlocation.1.gz \
+usr/share/${PN}/man/man1/pg_controldata.1.gz \
+usr/share/${PN}/man/man1/pg_ctl.1.gz \
+usr/share/${PN}/man/man1/pg_resetxlog.1.gz \
+usr/share/${PN}/man/man1/postgres.1.gz \
+usr/share/${PN}/man/man1/postmaster.1.gz \
+usr/share/doc/Cygwin/${P}.README \
+usr/share/doc/Cygwin/${PF}-pkg.log \
+usr/share/doc/${P}/COPYRIGHT \
+usr/share/doc/${P}/INSTALL \
+usr/share/doc/${P}/README \
+usr/share/${PN}/data \
+usr/share/${PN}/*.sample \
+usr/share/${PN}/*.sql \
+usr/share/${PN}/*.txt \
+usr/share/${PN}/postgres.* \
+"
+
+# postgresql7.4-devel
+PKG_CONTENTS[1]=" \
+--exclude=usr/include/postgresql/7.4/ecpg*.h \
+--exclude=usr/include/postgresql/7.4/informix \
+--exclude=usr/include/postgresql/7.4/pgtypes_*.h \
+--exclude=usr/include/postgresql/7.4/sql3types.h \
+--exclude=usr/include/postgresql/7.4/sqlca.h \
+--exclude=usr/include/postgresql/7.4/libpq-fe.h \
+--exclude=usr/include/postgresql/7.4/libpq/libpq-fs.h \
+--exclude=usr/include/postgresql/7.4/pg_config*.h \
+--exclude=usr/include/postgresql/7.4/postgres_ext.h \
+--exclude=usr/include/postgresql/7.4/internal \
+usr/include/postgresql/7.4 \
+usr/lib/${PN}/lib/libpostgres.a \
+usr/share/${PN}/man/man1/pgtclsh.1.gz \
+usr/share/${PN}/man/man1/pgtksh.1.gz"
+
+# TODO: usr/lib/pkgconfig/
+
+# postgresql-client
+PKG_CONTENTS[2]=" \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_controldata-7.4.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_resetxlog-7.4.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/postgres-7.4.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_config-7.4.mo \
+usr/lib/${PN}/bin/clusterdb.exe \
+usr/lib/${PN}/bin/createdb.exe \
+usr/lib/${PN}/bin/dropdb.exe \
+usr/lib/${PN}/bin/pg_dump.exe \
+usr/lib/${PN}/bin/pg_dumpall.exe \
+usr/lib/${PN}/bin/psql.exe \
+usr/lib/${PN}/bin/createlang.exe \
+usr/lib/${PN}/bin/createuser.exe \
+usr/lib/${PN}/bin/droplang.exe \
+usr/lib/${PN}/bin/dropuser.exe \
+usr/lib/${PN}/bin/pg_restore.exe \
+usr/lib/${PN}/bin/vacuumdb.exe \
+usr/share/${PN}/man/man1/clusterdb.1.gz \
+usr/share/${PN}/man/man1/createdb.1.gz \
+usr/share/${PN}/man/man1/createlang.1.gz \
+usr/share/${PN}/man/man1/createuser.1.gz \
+usr/share/${PN}/man/man1/dropdb.1.gz \
+usr/share/${PN}/man/man1/droplang.1.gz \
+usr/share/${PN}/man/man1/dropuser.1.gz \
+usr/share/${PN}/man/man1/pg_dump.1.gz \
+usr/share/${PN}/man/man1/pg_dumpall.1.gz \
+usr/share/${PN}/man/man1/pg_restore.1.gz \
+usr/share/${PN}/man/man1/psql.1.gz \
+usr/share/${PN}/man/man1/vacuumdb.1.gz \
+usr/share/${PN}/man/man7 \
+usr/share/locale/*/LC_MESSAGES/"
+
+# postgresql-contrib
+PKG_CONTENTS[3]=" \
+--exclude=usr/lib/${PN}/lib/*_and_*.dll \
+--exclude=usr/lib/${PN}/lib/pl*.dll \
+--exclude=usr/lib/${PN}/bin/initdb \
+--exclude=usr/lib/${PN}/bin/initlocation \
+--exclude=usr/lib/${PN}/bin/ipcclean \
+--exclude=usr/lib/${PN}/bin/pg_config \
+--exclude=usr/lib/${PN}/bin/pgxs \
+--exclude=usr/lib/${PN}/bin/clusterdb.exe \
+--exclude=usr/lib/${PN}/bin/createdb.exe \
+--exclude=usr/lib/${PN}/bin/dropdb.exe \
+--exclude=usr/lib/${PN}/bin/ecpg.exe \
+--exclude=usr/lib/${PN}/bin/pg_controldata.exe \
+--exclude=usr/lib/${PN}/bin/pg_ctl \
+--exclude=usr/lib/${PN}/bin/pg_dump.exe \
+--exclude=usr/lib/${PN}/bin/pg_dumpall.exe \
+--exclude=usr/lib/${PN}/bin/psql.exe \
+--exclude=usr/lib/${PN}/bin/createlang.exe \
+--exclude=usr/lib/${PN}/bin/createuser.exe \
+--exclude=usr/lib/${PN}/bin/droplang.exe \
+--exclude=usr/lib/${PN}/bin/dropuser.exe \
+--exclude=usr/lib/${PN}/bin/pg_resetxlog.exe \
+--exclude=usr/lib/${PN}/bin/pg_restore.exe \
+--exclude=usr/lib/${PN}/bin/postgres.exe \
+--exclude=usr/lib/${PN}/bin/postmaster \
+--exclude=usr/lib/${PN}/bin/vacuumdb.exe \
+usr/lib/${PN}/bin \
+usr/lib/${PN}/lib/*.dll \
+usr/share/${PN}/contrib \
+usr/share/doc/${P}/contrib"
+# ${PN}-doc 
+PKG_CONTENTS[4]=" \
+--exclude=usr/share/doc/${P}/contrib \
+--exclude=usr/share/doc/${P}/COPYRIGHT \
+--exclude=usr/share/doc/${P}/INSTALL \
+--exclude=usr/share/doc/${P}/README \
+usr/share/doc/${P}"
+# ${PN}-plperl 
+PKG_CONTENTS[5]="usr/lib/${PN}/lib/plperl.dll"
+# ${PN}-plpython 
+PKG_CONTENTS[6]="usr/lib/${PN}/lib/plpython.dll"
+# libpq3
+PKG_CONTENTS[7]="usr/bin/pq.dll"
+# libpq3-devel  
+PKG_CONTENTS[8]=" \
+usr/lib/${PN}/bin/pg_config \
+usr/include/postgresql/7.4/libpq-fe.h \
+usr/include/postgresql/7.4/libpq/libpq-fs.h \
+usr/include/postgresql/7.4/pg_config*.h \
+usr/include/postgresql/7.4/postgres_ext.h \
+usr/include/postgresql/7.4/internal/c.h \
+usr/include/postgresql/7.4/internal/lib/dllist.h \
+usr/include/postgresql/7.4/internal/libpq-int.h \
+usr/include/postgresql/7.4/internal/libpq/pqcomm.h \
+usr/include/postgresql/7.4/internal/port.h \
+usr/include/postgresql/7.4/internal/postgres_fe.h \
+usr/include/postgresql/7.4/internal/pqexpbuffer.h \
+usr/lib/${PN}/lib/libpq.a \
+usr/share/${PN}/man/man1/pg_config.1.gz \
+"
+# libpgtypes1
+PKG_CONTENTS[9]="usr/bin/pgtypes.dll"
+# libecpg4
+PKG_CONTENTS[10]=" \
+usr/lib/${PN}/bin/ecpg.exe \
+usr/bin/ecpg.dll \
+usr/share/${PN}/man/man1/ecpg.1.gz"
+# libecpg-compat1
+PKG_CONTENTS[11]="usr/bin/ecpg_compat.dll"
+# libecpg1-devel
+PKG_CONTENTS[12]=" \
+usr/include/postgresql/7.4/ecpg*.h \
+usr/include/postgresql/7.4/informix \
+usr/include/postgresql/7.4/pgtypes_*.h \
+usr/include/postgresql/7.4/sql3types.h \
+usr/include/postgresql/7.4/sqlca.h \
+usr/lib/${PN}/lib/libecpg.a \
+usr/lib/${PN}/lib/libecpg_compat.a \
+usr/lib/${PN}/lib/libpgtypes.a"
+# ${PN}-java
+PKG_CONTENTS[13]="usr/share/${PN}/java"
+# ${PN}-pltcl
+#PKG_CONTENTS[14]="usr/lib/${PN}/lib/pltcl.dll"
+
+src_compile() {
+  cd ${B}
+
+  # see http://ftp.debian.org/debian/pool/main/p/postgresql-7.4/postgresql-7.4_7.4.13-4.diff.gz
+  local confargs="--prefix=/usr --bindir=/usr/lib/${PN}/bin --libdir=/usr/lib/${PN}/lib \
+		--libexecdir=/usr/lib/${PN}/bin --includedir=/usr/include/postgresql/7.4 \
+		--datadir=/usr/share/${PN} --sysconfdir=/etc/${PN} \
+		--docdir=/usr/share/doc/${P} --mandir=/usr/share/${PN}/man  \
+		${CYGCONF_ARGS}";
+  export CFLAGS=${CFLAGS:-"-O2 -pipe"};
+  export LDFLAGS=${LDFLAGS};
+  export ac_cv_func_mmap_fixed_mapped=yes;
+  verbose ${S}/configure --srcdir="${S}" ${confargs} \
+			|| error "configure failed"
+  cygmake
+  cygmake -C contrib
+}
+
+src_test() {
+  cd ${B}
+  make -j1 check
+}
+
+src_install() {
+  cd ${B}
+    # docdir=/usr/share/doc/${P}/
+  cyginstall 
+  cyginstall -C contrib
+
+  # we solved all name conflicts. 7.4 dll's had no cyg prefix for historical reasons
+  mkdir ${D}/usr/bin
+  mv ${D}/usr/lib/${PN}/lib/{pq,pgtypes,ecpg,ecpg_compat}.dll ${D}/usr/bin/
+  cp ${B}/src/backend/libpostgres.a ${D}/usr/lib/${PN}/lib/
+  dodir /etc/rc.d/init.d
+  dodir /usr/share/${PN}/data
+  cp ${C}/${PN}.initd ${D}/etc/rc.d/init.d/${PN}
+  cp ${C}/${P}-1-pkg.log ${D}/usr/share/doc/Cygwin/
+  dodoc ${S}/doc/FAQ* ${S}/doc/TODO ${S}/doc/bug.* ${S}/doc/KNOWS_BUGS
+  dodoc ${S}/doc/MISSING_FEATURES ${S}/doc/README*
+
+  # gzip manpages in the special dir, missed by __prepman
+  for manpage in $(find ${D}/usr/share/${PN}/man -type f ! -name '*.gz' ! -name '*.bz2'); do
+    echo "        ${manpage##*/}"
+    gzip -q ${manpage}
+  done
+}

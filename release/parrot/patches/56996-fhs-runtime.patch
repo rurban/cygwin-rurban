@@ -1,0 +1,50 @@
+difforig runtime/parrot/library/config.pir runtime/parrot/library/parrotlib.pir
+
+diff -u runtime/parrot/library/config.pir.orig runtime/parrot/library/config.pir
+--- runtime/parrot/library/config.pir.orig	2008-07-05 10:04:43.000000000 +0000
++++ runtime/parrot/library/config.pir	2008-07-27 11:06:40.843750000 +0000
+@@ -50,10 +50,19 @@
+     .local string conf_file
+     conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
+     conf_file .= "/runtime/parrot/include/config.fpmc"
+-
++    stat $I0, conf_file, 0
++    if $I0 goto conf
++    
++    # If installed into /usr/lib/parrot, not /usr/runtime/parrot
++    # This logic has to be reversed when installed versions should run faster
++    # than source builds.
++    conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
++    conf_file .= "/lib/parrot/include/config.fpmc"
++conf:
+     open CONF, conf_file, "<"
+     $I0 = defined CONF
+     if $I0 goto ok1
++    
+     printerr "Can't read '"
+     printerr conf_file
+     printerr "': "
+diff -u runtime/parrot/library/parrotlib.pir.orig runtime/parrot/library/parrotlib.pir
+--- runtime/parrot/library/parrotlib.pir.orig	2008-02-23 18:27:07.000000000 +0000
++++ runtime/parrot/library/parrotlib.pir	2008-07-27 11:07:12.734375000 +0000
+@@ -143,8 +143,19 @@
+     stat $I0, name, 0
+     if $I0 goto END
+ 
+-    name = "runtime/parrot/dynext/"
++    concat name, ext
++    stat $I0, name, 0
++    if $I0 goto END
++
++    # This logic has to be reversed when installed versions should run faster
++    # than source builds.
++    .include "interpinfo.pasm"
++    name = interpinfo .INTERPINFO_RUNTIME_PREFIX
++    concat name, "lib/parrot/dynext/"
+     concat name, request
++    stat $I0, name, 0
++    if $I0 goto END
++
+     concat name, ext
+     stat $I0, name, 0
+     if $I0 goto END

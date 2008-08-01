@@ -1,0 +1,183 @@
+--- geos-2.1.4/CYGWIN-PATCHES/README.orig	1970-01-01 00:00:00.000000000 +0000
++++ geos-2.1.4/CYGWIN-PATCHES/README	2005-09-28 05:48:34.846625000 +0000
+@@ -0,0 +1,118 @@
++geos-2.1.4-1
++------------------------------------------
++The GEOS library (Geometry Engine - Open Source) 
++is a C++ port of the Java Topology Suite (JTS).
++Required by gdal, PostGIS and mapserver.
++geos-devel: static /usr/lib/libgeos.a built with -g is ~50MB
++
++Runtime requirements:
++  cygwin-1.5.x
++
++Build requirements: (additionally)
++  gcc-g++-3.4.1-1       or newer
++  libtool-devel-1.5.10  or newer
++  binutils-20040725-2   or newer
++  make-3.80-1           or newer
++  ash-20040127-1        or newer
++  fileutils-4.1         or newer
++  sed-4.1.2-1           or newer
++  m4-1.4-1
++
++  doxygen               (only if you want to build the docs also)
++
++Canonical homepage:
++  http://geos.refractions.net/
++
++Canonical download:
++  http://geos.refractions.net/geos-2.1.4.tar.bz2
++
++------------------------------------
++
++Build instructions:
++  unpack geos-<VER>-<REL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./geos-<VER>-<REL>.sh all
++
++This will create:
++  /usr/src/geos-<VER>-<REL>.tar.bz2
++  /usr/src/geos-devel-<VER>-<REL>.tar.bz2
++  /usr/src/geos-<VER>-<REL>-src.tar.bz2
++
++Or use './geos-<VER>-<REL>.sh prep' to get a patched source directory
++
++-------------------------------------------
++
++Files in geos:
++
++  /usr/bin/cyggeos-2.dll
++  /usr/lib/libgeos/XMLTester.exe
++  /usr/share/doc/Cygwin/geos-<VER>.README
++  /usr/share/doc/geos-<VER>/AUTHORS
++  /usr/share/doc/geos-<VER>/ChangeLog
++  /usr/share/doc/geos-<VER>/COPYING
++  /usr/share/doc/geos-<VER>/INSTALL
++  /usr/share/doc/geos-<VER>/NEWS
++  /usr/share/doc/geos-<VER>/README
++  /usr/share/doc/geos-<VER>/TODO
++  /usr/share/doc/geos-<VER>/html/<doxygen html docs>
++
++Files in geos-devel:
++
++  /usr/bin/geos-config
++  /usr/include/geos/geom.h
++  /usr/include/geos/geomgraph.h
++  /usr/include/geos/geomgraphindex.h
++  /usr/include/geos/geomUtil.h
++  /usr/include/geos/geosAlgorithm.h
++  /usr/include/geos/indexBintree.h
++  /usr/include/geos/indexChain.h
++  /usr/include/geos/indexQuadtree.h
++  /usr/include/geos/indexStrtree.h
++  /usr/include/geos/indexSweepline.h
++  /usr/include/geos/io.h
++  /usr/include/geos/noding.h
++  /usr/include/geos/nodingSnapround.h
++  /usr/include/geos/opBuffer.h
++  /usr/include/geos/opDistance.h
++  /usr/include/geos/operation.h
++  /usr/include/geos/opLinemerge.h
++  /usr/include/geos/opOverlay.h
++  /usr/include/geos/opPolygonize.h
++  /usr/include/geos/opRelate.h
++  /usr/include/geos/opValid.h
++  /usr/include/geos/planargraph.h
++  /usr/include/geos/platform.h
++  /usr/include/geos/precision.h
++  /usr/include/geos/profiler.h
++  /usr/include/geos/spatialIndex.h
++  /usr/include/geos/timeval.h
++  /usr/include/geos/unload.h
++  /usr/include/geos/util.h
++  /usr/include/geos/version.h
++  /usr/include/geos.h
++  /usr/lib/libgeos.a
++  /usr/lib/libgeos.dll.a
++  /usr/lib/libgeos.la
++
++------------------
++
++Port Notes:
++
++----------  geos-2.1.4-1 -----------
++
++- with included doxygen docs
++
++----------  geos-2.0.1-2 -----------
++
++- first official geos packages, 
++  previously handled upstream by Norman Vine
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please report problems, suggestions, etc. dependent on their nature 
++to one of the following:
++
++    http://geos.refractions.net/mailman/listinfo/geos-devel
++    cygwin@cygwin.com
++
+--- geos-2.1.4/CYGWIN-PATCHES/geos-devel.hint.orig	1970-01-01 00:00:00.000000000 +0000
++++ geos-2.1.4/CYGWIN-PATCHES/geos-devel.hint	2005-09-27 06:19:14.849875000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "GEOS library and includes"
++ldesc: "The GEOS library (Geometry Engine - Open Source) 
++is a C++ port of the Java Topology Suite (JTS).
++This includes all the OpenGIS =Simple Features for SQL= spatial
++predicate functions and spatial operators, as well as specific JTS
++topology functions such as IsValid()"
++external-source: geos
++category: Libs Science
++requires: cygwin gdal gdal-devel
+--- geos-2.1.4/CYGWIN-PATCHES/geos-doc.hint.orig	1970-01-01 00:00:00.000000000 +0000
++++ geos-2.1.4/CYGWIN-PATCHES/geos-doc.hint	2005-09-28 05:13:28.862250000 +0000
+@@ -0,0 +1,8 @@
++sdesc: "GEOS doxygen generated docs"
++ldesc: "The GEOS library (Geometry Engine - Open Source) 
++is a C++ port of the Java Topology Suite (JTS).
++This includes all the OpenGIS =Simple Features for SQL= spatial
++predicate functions and spatial operators, as well as specific JTS
++topology functions such as IsValid()"
++external-source: geos
++category: Libs Science
+--- geos-2.1.4/CYGWIN-PATCHES/geos.hint.orig	1970-01-01 00:00:00.000000000 +0000
++++ geos-2.1.4/CYGWIN-PATCHES/geos.hint	2004-10-11 13:05:09.000000000 +0000
+@@ -0,0 +1,8 @@
++sdesc: "GEOS shared library"
++ldesc: "The GEOS library (Geometry Engine - Open Source) 
++is a C++ port of the Java Topology Suite (JTS).
++This includes all the OpenGIS =Simple Features for SQL= spatial
++predicate functions and spatial operators, as well as specific JTS
++topology functions such as IsValid()"
++category: Science
++requires: cygwin
+--- geos-2.1.4/configure.in.orig	2005-08-22 13:37:41.000000000 +0000
++++ geos-2.1.4/configure.in	2005-09-27 18:41:10.049750000 +0000
+@@ -37,10 +37,10 @@
+ dnl types checks ------------------------------------------------------
+ 
+ dnl Find a working 64bit integer
+-PGAC_TYPE_64BIT_INT([long int])
+-if test x"$HAVE_LONG_INT_64" = x"no" ; then
+-  PGAC_TYPE_64BIT_INT([long long int])
+-fi
++dnl PGAC_TYPE_64BIT_INT([long int])
++dnl if test x"$HAVE_LONG_INT_64" = x"no" ; then
++dnl   PGAC_TYPE_64BIT_INT([long long int])
++dnl fi
+ 
+ dnl function checks ------------------------------------------------------
+ AC_FUNC_CLOSEDIR_VOID
+--- geos-2.1.4/source/geom/Makefile.am.orig	2005-05-23 18:30:22.000000000 +0000
++++ geos-2.1.4/source/geom/Makefile.am	2005-09-27 06:28:48.224875000 +0000
+@@ -210,7 +210,7 @@
+ 
+ libgeos_la_SOURCES = $(DIR_SOURCES) $(EXTERNAL_SOURCES)
+ 
+-libgeos_la_LDFLAGS = -version-info @INTERFACE_CURRENT@:@INTERFACE_REVISION@:@INTERFACE_AGE@
++libgeos_la_LDFLAGS = -no-undefined -version-info @INTERFACE_CURRENT@:@INTERFACE_REVISION@:@INTERFACE_AGE@
+ 
+ dist-local:
+ 	cp -p $(DIR_SOURCES) Makefile.am Makefile.in $(distdir)

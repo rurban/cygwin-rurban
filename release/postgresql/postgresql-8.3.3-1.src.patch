@@ -1,0 +1,351 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/configure.in src/postgresql-8.3.3/configure.in
+--- origsrc/postgresql-8.3.3/configure.in	2008-06-09 00:38:40.000000000 +0000
++++ src/postgresql-8.3.3/configure.in	2008-06-28 08:45:22.843750000 +0000
+@@ -759,7 +759,11 @@
+     AC_SEARCH_LIBS(gss_init_sec_context, [gssapi_krb5 gss 'gssapi -lkrb5 -lcrypto'], [],
+ 		 		  [AC_MSG_ERROR([could not find function 'gss_init_sec_context' required for GSSAPI])])
+   else
+-    LIBS="$LIBS -lgssapi32"
++    if test "$PORTNAME" = "cygwin"; then
++      LIBS="$LIBS -lsecur32"
++    else
++      LIBS="$LIBS -lgssapi32"
++    fi
+   fi
+ fi
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/backend/libpq/auth.c src/postgresql-8.3.3/src/backend/libpq/auth.c
+--- origsrc/postgresql-8.3.3/src/backend/libpq/auth.c	2008-02-08 17:58:46.000000000 +0000
++++ src/postgresql-8.3.3/src/backend/libpq/auth.c	2008-06-28 08:37:59.640625000 +0000
+@@ -32,7 +32,6 @@
+ #include "libpq/pqformat.h"
+ #include "storage/ipc.h"
+ 
+-
+ static void sendAuthRequest(Port *port, AuthRequest areq);
+ static void auth_failed(Port *port, int status);
+ static char *recv_password_packet(Port *port);
+@@ -314,6 +313,10 @@
+ 
+ #ifdef ENABLE_GSS
+ 
++#ifdef __CYGWIN__
++#define WIN32
++#endif
++
+ #if defined(HAVE_GSSAPI_H)
+ #include <gssapi.h>
+ #else
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/backend/libpq/be-secure.c src/postgresql-8.3.3/src/backend/libpq/be-secure.c
+--- origsrc/postgresql-8.3.3/src/backend/libpq/be-secure.c	2008-01-01 19:45:49.000000000 +0000
++++ src/postgresql-8.3.3/src/backend/libpq/be-secure.c	2008-06-28 08:27:03.546875000 +0000
+@@ -280,9 +280,26 @@
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-									FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				/* be nicer on cygwin also */
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto rloop;
+ 			case SSL_ERROR_SYSCALL:
+@@ -374,9 +391,25 @@
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-									FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto wloop;
+ 			case SSL_ERROR_SYSCALL:
+@@ -560,8 +593,8 @@
+ 	dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+ 	if (dh == NULL)
+ 		ereport(DEBUG2,
+-				(errmsg_internal("DH load buffer: %s",
+-								 SSLerrmessage())));
++			(errmsg_internal("DH load buffer: %s",
++					 SSLerrmessage())));
+ 	BIO_free(bio);
+ 
+ 	return dh;
+@@ -749,7 +782,7 @@
+ 		 * of a reasonable check to apply on Windows.  (See also the data
+ 		 * directory permission check in postmaster.c)
+ 		 */
+-#if !defined(WIN32) && !defined(__CYGWIN__)
++#ifndef WIN32
+ 		if (!S_ISREG(buf.st_mode) || (buf.st_mode & (S_IRWXG | S_IRWXO)) ||
+ 			buf.st_uid != geteuid())
+ 			ereport(FATAL,
+@@ -760,8 +793,8 @@
+ #endif
+ 
+ 		if (!SSL_CTX_use_PrivateKey_file(SSL_context,
+-										 SERVER_PRIVATE_KEY_FILE,
+-										 SSL_FILETYPE_PEM))
++						 SERVER_PRIVATE_KEY_FILE,
++						 SSL_FILETYPE_PEM))
+ 			ereport(FATAL,
+ 					(errmsg("could not load private key file \"%s\": %s",
+ 							SERVER_PRIVATE_KEY_FILE, SSLerrmessage())));
+@@ -810,9 +843,9 @@
+ 						  X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL);
+ #else
+ 				ereport(LOG,
+-				(errmsg("SSL certificate revocation list file \"%s\" ignored",
+-						ROOT_CRL_FILE),
+-				 errdetail("SSL library does not support certificate revocation lists.")));
++						(errmsg("SSL certificate revocation list file \"%s\" ignored",
++								ROOT_CRL_FILE),
++						 errdetail("SSL library does not support certificate revocation lists.")));
+ #endif
+ 			else
+ 			{
+@@ -887,9 +920,25 @@
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-						FD_READ | FD_CLOSE | FD_ACCEPT : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE | FD_ACCEPT : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto aloop;
+ 			case SSL_ERROR_SYSCALL:
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/backend/postmaster/pgstat.c src/postgresql-8.3.3/src/backend/postmaster/pgstat.c
+--- origsrc/postgresql-8.3.3/src/backend/postmaster/pgstat.c	2008-04-03 16:27:32.000000000 +0000
++++ src/postgresql-8.3.3/src/backend/postmaster/pgstat.c	2008-06-28 08:27:03.546875000 +0000
+@@ -2160,7 +2160,7 @@
+ 	int			len;
+ 	PgStat_Msg	msg;
+ 
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ #ifdef HAVE_POLL
+ 	struct pollfd input_fd;
+ #else
+@@ -2231,7 +2231,7 @@
+ 	 * Setup the descriptor set for select(2).	Since only one bit in the set
+ 	 * ever changes, we need not repeat FD_ZERO each time.
+ 	 */
+-#if !defined(HAVE_POLL) && !defined(WIN32)
++#if !defined(HAVE_POLL) && (!defined(WIN32) || defined(__CYGWIN__))
+ 	FD_ZERO(&rfds);
+ #endif
+ 
+@@ -2281,7 +2281,7 @@
+ 		 * We use poll(2) if available, otherwise select(2). Win32 has its own
+ 		 * implementation.
+ 		 */
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ #ifdef HAVE_POLL
+ 		input_fd.fd = pgStatSock;
+ 		input_fd.events = POLLIN | POLLERR;
+@@ -2321,7 +2321,7 @@
+ #endif   /* HAVE_POLL */
+ #else							/* WIN32 */
+ 		got_data = pgwin32_waitforsinglesocket(pgStatSock, FD_READ,
+-											   PGSTAT_SELECT_TIMEOUT * 1000);
++						       PGSTAT_SELECT_TIMEOUT * 1000);
+ #endif
+ 
+ 		/*
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/backend/postmaster/postmaster.c src/postgresql-8.3.3/src/backend/postmaster/postmaster.c
+--- origsrc/postgresql-8.3.3/src/backend/postmaster/postmaster.c	2008-01-11 00:54:09.000000000 +0000
++++ src/postgresql-8.3.3/src/backend/postmaster/postmaster.c	2008-06-28 08:27:03.546875000 +0000
+@@ -349,6 +349,9 @@
+ HANDLE		PostmasterHandle;
+ #endif
+ 
++#endif
++#ifdef EXEC_BACKEND
++
+ static pid_t backend_forkexec(Port *port);
+ static pid_t internal_forkexec(int argc, char *argv[], Port *port);
+ 
+@@ -417,6 +420,7 @@
+ static void ShmemBackendArrayRemove(pid_t pid);
+ #endif   /* EXEC_BACKEND */
+ 
++
+ #define StartupDataBase()		StartChildProcess(StartupProcess)
+ #define StartBackgroundWriter() StartChildProcess(BgWriterProcess)
+ #define StartWalWriter()		StartChildProcess(WalWriterProcess)
+@@ -1072,7 +1076,7 @@
+ 	 *
+ 	 * XXX can we safely enable this check on Windows?
+ 	 */
+-#if !defined(WIN32) && !defined(__CYGWIN__)
++#ifndef WIN32
+ 	if (stat_buf.st_uid != geteuid())
+ 		ereport(FATAL,
+ 				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+@@ -1094,7 +1098,7 @@
+ 	 * be proper support for Unix-y file permissions.  Need to think of a
+ 	 * reasonable check to apply on Windows.
+ 	 */
+-#if !defined(WIN32) && !defined(__CYGWIN__)
++#ifndef WIN32
+ 	if (stat_buf.st_mode & (S_IRWXG | S_IRWXO))
+ 		ereport(FATAL,
+ 				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/include/libpq/libpq-be.h src/postgresql-8.3.3/src/include/libpq/libpq-be.h
+--- origsrc/postgresql-8.3.3/src/include/libpq/libpq-be.h	2008-01-01 19:45:58.000000000 +0000
++++ src/postgresql-8.3.3/src/include/libpq/libpq-be.h	2008-06-28 08:27:03.546875000 +0000
+@@ -47,6 +47,9 @@
+ 
+ #ifdef ENABLE_SSPI
+ #define SECURITY_WIN32
++#ifdef __CYGWIN__
++#include <windows.h>
++#endif
+ #include <security.h>
+ #undef SECURITY_WIN32
+ 
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/include/libpq/libpq.h src/postgresql-8.3.3/src/include/libpq/libpq.h
+--- origsrc/postgresql-8.3.3/src/include/libpq/libpq.h	2008-01-01 19:45:58.000000000 +0000
++++ src/postgresql-8.3.3/src/include/libpq/libpq.h	2008-06-28 08:27:03.546875000 +0000
+@@ -20,6 +20,10 @@
+ #include "lib/stringinfo.h"
+ #include "libpq/libpq-be.h"
+ 
++#ifdef __CYGWIN__
++#undef WIN32
++#endif
++
+ /* ----------------
+  * PQArgBlock
+  *		Information (pointer to array of this structure) required
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/include/miscadmin.h src/postgresql-8.3.3/src/include/miscadmin.h
+--- origsrc/postgresql-8.3.3/src/include/miscadmin.h	2008-01-03 21:23:15.000000000 +0000
++++ src/postgresql-8.3.3/src/include/miscadmin.h	2008-06-28 08:27:03.546875000 +0000
+@@ -78,7 +78,7 @@
+ /* in tcop/postgres.c */
+ extern void ProcessInterrupts(void);
+ 
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ 
+ #define CHECK_FOR_INTERRUPTS() \
+ do { \
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/include/port/cygwin.h src/postgresql-8.3.3/src/include/port/cygwin.h
+--- origsrc/postgresql-8.3.3/src/include/port/cygwin.h	2007-07-25 12:22:53.000000000 +0000
++++ src/postgresql-8.3.3/src/include/port/cygwin.h	2008-06-28 08:27:03.546875000 +0000
+@@ -19,3 +19,10 @@
+ #define PGDLLIMPORT __declspec (dllimport)
+ 
+ #endif
++
++/*
++ * Always build with SSPI support. Keep it as a #define in case
++ * we want a switch to disable it sometime in the future.
++ */
++#define ENABLE_SSPI 1
++
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/interfaces/libpq/libpq-int.h src/postgresql-8.3.3/src/interfaces/libpq/libpq-int.h
+--- origsrc/postgresql-8.3.3/src/interfaces/libpq/libpq-int.h	2008-01-01 19:46:00.000000000 +0000
++++ src/postgresql-8.3.3/src/interfaces/libpq/libpq-int.h	2008-06-28 09:07:09.234375000 +0000
+@@ -53,6 +53,22 @@
+ #endif
+ 
+ #ifdef ENABLE_SSPI
++#ifdef __CYGWIN__
++#define WIN32
++#include <windows.h>
++int PASCAL WSAGetLastError(void);
++#define WSADESCRIPTION_LEN	256
++#define WSASYS_STATUS_LEN	128
++typedef struct WSAData {
++	WORD	wVersion;
++	WORD	wHighVersion;
++	char	szDescription[WSADESCRIPTION_LEN+1];
++	char	szSystemStatus[WSASYS_STATUS_LEN+1];
++	unsigned short	iMaxSockets;
++	unsigned short	iMaxUdpDg;
++	char * 	lpVendorInfo;
++} WSADATA;
++#endif
+ #define SECURITY_WIN32
+ #include <security.h>
+ #undef SECURITY_WIN32
+@@ -557,7 +573,7 @@
+  * These macros are needed to let error-handling code be portable between
+  * Unix and Windows.  (ugh)
+  */
+-#ifdef WIN32
++#if defined(WIN32) && !defined(__CYGWIN__)
+ #define SOCK_ERRNO (WSAGetLastError())
+ #define SOCK_STRERROR winsock_strerror
+ #define SOCK_ERRNO_SET(e) WSASetLastError(e)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'README~' -x 'pathmax.c~' -x 'postgresql-8.2.0-1.cygport~' -x 'postgresql-8.2.3-1.cygport~' -x 'postgresql-8.2.6-1.cygport~' -x 'postgresql-8.2.9-1.cygport~' -x 'postgresql-8.3.0-1.cygport~' -x 'postgresql-8.3.3-1.cygport~' -x 'postgresql7.4-7.4.13-1.cygport~' -x 'postgresql7.4-java.hint~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x configure -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x TAGS -x Makefile.shlib -x libpq.rc origsrc/postgresql-8.3.3/src/interfaces/libpq/libpq.rc.in src/postgresql-8.3.3/src/interfaces/libpq/libpq.rc.in
+--- origsrc/postgresql-8.3.3/src/interfaces/libpq/libpq.rc.in	2008-06-08 22:14:09.000000000 +0000
++++ src/postgresql-8.3.3/src/interfaces/libpq/libpq.rc.in	2008-06-28 08:27:03.546875000 +0000
+@@ -19,7 +19,7 @@
+             VALUE "InternalName", "libpq\0"
+             VALUE "LegalCopyright", "Copyright (C) 2008\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.3.3\0"
+         END

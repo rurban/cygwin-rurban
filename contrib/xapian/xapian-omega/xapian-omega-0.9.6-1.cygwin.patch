@@ -1,0 +1,106 @@
+diff -urN origsrc/omega-0.9.6/CYGWIN-PATCHES/README src/omega-0.9.6/CYGWIN-PATCHES/README
+--- origsrc/omega-0.9.6/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/omega-0.9.6/CYGWIN-PATCHES/README	2006-08-19 20:03:42.734375000 +0000
+@@ -0,0 +1,94 @@
++xapian-omega
++-------------------------------
++CGI search interface and indexers using xapian.
++xapian is a fulltext indexer and search library.
++
++Runtime requirements: (versions given or later)
++  xapian
++  libxapian1
++  cygwin-1.5.x
++  antiword
++  catdoc
++  unzip
++
++Build requirements: (versions given or later)
++  cygwin-1.5.x
++  zlib-1.2.x
++  gcc-core
++  gcc-g++
++  libtool
++  binutils
++  make
++  bash
++  fileutils
++  sed
++  help2man
++
++Recommended:
++  readpst
++  pstotext
++  wpd2text
++  perl and DBI for dbi2omega
++
++Canonical homepage:
++  http://www.xapian.org/
++
++Canonical download:
++  http://www.xapian.org/download.php
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++
++  cd /usr/src
++  tar xfvj xapian-omega-<VER>-src.tar.bz2
++  cygport ./xapian-omega-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/xapian-omega-<VER>-<CYGREL>.tar.bz2
++  /usr/src/xapian-omega-<VER>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport xapian-omega-<VER>-<CYGREL>.cygport prep' to get 
++a patched source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in the xapian-omega package:
++
++  /etc/omega.conf
++  /usr/bin/dbi2omega
++  /usr/bin/htdig2omega
++  /usr/bin/mbox2omega
++  /usr/bin/omindex.exe
++  /usr/bin/scriptindex.exe
++  /usr/lib/omega/bin/omega.exe
++  /usr/share/doc/Cygwin/xapian-omega-0.9.6.README
++  /usr/share/doc/xapian-omega-0.9.6/AUTHORS
++  /usr/share/doc/xapian-omega-0.9.6/COPYING
++  /usr/share/doc/xapian-omega-0.9.6/ChangeLog
++  /usr/share/doc/xapian-omega-0.9.6/INSTALL
++  /usr/share/doc/xapian-omega-0.9.6/NEWS
++  /usr/share/doc/xapian-omega-0.9.6/README
++  /usr/share/doc/xapian-omega-0.9.6/TODO
++  /usr/share/doc/xapian-omega-0.9.6/cgiparams.txt
++  /usr/share/doc/xapian-omega-0.9.6/omegascript.txt
++  /usr/share/doc/xapian-omega-0.9.6/overview.txt
++  /usr/share/doc/xapian-omega-0.9.6/quickstart.txt
++  /usr/share/doc/xapian-omega-0.9.6/scriptindex.txt
++  /usr/share/doc/xapian-omega-0.9.6/termprefixes.txt
++  /usr/share/man/man1/omindex.1.gz
++  /usr/share/man/man1/scriptindex.1.gz
++  /usr/share/omega/htdig2omega.script
++  /usr/share/omega/mbox2omega.script
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 0.9.6-1 ----- 
++Initial release
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN origsrc/omega-0.9.6/CYGWIN-PATCHES/xapian-omega.hint src/omega-0.9.6/CYGWIN-PATCHES/xapian-omega.hint
+--- origsrc/omega-0.9.6/CYGWIN-PATCHES/xapian-omega.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/omega-0.9.6/CYGWIN-PATCHES/xapian-omega.hint	2006-08-19 20:01:41.093750000 +0000
+@@ -0,0 +1,4 @@
++sdesc: "Xapian Web Interface (CGI)"
++ldesc: "CGI search interface and indexers using Xapian"
++category: Web
++requires: xapian libxapian11 antiword catdoc unzip

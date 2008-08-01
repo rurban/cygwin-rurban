@@ -1,0 +1,152 @@
+diff -urN origsrc/libwin32-0.28/CYGWIN-PATCHES/README src/libwin32-0.28/CYGWIN-PATCHES/README
+--- origsrc/libwin32-0.28/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/libwin32-0.28/CYGWIN-PATCHES/README	2008-02-16 13:33:00.953125000 +0000
+@@ -0,0 +1,133 @@
++perl-libwin32
++------------------------------------------
++Perl extensions for using the Win32 API.
++Included modules: Win32API::Net, Win32::ChangeNotify, Win32::Clipboard, 
++Win32::Console, Win32::Event, Win32::EventLog, Win32::File, Win32::FileSecurity,
++Win32::IPC, Win32::Internet, Win32::Job, Win32::Mutex, Win32::NetAdmin, 
++Win32::NetResource, Win32::ODBC, Win32::OLE, Win32::PerfLib, Win32::Pipe,
++Win32::Process, Win32::Registry, Win32::Semaphore, Win32::Service, 
++Win32::Shortcut, Win32::Sound and Win32::WinError.
++
++Seperately added since 0.28: Win32API::Registry, Win32::TieRegistry
++
++Note: Win32 and Win32API::File are now in core.
++
++Runtime requirements:
++  cygwin
++  perl-5.10.x
++  crypt-1.1-1
++
++Build requirements:
++  cygwin
++  cygport-0.3.8 (for src_unpack_hook)
++  crypt-1.1-1
++  cygutils
++  perl-5.10.x
++  gcc
++  make
++  w32api-2.2-1 (at least)
++  gzip
++  libiodbc from http://sf.net/projects/iodbc/ 
++
++    wget http://switch.dl.sourceforge.net/sourceforge/iodbc/libiodbc-3.52.5.tar.gz
++    tar xfz libiodbc-3.52.5.tar.gz
++    cd libiodbc-3.52.5
++    ./configure --disable-gui --prefix=/usr --sysconfdir=/etc
++    make
++    make check
++    make install 
++
++Project Homepages:
++  http://search.cpan.org/~jdb/libwin32-0.28/
++Download:
++  http://search.cpan.org/CPAN/authors/id/J/JD/JDB/libwin32-0.28.tar.gz
++
++Old defunct versions:
++  http://search.cpan.org/search?query=libwin32&mode=Distributions
++  http://sourceforge.net/projects/libwin32-exp/
++
++------------------------------------
++
++Build instructions:
++  unpack perl-libwin32-<VER>-<REL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./perl-libwin32-<VER>-<REL>.sh all
++
++This will create:
++  /usr/src/perl-libwin32-<VER>-<REL>.tar.bz2
++  /usr/src/perl-libwin32-<VER>-<REL>-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++Requirements:
++
++The dll's must probably be rebased. If a remap error occurs run rebaseall from 
++the rebase package. The packaged version is already rebased to my personal settings.
++
++Certain tests require esoteric apps, which probably will fail for you. 
++Win32::OLE requires Excel.Application
++
++Port TODO:
++
++* Some of the hints stuff might be nicer reworked using something like:
++  http://search.cpan.org/~jstowe/TermReadKey-2.21/Configure.pm
++
++----- version 0.28-2 -----
++Changed from gbs to cygport
++Rebuilt for perl-5.10.0-3 (archname: i686-cygwin)
++
++----- version 0.28-1 -----
++Built with and for perl-5.10 only.
++Win32API::Registry, Win32::TieRegistry had been removed. So added here sperately.
++
++----- version 0.27-1 -----
++none
++Built with and for perl-5.8.x only.
++
++----- version 0.26-1 -----
++
++* Almost all patches accepted upstream. 
++* Added APIFile OO and tied interface (as in the previous cygwin packages).
++* fixed Win32::ODBC to use Gerrit's iodbc headers
++  https://rt.cpan.org/NoAuth/Bug.html?id=14634
++* splitted rebase into rebase1 and rebase2
++
++----- version 0.191-4 -----
++* fixed src patch
++
++----- version 0.191-3 ----- (NOT RELEASED)
++
++* make install_vendor (into vendor_perl)
++* keep Win32::Process::GetCurrentProcessID(),
++* remove Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) from Process.xs
++  (now in core)
++* fix pm_to_blib MM targets (APIFile, APIRegistry).
++  better than the cRegistry_pc_to_blib hack in -2
++* cleaned the build script, hints and patch. fixed rebaseall step
++
++----- version 0.191-2 ----- (NOT RELEASED)
++
++* added Win32::Process::GetCurrentProcessID(), 
++  Win32::Process::CygwinToWin32ProcessID() and
++  Win32::Process::Win32ToCygwinProcessID(pid) to Process.xs
++* Removed Win32::GUI. Seperate perl-win32-gui package
++* Win32CORE is now in perl-5.8.6 core statically.
++* Win32API::Net test patches (locale independency)
++* fixed APIRegistry cRegistry_pc_to_blib
++* all DLL's rebased, but a rebaseall might be required nevertheless.
++
++Maintainership taken over by Reini Urban (rurban@x-ray.at)
++
++----- version 0.191-1 -----
++
++Initial Cygwin package.
++
++Cygwin port maintained by: Reini Urban
++Please address all cygwin related questions to the Cygwin mailing 
++list at <cygwin@cygwin.com>. 
++The new libwin32 mailinglist is <libwin32@lists.perl.org>.
+\ No newline at end of file
+diff -urN origsrc/libwin32-0.28/CYGWIN-PATCHES/setup.hint src/libwin32-0.28/CYGWIN-PATCHES/setup.hint
+--- origsrc/libwin32-0.28/CYGWIN-PATCHES/setup.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/libwin32-0.28/CYGWIN-PATCHES/setup.hint	2007-07-21 21:41:34.312500000 +0000
+@@ -0,0 +1,10 @@
++sdesc: "Perl extensions for using the Win32 API"
++ldesc: "Perl extensions for using the Win32 API.
++Included modules: Win32API::Net, Win32API::Registry,
++Win32::ChangeNotify, Win32::Clipboard, Win32::Console, Win32::Event, Win32::EventLog, 
++Win32::File, Win32::FileSecurity, Win32::IPC, Win32::Internet, Win32::Job, Win32::Mutex, 
++Win32::NetAdmin, Win32::NetResource, Win32::ODBC, Win32::OLE, Win32::PerfLib, 
++Win32::Pipe, Win32::Process, Win32::Registry, Win32::Semaphore, Win32::Service, Win32::Shortcut, 
++Win32::Sound, Win32::TieRegistry and Win32::WinError."
++category: Perl
++requires: perl cygwin crypt

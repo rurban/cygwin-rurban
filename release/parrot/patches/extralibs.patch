@@ -1,0 +1,30 @@
+2008-03-20 11:31:40  <rurban@x-ray.at>
+	* CREDITS: add rurban
+	* config/gen/makefiles/dynpmc_pl.in: add extralibs.
+
+diff -ub  ./CREDITS.orig
+--- ./CREDITS.orig	2008-03-16 08:15:14.000000000 +0100
++++ ./CREDITS	2008-03-20 11:31:01.500000000 +0100
+@@ -514,6 +514,10 @@
+ E: pdcawley@bofh.org.uk
+ W: http://www.bofh.org.uk:8080/
+ 
++N: Reini Urban
++E: rurban@cpan.org
++D: cygwin fixes
++
+ N: Richard Tibbetts
+ D: Divide by zero exceptions in some PMCs
+ 
+diff -ub  ./config/gen/makefiles/dynpmc_pl.in.orig
+--- ./config/gen/makefiles/dynpmc_pl.in.orig	2007-08-24 01:15:14.000000000 +0200
++++ ./config/gen/makefiles/dynpmc_pl.in	2008-03-20 11:31:20.718750000 +0100
+@@ -92,6 +92,8 @@
+     }
+     else {
+         $liblist = join( ' ', map { "-l$_" } keys %$libs );
++        my $extraLibs = '@libs@ @icu_shared@';
++        $liblist .= ' ' . $extraLibs;
+     }
+ 
+     return

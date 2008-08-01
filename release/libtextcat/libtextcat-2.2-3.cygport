@@ -1,0 +1,25 @@
+DESCRIPTION="Text Classification Library (language guessing in C)"
+HOMEPAGE="http://software.wise-guys.nl/libtextcat/"
+SRC_URI="http://software.wise-guys.nl/download/${P}.tar.gz"
+LICENSE="BSD"
+
+PKG_NAMES="${PN} ${PN}0 ${PN}-devel"
+PKG_HINTS="${PKG_NAMES}"
+
+# libtextcat
+PKG_CONTENTS[0]=" \
+etc \
+usr/bin/textcat.exe \
+--exclude=usr/share/libtextcat/ShortTexts \
+usr/share"
+
+# libtextcat0
+PKG_CONTENTS[1]=" \
+usr/bin/cygtextcat*.dll"
+
+# libtextcat-devel
+PKG_CONTENTS[2]=" \
+usr/bin/createfp.exe \
+usr/include \
+usr/lib \
+usr/share/libtextcat/ShortTexts"

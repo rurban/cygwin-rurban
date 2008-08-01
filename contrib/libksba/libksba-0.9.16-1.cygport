@@ -1,0 +1,6 @@
+DESCRIPTION="API to create and parse X.509 and CMS related objects for GnuPG"
+HOMEPAGE="http://www.gnupg.org/(en)/related_software/libksba/"
+SRC_URI="http://ftp.gnupg.zone-h.org/alpha/${PN}/${P}.tar.bz2"
+
+DOCS="README-alpha"
+

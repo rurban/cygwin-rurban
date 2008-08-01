@@ -1,0 +1,172 @@
+# -*- sh -*-
+DESCRIPTION="Parrot Virtual Machine"
+HOMEPAGE="http://www.parrotcode.org/"
+# the release managers change with every release
+SRC_URI=$(lwp-request -m HEAD -x -e "http://www.parrotcode.org/release/devel" 2>&1 | \
+	    grep "/authors/id" | tail -n1 | perl -ane 'print $F[2]')
+SRC_URI=${SRC_URI:-"http://search.cpan.org/CPAN/authors/id/S/SM/SMASH/parrot-${PV}.tar.gz"}
+# SRC_URI="http://search.cpan.org/dist/${PN}/${PN}-${PV}.tar.gz"
+# SRC_DIR="parrot-${PV}"
+LICENSE="GPL-2"
+DIFF_EXCLUDES="MANIFEST.* parrot.pc myconfig config_lib.pasm Makefile */Makefile"
+SIG=0
+
+PKG_NAMES="${PN} lib${PN}0 lib${PN}-devel ${PN}-perl6 ${PN}-languages"
+PKG_HINTS="${PKG_NAMES}"
+
+src_compile() {
+  cd ${B}
+  oldpath=$PATH
+  export PATH=${B}/blib/lib:$PATH 
+
+  test -e Configure.pl || lndirs
+
+  lang_stable="abc cardinal eclectus lolcode lua perl6 pipp punie pynie squaak"
+  lang_alltests_ok="bf lazy-k lazy-k regex unlambda"
+  # stable by 0.6.3: abc cardinal eclectus lolcode lua perl6 pipp punie pynie squaak
+  # 100% ok by 0.6.3: unlambda, regex, lazy-k, bf
+  perl Configure.pl --prefix=/usr --optimize #--docdir=/usr/share/doc/${P}
+
+  cygmake all parrot_utils perl6.exe
+
+  # generate an import lib
+  test -e libparrot.dll.a || dlltool -l libparrot.dll.a --export-all-symbols blib/lib/libparrot.dll
+
+  # Build executables for the other languages.
+  cygmake languages
+  mkdir languages/bin
+  for dir in languages/* ; do
+    exe=$( basename $dir )
+    [ $exe = parrot_compiler ] && continue
+
+    pbc=$dir/$exe.pbc
+
+    if [ ! -f $exe -a -d $dir -a -f $pbc ] ; then
+        ln $pbc languages/bin/
+        pbc=languages/bin/$exe.pbc
+        c=languages/bin/$exe.c
+        o=languages/bin/$exe.o
+        ./pbc_to_exe $pbc
+        rm $pbc $c $o 2>/dev/null
+    fi
+  done
+  cd languages/bin
+  for language in *.exe ; do
+    mv $language parrot-$language
+  done
+  cd ../..
+  export PATH=$oldpath
+
+}
+
+src_check () {
+  cd ${B}
+  oldpath=$PATH
+  export PATH=${B}/blib/lib:$PATH 
+  cygtest
+  cygmake test -C languages/perl6
+  cygmake languages-smoke 
+  export PATH=$oldpath
+}
+
+src_install () {
+  cd ${B}
+
+  # submitted a core patch for this
+  #mv disassemble.exe pbc_disassemble.exe
+  #sed -i -e's,disassemble.exe,pbc_disassemble.exe,' ${S}/MANIFEST.generated
+  PATH=${B}/blib/lib:$PATH make reallyinstall DESTDIR=${D} DOC_DIR="/usr/share/doc/${P}"
+
+  # These files *probably* aren't needed. says fedora. now patched in install_files.pl
+  # rm -rf ${D}/usr/lib/parrot/{compilers,config,src,language,tools}
+  # mv ${D}/usr/lib/parrot/lib/parrot/* ${D}/usr/lib/parrot/
+  # rm -rf ${D}/usr/lib/parrot/lib
+  # rm -rf ${D}/usr/incoming/parrot/src
+
+  cd ${D}/usr/include
+  ln -s parrot/parrot.h parrot.h
+  cd ${B}
+
+  mv ${D}/usr/bin/pdb.exe ${D}/usr/bin/parrot_pdb.exe
+
+  # said who? gentoo or freebsd
+  insinto /usr/lib/${PN}
+  sed -e"s,/usr/share/doc/parrot,/usr/share/doc/${P}," -i config_lib.pasm
+  #set P0["libparrot_ldflags"], "-L/usr/src/perl/parrot/parrot-0.6.3-1/build/blib/lib -lparrot"
+  # sed -e"s,$B,/usr/lib/${PN}," -i config_lib.pasm
+  doins config_lib.pasm
+
+  exeinto /usr/bin
+  doexe languages/bin/*.exe blib/lib/libparrot.dll
+  insinto /usr/lib
+  doins libparrot.dll.a
+
+  # language examples and docs
+  for dir in languages/* ; do
+    test \! -d $dir && continue
+    lang=$( basename $dir )
+    [ $lang = parrot_compiler ] && continue
+    [ $lang = bin ] && continue
+
+    cd languages/$lang
+    docinto languages/$lang
+    dodoc MAINTAINER README Changes ChangeLog CREDITS
+    test -d docs && dodoc docs/*
+
+    test -d examples && (insinto /usr/share/doc/${P}/languages/${lang}/examples; doins examples/*)
+    cd ${B}
+
+  done
+
+  # necessary for mod_parrot-0.3
+  insinto /usr/lib/${PN}/src/
+  doins "${B}/src/install_config.o" "${B}/src/null_config.o" "${B}/src/parrot_config.o" 
+
+  pod2html DEPRECATED.pod > DEPRECATED.html 
+  dodoc EADME RESPONSIBLE_PARTIES ABI_CHANGES ChangeLog CREDITS NEWS \
+    DONORS PBC_COMPAT PLATFORMS TODO \
+    DEPRECATED.html languages\LANGUAGES_STATUS.pod
+}
+
+# parrot
+PKG_CONTENTS[0]=" \
+--exclude=usr/bin/libparrot*.dll \
+--exclude=usr/include \
+--exclude=usr/bin/perl6.exe \
+--exclude=usr/bin/parrot-* \
+--exclude=usr/share/doc/${P}/examples \
+--exclude=usr/share/doc/${P}/languages \
+usr/bin \
+usr/share \
+usr/lib/parrot/config_lib.pasm
+usr/lib/parrot/dynext \
+usr/lib/parrot/library \
+"
+
+# libparrot0
+PKG_CONTENTS[1]=" \
+usr/bin/libparrot*.dll"
+
+# libparrot-devel
+PKG_CONTENTS[2]=" \
+--exclude=usr/lib/parrot/dynext \
+--exclude=usr/lib/parrot/library \
+--exclude=usr/lib/parrot/config_lib.pasm \
+usr/bin/parrot-config \
+usr/include \
+usr/lib \
+usr/share/doc/${P}/examples \
+"
+
+# parrot-perl6
+PKG_CONTENTS[3]=" \
+usr/bin/perl6.exe \
+usr/share/doc/${P}/languages/perl6 \
+"
+
+# parrot-languages
+PKG_CONTENTS[4]=" \
+--exclude=usr/share/doc/${P}/languages/perl6 \
+usr/bin/parrot-*.exe \
+usr/share/doc/${P}/languages \
+"

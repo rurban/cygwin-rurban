@@ -1,0 +1,158 @@
+--- clamav-0.75.1/CYGWIN-PATCHES/README.orig	2004-09-16 14:40:43.965887000 +0100
++++ clamav-0.75.1/CYGWIN-PATCHES/README	2004-09-16 14:30:56.707779200 +0100
+@@ -0,0 +1,90 @@
++See /usr/share/doc/clamav
++
++freshclam and clamd have to be configured manually.
++
++Runtime requirements: (versions at least)
++  cygwin-1.5.11-1
++  gmp-4.1.2-1
++  libbz2_1-1.0.2-5
++  zlib-1.2.1-1
++  
++Build requirements: (versions at least)
++  cygwin-1.5.11-1
++  gmp-4.1.2-1
++  libbz2_1-1.0.2-5
++  zlib-1.2.1-1
++  gcc-3.3.1
++  binutils-20030901
++  make-3.80
++  ash-20031007
++  fileutils-4.1
++  sed-4.0.7
++
++Canonical homepage:
++  http://clamav.net/
++
++Canonical download:
++  http://prdownloads.sourceforge.net/clamav/clamav-<VERSION>.tar.bz2?download
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack clamav-<VERSION>.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./clamav-<VERSION>-<CYGREL>.sh all
++
++This will create:
++  /usr/src/clamav-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/clamav-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use './clamav-<VERSION>-<CYGREL>.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in this package:
++
++  /etc/clamav.conf
++  /etc/freshclam.conf
++  /usr/bin/clamav-config
++  /usr/bin/clamdscan.exe
++  /usr/bin/clamscan.exe
++  /usr/bin/freshclam.exe
++  /usr/bin/sigtool.exe
++  /usr/include/clamav.h
++  /usr/lib/libclamav.a
++  /usr/lib/libclamav.la
++  /usr/lib/pkgconfig/libclamav.pc
++  /usr/sbin/clamd.exe
++  /usr/share/clamav/daily.cvd
++  /usr/share/clamav/main.cvd
++  /usr/share/doc/clamav/AUTHORS
++  /usr/share/doc/clamav/ChangeLog
++  /usr/share/doc/clamav/COPYING
++  /usr/share/doc/clamav/FAQ
++  /usr/share/doc/clamav/INSTALL
++  /usr/share/doc/clamav/NEWS
++  /usr/share/doc/clamav/README
++  /usr/share/doc/clamav/TODO
++  /usr/share/doc/Cygwin/README
++  /usr/share/man/man1/clamdscan.1.gz
++  /usr/share/man/man1/clamscan.1.gz
++  /usr/share/man/man1/freshclam.1.gz
++  /usr/share/man/man1/sigtool.1.gz
++  /usr/share/man/man5/clamav.conf.5.gz
++  /usr/share/man/man5/freshclam.conf.5.gz
++  /usr/share/man/man8/clamav-milter.8.gz
++  /usr/share/man/man8/clamd.8.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version clamav-0.75.1-1 -----
++
++Initial release
++
++Builds out of the box. No contrib. 
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- clamav-0.75.1/CYGWIN-PATCHES/postinstall.sh.orig	2004-09-16 14:40:47.372093000 +0100
++++ clamav-0.75.1/CYGWIN-PATCHES/postinstall.sh	2004-09-16 14:41:54.621232800 +0100
+@@ -0,0 +1,4 @@
++#!/bin/sh
++
++# update the database (/usr/share/clamav)
++freshclam
+--- clamav-0.75.1/etc/clamav.conf.orig	2004-05-13 00:59:21.000000000 +0100
++++ clamav-0.75.1/etc/clamav.conf	2004-09-16 14:49:49.880774400 +0100
+@@ -5,12 +5,12 @@
+ 
+ 
+ # Comment or remove the line below.
+-Example
++#Example
+ 
+ # Uncomment this option to enable logging.
+ # LogFile must be writable for the user running the daemon.
+ # Full path is required.
+-#LogFile /tmp/clamd.log
++LogFile /var/log/clamd.log
+ 
+ # By default the log file is locked for writing - the lock protects against
+ # running clamd multiple times (if want to run another clamd, please
+@@ -27,7 +27,7 @@
+ #LogFileMaxSize 2M
+ 
+ # Log time with an each message.
+-#LogTime
++LogTime
+ 
+ # Log also clean files. May be useful in debugging but will drastically
+ # increase the log size.
+@@ -45,11 +45,11 @@
+ 
+ # This option allows you to save the process identifier of the listening
+ # daemon (main thread).
+-#PidFile /var/run/clamd.pid
++PidFile /var/run/clamd.pid
+ 
+ # Optional path to the global temporary directory.
+ # Default is system specific - usually /var/tmp or /tmp.
+-#TemporaryDirectory /var/tmp
++TemporaryDirectory /tmp
+ 
+ # Path to the database directory.
+ # Default is the hardcoded directory (mostly /usr/local/share/clamav,
+@@ -62,7 +62,7 @@
+ # Path to the local socket. The daemon doesn't change the mode of the
+ # created file (portability reasons). You may want to create it in a directory
+ # which is only accessible for a user running daemon.
+-LocalSocket /tmp/clamd
++LocalSocket /tmp/clamd.sock
+ 
+ # Remove stale socket after unclean shutdown.
+ #FixStaleSocket
+@@ -74,7 +74,7 @@
+ # By default we bind to INADDR_ANY, probably not wise.
+ # Enable the following to provide some degree of protection
+ # from the outside world.
+-#TCPAddr 127.0.0.1
++TCPAddr 127.0.0.1
+ 
+ # Maximum length the queue of pending connections may grow to.
+ # Default is 15.

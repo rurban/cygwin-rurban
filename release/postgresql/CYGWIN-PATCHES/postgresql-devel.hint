@@ -1,0 +1,12 @@
+sdesc: "development files for PostgreSQL 8.2 server-side programming"
+ldesc: "Header files for compiling SSI code to link into PostgreSQL's backend; for
+example, for C functions to be called from SQL.
+.
+This package also contains the Makefiles necessary for building add-on
+modules of PostgreSQL, which would otherwise have to be built in the
+PostgreSQL source-code tree. (slony, postgis, ...)
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Devel Database
+requires: libpq-devel libecpg-devel openssl-devel crypt libintl3 zlib
+external-source: postgresql

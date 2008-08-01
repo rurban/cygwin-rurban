@@ -1,0 +1,196 @@
+diff -urN origsrc/icu/source/CYGWIN-PATCHES/README src/icu/source/CYGWIN-PATCHES/README
+--- origsrc/icu/source/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/icu/source/CYGWIN-PATCHES/README	2008-06-23 10:50:22.265625000 +0000
+@@ -0,0 +1,134 @@
++icu
++-------------------------------------------
++IBM Internationalization Components for Unicode
++
++Runtime requirements:
++  cygwin-1.5.25-7
++
++Build requirements:
++  cygwin-1.5.25-7
++  autoconf2.5-2.61-1
++  binutils-20060817-1
++  cygport-0.3.7-1
++  gawk-3.1.5-4
++  gcc-core-3.4.4-3
++  make-3.81-1
++  sed-4.1.5-2
++
++Canonical homepage:
++  http://ibm.com/software/globalization/icu/
++
++Canonical download:
++  ftp://www-126.ibm.com/pub/icu/
++
++-------------------------------------------
++
++Build instructions:
++  unpack icu-3.8-X-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport ./icu-3.8-X.cygport all
++
++This will create:
++  /usr/src/icu-3.8-X-src.tar.bz2
++  /usr/src/icu-3.8-X.tar.bz2
++  /usr/src/libicu38-3.8-X.tar.bz2
++  /usr/src/libicu-devel-3.8-X.tar.bz2
++  /usr/src/icu-doc-3.8-X.tar.bz2
++
++-------------------------------------------
++
++Files included in the binary packages:
++
++Files included in the =icu= package:
++
++  usr/share/doc/Cygwin/icu-3.8.README
++
++Files included in the =libicu38= package:
++
++  usr/bin/cygicudt38.dll	The huge DATA library
++  usr/bin/cygicuin38.dll	i18n Library
++  usr/bin/cygicuio38.dll	Optional stdio-like API with Unicode support
++  usr/bin/cygicule38.dll	Optional Font Layout Engine  
++  usr/bin/cygiculx38.dll 	Optional Font Layout Extensions Engine
++  usr/bin/cygicuuc38.dll	Base library required by all other ICU libraries
++
++Files included in the =libicu-devel= package:
++
++  usr/bin/cygicuut38.dll	Internal Tool Utility Library
++  usr/bin/derb.exe
++  usr/bin/genbrk.exe
++  usr/bin/gencnval.exe
++  usr/bin/genctd.exe
++  usr/bin/genrb.exe
++  usr/bin/icu-config
++  usr/bin/makeconv.exe
++  usr/bin/pkgdata.exe
++  usr/bin/uconv.exe
++  usr/share/man/man1/derb.1
++  usr/share/man/man1/genbrk.1
++  usr/share/man/man1/gencnval.1
++  usr/share/man/man1/genctd.1
++  usr/share/man/man1/genrb.1
++  usr/share/man/man1/icu-config.1
++  usr/share/man/man1/makeconv.1
++  usr/share/man/man1/pkgdata.1
++  usr/share/man/man1/uconv.1
++  usr/share/man/man8/genccode.8
++  usr/share/man/man8/gencmn.8
++  usr/share/man/man8/gensprep.8
++  usr/share/man/man8/genuca.8
++  usr/share/man/man8/icupkg.8
++  usr/sbin/genccode.exe
++  usr/sbin/gencmn.exe
++  usr/sbin/gensprep.exe
++  usr/sbin/genuca.exe
++  usr/sbin/icupkg.exe
++  usr/sbin/icuswap.exe
++  usr/include/layout/*
++  usr/include/unicode/*
++  usr/lib/icu/3.8/Makefile.inc
++  usr/lib/icu/Makefile.inc
++  usr/lib/icu/current
++  usr/lib/libicudt38.0.dll.a
++  usr/lib/libicudt38.dll.a
++  usr/lib/libicuin38.0.dll.a
++  usr/lib/libicuin38.dll.a
++  usr/lib/libicuio38.0.dll.a
++  usr/lib/libicuio38.dll.a
++  usr/lib/libicule38.0.dll.a
++  usr/lib/libicule38.dll.a
++  usr/lib/libiculx38.0.dll.a
++  usr/lib/libiculx38.dll.a
++  usr/lib/libicuuc38.0.dll.a
++  usr/lib/libicuuc38.dll.a
++  usr/share/icu/3.8/config/mh-cygwin
++  usr/share/icu/3.8/mkinstalldirs
++
++Files included in the =icu-doc= package:
++
++  usr/share/doc/icu-3.8/*.html
++  usr/share/doc/icu-3.8/html/*.html
++
++------------------
++
++Port Notes:
++
++----- version 3.8-3 -----
++Official cygwin release, merge of yaakov's 
++version with mine: Yaakov's simplier cygport, 
++Reini's layout (reini)
++
++----- version 3.8-2 -----
++Patch from Gentoo Linux for CVE-2007-4770,4771. (yaakov)
++
++----- version 3.8-1 -----
++Long-overdue version bump. (yaakov)
++Another version was ITP'd at cygwin. (reini)
++
++----- version 3.2-1 -----
++Initial release for Cygwin. (yaakov)
++
++Cygwin port maintained by:
++Reini Urban
+diff -urN origsrc/icu/source/CYGWIN-PATCHES/devel.hint src/icu/source/CYGWIN-PATCHES/devel.hint
+--- origsrc/icu/source/CYGWIN-PATCHES/devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/icu/source/CYGWIN-PATCHES/devel.hint	2008-06-23 10:50:22.375000000 +0000
+@@ -0,0 +1,17 @@
++category: Devel
++requires: cygwin icu libicu38
++external-source: icu
++sdesc: "IBM Internationalization Components for Unicode (development)"
++ldesc: "All the files necessary to write applications that use ICU, 
++along with examples and some documentation.
++- The /usr/include/unicode directory which contains all the ICU
++headers.
++- The libraries and import libraries, versioned and unversioned.
++- A sample Makefile fragment that can be included by applications
++using ICU, to faciliate their building, along with a platform-specific
++configuration file included by this fragment.
++- The sample applications from the ICU source tree, in an appropriate
++location for the system that the package is installed on (for example,
++in /usr/share/doc/icu-3.8-1/examples).
++This package depends on the ICU libraries package with the exact same
++version, since it provides .dll.a symbolic links to the latest libraries."
+diff -urN origsrc/icu/source/CYGWIN-PATCHES/doc.hint src/icu/source/CYGWIN-PATCHES/doc.hint
+--- origsrc/icu/source/CYGWIN-PATCHES/doc.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/icu/source/CYGWIN-PATCHES/doc.hint	2008-06-23 10:50:22.390625000 +0000
+@@ -0,0 +1,5 @@
++sdesc: "The ICU docs package"
++ldesc: "The doxygen generated html set for icu." 
++category: Devel Doc
++requires: cygwin
++external-source: icu
+diff -urN origsrc/icu/source/CYGWIN-PATCHES/icu.hint src/icu/source/CYGWIN-PATCHES/icu.hint
+--- origsrc/icu/source/CYGWIN-PATCHES/icu.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/icu/source/CYGWIN-PATCHES/icu.hint	2008-06-23 10:50:22.375000000 +0000
+@@ -0,0 +1,10 @@
++category: Libs
++requires: cygwin libicu38
++sdesc: "IBM Internationalization Components for Unicode (apps and docs)"
++ldesc: "ICU is a set of C and C++ libraries that provides robust and full-featured
++Unicode and locale support. The library provides calendar support, conversions
++for many character sets, language sensitive collation, date
++and time formatting, support for many locales, message catalogs
++and resources, message formatting, normalization, number and currency
++formatting, time zones support, transliteration, word, line and
++sentence breaking, etc."
+diff -urN origsrc/icu/source/CYGWIN-PATCHES/lib.hint src/icu/source/CYGWIN-PATCHES/lib.hint
+--- origsrc/icu/source/CYGWIN-PATCHES/lib.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/icu/source/CYGWIN-PATCHES/lib.hint	2008-06-23 10:50:22.390625000 +0000
+@@ -0,0 +1,10 @@
++category: Libs
++requires: cygwin
++external-source: icu
++sdesc: "IBM Internationalization Components for Unicode (runtime libs)"
++ldesc: "ICU is a C++ and C library that provides robust and full-featured 
++Unicode and locale support. Only libicu38 is required for runtime.
++The ICU C/C++ project is also called ICU4C when a distinction to 
++the java library ICU4J is necessary.
++For runtime only this package is needed."
++

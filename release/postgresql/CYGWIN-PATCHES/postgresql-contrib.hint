@@ -1,0 +1,44 @@
+sdesc: "additional facilities for PostgreSQL 8.2"
+ldesc: "The PostgreSQL contrib package provides several additional features
+for the PostgreSQL database. This version is built to work with the
+server package postgresql-8.2. contrib often serves as a testbed for
+features before they are adopted into PostgreSQL proper:
+.
+btree_gist - B-Tree indexing using GiST (Generalised Search Tree)
+chkpass - Password type for storing and comparing encrypted passwords
+cube - Type for n-dimensional cubes
+dbf2pg - Inserts the contents of an xBase-style .dbf file into a PostgreSQL table
+dblink - Functions to return results from a remote database
+dbmirror - Trigger-based databaase mirroring 
+earthdistance - Operator for computing the distance (in miles) between two points on the earth's surface
+fti - Full text indexing using triggers
+fuzzystrmatch - Functions for fuzzy string comparison (including Soundex)
+intagg - Integer aggregator/enumerator
+intarray - RD-tree data structure using GiST index
+isbn_issn - Type extensions for ISBN (books) and ISSN (serials)
+lo - Large Object maintenance
+ltree - data types, indexed access methods and queries for data organized as a tree-like structures.
+oid2name - Maps oids to table names
+ora2pg - Conversion utility for Oracle database schemas
+pg_buffercache - Real time queries on the shared buffer cache
+pg_trgm - Determine the similarity of text based on trigram matching
+pgbench - A simple program to run a benchmark test
+pgcrypto - Cryptographic functions
+pgstattuple - Returns the percentage of dead tuples in a table; this indicates whether a vacuum is required.
+seg - Type representing laboratory measurements as floating-point intervals
+spi - PostgreSQL Server Programming Interface; 4 examples of its use:
+autoinc - A function for implementing AUTOINCREMENT/IDENTITY
+insert_username - function for inserting user names
+moddatetime - Update modification timestamps
+refint - Functions for implementing referential integrity (foreign keys). Note that this is now superseded by built-in referential integrity.
+timetravel - Re-implements in user code the time travel feature that was removed in 6.3.
+tips - Micro HOWTOs
+tsearch2 - Searchable text data type supporting indexed access
+user_locks - User-level long-term locks
+vacuumlo - Vacuum deleted large objects
+xml2 - Manipulate XML documents in the database
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Database
+requires: postgresql
+external-source: postgresql

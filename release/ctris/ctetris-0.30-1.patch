@@ -1,0 +1,184 @@
+diff -urN -x .build -x .inst -x .sinst ctetris-0.30-orig/CYGWIN-PATCHES/README ctetris-0.30/CYGWIN-PATCHES/README
+--- ctetris-0.30-orig/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ ctetris-0.30/CYGWIN-PATCHES/README	2004-11-15 19:17:36.041029600 +0100
+@@ -0,0 +1,60 @@
++
++Runtime requirements:
++  cygwin-1.5.x              or newer
++  libncurses8               or newer  
++  
++Build requirements:
++  cygwin-1.5.x              or newer
++  gcc-3.3.1                 or newer
++  binutils-20030901         or newer
++  make-3.80                 or newer
++  ash-20031007              or newer
++  fileutils-4.1             or newer
++  sed-4.0.7                 or newer
++
++Canonical homepage:
++  http://sourceforge.net/projects/ctetris
++
++Canonical download:
++  http://prdownloads.sourceforge.net/ctetris/ctetris-0.30.tar.bz2?download
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack ctetris-0.30-1-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./ctetris-0.30-1.sh all
++
++This will create:
++  /usr/src/ctetris-0.30-1.tar.bz2
++  /usr/src/ctetris-0.30-1-src.tar.bz2
++
++Or use './ctetris-0.30-1.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in ctetris:
++
++  /usr/bin/ctetris.exe
++  /usr/share/man/man1/ctetris.1.gz
++  /usr/share/doc/Cygwin/ctetris-0.30.README (this file)
++  /usr/share/doc/ctetris-0.30/AUTHORS
++  /usr/share/doc/ctetris-0.30/COPYING
++  /usr/share/doc/ctetris-0.30/FAQ
++  /usr/share/doc/ctetris-0.30/INSTALL
++  /usr/share/doc/ctetris-0.30/KNOWN-BUGS
++  /usr/share/doc/ctetris-0.30/README
++  /usr/share/doc/ctetris-0.30/TODO
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version ctetris-0.29 -----
++
++Initial release
++
++Builds out of the box.
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN -x .build -x .inst -x .sinst ctetris-0.30-orig/CYGWIN-PATCHES/README~ ctetris-0.30/CYGWIN-PATCHES/README~
+--- ctetris-0.30-orig/CYGWIN-PATCHES/README~	1970-01-01 01:00:00.000000000 +0100
++++ ctetris-0.30/CYGWIN-PATCHES/README~	2004-08-21 14:23:14.000000000 +0100
+@@ -0,0 +1,60 @@
++
++Runtime requirements:
++  cygwin-1.5.x              or newer
++  libncurses7               or newer  
++  
++Build requirements:
++  cygwin-1.5.x              or newer
++  gcc-3.3.1                 or newer
++  binutils-20030901         or newer
++  make-3.80                 or newer
++  ash-20031007              or newer
++  fileutils-4.1             or newer
++  sed-4.0.7                 or newer
++
++Canonical homepage:
++  http://sourceforge.net/projects/ctetris
++
++Canonical download:
++  http://prdownloads.sourceforge.net/ctetris/ctetris-0.30.tar.bz2?download
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  unpack ctetris-0.30-2-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  ./ctetris-0.30-2.sh all
++
++This will create:
++  /usr/src/ctetris-0.30-2.tar.bz2
++  /usr/src/ctetris-0.30-2-src.tar.bz2
++
++Or use './ctetris-0.30-2.sh prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in ctetris:
++
++  /usr/bin/ctetris.exe
++  /usr/share/man/man1/ctetris.1.gz
++  /usr/share/doc/Cygwin/ctetris-0.30.README (this file)
++  /usr/share/doc/ctetris-0.30/AUTHORS
++  /usr/share/doc/ctetris-0.30/COPYING
++  /usr/share/doc/ctetris-0.30/FAQ
++  /usr/share/doc/ctetris-0.30/INSTALL
++  /usr/share/doc/ctetris-0.30/KNOWN-BUGS
++  /usr/share/doc/ctetris-0.30/README
++  /usr/share/doc/ctetris-0.30/TODO
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version ctetris-0.29 -----
++
++Initial release
++
++Builds out of the box.
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN -x .build -x .inst -x .sinst ctetris-0.30-orig/Makefile ctetris-0.30/Makefile
+--- ctetris-0.30-orig/Makefile	2004-08-20 22:03:43.000000000 +0100
++++ ctetris-0.30/Makefile	2004-08-21 14:15:25.000000000 +0100
+@@ -1,16 +1,16 @@
+ 
+-DESTDIR= # this variable is overwritten to install in RPMBUILDDESTDIR
++DESTDIR = # this variable is overwritten to install in RPMBUILDDESTDIR
+ PREFIX=$(DESTDIR)/usr/
+-DOCDIR=$(DESTDIR)/usr/share/doc/packages/ctetris/
++DOCDIR=$(DESTDIR)/usr/share/doc/ctetris-0.30/
+ MANDIR=$(DESTDIR)/usr/share/man/man1/
+-BINDIR=$(DESTDIR)/bin/
++BINDIR=$(DESTDIR)/usr/bin/
+ CC=gcc
+ MKDIR=mkdir -p
+ INSTALL=install
+ RM=rm -f
+ CFLAGS=-Wall -fomit-frame-pointer -O3
+ OBJS=ctetris.o game.o screen.o brick.o highscore.o
+-OUTPUT=ctetris
++OUTPUT=ctetris.exe
+ LIBS=-lm -lncurses
+ DOCS=AUTHORS COPYING FAQ INSTALL KNOWN-BUGS README TODO
+ MANS=ctetris.1
+@@ -19,7 +19,7 @@
+ all:
+ 	make config
+ 	make build
+-	
++
+ config:	
+ 	./create_config.sh
+ 
+@@ -37,9 +37,9 @@
+ 	$(RM) $(OBJS) $(OUTPUT) config.h
+ 
+ 
+-install:
++install: $(OUTPUT)
+ 	$(MKDIR) $(BINDIR) $(MANDIR) $(DOCDIR)
+-	$(INSTALL) $(OUTPUT) $(BINDIR)
++	$(INSTALL) -s -m 755 $(OUTPUT) $(BINDIR)
+ 	$(INSTALL) -m 644 $(DOCS) $(DOCDIR)
+ 	$(INSTALL) -m 644 $(MANS) $(MANDIR)
+ 
+Dateien ctetris-0.30-orig/brick.o und ctetris-0.30/brick.o sind verschieden.
+diff -urN -x .build -x .inst -x .sinst ctetris-0.30-orig/config.h ctetris-0.30/config.h
+--- ctetris-0.30-orig/config.h	1970-01-01 01:00:00.000000000 +0100
++++ ctetris-0.30/config.h	2004-11-15 19:17:25.931784000 +0100
+@@ -0,0 +1 @@
++
+Dateien ctetris-0.30-orig/ctetris.exe und ctetris-0.30/ctetris.exe sind verschieden.
+Dateien ctetris-0.30-orig/ctetris.o und ctetris-0.30/ctetris.o sind verschieden.
+Dateien ctetris-0.30-orig/game.o und ctetris-0.30/game.o sind verschieden.
+Dateien ctetris-0.30-orig/highscore.o und ctetris-0.30/highscore.o sind verschieden.
+Dateien ctetris-0.30-orig/screen.o und ctetris-0.30/screen.o sind verschieden.

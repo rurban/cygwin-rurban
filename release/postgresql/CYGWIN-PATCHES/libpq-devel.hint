@@ -1,0 +1,9 @@
+sdesc: "header files for libpq5 (PostgreSQL C client library)"
+ldesc: "Header files and static library for compiling C programs to link
+with the libpq library in order to communicate with a PostgreSQL
+database backend.
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Devel Libs
+requires: openssl-devel
+external-source: postgresql

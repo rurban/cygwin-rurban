@@ -1,0 +1,7 @@
+sdesc: "shared library pgtypes.dll for PostgreSQL 7.4"
+ldesc: "The libpgtypes shared library is used by programs built with ecpg.
+(Embedded PostgreSQL for C).
+.
+PostgreSQL is an object-relational SQL database management system."
+category: Libs
+external-source: postgresql7.4

@@ -1,0 +1,88 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x Makefile.in -x makefile.in -x configure -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make origsrc/xapian-omega-1.0.2/Makefile.am src/xapian-omega-1.0.2/Makefile.am
+--- origsrc/xapian-omega-1.0.2/Makefile.am	2007-07-05 00:38:41.000000000 +0000
++++ src/xapian-omega-1.0.2/Makefile.am	2007-08-11 09:41:55.046875000 +0000
+@@ -7,14 +7,48 @@
+ INCLUDES = -I$(top_srcdir)/common
+ 
+ EXTRA_DIST =\
++	xapian-omega.spec
++
++AM_CPPFLAGS = -DCONFIGFILE_SYSTEM=\"$(sysconfdir)/omega.conf\"
++
++pkglibbindir = $(libdir)/omega/bin
++pkglibbin_PROGRAMS = omega
++bin_PROGRAMS = omindex scriptindex
++dist_bin_SCRIPTS = dbi2omega htdig2omega mbox2omega
++
++check_PROGRAMS = htmlparsetest md5test
++TESTS = htmlparsetest$(EXEEXT) md5test$(EXEEXT)
++
++# Install documentation.
++dist_doc_DATA = \
++	docs/cgiparams.txt \
++	docs/omegascript.txt \
++	docs/overview.txt \
++	docs/quickstart.txt \
++	docs/scriptindex.txt \
++	docs/termprefixes.txt
++
++omegadatadir = $(datadir)/omega
++dist_omegadata_DATA = htdig2omega.script mbox2omega.script
++
++dist_sysconf_DATA = omega.conf
++
++templatesdir = $(localstatedir)/lib/omega/templates
++templatesincdir = $(localstatedir)/lib/omega/templates/inc
++webimagesdir = $(omegadatadir)/images
++
++dist_templates_DATA = \
+ 	templates/query \
+ 	templates/topterms \
+ 	templates/opensearch \
+ 	templates/godmode \
+-	templates/xml \
++	templates/xml
++dist_templatesinc_DATA = \
+ 	templates/inc/anyalldropbox \
+ 	templates/inc/anyallradio \
+-	templates/inc/toptermsjs \
++	templates/inc/toptermsjs
++
++dist_webimages_DATA =\
+ 	images/nextoff.png \
+ 	images/next.png \
+ 	images/page-10.png \
+@@ -51,32 +85,7 @@
+ 	images/score-6.png \
+ 	images/score-7.png \
+ 	images/score-8.png \
+-	images/score-9.png \
+-	xapian-omega.spec
+-
+-AM_CPPFLAGS = -DCONFIGFILE_SYSTEM=\"$(sysconfdir)/omega.conf\"
+-
+-pkglibbindir = $(pkglibdir)/bin
+-pkglibbin_PROGRAMS = omega
+-bin_PROGRAMS = omindex scriptindex
+-dist_bin_SCRIPTS = dbi2omega htdig2omega mbox2omega
+-
+-check_PROGRAMS = htmlparsetest md5test
+-TESTS = htmlparsetest$(EXEEXT) md5test$(EXEEXT)
+-
+-# Install documentation.
+-dist_doc_DATA = \
+-	docs/cgiparams.txt \
+-	docs/omegascript.txt \
+-	docs/overview.txt \
+-	docs/quickstart.txt \
+-	docs/scriptindex.txt \
+-	docs/termprefixes.txt
+-
+-omegadatadir = $(datadir)/omega
+-dist_omegadata_DATA = htdig2omega.script mbox2omega.script
+-
+-dist_sysconf_DATA = omega.conf
++	images/score-9.png
+ 
+ noinst_HEADERS = omega.h query.h cgiparam.h\
+  myhtmlparse.h htmlparse.h utils.h configfile.h date.h\

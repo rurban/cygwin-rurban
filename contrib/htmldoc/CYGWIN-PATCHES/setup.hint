@@ -1,0 +1,6 @@
+sdesc: HTML processor that generates indexed HTML, PS, and PDF
+ldesc: "HTMLDOC is a program for writing documentation in HTML and producing indexed HTML, PostScript, or PDF output (with tables of contents). It supports most HTML 3.2 and some HTML 4.0 syntax, as well as GIF, JPEG, and PNG images."
+category: Text
+requires: cygwin jpeg libpng
+curr: 1.8.26-1
+test: 1.9.x_r1514-1

@@ -1,0 +1,4 @@
+# -*- sh -*-
+DESCRIPTION="portable foreign function interface library"
+HOMEPAGE="http://sourceware.org/libffi/"
+SRC_URI="ftp://sourceware.org/pub/libffi/${PN}-${PV}.tar.gz"

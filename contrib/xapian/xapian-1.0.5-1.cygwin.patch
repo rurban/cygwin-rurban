@@ -1,0 +1,197 @@
+diff -urN origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/README src/xapian-core-1.0.5/CYGWIN-PATCHES/README
+--- origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/xapian-core-1.0.5/CYGWIN-PATCHES/README	2007-12-23 23:49:28.406250000 +0000
+@@ -0,0 +1,149 @@
++xapian
++-------------------------------
++Xapian Probabilistic Information Retrieval library
++
++xapian is a fulltext indexer and search library.
++
++Runtime requirements: (versions given or later)
++  cygwin-1.5.x
++  
++Build requirements: (versions given or later)
++  cygwin-1.5.x
++  zlib-1.2.x
++  gcc-core
++  gcc-g++
++  libtool
++  binutils
++  make
++  bash
++  fileutils
++  sed
++  doxygen (v1.4.6 is used for snapshots, releases, and the source documentation)
++  dot (part of the graphviz package)
++  perl-5.8.x
++  latex
++  dvips (usually packaged with TeX)
++  makeindex (usually packaged with TeX)
++  help2man
++
++Canonical homepage:
++  http://www.xapian.org/
++
++Canonical download:
++  http://www.xapian.org/download.php
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++
++  cd /usr/src
++  tar xfvj xapian-<VER>-src.tar.bz2
++  cygport ./xapian-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/xapian-<VER>-<CYGREL>.tar.bz2
++  /usr/src/xapian-<VER>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport xapian-<VER>-<CYGREL>.cygport prep' to get a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in the xapian package:
++  /usr/bin/copydatabase.exe
++  /usr/bin/delve.exe
++  /usr/bin/quartzcheck.exe
++  /usr/bin/quartzcompact.exe
++  /usr/bin/quartzdump.exe
++  /usr/bin/quest.exe
++  /usr/bin/simpleexpand.exe
++  /usr/bin/simpleindex.exe
++  /usr/bin/simplesearch.exe
++  /usr/bin/xapian-compact.exe
++  /usr/bin/xapian-config
++  /usr/bin/xapian-progsrv.exe
++  /usr/bin/xapian-tcpsrv.exe
++  /usr/share/aclocal/xapian.m4
++  /usr/share/doc/Cygwin/xapian-1.0.5.README
++  /usr/share/doc/xapian-1.0.5/AUTHORS
++  /usr/share/doc/xapian-1.0.5/COPYING
++  /usr/share/doc/xapian-1.0.5/ChangeLog
++  /usr/share/doc/xapian-1.0.5/HACKING
++  /usr/share/doc/xapian-1.0.5/INSTALL
++  /usr/share/doc/xapian-1.0.5/NEWS
++  /usr/share/doc/xapian-1.0.5/README
++  /usr/share/man/man1/copydatabase.1.gz
++  /usr/share/man/man1/delve.1.gz
++  /usr/share/man/man1/quartzcheck.1.gz
++  /usr/share/man/man1/quartzcompact.1.gz
++  /usr/share/man/man1/quartzdump.1.gz
++  /usr/share/man/man1/quest.1.gz
++  /usr/share/man/man1/xapian-compact.1.gz
++  /usr/share/man/man1/xapian-config.1.gz
++  /usr/share/man/man1/xapian-progsrv.1.gz
++  /usr/share/man/man1/xapian-tcpsrv.1.gz
++
++Files included in the libxapian15 package:
++  /usr/bin/cygxapian-15.dll
++
++Files included in the libxapian-devel package:
++  /usr/include/xapian.h
++  /usr/include/xapian/base.h
++  /usr/include/xapian/database.h
++  /usr/include/xapian/dbfactory.h
++  /usr/include/xapian/deprecated.h
++  /usr/include/xapian/document.h
++  /usr/include/xapian/enquire.h
++  /usr/include/xapian/error.h
++  /usr/include/xapian/errorhandler.h
++  /usr/include/xapian/errortypes.h
++  /usr/include/xapian/expanddecider.h
++  /usr/include/xapian/output.h
++  /usr/include/xapian/positioniterator.h
++  /usr/include/xapian/postingiterator.h
++  /usr/include/xapian/query.h
++  /usr/include/xapian/queryparser.h
++  /usr/include/xapian/stem.h
++  /usr/include/xapian/termiterator.h
++  /usr/include/xapian/types.h
++  /usr/include/xapian/valueiterator.h
++  /usr/include/xapian/version.h
++  /usr/lib/libxapian.a
++  /usr/lib/libxapian.dll.a
++  /usr/lib/libxapian.la
++
++Files included in the xapian-doc package:
++
++  /usr/share/doc/xapian-1.0.5/apidoc.pdf
++  /usr/share/doc/xapian-1.0.5/apidoc/html/*
++  /usr/share/doc/xapian-1.0.5/apidoc/*.html
++  /usr/share/doc/xapian-1.0.5/*.html
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 1.0.5-1 ----- 
++none
++----- version 1.0.4-1 ----- 
++none
++----- version 1.0.3-1 ----- 
++none
++----- version 1.0.2-1 ----- 
++none
++----- version 1.0.1-1 ----- 
++use libxapian15
++----- version 0.9.9-1 ----- 
++updated README
++----- version 0.9.8-1 ----- 
++apidoc changed from ps to pdf
++----- version 0.9.7-1 ----- 
++added xapian-progsrv
++use libxapian13
++----- version 0.9.6-1 ----- 
++Initial release (never uploaded)
++use libxapian11
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+diff -urN origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian-devel.hint src/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian-devel.hint
+--- origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian-devel.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian-devel.hint	2007-12-23 23:17:40.437500000 +0000
+@@ -0,0 +1,8 @@
++sdesc: "Xapian library and headers"
++ldesc: "Xapian is an Open Source Probabilistic Information Retrieval framework. It
++offers a highly adaptable toolkit that allows developers to easily add advanced
++indexing and search facilities to applications. This package provides the
++files needed for building packages which use Xapian."
++category: Libs
++requires: xapian
++external-source: xapian
+diff -urN origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian15.hint src/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian15.hint
+--- origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian15.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/xapian-core-1.0.5/CYGWIN-PATCHES/libxapian15.hint	2007-12-23 23:17:40.484375000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "Xapian client library"
++ldesc: "Xapian is an Open Source Probabilistic Information Retrieval framework. It
++offers a highly adaptable toolkit that allows developers to easily add advanced
++indexing and search facilities to applications. This package provides the
++libraries for applications using Xapian functionality."
++category: Libs
++external-source: xapian
+diff -urN origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/xapian-doc.hint src/xapian-core-1.0.5/CYGWIN-PATCHES/xapian-doc.hint
+--- origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/xapian-doc.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/xapian-core-1.0.5/CYGWIN-PATCHES/xapian-doc.hint	2007-12-23 23:17:40.500000000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "Xapian C++ API Documentation"
++ldesc: "Xapian is an Open Source Probabilistic Information Retrieval framework. It
++offers a highly adaptable toolkit that allows developers to easily add advanced
++indexing and search facilities to applications. This package provides the
++doxygen generated API documentation."
++category: Doc
++external-source: xapian
+diff -urN origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/xapian.hint src/xapian-core-1.0.5/CYGWIN-PATCHES/xapian.hint
+--- origsrc/xapian-core-1.0.5/CYGWIN-PATCHES/xapian.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/xapian-core-1.0.5/CYGWIN-PATCHES/xapian.hint	2007-12-23 23:17:40.500000000 +0000
+@@ -0,0 +1,6 @@
++sdesc: "Xapian Probabilistic Information Retrieval library"
++ldesc: "Xapian is an Open Source Probabilistic Information Retrieval Library. It
++offers a highly adaptable toolkit that allows developers to easily add advanced
++indexing and search facilities to applications."
++category: Text
++requires: cygwin libxapian15

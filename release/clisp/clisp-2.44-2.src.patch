@@ -1,0 +1,108 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/modules/gtk2/gtk-server.cfg src/clisp-2.44/modules/gtk2/gtk-server.cfg
+--- origsrc/clisp-2.44/modules/gtk2/gtk-server.cfg	2006-10-16 03:58:07.000000000 +0000
++++ src/clisp-2.44/modules/gtk2/gtk-server.cfg	2008-02-04 21:15:31.000000000 +0000
+@@ -30,14 +30,14 @@
+ # GDK_LIB_NAME = libgdk.so
+ # GLIB_LIB_NAME = libglib.so
+ #
+-# GTK2 backend:
+-GTK_LIB_NAME = libgtk-x11-2.0.so
+-GDK_LIB_NAME = libgdk-x11-2.0.so
+-GLIB_LIB_NAME = libglib-2.0.so
+-GOBJECT_LIB_NAME = libgobject-2.0.so
+-ATK_LIB_NAME = libatk-1.0.so
+-PANGO_LIB_NAME = libpango-1.0.so
+-PIXBUF_LIB_NAME = libgdk_pixbuf_xlib-2.0.so
++# GTK2 backend cygwin:
++GTK_LIB_NAME = cyggtk-x11-2.0-0.dll
++GDK_LIB_NAME = cyggdk-x11-2.0-0.dll
++GLIB_LIB_NAME = cygglib-2.0-0.dll
++GOBJECT_LIB_NAME = cyggobject-2.0-0.dll
++ATK_LIB_NAME = cygatk-1.0-0.dll
++PANGO_LIB_NAME = cygpango-1.0-0.dll
++PIXBUF_LIB_NAME = cyggdk_pixbuf_xlib-2.0-0.dll
+ #
+ # XForms backend:
+ # FORMS_LIB_NAME = libforms.so
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/modules/libsvm/link.sh src/clisp-2.44/modules/libsvm/link.sh
+--- origsrc/clisp-2.44/modules/libsvm/link.sh	2007-11-21 09:10:57.000000000 +0000
++++ src/clisp-2.44/modules/libsvm/link.sh	2008-02-07 21:53:24.343750000 +0000
+@@ -1,13 +1,11 @@
+ file_list=''
+-mod_list=''
+ if test -f libsvm.c; then # if we use :library in ffi, no C file is created
+   file_list="$file_list"' libsvm.o'
+-  mod_list="$mod_list"' libsvm'
+ fi
+ make clisp-module \
+      CC="${CC}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" \
+      INCLUDES="$absolute_linkkitdir"
+ NEW_FILES="${file_list}"
+ NEW_LIBS="${file_list} -lm"
+-NEW_MODULES="${mod_list}"
++NEW_MODULES="libsvm"
+ TO_LOAD='libsvm'
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/modules/syscalls/calls.c src/clisp-2.44/modules/syscalls/calls.c
+--- origsrc/clisp-2.44/modules/syscalls/calls.c	2008-01-01 02:50:54.000000000 +0000
++++ src/clisp-2.44/modules/syscalls/calls.c	2008-02-07 21:53:24.359375000 +0000
+@@ -3953,6 +3953,7 @@
+         error(file_error,GETTEXT("~S: StgOpenStorageEx() failed on file ~S"));
+     }
+   }
++#ifndef __CYGWIN__
+   if (eq(STACK_(iset),`:USER-DEFINED`))
+     fmtid = (REFFMTID)&FMTID_UserDefinedProperties;
+   else if (eq(STACK_(iset),`:BUILT-IN`))
+@@ -3962,6 +3963,7 @@
+     pushSTACK(TheSubr(subr_self)->name);
+     error(file_error,GETTEXT("~S: invalid property set specifier ~S"));
+   }
++#endif
+   begin_system_call();
+   hres = ppropsetstg->lpVtbl->Open(ppropsetstg, fmtid,
+                                    ((npropwr||use_wpn)?STGM_READWRITE:STGM_READ)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/src/clisp-link.in src/clisp-2.44/src/clisp-link.in
+--- origsrc/clisp-2.44/src/clisp-link.in	2007-12-11 02:54:30.000000000 +0000
++++ src/clisp-2.44/src/clisp-link.in	2008-02-07 21:53:24.375000000 +0000
+@@ -137,7 +137,7 @@
+     dyndir=${absolute_currentdir}/${dynmod}
+     mkdir -p ${dyndir}
+     dll="lib"; for m in ${NEW_MODULES}; do dll=${dll}-$m; done; dll=${dll}@SHREXT@
+-    lib=${dyndir}/${dll}; libs=${NEW_LIBS}; verbose @createsharedlib@
++    lib=${dyndir}/${dll}; libs="${LIBS} ${absolute_currentdir}/modules.o"; verbose @createsharedlib@
+     # for each module there will be a hard link to a REQUIRE file
+     firstmod=''; othermods=''
+     for m in ${NEW_MODULES}; do
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/src/encoding.d src/clisp-2.44/src/encoding.d
+--- origsrc/clisp-2.44/src/encoding.d	2008-01-07 04:18:51.000000000 +0000
++++ src/clisp-2.44/src/encoding.d	2008-02-07 21:53:24.390625000 +0000
+@@ -2555,7 +2555,7 @@
+   unused name; unused context;
+   pushSTACK(unbound);           /* :charset */
+  #endif /* UNICODE */
+- #if defined(WIN32) || (defined(UNIX) && (O_BINARY != 0))
++ #if defined(WIN32) && !defined(__CYGWIN__)
+   pushSTACK(S(Kdos));           /* :line-terminator */
+  #else
+   pushSTACK(S(Kunix));          /* :line-terminator */
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x ltmain.sh -x 'config.*' -x depcomp -x install-sh -x missing -x mkinstalldirs -x autom4te.cache -x '*compile' -x Makefile.in.in -x 'intltool*.in' -x 'xml-i18n-*.in' -x '*.pyc' -x '*.mo' -x '*.gmo' -x ABOUT-NLS -x Makevars.template -x COPYING -x INSTALL -x mdate-sh -x '*.orig' -x '*.rej' -x '*~' -x '*.temp' -x texinfo.tex -x ylwrap -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x omf.make -x xmldocs.make -x build origsrc/clisp-2.44/src/makemake.in src/clisp-2.44/src/makemake.in
+--- origsrc/clisp-2.44/src/makemake.in	2008-01-30 18:32:20.000000000 +0000
++++ src/clisp-2.44/src/makemake.in	2008-02-07 21:53:24.406250000 +0000
+@@ -1274,7 +1274,7 @@
+   if [ $XCC_GCC = true ] ; then
+     XCC_LINKER_FLAG_PREFIX='-Wl,'
+     case "$host_os" in
+-      irix5* | irix6*)
++      irix5* | irix6* | cygwin )
+         # PIC is the default for these OSes.
+         XCC_PICFLAG=''
+         ;;
+@@ -3760,7 +3760,7 @@
+   echotab "echo 'recommended: libsigsegv http://sourceforge.net/projects/libsigsegv' >> cygwin.README"
+   echotab "echo '' >> cygwin.README"
+   echotab "echo 'builds \"out of the box\" on cygwin:' >> cygwin.README"
+-  echotab "echo './configure$makemake_args --build --install build-cygwin' >> cygwin.README"
++  echotab "args=`echo $makemake_args | sed s,srcdir=.+ , ,`; echo './configure$args --build --install build-cygwin' >> cygwin.README"
+   echotab "echo 'will configure, build and install CLISP' >> cygwin.README"
+   echotab "echo 'see unix/INSTALL for details' >> cygwin.README"
+   echotab "echo '' >> cygwin.README"

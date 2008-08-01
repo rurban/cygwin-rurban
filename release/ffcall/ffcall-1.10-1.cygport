@@ -1,0 +1,21 @@
+# -*- sh -*-
+DESCRIPTION="Foreign function call libraries"
+HOMEPAGE="http://www.haible.de/bruno/packages-ffcall.html"
+SRC_URI="ftp://ftp.santafe.edu/pub/gnu/${PN}-${PV}.tar.gz"
+MAKEOPTS="-j1"
+
+export CFLAGS=${CFLAGS:-"-O2 -pipe"};
+export CXXFLAGS=${CXXFLAGS:-"-O2 -pipe"};
+
+src_compile() {
+   lndirs
+   cd ${B}
+   cygconf
+   cygmake 
+}
+
+src_install() {
+   cd ${B}
+   cyginstall htmldir=/usr/share/doc/${PN}-${PV}/html
+}
+

@@ -1,0 +1,414 @@
+--- ../xapian-omega-0.9.6-1/src/omega-0.9.6/omindex.cc	2006-05-15 05:43:45.000000000 +0200
++++ omindex.cc	2006-08-08 15:43:28.031250000 +0200
+@@ -4,6 +4,7 @@
+  * Copyright 2001,2005 James Aylett
+  * Copyright 2001,2002 Ananova Ltd
+  * Copyright 2002,2003,2004,2005,2006 Olly Betts
++ * Copyright 2006 AVL List GesmbH
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License as
+@@ -52,6 +53,7 @@
+ #include "indextext.h"
+ #include "myhtmlparse.h"
+ #include "utils.h"
++#include "configfile.h"
+ 
+ #include "gnu_getopt.h"
+ 
+@@ -76,10 +78,13 @@
+ 
+ static bool skip_duplicates = false;
+ static bool follow_symlinks = false;
++static bool ignore_time = false;
++static bool nocleanup = false;
+ static string dbpath;
+ static string root;
+ static string indexroot;
+ static string baseurl;
++static string error_log;
+ static Xapian::WritableDatabase db;
+ static Xapian::Stem stemmer("english");
+ static vector<bool> updated;
+@@ -185,7 +190,9 @@
+ stdout_to_string(const string &cmd)
+ {
+     string out;
+-    FILE * fh = popen(cmd.c_str(), "r");
++    string tmp;
++    tmp = cmd + error_log;
++    FILE * fh = popen(tmp.c_str(), "r");
+     if (fh == NULL) return out;
+     while (!feof(fh)) {
+ 	char buf[4096];
+@@ -215,10 +222,34 @@
+     if (urlterm.length() > MAX_SAFE_TERM_LENGTH)
+ 	urlterm = hash_long_term(urlterm, MAX_SAFE_TERM_LENGTH);
+ 
+-    if (skip_duplicates && db.term_exists(urlterm)) {
++    {
++	// at first find the docid with the urlterm
++	string lastmod("L");
++	Xapian::docid docid = 0;
++	Xapian::PostingIterator p = db.postlist_begin(urlterm);
++	if (p != db.postlist_end(urlterm)) {
++	    docid = *p;
++	    if (skip_duplicates) {
+ 	cout << "duplicate. Ignored." << endl;
+ 	return;
+     }
++	}
++	if (docid and ! ignore_time) {
++	    // search for the "L" termlist and check the timestamp
++	    Xapian::TermIterator t = db.termlist_begin(docid);
++	    Xapian::TermIterator tend = db.termlist_end(docid);
++	    while (t != tend) {
++		string lastmod = *t;
++		if (lastmod.substr(0,1) == "L") {
++		    if (string_to_int(lastmod.substr(1)) >= last_mod) {
++			cout << "not newer. Ignored." << endl;
++			return;
++		    }
++		}
++		++t;
++	    }
++	}
++    }
+ 
+     if (mimetype == "text/html") {
+ 	string text;
+@@ -262,7 +293,7 @@
+ 
+ 	// FIXME: run pdfinfo once and parse the output ourselves
+ 	try {
+-	    title = stdout_to_string("pdfinfo " + safefile +
++	    title = stdout_to_string("pdfinfo " + safefile + error_log+
+ 				     "|sed 's/^Title: *//p;d'");
+ 	} catch (ReadError) {
+ 	    title = "";
+@@ -289,7 +320,7 @@
+ 	string safefile = shell_protect(file);
+ #define OOO_XML_SED_DECODE_ENTITIES \
+ 	"'s/&lt;/</g;s/&gt;/>/g;s/&apos;/'\\''/g;s/&quot;/\"/g;s/&amp;/\\&/g'"
+-	string cmd = "unzip -p " + safefile + " content.xml"
++	string cmd = "unzip -p " + safefile + " content.xml"+error_log+
+ 		     "|sed 's/<[^>]*>/ /g;'"OOO_XML_SED_DECODE_ENTITIES;
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+@@ -300,7 +331,7 @@
+ 
+ 	// FIXME: unzip meta.xml once and parse the output ourselves
+ 	try {
+-	    cmd = "unzip -p " + safefile + " meta.xml"
++	    cmd = "unzip -p " + safefile + " meta.xml"+error_log+
+ 		  "|sed 's/.*<dc:title>\\([^<]*\\).*/\\1/p;d'"
+ 		  "|sed "OOO_XML_SED_DECODE_ENTITIES;
+ 	    title = stdout_to_string(cmd);
+@@ -313,7 +344,7 @@
+ 	    // <meta:keywords>
+ 	    // <meta:keyword>information retrieval</meta:keyword>
+ 	    // </meta:keywords>
+-	    cmd = "unzip -p " + safefile + " meta.xml"
++	    cmd = "unzip -p " + safefile + " meta.xml"+error_log+
+ 		  "|sed 's/.*<meta:keywords>//;s!</meta:keywords>.*!!;"
+ 			"s/<[^>]*>/ /g;'"OOO_XML_SED_DECODE_ENTITIES;
+ 	    keywords = stdout_to_string(cmd);
+@@ -328,7 +359,7 @@
+ 	    // OpenOffice uses meta:keywords for keywords - dc:subject
+ 	    // comes from a text field labelled "Subject".  Let's just treat
+ 	    // it as more keywords.
+-	    cmd = "unzip -p " + safefile + " meta.xml"
++	    cmd = "unzip -p " + safefile + " meta.xml"+error_log+
+ 		  "|sed 's/.*<dc:subject>\\([^<]*\\).*/\\1/p;d'"
+ 		  "|sed "OOO_XML_SED_DECODE_ENTITIES;
+ 	    string subject = stdout_to_string(cmd);
+@@ -340,7 +371,7 @@
+ 	}
+ 
+ 	try {
+-	    cmd = "unzip -p " + safefile + " meta.xml"
++	    cmd = "unzip -p " + safefile + " meta.xml"+error_log+
+ 		  "|sed 's/.*<dc:description>\\([^<]*\\).*/\\1/p;d'"
+ 		  "|sed "OOO_XML_SED_DECODE_ENTITIES;
+ 	    sample = stdout_to_string(cmd);
+@@ -364,8 +395,8 @@
+ 	    return;
+ 	}
+     } else if (mimetype == "text/rtf") {
+-	string cmd = "unrtf --nopict --text 2>/dev/null " +
+-		     shell_protect(file) +
++	string cmd = "unrtf --nopict --text " +
++		     shell_protect(file) + error_log+
+ 		     "|sed '/^### .*/d'";
+ 	try {
+ 	    dump = stdout_to_string(cmd);
+@@ -373,6 +404,50 @@
+ 	    cout << "\"" << cmd << "\" failed - skipping\n";
+ 	    return;
+ 	}
++    } else if (mimetype == "application/vnd.ms-excel") {
++	// cpan Startup Unicode::Map OLE::Storage
++	string text;
++	// TODO: check xls2cvs 
++	string cmd = "Herbert --to_stdout " + shell_protect(file);
++	try {
++	    text = stdout_to_string(cmd);
++	} catch (ReadError) {
++	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    return;
++	}
++	MyHtmlParser p;
++	try {
++	    p.parse_html(text);
++	} catch (bool) {
++	    // MyHtmlParser throws a bool to abandon parsing at </body> or when
++	    // indexing is disallowed
++	}
++	if (!p.indexing_allowed) {
++	    cout << "indexing disallowed by meta tag - skipping\n";
++	    return;
++	}
++	dump = p.dump;
++	title = p.title;
++	keywords = p.keywords;
++	sample = p.sample;
++    } else if (mimetype == "message/rfc822") { // // => mbox2script
++	//for stemmer lang, parse stemmer.get_description => Xapian::Stem(bla)
++	string cmd = "mbox2omega " + shell_protect(file) + error_log+"| "
++	    "scriptindex " + shell_protect(dbpath) + " /usr/share/omega/mbox2script.script";
++	try {
++	    dump = stdout_to_string(cmd);
++	} catch (ReadError) {
++	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    return;
++	}
++    } else if (mimetype == "application/vnd.ms-outlook") { // msg
++	string cmd = "outlook2text " + shell_protect(file);
++	try {
++	    dump = stdout_to_string(cmd);
++	} catch (ReadError) {
++	    cout << "\"" << cmd << "\" failed - skipping\n";
++	    return;
++	}
+     } else if (mimetype == "text/x-perl") {
+ 	string cmd = "pod2text " + shell_protect(file);
+ 	try {
+@@ -403,6 +478,8 @@
+     record += "\ntype=" + mimetype;
+     newdocument.set_data(record);
+ 
++    newdocument.add_term("L" + int_to_string(last_mod)); // last_mod
++
+     // Add postings for terms to the document
+     Xapian::termpos pos = 1;
+     pos = index_text(title, newdocument, stemmer, pos);
+@@ -519,13 +596,69 @@
+ 	    continue;
+ 	}
+ 	if (S_ISREG(statbuf.st_mode)) {
++            if (! statbuf.st_size) {
++                cout << "Empty \"" << file << "\" - skipping\n";
++                continue;
++            }
+ 	    string ext;
+ 	    string::size_type dot = url.find_last_of('.');
+ 	    if (dot != string::npos) ext = url.substr(dot + 1);
+ 
++	    if (strcmp(ent->d_name,"mbox") == 0) { // special filename
++		index_file(indexroot + url, "message/rfc822", statbuf.st_mtime);
++		continue;
++	    }
+ 	    map<string,string>::const_iterator mt;
+-	    if ((mt = mime_map.find(ext))!=mime_map.end()) {
+ 	      // If it's in our MIME map, presumably we know how to index it
++	    if ((mt = mime_map.find(ext))!=mime_map.end()) {
++		// NOTE: unpacking does not work on MSWin32 this way!
++		// we'd really have to pull in utils.cc:rmdir from xapian-core
++#ifndef _MSC_VER
++		if (ext == "rar") {
++		    // TODO: Check timestamp
++		    string x = root+indexroot+"/.rar";
++		    cout << "[UNRAR into " << shell_protect(x+url) << "]" << endl;
++		    stdout_to_string("mkdir -p "+shell_protect(x+url));
++		    string cmd = "unrar x -o+ " +shell_protect(file) + " " + shell_protect(x+url+"/");
++		    stdout_to_string(cmd);
++		    index_directory(5, "/.rar"+url, mime_map);
++		    if (!nocleanup) {
++			cout << "[CLEANUP " << "rm -rf " << shell_protect(x) << "]" << endl;
++			stdout_to_string("rm -rf "+shell_protect(x));
++		    }
++		} else if (ext == "zip") {
++		    // TODO: Check timestamp
++		    string x = root+indexroot+"/.zip";
++		    cout << "[UNZIP into " << shell_protect(x+url) << "]" << endl;
++		    stdout_to_string("mkdir -p "+shell_protect(x+url));
++		    string cmd = "unzip -o " +shell_protect(file) + " -d " +shell_protect(x+url+"/");
++		    stdout_to_string(cmd);
++		    index_directory(5, "/.zip"+url, mime_map);
++		    if (!nocleanup) {
++			cout << "[CLEANUP " << "rm -rf " << shell_protect(x) << "]" << endl;
++			stdout_to_string("rm -rf "+shell_protect(x));
++		    }
++		} else if (ext == "pst") {
++		    // TODO: Check timestamp
++		    /*map<string, string> pst_mime_map;
++		      pst_mime_map["mbox"] = "message/rfc822";
++		    */
++		    string x = root+indexroot+"/.pst";
++		    cout << "[READPST into " << shell_protect(x+url) << "]" << endl;
++		    stdout_to_string("mkdir -p "+shell_protect(x+url));
++		    // unpack attachments also, together with mbox files
++		    string cmd = "readpst -r -cv -w -o "+shell_protect(x+url)+" "+shell_protect(file);
++		    stdout_to_string(cmd);
++		    cout << "[UNPACK mbox attachments in " << shell_protect(x+url) << "]" << endl;
++		    cmd = "/usr/bin/find "+shell_protect(x+url)+" -name mbox -execdir uudeview -a -o -i '{}' ';'";
++		    stdout_to_string(cmd);
++		    index_directory(5, "/.pst"+url, mime_map); // mbox handling
++		    if (!nocleanup) {
++			cout << "[CLEANUP " << "rm -rf " << shell_protect(x) << "]" << endl;
++			stdout_to_string("rm -rf "+shell_protect(x));
++		    }
++		} else
++#endif
+ 	      index_file(indexroot + url, mt->second, statbuf.st_mtime);
+ 	    }
+ 	    continue;
+@@ -544,6 +677,8 @@
+     // If preserve_unupdated is false, delete any documents we don't
+     // replace (if in replace duplicates mode)
+     bool preserve_unupdated = false;
++    // If ignore_time is true, the existing timestamps are not checked on updates 
++    // and every file will be parsed.
+     size_t depth_limit = 0;
+ 
+     static const struct option longopts[] = {
+@@ -558,6 +693,8 @@
+ 	{ "depth-limit",required_argument,	NULL, 'l' },
+ 	{ "follow",	no_argument,		NULL, 'f' },
+ 	{ "stemmer",	required_argument,	NULL, 's' },
++	{ "ignore-time",no_argument,		NULL, 'i' },
++	{ "nocleanup",  no_argument,		NULL, 'c' },
+ 	{ 0, 0, NULL, 0 }
+     };
+ 
+@@ -617,7 +754,21 @@
+     mime_map["pm"] = "text/x-perl";
+     mime_map["pod"] = "text/x-perl";
+ 
+-    while ((getopt_ret = gnu_getopt_long(argc, argv, "hvd:D:U:M:lp", longopts, NULL))!=EOF) {
++    // added by AVL:
++    mime_map["xls"] = "application/vnd.ms-excel";       // Herbert (cpan OLE::Storage)
++    // ppt => catppt http://www.45.free.net/~vitus/software/catdoc/
++    mime_map["msg"] = "application/vnd.ms-outlook";     // outlook2text - single message
++    mime_map["pst"] = "application/vnd.ms-outlook-pst"; // readpst | mimeexpand (libpst, Mime-tools) Outlook messager folder
++    mime_map["mbox"] = "message/rfc822";                // => mbox2script
++
++#ifndef _MSC_VER
++    mime_map["zip"] = "application/x-zip"; // recursive scanning
++    mime_map["rar"] = "application/x-rar"; // recursive scanning
++#endif
++
++    read_config_file();
++
++    while ((getopt_ret = gnu_getopt_long(argc, argv, "hvd:D:U:M:lpfi", longopts, NULL))!=EOF) {
+ 	switch (getopt_ret) {
+ 	case 'h': {
+ 	    cout << PROG_NAME" - "PROG_DESC"\n\n"
+@@ -628,9 +779,12 @@
+ "                                duplicate replace mode\n"
+ "  -D, --db                 path to database to use\n"
+ "  -U, --url                base url DIRECTORY represents\n"
++"  -C, --cache              path to local cache to use (default from omega.conf)\n"
+ "  -M, --mime-type          additional MIME mapping ext:type\n"
+ "  -l, --depth-limit=LIMIT  set recursion limit (0 = unlimited)\n"
+ "  -f, --follow             follow symbolic links\n"
++"  -i, --ignore-time        ignore timestamp comparison\n"
++"      --nocleanup          dont delete temporary created zip,rar,pst folders\n"
+ "      --overwrite          create the database anew (the default is to update\n"
+ "                           the database already exists)" << endl;
+ 	    print_stemmer_help("     ");
+@@ -644,6 +798,7 @@
+ 		 << "Copyright (c) 2001,2005 James Aylett\n"
+ 		 << "Copyright (c) 2001,2002 Ananova Ltd\n"
+ 		 << "Copyright (c) 2002,2003,2004,2005,2006 Olly Betts\n\n"
++		 << "Copyright (c) 2006 AVL List GesmbH\n\n"
+ 		 << "This is free software, and may be redistributed under\n"
+ 		 << "the terms of the GNU Public License." << endl;
+ 	    return 0;
+@@ -660,6 +815,12 @@
+ 	case 'p': // don't delete unupdated documents
+ 	    preserve_unupdated = true;
+ 	    break;
++	case 'i': // --ignore-time: on updates parse the file again
++	    ignore_time = true;
++	    break;
++	case 'c':
++	    nocleanup = true;
++	    break;
+ 	case 'l': { // Set recursion limit
+ 	    int arg = atoi(optarg);
+ 	    if (arg < 0) arg = 0;
+@@ -692,6 +853,9 @@
+ 	case 'U':
+ 	    baseurl = optarg;
+ 	    break;
++	case 'C':
++	    cache_dir = optarg;
++	    break;
+ 	case 'o': // --overwrite
+ 	    overwrite = true;
+ 	    break;
+@@ -712,14 +876,11 @@
+ 	}
+     }
+ 
+-    if (dbpath.empty()) {
+-	cerr << PROG_NAME": you must specify a database with --db.\n";
+-	return 1;
+-    }
+     if (baseurl.empty()) {
+ 	cerr << PROG_NAME": you must specify a base URL with --url.\n";
+ 	return 1;
+     }
++    error_log = " 2>>"+log_dir+"omindex-error.log";
+     // baseurl mustn't end '/' or you end up with the wrong URL
+     // (//thing is different to /thing). We could probably make this
+     // safe a different way, by ensuring that we don't put a leading '/'
+@@ -745,6 +906,12 @@
+     } else {
+ 	indexroot = ""; // index the whole of root
+     }
++    if (dbpath.empty()) {
++	//dbpath = database_dir + basename(indexroot);
++	//cerr << PROG_NAME": database assumed " << dbpath << endl;
++	cerr << PROG_NAME << ": --db missing "<< endl;
++	return 1;
++    }
+ 
+     try {
+ 	if (!overwrite) {
+--- ../xapian-omega-0.9.6-1/src/omega-0.9.6/Makefile.in	2006-05-15 05:45:20.000000000 +0200
++++ Makefile.in	2006-08-08 15:47:31.703125000 +0200
+@@ -309,7 +309,7 @@
+ 
+ omega_LDADD = $(XAPIAN_LIBS) # -lpcre
+ omindex_SOURCES = omindex.cc myhtmlparse.cc htmlparse.cc indextext.cc\
+- getopt.cc commonhelp.cc utils.cc hashterm.cc
++ getopt.cc commonhelp.cc utils.cc hashterm.cc configfile.cc
+ 
+ omindex_LDADD = $(XAPIAN_LIBS)
+ scriptindex_SOURCES = scriptindex.cc myhtmlparse.cc htmlparse.cc indextext.cc\
+@@ -790,6 +790,13 @@
+ 	       exit 1; } >&2
+ check-am: all-am
+ check: check-am
++#	rm -rf data
++	mkdir data
++	./omindex -p --noclean --db data --url /test ../test
++	delve -r 1 data
++	delve -r 2 data
++	delve -r 3 data
++
+ all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA) $(HEADERS) \
+ 		config.h
+ installdirs:

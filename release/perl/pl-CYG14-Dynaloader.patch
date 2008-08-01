@@ -1,0 +1,32 @@
+difforig perl-5.10.x/ext/DynaLoader
+
+diff -u  perl-5.10.x/ext/DynaLoader/DynaLoader_pm.PL.orig
+--- perl-5.10.x/ext/DynaLoader/DynaLoader_pm.PL.orig	2008-06-27 08:43:06.906250000 +0000
++++ perl-5.10.x/ext/DynaLoader/DynaLoader_pm.PL	2008-06-27 09:05:10.171875000 +0000
+@@ -503,6 +503,7 @@
+             # these should be ordered with the most likely first
+             push(@names,"$_.$dl_dlext")    unless m/\.$dl_dlext$/o;
+             push(@names,"$_.$dl_so")     unless m/\.$dl_so$/o;
++            push(@names,"cyg$_.<<=$dl_so>>")  if !m:/: and $^O eq 'cygwin';
+             push(@names,"lib$_.$dl_so")  unless m:/:;
+             push(@names,"$_.a")          if !m/\.a$/ and $dlsrc eq "dl_dld.xs";
+             push(@names, $_);
+diff -u  perl-5.10.x/ext/DynaLoader/Makefile.PL.orig
+--- perl-5.10.x/ext/DynaLoader/Makefile.PL.orig	2007-12-24 19:44:16.000000000 +0000
++++ perl-5.10.x/ext/DynaLoader/Makefile.PL	2008-06-27 09:01:40.187500000 +0000
+@@ -17,6 +17,15 @@
+ 			     'XSLoader.pm'},
+ );
+ 
++sub MY::cflags {
++  package MY;
++  my $flags = shift->SUPER::cflags(@_);
++  if ($flags =~ /-DUSEIMPORTLIB/m) {
++    $flags =~ s/-DUSEIMPORTLIB/-UUSEIMPORTLIB/m;
++  }
++  $flags;
++}
++
+ sub MY::postamble {
+ 	'
+ DynaLoader.xs: $(DLSRC)
