@@ -1,0 +1,1093 @@
+#!/usr/bin/perl -w
+# -*- cperl-indent-level: 4 -*- Keep it perltidy friendly.
+
+package Cygwin::Install;
+
+=pod
+
+=head1 NAME
+
+cyginstall - cmdline cygwin installer with rpm options in perl
+
+=head1 SYNOPSIS
+
+    cyginstall [OPTIONS] [pkgname | local.tar.bz2]...
+
+=head1 OPTIONS
+
+=over 4
+
+=item -i --install <pakage>+		install or upgrade package(s),
+					local or remote. The DEFAULT.
+
+=item -e --erase <package>+		erase (uninstall) package
+
+=item -U --upgrade <package>+		upgrade package(s), don't install new.
+
+Usage: cyginstall -i [options] package ...
+
+This command will install or upgrade or erase or download one or more
+packages in the system. On install or upgrade, if a new version of an
+already installed package is available, the new version will be
+selected for installation.  If no local package name is given, a
+setup.ini from a mirror is checked for updates, and the package is
+downloaded.
+
+Options:
+  -h, --help            Show this help message and exit
+  --download            just download without install
+  --oldpackage          upgrade to an old version of the package
+                        (--force on upgrades does this automatically)
+  --test                don't install, but tell if it would work or not
+  --nodeps              do not verify package dependencies
+  --nosuggest           do not suggest missing dependency resolution(s)
+  --noscripts           do not execute package preremove and postinstall
+                        scripts
+  --nomd5               don't verify MD5 digest of files
+  --noorder             do not reorder package installation to
+                        satisfy dependencies
+  -L, --local           Local installation only, no download
+  --check               Just check if there are upgrades to be done
+
+Global options:
+
+  -y, --yes             Do not ask for confirmation
+  --stepped             Split operation in confirmed steps
+  --explain   	        Include additional information about changes,
+                        when possible
+  --setup=./setup.ini   use only this setup.ini
+  --force
+  --verbose
+  --quiet
+
+Examples:
+  cyginstall -U pkgname
+  cyginstall '*kgna*'
+  cyginstall -i pkgname-1.0
+  cyginstall -i pkgname-1.0-1
+  cyginstall pkgname1 pkgname2
+  cyginstall somepath/somepackage-1.0-1.tar.bz2
+  cyginstall http://some.url/some/path/somepackage
+  cyginstall http://some.url/some/path/somepackage-1.0-1.tar.bz2
+
+=back
+
+=item -q --query
+
+This command allows searching for the given expressions
+in the name, summary, and description of known packages.
+
+Examples:
+  cyginstall -q ldap
+  cyginstall -q kernel module
+  cyginstall -q rpm 'package manager'
+  cyginstall -q pkgname
+  cyginstall -q 'pkgn*e'
+
+  Query options (with -q or --query):
+  -h, --help           	        Show this help message and exit
+  --installed          	        Consider only installed packages
+  -c, --configfiles             list all configuration files
+  -d, --docfiles                list all documentation files
+  --dump                        dump basic file information
+  -l, --list                    list files in package
+  -s, --state                   display the states of the listed files
+  -a, --all                     query/verify all packages
+  -f, --file                    query/verify package(s) owning file
+  -g, --group                   query/verify package(s) in group
+  -p, --package                 query/verify a package file
+  --hintfile                    query a setup.hint file
+  --whatrequires                query/verify the package(s) which require a
+                                dependency
+  --whatprovides                query/verify the package(s) which provide a
+                                dependency
+  --show-sdesc       		Show package short line - sdesc
+  --show-ldesc       		Show package summaries - ldesc
+  --show-summary       		Show package summaries - ldesc
+  --show-provides      		Show provides for the given packages
+  --show-requires      		Show requires for the given packages
+  --show-upgrades      		Show upgrades for the given packages
+  --show-conflicts		Show conflicts for the given packages
+  --show-providedby    		Show packages providing dependencies
+  --show-requiredby    		Show packages requiring provided information
+  --show-upgradedby    		Show packages upgrading provided information
+  --show-conflictedby  		Show packages conflicting with provided information
+  --show-channels      		Show channels that include this package
+  --show-all           		Enable all --show-* options
+
+=item -v --verify
+
+  Verify options (with -V or --verify):
+
+  --nomd5                          don't verify MD5 digest of files
+  --nofiles                        don't verify files in package
+  --nodeps                         don't verify package dependencies
+  --noscript                       don't execute verify script(s)
+  -a, --all                        query/verify all packages
+  -f, --file                       query/verify package(s) owning file
+  -g, --group                      query/verify package(s) in group
+  -p, --package                    query/verify a package file
+  --specfile                       query a spec file
+  --whatrequires                   query/verify the package(s) which require a
+                                   dependency
+  --whatprovides                   query/verify the package(s) which provide a
+                                   dependency
+=back
+
+=head1 DESCRIPTION
+
+Handle the cygwin setup compatible to L<http://cygwin.com/setup.exe>
+with rpm-like options for the cygwin package database. A bit of smart
+L<http://labix.org/smart/> is also mixed into it.
+
+This is not for the initial user-friendly UI setup,
+this is a fast package manager for the experienced power-user.
+
+This command-line installer has most of the rpm-like options, which
+can do most of the setup.exe features, just not bootstrapping a fresh
+cygwin installation.
+
+A Win32::GUI version with this as module as also possible, if wanted.
+But probably a simplier console version such as rpm, yum, apt or
+aptitute is preferred.
+
+=head1 CHANNELS
+
+Channels define a list of mirror sites and network methods.
+Depending on the channel type, a different backend is
+used to handle interactions with the operating system and
+extraction of information from the given channel.
+
+Predefined channels are:
+
+  release   - the official cygwin 1.5 mirror network
+  release-2 - the official cygwin 1.7 mirror network
+  cygports  - Yaakov Selkowitz' setup site
+
+Commandline Example:
+  --channel release-2
+  --channel name1,name2		Use named channel(s)
+  --mirror  name1,name2		Use named mirrors(s), domainname is enough
+
+=head1 /etc/cyginstall Configuration options
+
+F</etc/cyginstall> defines additional channel and mirror definitions.
+
+status=official, the default, handles the official mirrors list
+from C<http://cygwin.com/mirrors.lst.bz2>, stored locally in
+/etc/last-mirror.
+
+status=unofficial, handles an unofficial setup site, with
+varying timestamps and special packages, which can upgrade
+or downgrade official packages.
+
+  [Channel release]
+  status=official
+  mirror=/etc/last-mirror
+
+  [Channel release-2]
+  status=official
+  mirror=/etc/last-mirror
+
+  [Channel cygport]
+  status=unofficial
+  mirror=ftp://sunsite.dk/projects/cygwinports
+
+  [Channel reini]
+  status=unofficial
+  mirror=http://ftp.inf.tu-dresden.de/software/windows/cygwin32
+  mirror=ftp://sunsite.dk/projects/cygwinports
+  mirror=http://rurban.xarch.at/software/cygwin
+
+  [Channel scheme]
+  status=unofficial
+  mirror=http://www.liquid.spod.org/~nthern/cygwin
+
+=head1 DEPENDENCIES
+
+C<cygwin perl bash gzip coreutils tar>
+
+=head1 UPGRADE PSEUDOCODE
+
+  foreach argv[] check if pkgname or local_path
+  local only if local_path or --
+  get setup.ini from given local_path, or update from /etc/setup/last-mirror
+    step up until local setup.ini if local_path
+  check requires dependencies from setup.ini
+    enhance argv[]
+  tie installed.db
+
+  foreach new in argv[] do
+    check installed.db for curr
+    uninstall curr package
+      rm `zcat /etc/setup/$prev.lst.gz` for files only
+    install new
+      tar xfvj $1 | gzip -c /etc/setup/$curr.lst.gz
+      test -e /etc/postinstall/$curr.sh && \
+	. /etc/postinstall/$curr.sh && \
+        mv /etc/postinstall/$curr.sh /etc/postinstall/$curr.sh.done
+  done
+  update installed.db
+
+=cut
+
+use strict;
+use integer;
+use vars qw(%opt);
+use Getopt::Long;
+use File::Copy;
+use File::Basename;
+use Pod::Usage;
+use Cwd;
+use Term::ReadKey;
+my ($VERSION, %db, %setupdb);
+
+$VERSION = sprintf( "%d.%02d", q$Revision: 0.4 $ =~ /(\d+)\.(\d+)/ );
+
+package Cygwin::Install::Database;
+use Tie::Hash;
+use File::Copy;
+use vars qw(@ISA $db %opt);
+@ISA = qw(Tie::ExtraHash);
+use Carp qw/croak/;
+$db = '/etc/setup/installed.db';
+%opt = %{*Cygwin::Install::opt{HASH}};
+
+=pod
+
+=head1 Cygwin::Install::Database
+
+hash tie for /etc/setup/installed.db
+
+  tie %db, 'Cygwin::Install::Database';
+  $pkg = $db{'gtk+'};
+  $db{'gtk+'} = 'gtk+-1.2.10-2.tar.bz2'
+  untie %db;
+  # stores the resorted array
+  => changed /etc/setup/installed.db: 1 times
+
+/etc/setup/$pkgname.lst.gz not
+
+=cut
+
+sub TIEHASH {
+    my $class = shift;
+    my $hash  = {};
+    my @rest  = ();
+    open DB, "< $db" or croak "Failed to read $db: $!";
+    $rest[0]->{installed} = <DB>;    # INSTALLED.DB 2
+    $rest[0]->{changed}   = 0;       # changed or not
+    while ( my $_ = <DB> ) {
+        chomp;
+        my ( $pkg, $path, $ver ) = split / /;
+        $hash->{$pkg} = $path;
+    }
+    close DB;
+    bless [ $hash, @rest ], $class;
+}
+
+sub STORE {
+    $_[0][1]->{changed}++
+      if ( !$_[2]
+        or ( !$_[0][0]{ $_[1] } )
+        or ( $_[0][0]{ $_[1] } ne $_[2] ) );
+    $_[0][0]{ $_[1] } = $_[2];
+    $_[2];
+}
+
+sub UNTIE {
+
+    # store a sorted $db
+    my $obj = shift;
+    if ( $obj->[1]->{changed} ) {
+        move( $db, $db . "~" );
+        open DB, "> $db" or croak "Failed to write $db: $!";
+        print DB $obj->[1]->{installed};
+        my @arr;
+        foreach ( keys %{ $obj->[0] } ) {
+            push @arr, $_ . " " . $obj->[0]{$_} . " 0\n";
+        }
+        foreach ( sort { lc $a cmp lc $b } @arr ) {    # sort case insensitive
+            print DB $_;
+        }
+        close DB;
+        warn "changed $db: " . $obj->[1]->{changed} . " packages\n" unless $opt{quiet};
+        $obj->[1]->{changed} = 0;
+    }
+    else {
+        print "unchanged $db\n" if $opt{verbose};
+    }
+}
+sub DESTROY { $_[0]->UNTIE; }
+
+package Cygwin::Install::SetupLst;
+use Tie::Array;
+#use IO::Uncompress::Gunzip;
+#use IO::Compress::Gzip;
+use vars qw(@ISA);
+@ISA = qw(Tie::Array);
+use Carp qw/croak carp/;
+
+=pod
+
+=head1 Cygwin::Install::SetupLst
+
+Array tie for /etc/setup/$pkgname.lst.gz. Read and writeable.
+
+Note that the lst contains also intermediate dirs, as
+it comes from tar tfj.
+
+readlst() returns the full list without leading /, all files and dirs.
+files() only returns the files with leading /, skips the dirs.
+
+  tie @lst, 'Cygwin::Install::SetupLst', $name;
+  @files = @lst->files;
+
+  @all = Cygwin::Install::SetupLst::read $name;
+
+  @all = split /\n/, `tar tfj $pkg.tar.bz2`;
+  Cygwin::Install::SetupLst::write $name, \@all;
+
+TODO: Get rid of zcat (coreutils + gzip)?
+Evaluate memory and speed of zcat against IO::Uncompress::Gunzip
+
+=head1 FUNCTIONS
+
+=item readlst $NAME
+
+$NAME is the package name, leading to /etc/setup/$NAME.lst.gz
+
+Returns the full list without leading /, all files and dirs.
+
+=item writelst $NAME, \@LIST
+
+$NAME is the package name, leading to /etc/setup/$NAME.lst.gz
+
+\@LIST conains the filenames as from readlst(), the full list
+without leading /, all files and dirs.
+
+=head1 METHODS
+
+=item files NAME
+
+Returns a list of non-directores with leading /, skips the dirs.
+Files and links.
+
+=item rm NAME
+
+=cut
+
+sub readlst {
+    my $name = shift;
+    my $path = "/etc/setup/$name.lst.gz";
+    unless (-e $path) {
+	carp "path not found";
+	return;
+    }
+    return split /\n/, `zcat $path`;
+    #system("zcat /etc/setup/$name.lst.gz");
+}
+
+sub writelst {
+    my $name = shift;
+    my $list = shift;
+    my $path = "/etc/setup/$name.lst";
+    # TODO: performance (mem + speed) against IO::Compress::Gzip
+    open LST, "> $path";
+    #$_ = substr($_[0],1) if substr($_[0],0,1) eq '/';
+    print LST "$_\n" for @$list;
+    close LST;
+    `gzip -f /etc/setup/$name.lst`;
+}
+
+sub writelst_from_tar {
+    my $name = shift;
+    my $tar = shift;
+    # protect against 42 byte tars
+    if ( -e $tar and -s $tar ) {
+	if (-s $tar == 42) {
+	    writelst($name, []);
+	} else {
+	    # TODO: Check performance (mem + speed) against Archive::Tar
+	    my @list = split /\n/, `/usr/bin/tar tfj $tar`;
+	    writelst($name, \@list);
+	}
+    }
+    # system(qq(/usr/bin/tar tvj $tar |)
+    # . q(perl -ne'chomp; print "$_\n" if -f "/$_"' | )
+    # . qq(gzip -c > /etc/setup/$name.lst.gz) );
+}
+
+sub files { # and links
+    my $class = shift;
+    my $name = @_ ? shift : $class;
+    my $path = "/etc/setup/$name.lst.gz";
+    return grep { -d "/$_" ? undef : "/$_" } split /\n/, `zcat $path`;
+    #system(qq(for f in `zcat /etc/setup/$name.lst.gz`; do test -f "/\$f" && echo "/\$f"; done));
+}
+
+sub rm {
+    my $class = shift;
+    my $name = @_ ? shift : $class;
+    for ($class->files($name)) {
+	unlink $_;
+    }
+}
+
+package Cygwin::Install::Package;
+use Tie::Hash;
+use vars qw(@ISA);
+@ISA = qw(Tie::ExtraHash);
+use Carp qw/croak carp/;
+
+=pod
+
+=head1 Cygwin::Install::Package
+
+Tied hash to the setup.ini fields:
+
+  name
+  ldesc sdesc category requires
+  version install source
+    ver pkg size md5
+  prev-version prev-install prev-source
+  test-version test-install test-source
+
+Extracts and compares versions.
+
+=item version
+
+=item name
+
+=cut
+
+# set name and fields
+sub new {
+    shift->TIEHASH(@_);
+}
+
+sub TIEHASH {
+    my $class = shift;
+    my $obj   = {};
+    my @rest  = ();
+    $obj->{name} = shift;
+    my $last = '';
+    my $blob = shift;
+    $blob =~ s/^@ \S+\n//;
+    $blob =~ s/\n$//;
+    foreach (split /\n/, $blob) {
+	my ($name, $value) = m/^(.+?):\s+"?(.+?)"?$/;
+	if (!$name) {
+	    if (/^\[(prev|test)\]$/) {
+		$last = $1;
+	    }
+	    elsif ($last eq 'ldesc') {
+		$obj->{'ldesc'} .= ($value ? "\n$value" : "\n$_");
+	    }
+	    next;
+	}
+	if ($name =~ /ldesc|sdesc|category|requires|version|install|source/) {
+	    my $prefix = '';
+	    my $ver = Cygwin::Install::version($value) if $name eq 'version';
+	    if ($last eq 'prev' or $last eq 'test') {
+		$prefix = $last."-";
+		$name = $prefix . $name;
+	    }
+	    if ($name =~ /install|source/) {
+		($obj->{$prefix."pkg"},
+		 $obj->{$prefix."size"},
+		 $obj->{$prefix."md5"}) = split / /, $value;
+	    }
+	    $obj->{$name} = $value;
+	    if ($name eq 'version') { $obj->{ver} = $ver; }
+	    elsif ($name eq 'prev-version') { $obj->{'prev-ver'} = $ver; }
+	    elsif ($name eq 'test-version') { $obj->{'test-ver'} = $ver; }
+
+	} elsif ($last eq 'ldesc') {
+	    $obj->{'ldesc'} .= "\n$value";
+	    $name = 'ldesc';
+	} else {
+	    carp("unknown setup field: $name: $value");
+	}
+	$last = $name;
+	#for ('','prev','test')
+    }
+    $obj->{'name_ver'} = $obj->{name} . ($obj->{version} ? "-".$obj->{version} : "");
+    bless [ $obj, @rest ], $class;
+}
+
+package Cygwin::Install::SetupIni;
+use Tie::Hash;
+use File::Copy;
+use vars qw(@ISA);
+@ISA = qw(Tie::ExtraHash);
+use Carp qw/croak carp/;
+my $setup_ini = 'setup.ini'; # full path
+
+=pod
+
+=head1 Cygwin::Install::SetupIni
+
+Handle a single setup.ini database as read-only tied hash,
+plus some helper functions and methods.
+
+  $ini = new Cygwin::Install::SetupIni;
+  my @remote = $ini->from_mirrors;
+  tie %setup, $ini, $result[0];
+
+  my @local = $ini->from_last_mirror;
+  tie %setup, $ini, $local[0];
+  my $local = $ini->from_current_path;
+
+  /etc/setup/last-mirror (ro)
+
+=head1 FUNCTIONS
+
+=head1 from_current_path
+
+Method or sub.
+Returns one local setup.ini path if cwd() contains a mirror-style path.
+
+If method stores the found path in path.
+
+=head1 from_mirrors
+
+Not a method, only a sub!
+Download setup.ini from /etc/setup/last-mirror.
+Returns the list of local setup.ini paths.
+
+=head1 from_last_mirrors
+
+Not a method, only a sub!
+Returns the list of local setup.ini paths, taken from /etc/setup/last-mirror.
+
+=head1 from_current_paths_below
+
+Not a method, only a sub!
+Returns the local setup.ini paths if there are direct mirror-style subdirs.
+
+=cut
+
+sub from_current_path {
+    my $self = shift;
+    my $cd;
+    my $olddir = $cd = getcwd();
+    while ($cd =~ /(ht|f)tp%3a%2f%2fs/) {
+	$self->path("$cd/setup.ini") if $self;
+	return "$cd/setup.ini" if -f "./setup.ini";
+	chdir "..";
+	$cd = getcwd();
+    }
+    '';
+}
+sub from_current_paths_below {
+    my $cd = getcwd();
+    opendir(my $dh, '.');
+    my ($f, @result);
+    while ($f = readdir $dh) {
+	next unless -d $f or substr($f,0,1) eq '.';
+	if ($f =~ /(ht|f)tp%3a%2f%2fs/) {
+	    push @result, "$cd/$f/setup.ini" if -f "$cd/$f/setup.ini";
+	}
+    }
+    closedir $dh;
+    @result;
+}
+sub from_last_mirrors { carp "from_last_mirrors nyi"; () }
+
+sub from_mirrors { carp "from_mirrors nyi"; () }
+
+=head1 METHODS
+
+=head1 path
+
+Returns the setup.ini path
+
+=cut
+
+sub new { shift->TIEHASH(@_) }
+sub path { $_[0][1]->{path} = $_[1] if @_>1; return $_[0][1]->{path} }
+
+sub TIEHASH {
+    my $class = shift;
+    my $obj   = {};
+    my @rest  = ();
+    local $/ = "";    # slurp paragraphs
+    # TODO: store $setup_ini in the object, not in the stash
+    $setup_ini = $_[0] if defined $_[0] and -e $_[0] and $_[0] =~ /setup\.ini/;
+    # TODO: handle bz2
+    unless ( open DB, "< $setup_ini" ) {
+        warn "Failed to read $setup_ini: $!";
+        return undef;
+    }
+    $rest[0]->{path} = $setup_ini;
+    while ( my $_ = <DB> ) {
+        if (! defined $rest[0]->{'setup-timestamp'} and /^setup-timestamp: (\d+)$/s) {
+            $rest[0]->{'setup-timestamp'} = $1;
+        }
+        elsif (/^@ (\S+)\n/s) {
+	    chop $_;
+	    my %pkg;
+            tie %pkg, 'Cygwin::Install::Package', $1, $_;
+            $obj->{$1} = \%pkg;
+        }
+    }
+    close DB;
+    bless [ $obj, @rest ], $class;
+}
+
+sub STORE { croak "setup.ini is read-only" }
+
+=pod
+
+=head1 Cygwin::Install::SetupDb
+
+The big combined database of all setup.ini's with all conflicting versions.
+
+=cut
+
+package Cygwin::Install::SetupDb;
+use Tie::Hash;
+use vars qw(@ISA);
+@ISA = qw(Tie::StdHash); # not allow -path and -uri
+
+sub TIEHASH {
+    my $class = shift;
+    my $local = shift;
+    my $remote = shift;
+    my $db = { -path => [] };
+    #my @rest  = ();
+    # here we merge the packages of all setup.ini's
+    # according to two rules: favor setup.ini timestamp or favor higher version numbers
+    foreach my $ini (@$local) {
+	my $n = $ini->FIRSTKEY;
+	my $path = $ini->path;
+	$db->{-path} = [ @{$db->{-path}}, $path ];
+	#push @{$db->{-path}}, $path;
+	$db->{$n} = $ini->FETCH($n);
+	$db->{$n}->{-path} = $path;
+	while (my $n = $ini->NEXTKEY) {
+	    $db->{$n} = $ini->FETCH($n);
+	    $db->{$n}->{-path} = $path;
+	}
+    }
+    foreach my $ini (@$remote) {
+	my $n = $ini->FIRSTKEY;
+	my $path = $ini->path;
+	$db->{-path} = [ @{$db->{-path}}, $path ];
+	#push @{$db->{-path}}, $path;
+	$db->{$n} = $ini->FETCH($n);
+	$db->{$n}->{-uri} = $path;
+	while (my $n = $ini->NEXTKEY) {
+	    $db->{$n} = $ini->FETCH($n);
+	    $db->{$n}->{-uri} = $path;
+	}
+    }
+    bless $db, $class;
+}
+
+package Cygwin::Install;
+use Carp qw/croak/;
+
+=pod
+
+=head1 Cygwin::Install
+
+Object interface. Don't call the subs as methods, because there's
+no global Cygwin::Install object, and the class is not (yet) accepted 
+as first arg.
+
+=head1 uninstall NAME, FULL
+
+FULL is just the display friendly name
+
+=cut
+
+sub uninstall($$) {
+    my ( $name, $full ) = @_;
+    $full =~ s/\.tar\.bz2$//;
+    print "uninstall $full\n" unless $opt{quiet};
+    if ( -e "/etc/setup/$name.lst.gz" ) {
+        if ( -e "/etc/preremove/$name.sh" ) {
+            my $cd = getcwd();
+            chdir "/etc/preremove";
+            system("/bin/bash /etc/preremove/$name.sh")
+              and
+              move( "/etc/preremove/$name.sh", "/etc/preremove/$name.sh.done" );
+            chdir $cd;
+        }
+	Cygwin::Install::SetupLst->rm($name);
+        #system(qq(for f in `zcat /etc/setup/$name.lst.gz`; do test -f && rm "/\$f"; done));
+
+        # remove from installed.db
+        undef $db{$name};
+    }
+    return 1;
+}
+
+=pod
+
+=head1 install NAME, PKG, PATH
+
+  NAME is the shortname
+  PKG  is the full basename including .tar.bz2
+  PATH is the path to the PKG
+
+=cut
+
+sub install {
+    my ( $name, $pkg, $path ) = @_;
+    print "install $pkg\n" unless $opt{quiet};
+    if ( -e $path and -s $path ) {
+	if (-s $path == 42) {
+	    # handle empty tar
+	    print "empty tar $path skipped\n" unless $opt{quiet};
+	    Cygwin::Install::SetupLst::writelst($name, []);
+	} else {
+	    my $errstr = `/usr/bin/tar xfj $path -C /`;
+	    if ($!) {
+		# TODO: handle locked files in use: rename to .new or better use MoveFileEx
+		warn "untar $path failed with \"$!\" $errstr. Files in use?\n" unless $opt{quiet};
+		#require Archive::Tar;
+	    }
+	    Cygwin::Install::SetupLst::writelst_from_tar($name, $path);
+	    #system( qq(/usr/bin/tar xfvj $path -C / | )
+	    #      . q(perl -ne'chomp; print "$_\n" if -f "/$_"' | )
+	    #      . qq(gzip -c > /etc/setup/$name.lst.gz) );
+	}
+    }
+    else {
+        croak "$path not found\n";
+        return 0;
+    }
+    if ( -e "/etc/postinstall/$name.sh" ) {
+        system("/bin/bash /etc/postinstall/$name.sh")
+          and
+          move( "/etc/postinstall/$name.sh", "/etc/postinstall/$name.sh.done" );
+    }
+
+    # add to installed.db
+    $db{$name} = $pkg;
+    return 1;
+}
+
+=pod
+
+=head1 query NAME, PATH
+
+  NAME is the shortname. May be empty.
+  PATH is a substring of the path to the PKG.
+       Or the full PKG name, with or without .tar.bz2.
+       Or a sdesc substring.
+
+=cut
+
+sub query {
+    my ( $name, $pkg, $path ) = @_;
+    my $curr;
+
+    # local search query, simular to cygcheck
+    if ( $name and ( $curr = $db{$name} ) ) {
+        print "installed $name $curr\n";
+    }
+    elsif ( $curr = $db{$path} ) {
+        $name = $path;
+        print "installed $name $curr\n";
+    }
+    else {
+        return unless $path;
+        my @found = find_names($path);
+	foreach (@found) {
+            $curr = $db{$_};
+            print "installed $_ $curr\n";
+            if ( $opt{list} ) {
+		print "$_\n" for list($_);
+            }
+        }
+        unless (@found) {
+            warn "$path not installed\n";
+            return;
+        }
+        $name = '';
+    }
+    if ( $name and $opt{list} ) {
+	print "$_\n" for list($name);
+    }
+
+    # print info from setup.ini: requires, ...
+
+    # remote search query. check versions, if to be updated, ...
+}
+
+# list of files in /etc/setup/$name.lst.gz
+# dont print dirs
+sub list {
+    my $name = shift;
+    return Cygwin::Install::SetupLst->files($name);
+}
+
+sub name_ver($) {
+    my $pkg = shift || return ();
+    if ($pkg =~ /-src\.tar\.bz2$/) {
+	$pkg =~ s/-src\.tar\.bz2$//;
+    } else {
+	$pkg =~ s/\.tar\.bz2$//;
+    }
+    my ( $name, $ver ) = $pkg =~ m/^(.+)-(\d[.\w]+-\d+)$/;
+    unless ($name) {
+	( $name, $ver ) = $pkg =~ m/^([-.\w]+)-(\d[.\w]+)/;
+    }
+    return ( $name, $ver );
+}
+
+#ascii comparable versions. To avoid:
+#  uninstall gtk2-x11-2.10.14-1.tar.bz2
+#  install   gtk2-x11-2.8.20-1.tar.bz2
+# 8 > 10
+# 2.10.14-1 => 000002.000010.000014-000001
+sub version($) {
+    my $ver = shift || return;
+    $ver =~ s/(\d+)/sprintf "%06d", $1/ge;
+    $ver;
+}
+
+# substring search with or without version
+# in installed packages and in setupdb
+sub find_names($) {
+    my $path = shift;
+    my (@names, $pkg);
+    # first exact search
+    if ($pkg = $db{$path}) {
+	$pkg =~ s/\.tar\.bz2$//;
+	push @names, ($pkg); 	# already installed
+    }
+    unless ($opt{erase}) {
+        require_setupdb() unless %setupdb;
+    }
+    if ($setupdb{$path}) {
+	$pkg = $setupdb{$path}->{name_ver} ;
+	push @names, ($pkg) unless grep /^$pkg$/, @names;
+    }
+    return @names if @names;
+    # then if it fails, regex resp. substr
+    my $qr = qr/$path/;
+    foreach my $s ( keys %db ) {
+	if ($s =~ $qr) {
+	    $pkg = $db{$s};
+	    $pkg =~ s/\.tar\.bz2$//;
+	    push @names, ($pkg) unless grep /^$pkg$/, @names;
+	}
+    }
+    foreach my $s ( keys %setupdb ) {
+	if ($s =~ $qr) {
+	    $pkg = $setupdb{$s}->{name_ver};
+	    push @names, ($pkg) unless grep /^$pkg$/, @names;
+	}
+    }
+    return @names if @names;
+    $qr = qr/$path/i; # case-insensitive
+    foreach my $s ( keys %db ) {
+	if ($s =~ $qr) {
+	    $pkg = $db{$s};
+	    $pkg =~ s/\.tar\.bz2$//;
+	    push @names, ($pkg) unless grep /^$pkg$/, @names;
+	}
+    }
+    foreach my $s ( keys %setupdb ) {
+	if ($s =~ $qr) {
+	    $pkg = $setupdb{$s}->{name_ver};
+	    push @names, ($pkg) unless grep /^$pkg$/, @names;
+	}
+    }
+    @names;
+}
+
+sub find_deps {
+    my @names = @_;
+    require_setupdb() unless %setupdb;
+    my @deps;
+    # ordering: @deps $name @deps $name
+    foreach my $pkg (@names) {
+	my ( $name, $ver ) = name_ver($pkg);
+	$name = $pkg unless $name;
+	# push only new members
+	my $deps = $setupdb{$name}->{requires};
+	if ($deps) {
+	    print "  $name requires: $deps\n" if $opt{verbose};
+	    foreach (split(/ /, $deps)) {
+		push @deps, ($_) unless grep /^$_$/, @deps;
+	    }
+	}
+	push @deps, ($name) unless grep /^$name$/, @deps;
+    }
+    print "  => @deps\n" if $opt{verbose};
+    @deps;
+}
+
+sub require_setupdb {
+    # How to find the right setup.ini?
+    unless (%setupdb) {
+	my $ini = new Cygwin::Install::SetupIni($opt{setup});
+	my (@local, @remote);
+	unless ( -e $ini->path) {
+	    # check local or remote options:
+	    # cwd = /usr/src/down/ftp%3a%2f%2fsunsite.dk%2fprojects%2fcygwinports
+	    my $local = $ini->from_current_path;
+	    # or cwd = /usr/src/down
+	    @local = $local ? ($local) : $ini->from_current_paths_below;
+	    # or elsewhere
+	    @local = @local ? @local : $ini->from_last_mirrors;
+	    @remote = $ini->from_mirrors unless $opt{local};
+	} else {
+	    @local = ($ini);
+	}
+	tie %setupdb, 'Cygwin::Install::SetupDb', \@local, \@remote;
+    }
+}
+
+sub getline {
+    my %k = GetControlChars();
+    my $oeol = $k{EOL};
+    $k{EOL2} = "\cL";
+    SetControlChars(%k);
+    my $str = '';
+    my $ch;
+    do {
+	$ch = ReadKey(0);
+	$str .= $ch;
+    } while ($ch ne "\cL" && $ch ne "\n");
+    $k{EOL2} = $oeol;
+    SetControlChars(%k);
+    chomp $str;
+    $str =~ s/^\s+|\s+$//g;
+    exit 0 if $str =~ /q/i;
+    return $str;
+}
+
+sub yorn {
+    return 1 if $opt{yes};
+    print @_;
+    my $ans = <STDIN>;
+    my $res = $ans =~ /^y/io;
+    return 1 if $res;
+    if ($ans =~ /^A/) {
+	$opt{yes} = 1;
+	return 1;
+    }
+    return 0;
+}
+
+sub main {
+
+    tie %db, 'Cygwin::Install::Database' unless %db;
+
+    foreach my $path (@ARGV) {
+	my $issrc = 0;
+        #if ( $opt{install} or $opt{upgrade} ) {
+	    # path to tar.bz2 or pkgname release/GNOME/glib2/glib2-2.16.3-1.tar.bz2
+            #unless ( -e $path ) {
+            #    warn "$path not found\n" if $opt{verbose};
+            #    #next;
+            #}
+        #}
+        my $pkg = basename($path);
+        if ($pkg =~ /-src\.tar\.bz2$/) {
+	    $pkg =~ s/-src\.tar\.bz2$//;
+	    $issrc = 1;
+	    next if $opt{nosrc};
+	} else {
+	    $pkg =~ s/\.tar\.bz2$//;
+	}
+        my ( $name, $ver ) = name_ver($pkg);
+        #$pkg .= $issrc ? "-src.tar.bz2" : ".tar.bz2";
+        if ( $opt{install} or $opt{upgrade} or $opt{erase} ) {
+            # allow substring query?
+	    my @names = ($pkg);
+            unless ($name) { # no version
+                @names = find_names($pkg);
+		print "Found ",join(", ",@names)."\n";
+		exit unless @names;
+		exit unless yorn("Continue? [y/n] ");
+            }
+	    my @deps = ($issrc || $opt{nodeps}) ? @names : find_deps( @names );
+	    for ( @deps ) {
+		my $warn_downgrade;
+		$pkg = $_;
+		my ( $name, $ver ) = name_ver($pkg);
+		next unless $name;
+		my $curr = $db{$name};
+		my ( $namec, $verc ) = name_ver($curr);
+		# install does only fresh packages
+		if ($opt{install} and $curr) {
+		    print "skipped --install $curr. Already exists. Try --upgrade\n"
+		      unless $opt{quiet};
+		} elsif ($opt{erase}) {
+                    uninstall( $name, $curr ) if $curr;
+		} else {
+		    if ( !$curr or ( $curr ne $pkg ) or $opt{force}) {
+			if ($curr) {
+			    # check downgrade
+			    if (!$verc or !$ver) {
+				croak "Cannot compare versions. Empty pkg=$ver or curr=$verc";
+			    }
+			    if ( (version($verc) cmp version($ver)) == 1 ) {
+				unless ($opt{force} or $opt{oldpackage}) {
+				    print "skipped --install $pkg."
+				      . "\n  Newer version $curr installed. Try --force or --oldpackage\n" 
+					unless $opt{quiet};
+				    next;
+				}
+				$warn_downgrade = 1;
+			    }
+			}
+			if ( $opt{check} or $opt{test} ) {
+			    print "downgrade forced:\n" if $warn_downgrade and !$opt{quiet};
+			    print "uninstall $curr --skipped (test only)\n" if $curr and !$opt{quiet};
+			    print "install   $pkg from $path --skipped (test only)\n" unless $opt{quiet};
+			} else {
+			    print "downgrade forced:\n" if $warn_downgrade and !$opt{quiet};
+			    uninstall( $name, $curr ) if $curr;
+			    install( $name, $pkg, $path );
+			}
+		    } else {
+			# $curr eq $pkg:
+			print "skipped --install $pkg. Already installed. Try --force\n"
+			  unless $opt{quiet};
+		    }
+		}
+	    }
+        }
+        elsif ( $opt{query} ) {
+            query( $name, $path );
+        }
+    }
+    untie %db;
+}
+
+# Getopt::Long::Configure("bundling");
+# TODO: CGI-Interface?
+#       cyginstall-wui with Win32::GUI
+#       cyginstall-tui with TCL UI
+unless ( $ENV{'REQUEST_METHOD'} or $0 !~ /cyginstall/ ) {
+    GetOptions(
+        \%opt,     'install|i', 'erase|e', 'upgrade|U',
+        'query|q', 'verify|v',  'version', 'test',      'list',
+        'setup=s', 'local!',    'check!',  'yes|y',     'force',
+        'nosrc!',  'nodeps',    'help|?',  'verbose',   'quiet',
+	'oldpackage',
+    ) or pod2usage(1);
+    pod2usage( -verbose => 2 ) if exists $opt{help};
+    if (   !%opt
+        or !( $opt{erase} or $opt{upgrade} or $opt{query} or $opt{verify} ) )
+    {
+        $opt{install}++;    # default
+    }
+    # we want to look only at one: $opt{verbose}
+    undef $opt{verbose} if $opt{quiet};
+    undef $opt{quiet} if $opt{verbose};
+    if (!@ARGV) {
+	some_interactive_repl(); # as in cygupdate from cygwin-apps
+    } else {
+	main();
+    }
+}
