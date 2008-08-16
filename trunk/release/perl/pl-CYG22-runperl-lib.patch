@@ -1,0 +1,19 @@
+Index: perl-current/t/test.pl
+===================================================================
+--- perl-current/t/test.pl
++++ perl-current/t/test.pl
+@@ -432,12 +432,12 @@ sub _create_runperl { # Create the strin
+     }
+     unless ($args{nolib}) {
+ 	if ($is_macos) {
+-	    $runperl .= ' -I::lib';
++	    $runperl .= ' -I::lib:auto -I::lib';
+ 	    # Use UNIX style error messages instead of MPW style.
+ 	    $runperl .= ' -MMac::err=unix' if $args{stderr};
+ 	}
+ 	else {
+-	    $runperl .= ' "-I../lib"'; # doublequotes because of VMS
++	    $runperl .= ' "-I../lib/auto" "-I../lib"'; # doublequotes because of VMS
+ 	}
+     }
+     if ($args{switches}) {
