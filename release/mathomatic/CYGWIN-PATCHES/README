@@ -82,6 +82,8 @@ Files included in mathomatic:
 
 Port Notes:
 
+----- version mathomatic-14.1.4-1 -----
+rebased Makefile patches
 ----- version mathomatic-14.0.7-1 -----
 none
 ----- version mathomatic-14.0.4-2 -----
