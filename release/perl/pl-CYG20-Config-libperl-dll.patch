@@ -1,0 +1,379 @@
+2008-07-06 22:39:26 URBANR
+
+	* Configure, cygwin/Makefile.SHs, MANIFEST, installperl:
+	build harmonization. remove cygwin specific Makefile.SHs, use LIBPERL 
+	for the shared lib, add importlib.
+	Now there's only os2/Makefile.SHs left
+
+Index: perl-current/MANIFEST
+===================================================================
+--- perl-current/MANIFEST.orig
++++ perl-current/MANIFEST
+@@ -42,7 +42,6 @@ Cross/TODO		Cross-compilation
+ Cross/warp		Cross-compilation
+ cv.h			Code value header
+ cygwin/cygwin.c		Additional code for Cygwin port
+-cygwin/Makefile.SHs	Shared library generation for Cygwin port
+ deb.c			Debugging routines
+ djgpp/config.over	DOS/DJGPP port
+ djgpp/configure.bat	DOS/DJGPP port
+Index: perl-current/Makefile.SH
+===================================================================
+--- perl-current/Makefile.SH.orig
++++ perl-current/Makefile.SH
+@@ -68,7 +68,8 @@ true)
+ 			     -install_name \$(shrpdir)/\$@"
+ 		;;
+ 	cygwin*)
+-		linklibperl="-lperl"
++		shrpldflags="$shrpldflags -Wl,--out-implib=libperl.dll.a -Wl,--image-base,0x52000000"
++		linklibperl="-L. -lperl"
+ 		;;
+ 	sunos*)
+ 		linklibperl="-lperl"
+@@ -516,19 +517,9 @@ miniperlmain$(OBJ_EXT): miniperlmain.c p
+ perlmain.c: miniperlmain.c config.sh $(FIRSTMAKEFILE)
+ 	sh writemain $(DYNALOADER) $(static_ext) > perlmain.c
+ 
+-!NO!SUBS!
+-case "$osname" in
+-cygwin)
+-	;; # Let cygwin/Makefile.SHs do its work.
+-*)
+-	$spitshell >>Makefile <<'!NO!SUBS!'
+ perlmain$(OBJ_EXT): perlmain.c
+ 	$(CCCMD) $(PLDLFLAGS) $*.c
+ 
+-!NO!SUBS!
+-	;;
+-esac
+-$spitshell >>Makefile <<'!NO!SUBS!'
+ # The file ext.libs is a list of libraries that must be linked in
+ # for static extensions, e.g. -lm -lgdbm, etc.  The individual
+ # static extension Makefile's add to it.
+@@ -601,9 +592,22 @@ perl5.def: $(MINIPERLEXP) makedef.pl con
+ 
+ !NO!SUBS!
+ 	;;
++cygwin)
++	$spitshell >>Makefile <<'!NO!SUBS!'
++cygwin.c: cygwin/cygwin.c
++	$(LNS) cygwin/cygwin.c
++
++LIBPERL_NONSHR		= libperl$(LIB_EXT)
++
++$(LIBPERL_NONSHR): $(obj)
++	$(RMS) $(LIBPERL_NONSHR)
++	$(AR) rcu $(LIBPERL_NONSHR) $(obj)
++
++!NO!SUBS!
++	;;
+ esac
+ 
+-if test -r $Makefile_s ; then
++if test -s $Makefile_s ; then
+ 	. $Makefile_s
+ 	$spitshell >>Makefile <<!GROK!THIS!
+ 
+@@ -1171,7 +1175,6 @@ _cleaner2:
+ 	-rmdir lib/threads lib/XS
+ 	-rmdir lib/CPANPLUS/Dist/Build/t/dummy-*
+ 	-rmdir lib/CPANPLUS/t/dummy-cpanplus lib/CPANPLUS/t/dummy-localmirror
+-	-rm -f cygcrypt-0.dll cygwin1.dll
+ 	-rm -f lib/ExtUtils/CBuilder/t/libcompilet.dll.a
+ 	-rm -f lib/ExtUtils/ParseXS/t/libXSTest.dll.a
+ 
+Index: perl-current/Configure
+===================================================================
+--- perl-current/Configure.orig
++++ perl-current/Configure
+@@ -8151,9 +8151,9 @@ true)
+ 		# a version-specific architecture-dependent library, the version
+ 		# number isn't really that important, except for making cc/ld happy.
+ 		#
+-		# A name such as libperl.so.3.1
++		# A name such as libperl.so.10.0
+ 		majmin="libperl.$so.$patchlevel.$subversion"
+-		# A name such as libperl.so.301
++		# A name such as libperl.so.100
+ 		majonly=`echo $patchlevel $subversion |
+ 			$awk '{printf "%d%02d", $1, $2}'`
+ 		majonly=libperl.$so.$majonly
+@@ -8167,8 +8167,12 @@ true)
+ 		linux*|gnu*)  # ld won't link with a bare -lperl otherwise.
+ 			dflt=libperl.$so
+ 			;;
+-		cygwin*) # ld links against an importlib
+-			dflt=libperl$lib_ext
++		cygwin*) # ld links now against the dll directly
++			majmin="cygperl5_${patchlevel}_${subversion}.${so}"
++			majonly=`echo $patchlevel $subversion |
++				$awk '{printf "%03d%03d", $1, $2}'`
++			majonly=cygperl5.$majonly.$so
++			dflt=$majmin
+ 			;;
+ 		*)	# Try to guess based on whether libc has major.minor.
+ 			case "$libc" in
+@@ -8264,6 +8268,9 @@ if "$useshrplib"; then
+ 		# hpux doesn't like the default, either.
+ 		tmp_shrpenv="env LDOPTS=\"+s +b${shrpdir}\""
+ 		;;
++	cygwin)
++		# cygwin needs only $ldlibpth
++		;;
+ 	*)
+ 		tmp_shrpenv="env LD_RUN_PATH=$shrpdir"
+ 		;;
+Index: perl-current/cygwin/Makefile.SHs
+===================================================================
+--- perl-current/cygwin/Makefile.SHs
++++ /dev/null
+@@ -1,168 +0,0 @@
+-# -*- shell-script -*-
+-# This file is read by Makefile.SH to produce rules for $(LIBPERL) (and
+-# some additional rules as well).
+-
+-# Rerun `sh Makefile.SH; make depend' after making any change.
+-
+-# Additional rules supported: libperl.a (for static linking),
+-# ld2 and perlld removed. 
+-# DynaLoader.o and Win32CORE.o added to libperl
+-#
+-
+-#! /bin/sh
+-case $PERL_CONFIG_SH in
+-'')
+-	if test -f config.sh; then TOP=.;
+-	elif test -f ../config.sh; then TOP=..;
+-	elif test -f ../../config.sh; then TOP=../..;
+-	elif test -f ../../../config.sh; then TOP=../../..;
+-	elif test -f ../../../../config.sh; then TOP=../../../..;
+-	else
+-		echo "Can't find config.sh."; exit 1
+-	fi
+-	. $TOP/config.sh
+-	;;
+-esac
+-
+-addtopath=`pwd | sed -e 's/ /\\\ /g'`
+-$spitshell >>Makefile <<!GROK!THIS!
+-
+-cygwin.c: cygwin/cygwin.c
+-	\$(LNS) cygwin/cygwin.c
+-
+-CLDFLAGS= -L$addtopath \$(LDFLAGS)
+-CCFLAGS=$ccflags
+-PLDLFLAGS = 
+-CAT = $cat
+-AWK = $awk
+-WIN32CORE = Win32CORE.o
+-!GROK!THIS!
+-
+-# if shared this is cgyperl5_11_0.dll, if static it is libperl.a
+-# make sure that all library names are not malformed
+-case "$useshrplib" in
+-true)
+-	#libperl=`echo $libperl|sed -e s,^lib,cyg,`
+-	if [ "$libperl" = "libperl" ]
+-	then 
+-	    libperl="cygperl${major}_${patchlevel}_${subversion}.dll"
+-	    $spitshell >>Makefile <<!GROK!THIS!
+-# Configure problem
+-LIBPERL = $libperl
+-!GROK!THIS!
+-	fi
+-	dllname=`echo $libperl|sed -e s,\\\..*,,`
+-	if [ -n "$static_ext" ]; then
+-    		static_ext=`echo $static_ext|sed -e s/Win32CORE//`
+-	    	$spitshell >>Makefile <<!GROK!THIS!
+-# move Win32CORE from static_ext to libperl. see below.
+-static_ext = $static_ext
+-!GROK!THIS!
+-	fi
+-
+-	$spitshell >>Makefile <<!GROK!THIS!
+-LIBPERL_A=libperl.a
+-IMPORTLIB=libperl.dll.a
+-DLLNAME= $dllname
+-LDDLFLAGS = --shared -L$addtopath \$(LDFLAGS)
+-!GROK!THIS!
+-
+-	$spitshell >>Makefile <<'!NO!SUBS!'
+-# override default rule (NB: make croaks!) to force dll usage
+-perlmain$(OBJ_EXT): perlmain.c
+-	$(CCCMD) $(PLDLFLAGS) -DUSEIMPORTLIB $*.c
+-
+-# library used to make statically linked executables
+-$(LIBPERL_A): $& $(obj) $(DYNALOADER) $(WIN32CORE)
+-	$(AR) rcu $@ $(obj) $(DYNALOADER) $(WIN32CORE)
+-
+-# dll and import library
+-$(LIBPERL) : $(IMPORTLIB)
+-
+-$(IMPORTLIB): $& $(obj) $(DYNALOADER) $(WIN32CORE)
+-	$(LDLIBPTH) $(CC) $(SHRPLDFLAGS) -o $(LIBPERL) -Wl,--out-implib=$@ \
+-	  $(obj) $(DYNALOADER) $(WIN32CORE) $(libs)
+-
+-# Win32CORE is added to libperl to help linking with libtool (mod_perl)
+-$(WIN32CORE):	miniperl$(EXE_EXT) preplibrary FORCE
+-	@$(LDLIBPTH) sh ext/util/make_ext $(STATIC) $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL_A)
+-
+-# How to build executables.
+-
+-# The miniperl -w -MExporter line is a basic cheap test to catch errors
+-# before make goes on to run preplibrary and then MakeMaker on extensions.
+-# This is very handy because later errors are often caused by miniperl
+-# build problems but that's not obvious to the novice.
+-# The Module used here must not depend on Config or any extensions.
+-
+-miniperl$(EXE_EXT): $& miniperlmain$(OBJ_EXT) $(obj) opmini$(OBJ_EXT)
+-	$(LDLIBPTH) $(CC) $(CCFLAGS) $(OPTIMIZE) -o miniperl $(CLDFLAGS) \
+-	    `echo $(obj) | sed 's/ op$(OBJ_EXT) / /'` \
+-	    miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(libs)
+-	$(LDLIBPTH) ./miniperl -w -Ilib -MExporter -e '<?>' || $(MAKE) minitest
+-
+-perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(LIBPERL) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) $(CC) $(CCFLAGS) $(OPTIMIZE) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+-
+-!NO!SUBS!
+-	;;
+-*)
+-	$spitshell >>Makefile <<'!NO!SUBS!'
+-# static perl library
+-$(LIBPERL_A): $& $(obj) $(DYNALOADER) $(WIN32CORE)
+-	$(AR) rcu $@ $(obj) $(DYNALOADER) $(WIN32CORE)
+-
+-# Win32CORE is added to libperl to help linking with libtool (mod_perl)
+-$(WIN32CORE):	miniperl$(EXE_EXT) preplibrary FORCE
+-	@$(LDLIBPTH) sh ext/util/make_ext $(STATIC) $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL_A)
+-
+-# How to build executables.
+-
+-# The miniperl -w -MExporter line is a basic cheap test to catch errors
+-# before make goes on to run preplibrary and then MakeMaker on extensions.
+-# This is very handy because later errors are often caused by miniperl
+-# build problems but that's not obvious to the novice.
+-# The Module used here must not depend on Config or any extensions.
+-
+-miniperl$(EXE_EXT): $& miniperlmain$(OBJ_EXT) $(obj) opmini$(OBJ_EXT)
+-	$(LDLIBPTH) $(CC) $(CCFLAGS) $(OPTIMIZE) -o miniperl $(CLDFLAGS) \
+-	    `echo $(obj) | sed 's/ op$(OBJ_EXT) / /'` \
+-	    miniperlmain$(OBJ_EXT) opmini$(OBJ_EXT) $(libs)
+-	$(LDLIBPTH) ./miniperl -w -Ilib -MExporter -e '<?>' || $(MAKE) minitest
+-
+-perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(LIBPERL)$(LIB_EXT) $(static_ext) ext.libs
+-	$(SHRPENV) $(LDLIBPTH) $(CC) $(CCFLAGS) $(OPTIMIZE) $(CLDFLAGS) $(CCDLFLAGS) -o perl perlmain$(OBJ_EXT) $(static_ext) -Wl,-Bstatic $(LLIBPERL) -Wl,-Bdynamic `cat ext.libs` $(libs)
+-
+-!NO!SUBS!
+-	;;
+-esac
+-
+-# libperl.a is now only the library for the static case, for the dll
+-# libperl is directly the cygperl5_x_y.dll
+-#
+-# NOTE: The "-Wl,-Bstatic $(LLIBPERL) -Wl,-Bdynamic" is required to give
+-# the import library linking priority over the dynamic library, since both
+-# the .dll and .a are in the same directory.  When the new standard for
+-# naming import/dynamic/static libraries emerges this should be updated.
+-#
+-$spitshell >>Makefile <<'!NO!SUBS!'
+-
+-!NO!SUBS!
+-
+-# suid perl is removed - i've never seen suid scripts for win32
+-
+-##############################################
+-# additional targets
+-
+-$spitshell >>Makefile <<'!NO!SUBS!'
+-
+-DIST_DIRECTORY = .dist
+-
+-distdir: miniperl
+-	-mkdir $(DIST_DIRECTORY)
+-	./miniperl -Ilib '-MExtUtils::Manifest' \
+-	-e "ExtUtils::Manifest::manicopy(ExtUtils::Manifest::maniread(),'$(DIST_DIRECTORY)')"
+-
+-test_prep: 
+-
+-!NO!SUBS!
+Index: perl-current/installperl
+===================================================================
+--- perl-current/installperl.orig
++++ perl-current/installperl
+@@ -252,22 +252,9 @@ if (($Is_W32 and ! $Is_NetWare) or $Is_C
+     my $perldll;
+ 
+     if ($Is_Cygwin) {
+-        # get DLLNAME from GNUMakefile
+-        my $cmdline = "perl -ne 'm/^DLLNAME=\\s*(.*)\$/ && print \$1' GNUMakefile";
+-	$perldll = `$cmdline`;
+-	unless ($perldll) {
+-	  $perldll = $libperl;
+-	  my $v_e_r_s = $ver;
+-	  $v_e_r_s =~ s/\.\d+$// unless $Config{usedevel};
+-	  $v_e_r_s .= "d" if $Config{ccflags}=~/-DDEBUGGING/;
+-	  $v_e_r_s =~ tr/./_/;
+-	  $perldll =~ s/(\..*)?$/$v_e_r_s.$dlext/;
+-	  $perldll =~ s/^lib/cyg/;
+-	} else {
+-	  $perldll .= '.dll';
+-	}
++	$perldll = $libperl;
+     } else {
+-	$perldll = 'perl511.' . $dlext;
++	$perldll = 'perl5'.$Config{patchlevel}.'.'.$dlext;
+     }
+ 
+     if ($dlsrc ne "dl_none.xs") {
+Index: perl-current/lib/ExtUtils/CBuilder/Platform/cygwin.pm
+===================================================================
+--- perl-current/lib/ExtUtils/CBuilder/Platform/cygwin.pm.orig
++++ perl-current/lib/ExtUtils/CBuilder/Platform/cygwin.pm
+@@ -10,17 +10,16 @@ $VERSION = '0.23';
+ 
+ sub link_executable {
+   my $self = shift;
+-  # $Config{ld} is set up as a special script for building
+-  # perl-linkable libraries.  We don't want that here.
+-  local $self->{config}{ld} = 'gcc';
++  # $Config{ld} is okay. revert the stupid Unix cc=ld override
++  local $self->{config}{cc} = $self->{config}{ld};
+   return $self->SUPER::link_executable(@_);
+ }
+ 
+ sub link {
+   my ($self, %args) = @_;
+-
++  # libperl.dll.a fails with -Uusedl. -L../CORE -lperl is better
+   $args{extra_linker_flags} = [
+-    File::Spec->catdir($self->perl_inc(), 'libperl.dll.a'),
++    '-L'.$self->perl_inc().' -lperl',
+     $self->split_like_shell($args{extra_linker_flags})
+   ];
+ 
+Index: perl-current/lib/ExtUtils/t/Embed.t
+===================================================================
+--- perl-current/lib/ExtUtils/t/Embed.t.orig
++++ perl-current/lib/ExtUtils/t/Embed.t
+@@ -105,11 +105,6 @@ if ($^O eq 'VMS') {
+         s!-bE:(\S+)!-bE:$perl_exp!;
+     }
+    }
+-   elsif ($^O eq 'cygwin') { # Cygwin needs the shared libperl copied
+-     my $v_e_r_s = substr($Config{version},0,-2);
+-     $v_e_r_s =~ tr/./_/;
+-     system("cp ../cygperl$v_e_r_s.dll ./");    # for test 1
+-   }
+    elsif ($Config{'libperl'} !~ /\Alibperl\./) {
+      # Everyone needs libperl copied if it's not found by '-lperl'.
+      $testlib = $Config{'libperl'};
+@@ -137,7 +132,7 @@ print "# $_\n" foreach @out;
+ 
+ if ($^O eq 'VMS' && !$status) {
+   print "# @cmd2\n";
+-  $status = system(join(' ',@cmd2)); 
++  $status = system(join(' ',@cmd2));
+ }
+ print (($status? 'not ': '')."ok 1\n");
+ 
