@@ -2,44 +2,68 @@ difforig config/auto/opengl.pm lib/Parrot/Configure/Step/Methods.pm
 
 revised to add -L/usr/X11R6/lib and /usr/bin/glut32.dll directly
 
-diff -u config/auto/opengl.pm config/auto/opengl.pm
---- config/auto/opengl.pm	2008-06-02 17:35:05.000000000 +0000
-+++ config/auto/opengl.pm	2008-07-19 08:18:54.609375000 +0000
-@@ -109,11 +109,16 @@
+Index: config/auto/opengl.pm
+===================================================================
+--- config/auto/opengl.pm.orig
++++ config/auto/opengl.pm
+@@ -114,14 +114,16 @@ F<GLUT for Win32> (L<http://www.xmission
  
-  XXXX: No details yet
+ The Cygwin/w32api for native opengl support
  
-+=head3 Cygwin/w32api
- 
--=head3 cygwin
+-F<-lglut32 -lglu32 -lopengl32>
+-
 +F<opengl>, F<w32api>
  
-- XXXX: No details yet
-+=head3 Cygwin/X
-+
-+F<freeglut>, F<libglut-devel>, F<xorg-x11-devel>
+ =head3 Cygwin/X
  
+ Requires a X server.
+ 
+-F<freeglut>, F<libglut-devel>
++F<freeglut>, F<libglut-devel>, F<xorg-x11-devel>
++
 +This is detected if freeglut is installed and DISPLAY is set.
 +It requires an X server.
  
  =cut
  
-@@ -163,6 +168,11 @@
-         conf            => $conf,
-         osname          => $osname,
-         cc              => $cc,
-+        # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
-+        ($^O eq 'cygwin') ?
-+         ($ENV{DISPLAY} ? (cygwin => '-lglut -L/usr/X11R6/lib -lGLU -lGL')
-+                        : (cygwin => '/usr/bin/glut32.dll -lglu32 -lopengl32')) 
-+         : (),
-         win32_gcc       => '-lglut32 -lglu32 -lopengl32',
-         win32_nongcc    => 'opengl32.lib glu32.lib glut32.lib',
-         darwin          => '-framework OpenGL -framework GLUT',
-diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Methods.pm
---- lib/Parrot/Configure/Step/Methods.pm.orig	2008-06-24 19:59:15.000000000 +0000
-+++ lib/Parrot/Configure/Step/Methods.pm	2008-07-16 19:01:24.078125000 +0000
-@@ -119,6 +119,7 @@
+@@ -168,24 +170,20 @@ sub runstep {
+     my $osname = $conf->data->get_p5('OSNAME');
+ 
+     # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
+-    if ($^O eq 'cygwin' and $ENV{DISPLAY}) {
+-        $self->_add_to_libs( {
+-            conf        => $conf,
+-            osname      => $osname,
+-            cc          => $cc,
+-            cygwin      => '-lglut -L/usr/X11R6/lib -lGLU -lGL'
+-        } )
+-    }
+-    else {
+-        $self->_add_to_libs( {
+-            conf            => $conf,
++    $self->_add_to_libs( {
++	    conf            => $conf,
+             osname          => $osname,
+             cc              => $cc,
++	    # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
++            ($^O eq 'cygwin') ?
++             ($ENV{DISPLAY} ? (cygwin => '-lglut -L/usr/X11R6/lib -lGLU -lGL')
++                            : (cygwin => '/usr/bin/glut32.dll -lglu32 -lopengl32'))
++             : (),
+             win32_gcc       => '-lglut32 -lglu32 -lopengl32',
+             win32_nongcc    => 'opengl32.lib glu32.lib glut32.lib',
+             darwin          => '-framework OpenGL -framework GLUT',
+             default         => '-lglut -lGLU -lGL',
+-    } ) };
++    } );
+ 
+     # On OS X check the presence of the OpenGL headers in the standard
+     # Fink/macports locations.
+Index: lib/Parrot/Configure/Step/Methods.pm
+===================================================================
+--- lib/Parrot/Configure/Step/Methods.pm.orig
++++ lib/Parrot/Configure/Step/Methods.pm
+@@ -119,6 +119,7 @@ sub _handle_darwin_for_macports {
          cc              => $cc,
          win32_gcc       => '-lalpha32 -lalpha32 -lopenalpha32',
          win32_nongcc    => 'alpha.lib',
@@ -47,7 +71,7 @@ diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Meth
          darwin          => 'alphadarwin.lib',
          default         => '-lalpha',
      } );
-@@ -138,6 +139,8 @@
+@@ -138,6 +139,8 @@ combinations.  We currently support sett
  
  =item * MSWin32 with any C-compiler other than F<gcc>.
  
@@ -56,7 +80,7 @@ diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Meth
  =item * Darwin.
  
  =back
-@@ -173,7 +176,7 @@
+@@ -173,7 +176,7 @@ supersede the value in C<default>.
  
  =item * C<win32_gcc>
  
@@ -65,7 +89,7 @@ diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Meth
  Single whitespace-delimited string.
  
  =item * C<win32_nongcc>
-@@ -181,6 +184,12 @@
+@@ -181,6 +184,12 @@ Single whitespace-delimited string.
  Libraries to be added where OS is mswin32 and C-compiler is not F<gcc>.
  Single whitespace-delimited string.
  
@@ -78,7 +102,7 @@ diff -u lib/Parrot/Configure/Step/Methods.pm.orig lib/Parrot/Configure/Step/Meth
  =item * C<darwin>
  
  Libraries to be added where OS is Darwin.  Do not supply a value if the value
-@@ -197,7 +206,8 @@
+@@ -197,7 +206,8 @@ sub _add_to_libs {
      my $args = shift;
      croak "_add_to_libs() takes hashref: $!" unless ref($args) eq 'HASH';
      my $platform =

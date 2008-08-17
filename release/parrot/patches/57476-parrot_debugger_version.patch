@@ -1,0 +1,13 @@
+Index: src/parrot_debugger.c
+===================================================================
+--- src/parrot_debugger.c	(revision 29965)
++++ src/parrot_debugger.c	(working copy)
+@@ -244,7 +244,7 @@
+ static void
+ PDB_printwelcome(void)
+ {
+-    fprintf(stderr, "Parrot Debugger 0.4.x\n");
++    fprintf(stderr, "Parrot Debugger " PARROT_VERSION "\n");
+     fprintf(stderr, "\nPlease note: ");
+     fprintf(stderr, "the debugger is currently under reconstruction\n");
+ }
