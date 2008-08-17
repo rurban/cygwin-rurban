@@ -1,0 +1,54 @@
+2008-07-03 20:43:41 rurban
+
+	Use sane defaults without destdir, prefix and without buildprefix.
+	esp. main and library files to /usr/lib/parrot and not just to prefix 
+	(/usr) is important.
+	There's also a fix for a minor cygwin stat-copy discrepancy.
+	Does about the same as the fedora spec file, the debian rule, 
+	the gentoo ebuild and freebsd ports Makefile.
+
+Index: parrot-svn/tools/dev/install_files.pl
+===================================================================
+--- parrot-svn.orig/tools/dev/install_files.pl
++++ parrot-svn/tools/dev/install_files.pl
+@@ -126,7 +126,7 @@ my %options = (
+     bindir      => '/usr/bin',
+     libdir      => '/usr/lib',
+     includedir  => '/usr/include',
+-    docdir      => '/usr/share/doc',
++    docdir      => '/usr/share/doc/parrot',
+     'dry-run'   => 0,
+ );
+ 
+@@ -189,6 +189,7 @@ while (<>) {
+     }
+     elsif ( $meta{include} ) {
+         $dest =~ s/^include//;
++        $dest =~ s/^src/parrot/;
+         $dest = File::Spec->catdir( $options{includedir}, $dest );
+     }
+     elsif ( $meta{doc} ) {
+@@ -197,12 +198,14 @@ while (<>) {
+     elsif ( $meta{pkgconfig} ) {
+ 
+         # For the time being this is hardcoded as being installed under libdir
+-        # as it is typically donw with automake installed packages.  If there
++        # as it is typically done with automake installed packages.  If there
+         # is a use case to make this configurable we'll add a seperate
+         # --pkgconfigdir option.
+         $dest = File::Spec->catdir( $options{libdir}, 'pkgconfig', $dest );
+     }
+     else {
++        $dest =~ s|^src/|lib/parrot/src/|;
++        next if $dest =~ /^compilers|config|language|tools/;
+         $dest =~ s/^runtime/lib/ if /\[library]/;
+         $dest = File::Spec->catdir( $options{prefix}, $dest );
+     }
+@@ -243,6 +246,7 @@ foreach ( @files, @installable_exe ) {
+     }
+     else {
+         next unless -e $src;
++        next if $^O eq 'cygwin' and -e "$src.exe"; # cygwin stat works, but copy not
+         copy( $src, $dest ) or die "copy $src to $dest: $!\n";
+         print "$dest\n";
+     }

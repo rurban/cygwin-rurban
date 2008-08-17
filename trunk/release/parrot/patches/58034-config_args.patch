@@ -1,0 +1,70 @@
+2008-08-17 rurban@x-ray.at
+
+make reconfig ignores the given Configure.pl command-line args.
+We need to save the config_args somewhere to be able to do 
+make reconfig like 
+
+CONFIG_ARGS = @config_args@
+
+$(GEN_CONFIGS) : Makefile
+	$(PERL) Configure.pl $(CONFIG_ARGS)
+
+We really should track all dependencies and do a make reconfig automatically.
+
+The CONFIG_ARGS should be stored in Makefile.
+config_args should be stored in config_lib.pasm as in perl5 also.
+
+Index: parrot-svn/config/gen/makefiles/root.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/root.in
++++ parrot-svn/config/gen/makefiles/root.in
+@@ -19,6 +19,7 @@
+ DEVEL           = @DEVEL@
+ VERSION         = @VERSION@$(DEVEL)
+ SOVERSION       = @VERSION@
++CONFIG_ARGS     = @config_args@
+ 
+ # Override at least PREFIX with the install location if you're going
+ # to be using this outside of your build area.
+@@ -999,6 +1000,19 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
+     lib/Parrot/OpsFile.pm lib/Parrot/Op.pm $(OPS_DIR)/ops.num $(OPS_DIR)/ops.skip
+ 	$(PERL) $(BUILD_TOOLS_DIR)/ops2pm.pl $(OPS_FILES)
+ 
++lib/Parrot/Config/Generated.pm \
++    $(SRC_DIR)/platform.c \
++#CONDITIONED_LINE(platform_asm):    $(SRC_DIR)/platform_asm.s \
++#CONDITIONED_LINE(has_opengl):    config/gen/call_list/opengl.in \
++#CONDITIONED_LINE(has_glut):    $(SRC_DIR)/glut_callbacks.c \
++    config_lib.pasm \
++    $(BUILD_TOOLS_DIR)/dynpmc.pl \
++    $(BUILD_TOOLS_DIR)/dynoplibs.pl \
++ : Configure.pl lib/Parrot/Configure.pm \
++   lib/Parrot/Configure/Step/List.pm lib/Parrot/Configure/Step/Methods.pm
++	@echo "  Makefile out-of-date: reconfigure"
++	$(PERL) Configure.pl $(CONFIG_ARGS)
++
+ ###############################################################################
+ #
+ # Examples (Assembly):
+@@ -1774,7 +1788,7 @@ svnclobber : .svn
+ 	$(PERL) tools/dev/svnclobber.pl
+ 
+ reconfig : clean
+-	$(PERL) Configure.pl
++	$(PERL) Configure.pl $(CONFIG_ARGS)
+ 
+ manitest :
+ 	$(PERL) tools/dev/manicheck.pl
+Index: parrot-svn/Configure.pl
+===================================================================
+--- parrot-svn.orig/Configure.pl
++++ parrot-svn/Configure.pl
+@@ -63,6 +63,8 @@ $conf->add_steps( get_steps_list() );
+ 
+ # from Parrot::Configure::Data
+ $conf->options->set( %{$args} );
++# save the command-line
++$conf->data->set(config_args => join(" ", @ARGV));
+ 
+ # Log files created by Configure.pl in MANIFEST.configure.generated
+ $conf->{active_configuration} = 1;

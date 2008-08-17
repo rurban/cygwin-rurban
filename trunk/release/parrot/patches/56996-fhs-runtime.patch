@@ -1,16 +1,30 @@
-difforig runtime/parrot/library/config.pir runtime/parrot/library/parrotlib.pir
+Remove stats to /usr/runtime/parrot at installed versions
+("/usr" being the prefix).
+Check the config_hash for the installed key and the 
+interpreter INTERPINFO_RUNTIME_PREFIX or CONFIG_HASH if present.
 
-diff -u runtime/parrot/library/config.pir.orig runtime/parrot/library/config.pir
---- runtime/parrot/library/config.pir.orig	2008-07-05 10:04:43.000000000 +0000
-+++ runtime/parrot/library/config.pir	2008-07-27 11:06:40.843750000 +0000
-@@ -50,10 +50,19 @@
+The library.c code is not working yet.
+
+Index: parrot-svn/runtime/parrot/library/config.pir
+===================================================================
+--- parrot-svn.orig/runtime/parrot/library/config.pir
++++ parrot-svn/runtime/parrot/library/config.pir
+@@ -48,12 +48,28 @@ undefined values) is undefined, and may 
+ .sub _config
+     .local pmc CONF
      .local string conf_file
++
++    #unless find_sub('_config') goto runtime
++    #$P0 = _config()
++    #.return( $P0 )
++
++runtime:
++    # conf_file = Parrot_locate_runtime_file_str(interp, "config.fpmc", 2)
      conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
      conf_file .= "/runtime/parrot/include/config.fpmc"
--
 +    stat $I0, conf_file, 0
 +    if $I0 goto conf
-+    
+ 
 +    # If installed into /usr/lib/parrot, not /usr/runtime/parrot
 +    # This logic has to be reversed when installed versions should run faster
 +    # than source builds.
@@ -20,14 +34,31 @@ diff -u runtime/parrot/library/config.pir.orig runtime/parrot/library/config.pir
      open CONF, conf_file, "<"
      $I0 = defined CONF
      if $I0 goto ok1
-+    
++
      printerr "Can't read '"
      printerr conf_file
      printerr "': "
-diff -u runtime/parrot/library/parrotlib.pir.orig runtime/parrot/library/parrotlib.pir
---- runtime/parrot/library/parrotlib.pir.orig	2008-02-23 18:27:07.000000000 +0000
-+++ runtime/parrot/library/parrotlib.pir	2008-07-27 11:07:12.734375000 +0000
-@@ -143,8 +143,19 @@
+Index: parrot-svn/runtime/parrot/library/parrotlib.pir
+===================================================================
+--- parrot-svn.orig/runtime/parrot/library/parrotlib.pir
++++ parrot-svn/runtime/parrot/library/parrotlib.pir
+@@ -24,14 +24,13 @@ parrotlib's interface functions.
+     .local pmc includes
+     .local string root
+ 
+-
+-    # XXX todo: get root from config
+     $P0 = new 'Env'
+     root = $P0["PARROT_RUNTIME_ROOT"]
+     length $I0, root
+     if $I0 == 0 goto DEFAULT
+     branch OKAY
+ DEFAULT:
++    # lib/parrot on installed, or runtime
+     root = "runtime/parrot"
+ OKAY:
+ 
+@@ -143,8 +142,19 @@ Returns the location of a dynamic extens
      stat $I0, name, 0
      if $I0 goto END
  
@@ -48,3 +79,131 @@ diff -u runtime/parrot/library/parrotlib.pir.orig runtime/parrot/library/parrotl
      concat name, ext
      stat $I0, name, 0
      if $I0 goto END
+Index: parrot-svn/src/library.c
+===================================================================
+--- parrot-svn.orig/src/library.c
++++ parrot-svn/src/library.c
+@@ -130,55 +130,73 @@ parrot_init_library_paths(PARROT_INTERP)
+ {
+     PMC *paths;
+     STRING *entry;
++    INTVAL installed = 0;
+ 
+     PMC * const iglobals = interp->iglobals;
+     /* create the lib_paths array */
+     PMC * const lib_paths = pmc_new(interp, enum_class_FixedPMCArray);
++    PMC * const config_hash =
++        VTABLE_get_pmc_keyed_int(interp, iglobals, (INTVAL) IGLOBALS_CONFIG_HASH);
+ 
+     VTABLE_set_integer_native(interp, lib_paths, PARROT_LIB_PATH_SIZE);
+     VTABLE_set_pmc_keyed_int(interp, iglobals,
+             IGLOBALS_LIB_PATHS, lib_paths);
++
++    if (VTABLE_elements(interp, config_hash)) {
++        STRING * const key = CONST_STRING(interp, "installed");
++        installed = VTABLE_get_integer_keyed_str(interp, config_hash, key);
++    }
++
+     /* each is an array of strings */
+     /* define include paths */
+     paths = pmc_new(interp, enum_class_ResizableStringArray);
+     VTABLE_set_pmc_keyed_int(interp, lib_paths,
+             PARROT_LIB_PATH_INCLUDE, paths);
+-    entry = CONST_STRING(interp, "runtime/parrot/include/");
+-    VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "runtime/parrot/");
+-    VTABLE_push_string(interp, paths, entry);
++    if (installed) {
++        entry = CONST_STRING(interp, "runtime/parrot/include/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "runtime/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    } else {
++        entry = CONST_STRING(interp, "lib/parrot/include/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "lib/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    }
+     entry = CONST_STRING(interp, "./");
+     VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "lib/parrot/include/");
+-    VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "lib/parrot/");
+-    VTABLE_push_string(interp, paths, entry);
+ 
+     /* define library paths */
+     paths = pmc_new(interp, enum_class_ResizableStringArray);
+     VTABLE_set_pmc_keyed_int(interp, lib_paths,
+             PARROT_LIB_PATH_LIBRARY, paths);
+-    entry = CONST_STRING(interp, "runtime/parrot/library/");
+-    VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "runtime/parrot/");
+-    VTABLE_push_string(interp, paths, entry);
++    if (installed) {
++        entry = CONST_STRING(interp, "runtime/parrot/library/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "runtime/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    } else {
++        entry = CONST_STRING(interp, "lib/parrot/library/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "lib/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    }
+     entry = CONST_STRING(interp, "./");
+     VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "lib/parrot/library/");
+-    VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "lib/parrot/");
+-    VTABLE_push_string(interp, paths, entry);
+ 
+     /* define dynext paths */
+     paths = pmc_new(interp, enum_class_ResizableStringArray);
+     VTABLE_set_pmc_keyed_int(interp, lib_paths,
+             PARROT_LIB_PATH_DYNEXT, paths);
+-    entry = CONST_STRING(interp, "runtime/parrot/dynext/");
+-    VTABLE_push_string(interp, paths, entry);
++    if (installed) {
++        entry = CONST_STRING(interp, "runtime/parrot/dynext/");
++        VTABLE_push_string(interp, paths, entry);
++    } else {
++        entry = CONST_STRING(interp, "lib/parrot/dynext/");
++        VTABLE_push_string(interp, paths, entry);
++    }
+     entry = CONST_STRING(interp, "");
+     VTABLE_push_string(interp, paths, entry);
+-    entry = CONST_STRING(interp, "lib/parrot/dynext/");
+-    VTABLE_push_string(interp, paths, entry);
+ 
+     /* shared exts */
+     paths = pmc_new(interp, enum_class_ResizableStringArray);
+@@ -202,7 +220,16 @@ parrot_init_library_paths(PARROT_INTERP)
+ 
+ =item C<static PMC* get_search_paths>
+ 
+-RT#48260: Not yet documented!!!
++Return lib_paths as array of StringArrays with library searchpaths and shared
++extension used for loading various files at runtime.
++The structure looks like this:
++
++  lib_paths = [
++    [ "runtime/parrot/include", ... ],   # paths for .include 'file'
++    [ "runtime/parrot/library", ... ],   # paths for load_bytecode
++    [ "runtime/parrot/dynext", ... ],    # paths for loadlib
++    [ ".so", ... ]                       # list of shared extensions
++  ]
+ 
+ =cut
+ 
+Index: parrot-svn/config/gen/config_pm/config_lib.in
+===================================================================
+--- parrot-svn.orig/config/gen/config_pm/config_lib.in
++++ parrot-svn/config/gen/config_pm/config_lib.in
+@@ -12,6 +12,7 @@ no_arg:
+ 
+ 	<<PCONFIG>>
+ 
++	set P0["installed"], I11
+ 	if I11, is_install
+ 	set S1, "<<PWD>>"
+ 	set P0["prefix"], S1

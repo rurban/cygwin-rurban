@@ -1,0 +1,126 @@
+Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
+===================================================================
+--- /dev/null
++++ parrot-svn/docs/pdds/draft/pdd30_install.pod
+@@ -0,0 +1,121 @@
++# Copyright (C) 2008, The Perl Foundation.
++# $Id: pdd30_install.pod 30255 2008-08-16 12:15:46Z rurban $
++
++=head1 NAME
++
++docs/pdds/draft/pdd30_install.pod - Parrot Installation
++
++=head1 ABSTRACT
++
++This PDD defines Parrot's installation details. The goal is make install
++for parrot, the installables, FHS compliant search paths for the installables
++and solving the _config bootstrapping problem if a frozen config_hash is already
++linked.
++
++=head1 VERSION
++
++$Revision: 30255 $
++
++=head1 SYNOPSIS
++
++  make install
++  make test-installable -C language/lang
++  make installable -C language/lang
++  make install -C language/lang DESTDIR=inst
++
++=head1 DESCRIPTION
++
++Parrot installation mechanisms are more powerful than perl5's.
++MANIFEST contains also the end location, tools/dev/install_files.pl is driven
++by this definition.
++The three runtime paths for "include", "library" for load_bytecode and "dynext" for
++loadlib should end up in the $prefix/lib/parrot paths.
++See #56996-fhs-runtime.patch
++
++Contrary to perl5, parrot and its language implementions on top of parrot may
++be installed as self-hosting single-file executables, with the help of merged
++pbc's and pbc2exe --install.
++
++Bootstrapping the config hash should not read a config file when the hash is
++already contained in the pmc or executable.  See #57418 [TODO] optimize
++_config to omit .include "library/config.pir" on installables.
++Test executables are binary different to installable executables because of
++this embedded config hash.
++
++There are's also a long-standing conflict in building parrot with an already
++installed shared libparrot.so. See #39742-installed-conflict.patch
++
++=head1 DEFINITIONS
++
++An B<installable> is a pbc or exe which must not access the build_dir
++paths. The build_dir is not available in a binary package. This is solved by
++generating and linking a special F<install_config.fpmc>. Custom python modules
++have a similar packaging problem, which they haven't solved yet.
++
++B<build_dir> is the full path where parrot was built. It is defined in the
++config hash.
++
++B<DESTDIR> is the end location of the parrot tree in front of the $prefix
++(/usr or /usr/local). This allows packaging by installing into a seperate
++install tree and do a tar cf there.
++
++The B<config hash> is the return value of the global function C<_config()>,
++generated in F<config_lib.pasm>, and either defined in F<library/config.pir>, or
++as frozen pmc embedded in the test executable (F<config.fpmc>), the installable
++executable (F<install_config.fpmc>) or empty for miniparrot (F<null_config.fpmc>).
++
++=head1 IMPLEMENTATION
++
++=head2 make install
++
++The parrot build system is optimized for building and testing in the
++build_dir, but not for building with an already installed parrot due to simple
++build system bugs, and not optimized to build and test installables, which should
++not access the libraries in the build_dir, but in the DESTDIR.
++
++The goal is to make install work for parrot, the utils, and all the languages.
++
++C<make install> currently does not work with an already installed shared
++libparrot.so on most platforms. There's a patch at #39742.
++
++=head2 make installable -C languages/lang
++
++
++=head2 make test-installable -C languages/lang
++
++B<Goal>: Test if the generated installable does not access the build_dir paths
++but does find older libraries, includes and dynext's in $prefix. DESTDIR is
++not known and may be optional. A simple test from C<make test> without any
++features from an external library is enough, because newer libraries are not
++installed yet at this stage.
++
++B<Implementation>: TODO
++
++B<Problem>: make test-installable should copy the make install files away, out
++of the build_dir, should temporarily rename build_dir, run a simple test, and
++remake the build_dir back. This will not be possible from a make run from
++within the build_dir. So renaming runtime will be it.
++
++This is fragile and similar for every language target, so it should be
++simplified by a make framework, like include Makefile.common or
++extending the current automake-like framework.
++
++=head2 _config bootstrapping
++
++
++=head1 ATTACHMENTS
++
++None.
++
++=head1 FOOTNOTES
++
++None.
++
++=head1 REFERENCES
++
++=cut
++
++__END__
++Local Variables:
++  fill-column:78
++End:
