@@ -42,10 +42,10 @@ Index: config/auto/opengl.pm
 -        $self->_add_to_libs( {
 -            conf            => $conf,
 +    $self->_add_to_libs( {
-+	    conf            => $conf,
++            conf            => $conf,
              osname          => $osname,
              cc              => $cc,
-+	    # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
++            # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
 +            ($^O eq 'cygwin') ?
 +             ($ENV{DISPLAY} ? (cygwin => '-lglut -L/usr/X11R6/lib -lGLU -lGL')
 +                            : (cygwin => '/usr/bin/glut32.dll -lglu32 -lopengl32'))

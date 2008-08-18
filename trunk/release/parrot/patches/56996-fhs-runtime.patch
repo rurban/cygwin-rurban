@@ -3,7 +3,7 @@ Remove stats to /usr/runtime/parrot at installed versions
 Check the config_hash for the installed key and the 
 interpreter INTERPINFO_RUNTIME_PREFIX or CONFIG_HASH if present.
 
-The library.c code is not working yet.
+The library.c code is not working yet. Parrot VM: PANIC: Out of mem!
 
 Index: parrot-svn/runtime/parrot/library/config.pir
 ===================================================================
@@ -58,20 +58,23 @@ Index: parrot-svn/runtime/parrot/library/parrotlib.pir
      root = "runtime/parrot"
  OKAY:
  
-@@ -143,8 +142,19 @@ Returns the location of a dynamic extens
+@@ -138,13 +137,22 @@ Returns the location of a dynamic extens
      stat $I0, name, 0
      if $I0 goto END
  
 -    name = "runtime/parrot/dynext/"
++    .include "interpinfo.pasm"
++    name = interpinfo .INTERPINFO_RUNTIME_PREFIX
++    concat name, "lib/parrot/dynext/"
+     concat name, request
+     stat $I0, name, 0
+     if $I0 goto END
+ 
 +    concat name, ext
 +    stat $I0, name, 0
 +    if $I0 goto END
 +
-+    # This logic has to be reversed when installed versions should run faster
-+    # than source builds.
-+    .include "interpinfo.pasm"
-+    name = interpinfo .INTERPINFO_RUNTIME_PREFIX
-+    concat name, "lib/parrot/dynext/"
+     name = "runtime/parrot/dynext/"
      concat name, request
 +    stat $I0, name, 0
 +    if $I0 goto END
@@ -83,7 +86,7 @@ Index: parrot-svn/src/library.c
 ===================================================================
 --- parrot-svn.orig/src/library.c
 +++ parrot-svn/src/library.c
-@@ -130,55 +130,73 @@ parrot_init_library_paths(PARROT_INTERP)
+@@ -130,55 +130,76 @@ parrot_init_library_paths(PARROT_INTERP)
  {
      PMC *paths;
      STRING *entry;
@@ -92,17 +95,20 @@ Index: parrot-svn/src/library.c
      PMC * const iglobals = interp->iglobals;
      /* create the lib_paths array */
      PMC * const lib_paths = pmc_new(interp, enum_class_FixedPMCArray);
-+    PMC * const config_hash =
-+        VTABLE_get_pmc_keyed_int(interp, iglobals, (INTVAL) IGLOBALS_CONFIG_HASH);
++#if 0
++    PMC * const config_hash = VTABLE_get_pmc_keyed_int(interp, iglobals, IGLOBALS_CONFIG_HASH);
++    STRING * const key = CONST_STRING(interp, "installed");
++#endif
  
      VTABLE_set_integer_native(interp, lib_paths, PARROT_LIB_PATH_SIZE);
      VTABLE_set_pmc_keyed_int(interp, iglobals,
              IGLOBALS_LIB_PATHS, lib_paths);
-+
-+    if (VTABLE_elements(interp, config_hash)) {
-+        STRING * const key = CONST_STRING(interp, "installed");
++#if 0
++    if (VTABLE_elements(interp, config_hash) &&
++        VTABLE_exists_keyed_str(interp, config_hash, key))) {
 +        installed = VTABLE_get_integer_keyed_str(interp, config_hash, key);
 +    }
++#endif
 +
      /* each is an array of strings */
      /* define include paths */
@@ -114,14 +120,14 @@ Index: parrot-svn/src/library.c
 -    entry = CONST_STRING(interp, "runtime/parrot/");
 -    VTABLE_push_string(interp, paths, entry);
 +    if (installed) {
-+        entry = CONST_STRING(interp, "runtime/parrot/include/");
-+        VTABLE_push_string(interp, paths, entry);
-+        entry = CONST_STRING(interp, "runtime/parrot/");
-+        VTABLE_push_string(interp, paths, entry);
-+    } else {
 +        entry = CONST_STRING(interp, "lib/parrot/include/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "lib/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    } else {
++        entry = CONST_STRING(interp, "runtime/parrot/include/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "runtime/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
 +    }
      entry = CONST_STRING(interp, "./");
@@ -140,14 +146,14 @@ Index: parrot-svn/src/library.c
 -    entry = CONST_STRING(interp, "runtime/parrot/");
 -    VTABLE_push_string(interp, paths, entry);
 +    if (installed) {
-+        entry = CONST_STRING(interp, "runtime/parrot/library/");
-+        VTABLE_push_string(interp, paths, entry);
-+        entry = CONST_STRING(interp, "runtime/parrot/");
-+        VTABLE_push_string(interp, paths, entry);
-+    } else {
 +        entry = CONST_STRING(interp, "lib/parrot/library/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "lib/parrot/");
++        VTABLE_push_string(interp, paths, entry);
++    } else {
++        entry = CONST_STRING(interp, "runtime/parrot/library/");
++        VTABLE_push_string(interp, paths, entry);
++        entry = CONST_STRING(interp, "runtime/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
 +    }
      entry = CONST_STRING(interp, "./");
@@ -164,10 +170,10 @@ Index: parrot-svn/src/library.c
 -    entry = CONST_STRING(interp, "runtime/parrot/dynext/");
 -    VTABLE_push_string(interp, paths, entry);
 +    if (installed) {
-+        entry = CONST_STRING(interp, "runtime/parrot/dynext/");
++        entry = CONST_STRING(interp, "lib/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
 +    } else {
-+        entry = CONST_STRING(interp, "lib/parrot/dynext/");
++        entry = CONST_STRING(interp, "runtime/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
 +    }
      entry = CONST_STRING(interp, "");
@@ -177,7 +183,7 @@ Index: parrot-svn/src/library.c
  
      /* shared exts */
      paths = pmc_new(interp, enum_class_ResizableStringArray);
-@@ -202,7 +220,16 @@ parrot_init_library_paths(PARROT_INTERP)
+@@ -202,7 +223,16 @@ parrot_init_library_paths(PARROT_INTERP)
  
  =item C<static PMC* get_search_paths>
  
