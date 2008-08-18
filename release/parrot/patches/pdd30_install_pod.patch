@@ -2,7 +2,7 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 ===================================================================
 --- /dev/null
 +++ parrot-svn/docs/pdds/draft/pdd30_install.pod
-@@ -0,0 +1,121 @@
+@@ -0,0 +1,134 @@
 +# Copyright (C) 2008, The Perl Foundation.
 +# $Id: pdd30_install.pod 30255 2008-08-16 12:15:46Z rurban $
 +
@@ -45,7 +45,8 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 +already contained in the pmc or executable.  See #57418 [TODO] optimize
 +_config to omit .include "library/config.pir" on installables.
 +Test executables are binary different to installable executables because of
-+this embedded config hash.
++this embedded config hash. Test executables contain config hash with
++the prefix to the build_dir, installables to the given prefix from Configure.pl.
 +
 +There are's also a long-standing conflict in building parrot with an already
 +installed shared libparrot.so. See #39742-installed-conflict.patch
@@ -58,9 +59,9 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 +have a similar packaging problem, which they haven't solved yet.
 +
 +B<build_dir> is the full path where parrot was built. It is defined in the
-+config hash.
++config hash. When building from source build_dir is also the PARROT_RUNTIME prefix.
 +
-+B<DESTDIR> is the end location of the parrot tree in front of the $prefix
++B<DESTDIR> is the end location of the parrot tree in front of the prefix
 +(/usr or /usr/local). This allows packaging by installing into a seperate
 +install tree and do a tar cf there.
 +
@@ -83,8 +84,20 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 +C<make install> currently does not work with an already installed shared
 +libparrot.so on most platforms. There's a patch at #39742.
 +
++make install steps for a language:
++
++  copy installables to DESTDIR/bin_dir as parrot-lang
++  copy libraries to DESTDIR/lib_dir/parrot/dynext
++  copy docs to DESTDIR/doc_dir
++  generate a man(1) page and copy to DESTDIR/man_dir
++
 +=head2 make installable -C languages/lang
 +
++This creates a pbc or exe linked to F<install_config.fpmc>, and this
++executable should not access the build_dir/runtime/parrot paths.
++
++A pbc may be optionally merged with install_config.fpmc, an exe
++is just linked with pbc_to_exe --install.
 +
 +=head2 make test-installable -C languages/lang
 +
