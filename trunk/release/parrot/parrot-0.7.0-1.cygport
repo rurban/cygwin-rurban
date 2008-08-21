@@ -163,7 +163,7 @@ src_install () {
   insinto /usr/share/emacs/site-lisp
   doins ${B}/editor/*.el
   pod2text ${B}/editor/README.pod > ${D}/usr/share/emacs/site-lisp/parrot.README
-  # put this into ~/.vim/ or the global vim dirs?
+  # put this into ~/.vim/ or to the global vim dirs?
   insinto /usr/share/vim/vimfiles/syntax
   doins ${B}/editor/pir.vim ${B}/editor/pasm.vim ${B}/editor/pmc.vim
   mkdir -p ${D}/usr/share/vim/vimfiles/ftplugin
