@@ -1,0 +1,44 @@
+Index: parrot-svn/languages/dotnet/ops/dotnet.ops
+===================================================================
+--- parrot-svn.orig/languages/dotnet/ops/dotnet.ops
++++ parrot-svn/languages/dotnet/ops/dotnet.ops
+@@ -88,7 +88,10 @@ static opcode_t* dotnet_OverflowExceptio
+     PMC *ex_pmc = pmc_new(interp, enum_class_Exception);
+     VTABLE_set_string_native(interp, ex_pmc,
+         string_from_literal(interp, "System.OverflowException"));
+-    return (opcode_t *)throw_exception(interp, ex_pmc, ret);
++    VTABLE_set_integer_keyed_str(interp, ex_pmc,
++        "severity", EXCEPT_error);
++    Parrot_ex_throw_from_c(interp, ex_pmc);
++    return ret;
+ }
+ 
+ 
+Index: parrot-svn/languages/dotnet/pmc/dotnetassembly.pmc
+===================================================================
+--- parrot-svn.orig/languages/dotnet/pmc/dotnetassembly.pmc
++++ parrot-svn/languages/dotnet/pmc/dotnetassembly.pmc
+@@ -1848,7 +1848,7 @@ pmclass DotNetAssembly dynpmc group dotn
+         free(filename);
+ 
+         if (!in)
+-            Parrot_ex_throw_from_c_args(INTERP, NULL, E_IOError,
++            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_PIO_ERROR,
+                 "Unable to open file %s", filename);
+ 
+         /* Attempt to load the PE parts of the file; this locates the CLI
+@@ -2184,12 +2184,9 @@ pmclass DotNetAssembly dynpmc group dotn
+ 
+         /* If we don't have an assembly or nothing is loaded, throw an
+            exception and leave. */
+-        if (ass == NULL || ass->loaded == 0)
+-        {
+-            EXCEPTION_INVALID_OPERATION(INTERP, NULL, INVALID_OPERATION,
++        if (!ass || !ass->loaded)
++            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_INVALID_OPERATION,
+                "No .NET CLI file loaded");
+-            RETURN(PMC *PMCNULL);
+-        }
+         else {
+             PMC *result = VTABLE_get_pmc_keyed_int(INTERP, ass->methods,
+                 ass->entry_point);

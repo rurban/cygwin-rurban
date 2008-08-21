@@ -1,6 +1,12 @@
 difforig config/auto/opengl.pm lib/Parrot/Configure/Step/Methods.pm
 
-revised to add -L/usr/X11R6/lib and /usr/bin/glut32.dll directly
+header parsing: 
+  need to match the linker logic. On cygwin without DISPLAY 
+  leave out freeglut.
+
+linking:
+  same logic.
+  revised to add -L/usr/X11R6/lib and /usr/bin/glut32.dll directly
 
 Index: config/auto/opengl.pm
 ===================================================================
@@ -40,15 +46,14 @@ Index: config/auto/opengl.pm
 -    }
 -    else {
 -        $self->_add_to_libs( {
--            conf            => $conf,
 +    $self->_add_to_libs( {
-+            conf            => $conf,
+             conf            => $conf,
              osname          => $osname,
              cc              => $cc,
 +            # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
 +            ($^O eq 'cygwin') ?
 +             ($ENV{DISPLAY} ? (cygwin => '-lglut -L/usr/X11R6/lib -lGLU -lGL')
-+                            : (cygwin => '/usr/bin/glut32.dll -lglu32 -lopengl32'))
++                            : (cygwin => '-lglut32 -lglu32 -lopengl32'))
 +             : (),
              win32_gcc       => '-lglut32 -lglu32 -lopengl32',
              win32_nongcc    => 'opengl32.lib glu32.lib glut32.lib',
@@ -112,3 +117,17 @@ Index: lib/Parrot/Configure/Step/Methods.pm
             $args->{osname} =~ /cygwin/i) &&
             $args->{cc} =~ /^gcc/i)          ? 'win32_gcc'
          :  $args->{osname} =~ /mswin32/i    ? 'win32_nongcc'
+Index: config/gen/opengl.pm
+===================================================================
+--- config/gen/opengl.pm.orig
++++ config/gen/opengl.pm
+@@ -447,6 +447,9 @@ sub runstep {
+ #         "$ENV{HOME}/src/osx-insane/usr/X11R6 1/include/GL/*.h",
+     );
+ 
++    # X freeglut only if DISPLAY is set, otherwise use native w32api GLUT
++    shift @header_globs if $^O eq 'cygwin' and !$ENV{DISPLAY};
++
+     print "\nChecking for OpenGL headers using the following globs:\n\t",
+         join("\n\t", @header_globs), "\n"
+         if $verbose;

@@ -1,5 +1,7 @@
 				-*- diff -*-
-The reason for the shared libparrot problem is simple and two-fold:
+The reason for the problem to make shared libparrot with an already installed 
+shared libparrot is simple and has several reasons:
+
 1. libs belongs to the end. 
 
 first LDFLAGS, then LD_LOAD_FLAGS, then libparrot, 
@@ -27,42 +29,16 @@ to the LIBS flag at the front. I went this way.
 The other fix would be to explicitly link to blib/lib/libparrot.so,
 without -L path hacks.
 
+3. Now an already installed libparrot.dll/.so does not conflict with make anymore.
+   The remaining problem is at make installable esp. for the languages 
+   and already installed /usr/lib/parrot, /usr/include/parrot and
+   /usr/lib/libparrot.dll.a
+
 This patch adds PATH resp. LD_RUN_PATH to the parrot invocations, similar as in perl5.
 It moves a -L<path> from @ldflags@ to @libs@ in config.
 It also adds emacs/vim modes to the Makefiles.
 It also adds Makefile targets to regenerate the Makefiles automatically.
 
-Index: parrot-svn/config/gen/makefiles/dynoplibs_pl.in
-===================================================================
---- parrot-svn.orig/config/gen/makefiles/dynoplibs_pl.in
-+++ parrot-svn/config/gen/makefiles/dynoplibs_pl.in
-@@ -46,7 +46,7 @@ if ($^O eq 'MSWin32') {
- }
- 
- # OPS2C Config
--our $OPS2C = "$PERL -I $PATHQUOTE" . 
-+our $OPS2C = "$PERL -I $PATHQUOTE" .
-              q[@build_dir@@slash@lib] .
-              "$PATHQUOTE $PATHQUOTE" .
-              q[@build_dir@@slash@tools@slash@build@slash@ops2c.pl] .
-@@ -73,7 +73,7 @@ sub compile_cmd {
- 
- sub partial_link_cmd {
-     my ($target, $libs, $sources) = @_;
--    
-+
-     my $liblist;
-     if ($^O =~ /mswin32/i) {
-         # Need to put various libraries in the link line.
-@@ -93,7 +93,7 @@ sub partial_link_cmd {
-         "$LD ".
-         "@ld_out@" . $target . " " .
-         join(" ", map {"$PATHQUOTE$_$PATHQUOTE"} @$sources) .
--        " $liblist $LDFLAGS $LD_LOAD_FLAGS $PATHQUOTE$LIBPARROT$PATHQUOTE";
-+        " $LDFLAGS $LD_LOAD_FLAGS $PATHQUOTE$LIBPARROT$PATHQUOTE $liblist";
- }
- 
- our $NOW = time();
 Index: parrot-svn/config/gen/makefiles/dynpmc_pl.in
 ===================================================================
 --- parrot-svn.orig/config/gen/makefiles/dynpmc_pl.in
@@ -615,6 +591,17 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # HLL Executable targets
  #CONDITIONED_LINE(win32):perl6 : $(PERL6)
+@@ -813,8 +820,8 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
+     lib/Parrot/OpLib/core.pm $(SRC_DIR)/install_config$(O) \
+     $(PARROT)
+ 	$(LINK) @ld_out@$@ \
+-    $(SRC_DIR)/main$(O) \
+-    $(ALL_PARROT_LIBS) $(LINKFLAGS) $(SRC_DIR)/install_config$(O)
++    $(SRC_DIR)/main$(O) $(SRC_DIR)/install_config$(O) \
++    $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ #CONDITIONED_LINE(win32):	if exist $@.manifest mt.exe -manifest $@.manifest -outputresource:$@;1
+ 
+ $(INC_DIR)/parrot.h : $(INC_DIR)/pbcversion.h $(INC_DIR)/vtable.h
 @@ -840,7 +847,7 @@ $(SRC_DIR)/null_config.c : myconfig $(BU
  
  install_config.fpmc : myconfig config_lib.pasm $(PARROT)
@@ -787,3 +774,34 @@ Index: parrot-svn/config/gen/makefiles/dynoplibs.in
 +# mode: makefile
 +# ex: ft=make
 +# End:
+Index: parrot-svn/config/gen/makefiles/dynoplibs_pl.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/dynoplibs_pl.in
++++ parrot-svn/config/gen/makefiles/dynoplibs_pl.in
+@@ -46,7 +46,7 @@ if ($^O eq 'MSWin32') {
+ }
+ 
+ # OPS2C Config
+-our $OPS2C = "$PERL -I $PATHQUOTE" . 
++our $OPS2C = "$PERL -I $PATHQUOTE" .
+              q[@build_dir@@slash@lib] .
+              "$PATHQUOTE $PATHQUOTE" .
+              q[@build_dir@@slash@tools@slash@build@slash@ops2c.pl] .
+@@ -73,7 +73,7 @@ sub compile_cmd {
+ 
+ sub partial_link_cmd {
+     my ($target, $libs, $sources) = @_;
+-    
++
+     my $liblist;
+     if ($^O =~ /mswin32/i) {
+         # Need to put various libraries in the link line.
+@@ -93,7 +93,7 @@ sub partial_link_cmd {
+         "$LD ".
+         "@ld_out@" . $target . " " .
+         join(" ", map {"$PATHQUOTE$_$PATHQUOTE"} @$sources) .
+-        " $liblist $LDFLAGS $LD_LOAD_FLAGS $PATHQUOTE$LIBPARROT$PATHQUOTE";
++        " $LDFLAGS $LD_LOAD_FLAGS $PATHQUOTE$LIBPARROT$PATHQUOTE $liblist";
+ }
+ 
+ our $NOW = time();

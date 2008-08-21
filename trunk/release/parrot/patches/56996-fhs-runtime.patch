@@ -3,7 +3,9 @@ Remove stats to /usr/runtime/parrot at installed versions
 Check the config_hash for the installed key and the 
 interpreter INTERPINFO_RUNTIME_PREFIX or CONFIG_HASH if present.
 
-The library.c code is not working yet. Parrot VM: PANIC: Out of mem!
+The library.c code is not working yet with ENABLE_PARROT_LIBRARY_INSTALLED
+Parrot VM: PANIC: Out of mem!
+Not enough tuits yet to fix and debug it.
 
 Index: parrot-svn/runtime/parrot/library/config.pir
 ===================================================================
@@ -86,7 +88,29 @@ Index: parrot-svn/src/library.c
 ===================================================================
 --- parrot-svn.orig/src/library.c
 +++ parrot-svn/src/library.c
-@@ -130,55 +130,76 @@ parrot_init_library_paths(PARROT_INTERP)
+@@ -1,6 +1,6 @@
+ /*
+ Copyright (C) 2004-2007, The Perl Foundation.
+-$Id: library.c 27529 2008-05-16 01:38:16Z chromatic $
++$Id: library.c 30318 2008-08-19 02:02:46Z Whiteknight $
+ 
+ =head1 NAME
+ 
+@@ -121,64 +121,108 @@ if will be called as a function with thi
+ Platform code may add, delete, or replace search path entries as needed. See
+ also F<include/parrot/library.h> for C<enum_lib_paths>.
+ 
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
++then the config hash is checked for the path prefix. This still crashes.
++
+ =cut
+ 
+ */
+ 
++#undef ENABLE_PARROT_LIBRARY_INSTALLED
++
+ void
+ parrot_init_library_paths(PARROT_INTERP)
  {
      PMC *paths;
      STRING *entry;
@@ -95,7 +119,7 @@ Index: parrot-svn/src/library.c
      PMC * const iglobals = interp->iglobals;
      /* create the lib_paths array */
      PMC * const lib_paths = pmc_new(interp, enum_class_FixedPMCArray);
-+#if 0
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    PMC * const config_hash = VTABLE_get_pmc_keyed_int(interp, iglobals, IGLOBALS_CONFIG_HASH);
 +    STRING * const key = CONST_STRING(interp, "installed");
 +#endif
@@ -103,7 +127,7 @@ Index: parrot-svn/src/library.c
      VTABLE_set_integer_native(interp, lib_paths, PARROT_LIB_PATH_SIZE);
      VTABLE_set_pmc_keyed_int(interp, iglobals,
              IGLOBALS_LIB_PATHS, lib_paths);
-+#if 0
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    if (VTABLE_elements(interp, config_hash) &&
 +        VTABLE_exists_keyed_str(interp, config_hash, key))) {
 +        installed = VTABLE_get_integer_keyed_str(interp, config_hash, key);
@@ -119,17 +143,23 @@ Index: parrot-svn/src/library.c
 -    VTABLE_push_string(interp, paths, entry);
 -    entry = CONST_STRING(interp, "runtime/parrot/");
 -    VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    if (installed) {
++#endif
 +        entry = CONST_STRING(interp, "lib/parrot/include/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "lib/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    } else {
++#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/include/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "runtime/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    }
++#endif
      entry = CONST_STRING(interp, "./");
      VTABLE_push_string(interp, paths, entry);
 -    entry = CONST_STRING(interp, "lib/parrot/include/");
@@ -145,17 +175,23 @@ Index: parrot-svn/src/library.c
 -    VTABLE_push_string(interp, paths, entry);
 -    entry = CONST_STRING(interp, "runtime/parrot/");
 -    VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    if (installed) {
++#endif
 +        entry = CONST_STRING(interp, "lib/parrot/library/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "lib/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    } else {
++#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/library/");
 +        VTABLE_push_string(interp, paths, entry);
 +        entry = CONST_STRING(interp, "runtime/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    }
++#endif
      entry = CONST_STRING(interp, "./");
      VTABLE_push_string(interp, paths, entry);
 -    entry = CONST_STRING(interp, "lib/parrot/library/");
@@ -169,13 +205,19 @@ Index: parrot-svn/src/library.c
              PARROT_LIB_PATH_DYNEXT, paths);
 -    entry = CONST_STRING(interp, "runtime/parrot/dynext/");
 -    VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    if (installed) {
++#endif
 +        entry = CONST_STRING(interp, "lib/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    } else {
++#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
++#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
 +    }
++#endif
      entry = CONST_STRING(interp, "");
      VTABLE_push_string(interp, paths, entry);
 -    entry = CONST_STRING(interp, "lib/parrot/dynext/");
@@ -183,7 +225,7 @@ Index: parrot-svn/src/library.c
  
      /* shared exts */
      paths = pmc_new(interp, enum_class_ResizableStringArray);
-@@ -202,7 +223,16 @@ parrot_init_library_paths(PARROT_INTERP)
+@@ -202,7 +246,16 @@ parrot_init_library_paths(PARROT_INTERP)
  
  =item C<static PMC* get_search_paths>
  
@@ -198,6 +240,49 @@ Index: parrot-svn/src/library.c
 +    [ "runtime/parrot/dynext", ... ],    # paths for loadlib
 +    [ ".so", ... ]                       # list of shared extensions
 +  ]
+ 
+ =cut
+ 
+@@ -223,7 +276,9 @@ get_search_paths(PARROT_INTERP, enum_lib
+ 
+ =item C<static int is_abs_path>
+ 
+-RT#48260: Not yet documented!!!
++Determines whether a file name given by a fixed-8 or utf8 C<STRING> is an
++absolute file name. Returns C<1> if the filename is absolute, returns C<0>
++otherwise.
+ 
+ =cut
+ 
+@@ -244,7 +299,7 @@ is_abs_path(ARGIN(const STRING *file))
+              (strncmp(file_name+1, ":\\", 2) == 0 ||
+               strncmp(file_name+1, ":/",  2) == 0)))
+ #else
+-        if (file_name[0] == '/')     /* XXX  ../foo, ./bar */
++    if (file_name[0] == '/')     /* XXX  ../foo, ./bar */
+ #endif
+         {
+             return 1;
+@@ -287,7 +342,10 @@ cnv_to_win32_filesep(ARGMOD(STRING *path
+ 
+ =item C<static STRING* path_finalize>
+ 
+-RT#48260: Not yet documented!!!
++Ensures the given STRING C<path> has a C-style NULL character at the end. The
++length of the string is not increased to account for this NULL, however. In
++WIN32 systems, the path separator is switched from the unix-style "/" to the
++Windows-style "\".
+ 
+ =cut
+ 
+@@ -409,7 +467,9 @@ static const char* load_ext_code[ LOAD_E
+ 
+ =item C<static STRING* try_load_path>
+ 
+-RT#48260: Not yet documented!!!
++Attempts to load a file with name C<path>. If the file is successfully located,
++the finalized name of the file is returned as a STRING. Otherwise, returns
++NULL.
  
  =cut
  
