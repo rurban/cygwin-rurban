@@ -17,8 +17,8 @@ PKG_NAMES="${PN} lib${PN}0 lib${PN}-devel ${PN}-perl6 ${PN}-languages"
 PKG_HINTS="${PKG_NAMES}"
 
 parrot_exists_check() {
-  for d in /usr/lib/libparrot.dll.a /usr/local/lib/libparrot.dll.a \
-	   /usr/local/lib/parrot /usr/local/include/parrot \
+  #/usr/lib/libparrot.dll.a /usr/local/lib/libparrot.dll.a \
+  for d in /usr/local/lib/parrot /usr/local/include/parrot \
 	   /usr/include/parrot /usr/lib/parrot
   do
     if [ -e $d ]; then
@@ -36,7 +36,7 @@ src_compile() {
   export PATH
 
   test -e Configure.pl || lndirs
-  test -e config_lib.pasm && make clean
+  test -e config_lib.pasm && make realclean
 
   # stable by irc:#parrot
   lang_stable="abc cardinal eclectus lolcode lua perl6 pipp punie pynie squaak"
@@ -109,17 +109,17 @@ src_install () {
   rm $man1/parrot-perl6.1
 
   cd ${B}
-  mkdir languages/bin
+  #mkdir languages/bin
   for dir in languages/* ; do
     lang=$( basename $dir )
     [ $lang = parrot_compiler ] && continue
     if [ ! -f $lang -a -d $dir -a -f $dir/${lang}.pbc ] ; then
         cd languages/$lang
 	make installable || ../../pbc_to_exe ${lang}.pbc --install
-	make install DESTDIR=${D}
+	make install DESTDIR=${D} DOC_DIR="/usr/share/doc/${P}"
 	# TODO: do some standalone testing with renamed builddir
-	test -e ${lang}.pir -a ! -e $man1/parrot-${lang}.1 && pod2man ${lang}.pir > $man1/parrot-${lang}.1
-        test -e installable_${lang}.exe && cp installable_${lang}.exe ../bin/parrot-${lang}.exe
+	#test -e ${lang}.pir -a ! -e $man1/parrot-${lang}.1 && pod2man ${lang}.pir > $man1/parrot-${lang}.1
+        #test -e installable_${lang}.exe && cp installable_${lang}.exe ../bin/parrot-${lang}.exe
         cd ${B}
     fi
   done
@@ -136,9 +136,9 @@ src_install () {
   doins myconfig VERSION parrotbug
 
   exeinto /usr/bin
-  doexe parrot_config.exe languages/bin/*.exe blib/lib/cygparrot${DLLVER}.dll
-  doexe runtime/bin/*.exe
-  cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
+  doexe parrot_config.exe blib/lib/cygparrot${DLLVER}.dll
+  #doexe runtime/bin/*.exe
+  #cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
 
   insinto /usr/lib
   doins blib/lib/libparrot.dll.a
@@ -187,7 +187,7 @@ src_install () {
     test \! -d $dir && continue
     lang=$( basename $dir )
     [ $lang = parrot_compiler ] && continue
-    [ $lang = bin ] && continue
+    [ $lang = t ] && continue
 
     cd languages/$lang
     docinto languages/$lang
