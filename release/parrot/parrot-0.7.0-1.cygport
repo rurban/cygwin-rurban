@@ -10,16 +10,30 @@ SRC_URI=${SRC_URI:-"http://search.cpan.org/CPAN/authors/id/R/RG/RGRJR/parrot-${P
 # SRC_DIR="parrot-${PV}"
 LICENSE="Artistic2"
 DIFF_EXCLUDES="MANIFEST.* parrot.pc myconfig config_lib.pasm Makefile TAGS"
-SIG=0
+#SIG=0
 DLLVER=$(echo $PV|sed -e's,\.,_,g')
 
 PKG_NAMES="${PN} lib${PN}0 lib${PN}-devel ${PN}-perl6 ${PN}-languages"
 PKG_HINTS="${PKG_NAMES}"
 
+parrot_exists_check() {
+  for d in /usr/lib/libparrot.dll.a /usr/local/lib/libparrot.dll.a \
+	   /usr/local/lib/parrot /usr/local/include/parrot \
+	   /usr/include/parrot /usr/lib/parrot
+  do
+    if [ -e $d ]; then
+      echo "Building with $d is not yet supported! Remove or rename first"
+      exit
+    fi
+  done
+}
+
 src_compile() {
   cd ${B}
+  parrot_exists_check
   oldpath=$PATH
-  export PATH=${B}/blib/lib:$PATH 
+  PATH=${B}/blib/lib:$PATH
+  export PATH
 
   test -e Configure.pl || lndirs
   test -e config_lib.pasm && make clean
@@ -52,22 +66,28 @@ EOF
 
   cygmake -C editor
 
-  export PATH=$oldpath
-
+  PATH=$oldpath
+  export PATH
 }
 
 src_check () {
   cd ${B}
+  parrot_exists_check
   oldpath=$PATH
-  export PATH=${B}/blib/lib:$PATH 
+  PATH=${B}/blib/lib:$PATH
+  export PATH
+
   cygtest
   cygmake test -C languages/perl6
-  cygmake languages-smoke 
-  export PATH=$oldpath
+  cygmake languages-smoke
+
+  PATH=$oldpath
+  export PATH
 }
 
 src_install () {
   cd ${B}
+  parrot_exists_check
   man1=${D}/usr/share/man/man1
   mkdir -p $man1
 
@@ -98,7 +118,7 @@ src_install () {
 	make installable || ../../pbc_to_exe ${lang}.pbc --install
 	make install DESTDIR=${D}
 	# TODO: do some standalone testing with renamed builddir
-	test -e ${lang}.pir && pod2man ${lang}.pir > $man1/parrot-${lang}.1
+	test -e ${lang}.pir -a ! -e $man1/parrot-${lang}.1 && pod2man ${lang}.pir > $man1/parrot-${lang}.1
         test -e installable_${lang}.exe && cp installable_${lang}.exe ../bin/parrot-${lang}.exe
         cd ${B}
     fi
@@ -172,7 +192,7 @@ src_install () {
     cd languages/$lang
     docinto languages/$lang
     dodoc MAINTAINER README Changes ChangeLog CREDITS
-    test -e $lang.pir && pod2man $lang.pir > $man1/parrot-$lang.1
+    #test -e $lang.pir && pod2man $lang.pir > $man1/parrot-$lang.1
     test -d docs && dodoc docs/*
 
     test -d examples && (insinto /usr/share/doc/${P}/languages/${lang}/examples; doins examples/*)
@@ -187,12 +207,13 @@ PKG_CONTENTS[0]=" \
 --exclude=usr/include \
 --exclude=usr/bin/perl6.exe \
 --exclude=usr/bin/parrot-* \
---exclude=usr/lib/parrot/dynext/apl_group.dll \
---exclude=usr/lib/parrot/dynext/dotnet_*.dll \
---exclude=usr/lib/parrot/dynext/eclectus_group.dll \
---exclude=usr/lib/parrot/dynext/lua_group.dll \
---exclude=usr/lib/parrot/dynext/perl6_group.dll \
---exclude=usr/lib/parrot/dynext/tcl_group.dll \
+--exclude=usr/lib/parrot/dynext/apl_*.dll \
+--exclude=usr/lib/parrot/dynext/dotnet*.dll \
+--exclude=usr/lib/parrot/dynext/eclectus_*.dll \
+--exclude=usr/lib/parrot/dynext/lua_*.dll \
+--exclude=usr/lib/parrot/dynext/perl6_*.dll \
+--exclude=usr/lib/parrot/dynext/php_*.dll \
+--exclude=usr/lib/parrot/dynext/tcl_*.dll \
 --exclude=usr/lib/parrot/dynext/wmls_*.dll \
 --exclude=usr/share/doc/${P}/languages \
 --exclude=usr/share/doc/${P}/docs/dev \
@@ -240,7 +261,7 @@ usr/share/doc/${P}/docs/project \
 # parrot-perl6
 PKG_CONTENTS[3]=" \
 usr/bin/perl6.exe \
-usr/lib/parrot/dynext/perl6_group.dll \
+usr/lib/parrot/dynext/perl6_*.dll \
 usr/share/doc/${P}/languages/perl6 \
 usr/share/man/man1/perl6.1.gz \
 "
@@ -249,11 +270,12 @@ usr/share/man/man1/perl6.1.gz \
 PKG_CONTENTS[4]=" \
 --exclude=usr/share/doc/${P}/languages/perl6 \
 usr/bin/parrot-*.exe \
-usr/lib/parrot/dynext/apl_group.dll \
-usr/lib/parrot/dynext/dotnet_*.dll \
-usr/lib/parrot/dynext/eclectus_group.dll \
-usr/lib/parrot/dynext/lua_group.dll \
-usr/lib/parrot/dynext/tcl_group.dll \
+usr/lib/parrot/dynext/apl_*.dll \
+usr/lib/parrot/dynext/dotnet*.dll \
+usr/lib/parrot/dynext/eclectus_*.dll \
+usr/lib/parrot/dynext/lua_*.dll \
+usr/lib/parrot/dynext/php_*.dll \
+usr/lib/parrot/dynext/tcl_*.dll \
 usr/lib/parrot/dynext/wmls_*.dll \
 usr/share/doc/${P}/languages \
 usr/share/man/man1/parrot-*1.gz \
