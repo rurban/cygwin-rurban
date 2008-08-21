@@ -251,7 +251,7 @@ use vars qw(@ISA $db %opt);
 @ISA = qw(Tie::ExtraHash);
 use Carp qw/croak/;
 $db = '/etc/setup/installed.db';
-%opt = %{*Cygwin::Install::opt{HASH}};
+%opt = %{*Cygwin::Install::opt{HASH}}; # copy not ptr
 
 =pod
 
@@ -307,11 +307,13 @@ sub UNTIE {
         foreach ( keys %{ $obj->[0] } ) {
             push @arr, $_ . " " . $obj->[0]{$_} . " 0\n";
         }
-        foreach ( sort { lc $a cmp lc $b } @arr ) {    # sort case insensitive
+	# sort case insensitive
+        foreach ( sort { lc $a cmp lc $b } @arr ) {
             print DB $_;
         }
         close DB;
-        warn "changed $db: " . $obj->[1]->{changed} . " packages\n" unless $opt{quiet};
+        warn "changed $db: " . $obj->[1]->{changed} . " packages\n" 
+	    unless $opt{quiet};
         $obj->[1]->{changed} = 0;
     }
     else {
@@ -522,7 +524,9 @@ use File::Copy;
 use vars qw(@ISA);
 @ISA = qw(Tie::ExtraHash);
 use Carp qw/croak carp/;
+use Cwd;
 my $setup_ini = 'setup.ini'; # full path
+# %opt = %{*Cygwin::Install::opt{HASH}};
 
 =pod
 
@@ -593,9 +597,9 @@ sub from_current_paths_below {
     closedir $dh;
     @result;
 }
-sub from_last_mirrors { carp "from_last_mirrors nyi"; () }
+sub from_last_mirrors { carp "  *setup.ini* from_last_mirrors nyi"; () }
 
-sub from_mirrors { carp "from_mirrors nyi"; () }
+sub from_mirrors { carp "  *setup.ini* from_mirrors nyi"; () }
 
 =head1 METHODS
 
@@ -615,10 +619,12 @@ sub TIEHASH {
     local $/ = "";    # slurp paragraphs
     # TODO: store $setup_ini in the object, not in the stash
     $setup_ini = $_[0] if defined $_[0] and -e $_[0] and $_[0] =~ /setup\.ini/;
-    # TODO: handle bz2
+    return bless([],$class) unless $setup_ini;
+    # TODO: handle bz2 and sig check
     unless ( open DB, "< $setup_ini" ) {
-        warn "Failed to read $setup_ini: $!";
-        return undef;
+        warn "Failed to read $setup_ini. Turning dependencies off. $!\n";
+	$Cygwin::Install::opt{nodeps}++;
+        return bless([],$class);
     }
     $rest[0]->{path} = $setup_ini;
     while ( my $_ = <DB> ) {
@@ -747,7 +753,8 @@ sub install {
 	    my $errstr = `/usr/bin/tar xfj $path -C /`;
 	    if ($!) {
 		# TODO: handle locked files in use: rename to .new or better use MoveFileEx
-		warn "untar $path failed with \"$!\" $errstr. Files in use?\n" unless $opt{quiet};
+		warn "untar $path failed with \"$!\" $errstr. Files in use?\n" 
+		  unless $opt{quiet};
 		#require Archive::Tar;
 	    }
 	    Cygwin::Install::SetupLst::writelst_from_tar($name, $path);
@@ -929,7 +936,7 @@ sub require_setupdb {
     unless (%setupdb) {
 	my $ini = new Cygwin::Install::SetupIni($opt{setup});
 	my (@local, @remote);
-	unless ( -e $ini->path) {
+	unless ( $ini->path and -e $ini->path) {
 	    # check local or remote options:
 	    # cwd = /usr/src/down/ftp%3a%2f%2fsunsite.dk%2fprojects%2fcygwinports
 	    my $local = $ini->from_current_path;
@@ -1008,13 +1015,14 @@ sub main {
 		print "Found ",join(", ",@names)."\n";
 		exit unless @names;
 		exit unless yorn("Continue? [y/n] ");
-            }
-	    my @deps = ($issrc || $opt{nodeps}) ? @names : find_deps( @names );
-	    for ( @deps ) {
+	    }
+	    my @deps = @names;
+	    @deps = find_deps( @names ) unless $issrc or $opt{nodeps};
+	    for my $pkg ( @deps ) {
 		my $warn_downgrade;
-		$pkg = $_;
+		# TODO: find the versions for the deps
 		my ( $name, $ver ) = name_ver($pkg);
-		next unless $name;
+		$name = $pkg unless $name; # ?!
 		my $curr = $db{$name};
 		my ( $namec, $verc ) = name_ver($curr);
 		# install does only fresh packages
@@ -1032,8 +1040,9 @@ sub main {
 			    }
 			    if ( (version($verc) cmp version($ver)) == 1 ) {
 				unless ($opt{force} or $opt{oldpackage}) {
-				    print "skipped --install $pkg."
-				      . "\n  Newer version $curr installed. Try --force or --oldpackage\n" 
+				    print "skipped --install $pkg.\n"
+				        . "  Newer version $curr installed."
+					. " Try --force or --oldpackage\n"
 					unless $opt{quiet};
 				    next;
 				}
@@ -1042,8 +1051,10 @@ sub main {
 			}
 			if ( $opt{check} or $opt{test} ) {
 			    print "downgrade forced:\n" if $warn_downgrade and !$opt{quiet};
-			    print "uninstall $curr --skipped (test only)\n" if $curr and !$opt{quiet};
-			    print "install   $pkg from $path --skipped (test only)\n" unless $opt{quiet};
+			    print "uninstall $curr --skipped (test only)\n" 
+			      if $curr and !$opt{quiet};
+			    print "install   $pkg from $path --skipped (test only)\n" 
+			      unless $opt{quiet};
 			} else {
 			    print "downgrade forced:\n" if $warn_downgrade and !$opt{quiet};
 			    uninstall( $name, $curr ) if $curr;
@@ -1065,9 +1076,10 @@ sub main {
 }
 
 # Getopt::Long::Configure("bundling");
-# TODO: CGI-Interface?
+# TODO: some_interactive_repl
 #       cyginstall-wui with Win32::GUI
 #       cyginstall-tui with TCL UI
+#       CGI-Interface?
 unless ( $ENV{'REQUEST_METHOD'} or $0 !~ /cyginstall/ ) {
     GetOptions(
         \%opt,     'install|i', 'erase|e', 'upgrade|U',
