@@ -1,0 +1,13 @@
+#57476-pdb-version.patch
+#57546-tags-xemacs.patch
+39742-installed-conflict.patch
+56544-install_files.patch
+57006-opengl-cyg.patch -p0
+58034-config_args.patch
+56554-make-install-lang.patch
+56998-cygdll_versioning.patch -p0
+51944-README_cygwin.patch -p0
+pdd30_install_pod.patch
+56996-fhs-runtime.patch
+58176-dotnet-exceptions.patch
+57548-CONDITIONED_LINE_enh.patch
