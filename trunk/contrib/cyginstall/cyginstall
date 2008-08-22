@@ -24,14 +24,14 @@ cyginstall - cmdline cygwin installer with rpm options in perl
 
 =item -U --upgrade <package>+		upgrade package(s), don't install new.
 
-Usage: cyginstall -i [options] package ...
+  Usage: cyginstall -i [options] package ...
 
-This command will install or upgrade or erase or download one or more
-packages in the system. On install or upgrade, if a new version of an
-already installed package is available, the new version will be
-selected for installation.  If no local package name is given, a
-setup.ini from a mirror is checked for updates, and the package is
-downloaded.
+  This command will install or upgrade or erase or download one or
+  more packages in the system. On install or upgrade, if a new version
+  of an already installed package is available, the new version will
+  be selected for installation.  If no local package name is given, a
+  setup.ini from a mirror is checked for updates, and the package is
+  downloaded.
 
 Options:
   -h, --help            Show this help message and exit
@@ -50,7 +50,6 @@ Options:
   --check               Just check if there are upgrades to be done
 
 Global options:
-
   -y, --yes             Do not ask for confirmation
   --stepped             Split operation in confirmed steps
   --explain   	        Include additional information about changes,
@@ -70,12 +69,10 @@ Examples:
   cyginstall http://some.url/some/path/somepackage
   cyginstall http://some.url/some/path/somepackage-1.0-1.tar.bz2
 
-=back
-
 =item -q --query
 
-This command allows searching for the given expressions
-in the name, summary, and description of known packages.
+  This command allows searching for the given expressions
+  in the name, summary, and description of known packages.
 
 Examples:
   cyginstall -q ldap
@@ -132,6 +129,7 @@ Examples:
                                    dependency
   --whatprovides                   query/verify the package(s) which provide a
                                    dependency
+
 =back
 
 =head1 DESCRIPTION
@@ -355,6 +353,8 @@ Evaluate memory and speed of zcat against IO::Uncompress::Gunzip
 
 =head1 FUNCTIONS
 
+=over
+
 =item readlst $NAME
 
 $NAME is the package name, leading to /etc/setup/$NAME.lst.gz
@@ -368,14 +368,16 @@ $NAME is the package name, leading to /etc/setup/$NAME.lst.gz
 \@LIST conains the filenames as from readlst(), the full list
 without leading /, all files and dirs.
 
+=back
+
 =head1 METHODS
 
-=item files NAME
+=head2 files NAME
 
 Returns a list of non-directores with leading /, skips the dirs.
 Files and links.
 
-=item rm NAME
+=head2 rm NAME
 
 =cut
 
@@ -457,9 +459,9 @@ Tied hash to the setup.ini fields:
 
 Extracts and compares versions.
 
-=item version
+=head2 version()
 
-=item name
+=head2 name()
 
 =cut
 
@@ -547,25 +549,25 @@ plus some helper functions and methods.
 
 =head1 FUNCTIONS
 
-=head1 from_current_path
+=head2 from_current_path()
 
 Method or sub.
 Returns one local setup.ini path if cwd() contains a mirror-style path.
 
 If method stores the found path in path.
 
-=head1 from_mirrors
+=head2 from_mirrors()
 
 Not a method, only a sub!
 Download setup.ini from /etc/setup/last-mirror.
 Returns the list of local setup.ini paths.
 
-=head1 from_last_mirrors
+=head2 from_last_mirrors()
 
 Not a method, only a sub!
 Returns the list of local setup.ini paths, taken from /etc/setup/last-mirror.
 
-=head1 from_current_paths_below
+=head2 from_current_paths_below()
 
 Not a method, only a sub!
 Returns the local setup.ini paths if there are direct mirror-style subdirs.
@@ -603,7 +605,7 @@ sub from_mirrors { carp "  *setup.ini* from_mirrors nyi"; () }
 
 =head1 METHODS
 
-=head1 path
+=head2 path
 
 Returns the setup.ini path
 
@@ -703,7 +705,7 @@ Object interface. Don't call the subs as methods, because there's
 no global Cygwin::Install object, and the class is not (yet) accepted 
 as first arg.
 
-=head1 uninstall NAME, FULL
+=head2 uninstall NAME, FULL
 
 FULL is just the display friendly name
 
@@ -733,7 +735,7 @@ sub uninstall($$) {
 
 =pod
 
-=head1 install NAME, PKG, PATH
+=head2 install NAME, PKG, PATH
 
   NAME is the shortname
   PKG  is the full basename including .tar.bz2
@@ -780,7 +782,7 @@ sub install {
 
 =pod
 
-=head1 query NAME, PATH
+=head2 query NAME, PATH
 
   NAME is the shortname. May be empty.
   PATH is a substring of the path to the PKG.
