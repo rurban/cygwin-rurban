@@ -2154,13 +2154,14 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -1,27 +1,34 @@
+@@ -1,38 +1,40 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
+-PARROT = ../../parrot@exe@
 +LANG   = forth
- PARROT = ../../parrot@exe@
  PERL   = @perl@
  RM_RF  = @rm_rf@
++PARROT = ../../parrot@exe@
 +PBC_TO_EXE    = ../../pbc_to_exe@exe@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
@@ -2179,10 +2180,12 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
      tokenstream.pbc \
      variablestack.pbc \
      virtualstack.pbc
--
 +DOCS = MAINTAINER
  
- all: $(DEPENDENCIES)
++build: $(DEPENDENCIES)
+ 
+-all: $(DEPENDENCIES)
++all: $(DEPENDENCIES) forth@exe@ installable
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
@@ -2191,7 +2194,18 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  
  prompt: all
  	$(PARROT) forth.pbc
-@@ -47,3 +54,70 @@ virtualstack.pbc: virtualstack.pir
+ 
+-clean:
+-	$(RM_RF) $(DEPENDENCIES)
+-
+-realclean: clean
+-	$(RM_RF) Makefile
+-
+-
+ forth.pbc: forth.pir words.pir
+ 	$(PARROT) -o forth.pbc forth.pir
+ 
+@@ -47,3 +49,67 @@ virtualstack.pbc: virtualstack.pir
  
  test: all
  	$(PERL) t/harness
@@ -2201,7 +2215,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +	@echo ""
 +	@echo "Following targets are available for the user:"
 +	@echo ""
-+	@echo "  all:               js.pbc"
++	@echo "  all:               force.pbc"
 +	@echo "                     This is the default."
 +	@echo "  installable:       Create self-hosting bins and libs."
 +	@echo "  install:           Install the installable targets and docs."
@@ -2229,9 +2243,6 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +	$(POD2MAN) $(LANG).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
 +	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +	cp $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
-+
-+$(LANG).pbc : js.pbc
-+	$(CP) js.pbc $(LANG).pbc
 +
 +$(LANG)@exe@: $(LANG).pbc
 +	$(PBC_TO_EXE) $(LANG).pbc
@@ -4184,3 +4195,32 @@ Index: parrot-svn/languages/perl6/src/utils/perl6doc.pir
    -V, --version        display version information
  USAGE
      setattribute self, '$usage', $P0
+Index: parrot-svn/languages/tcl/config/makefiles/root.in
+===================================================================
+--- parrot-svn.orig/languages/tcl/config/makefiles/root.in
++++ parrot-svn/languages/tcl/config/makefiles/root.in
+@@ -143,6 +143,24 @@ install : installable
+ 	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
+ 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
+ 
++installable : installable_tclsh@exe@
++
++installable_tclsh@exe@: tcl.pbc
++	$(PBC_TO_EXE) tcl.pbc --install
++	$(RENAME) installable_tcl@exe@ installable_tclsh@exe@
++
++# TODO: rename build_dir. basic run for missing libs
++test-installable : installable
++	./installable_tclsh@exe@ tcl_misc_28.tcl
++
++install : installable
++	$(CP) installable_tclsh@exe@ $(DESTDIR)$(BIN_DIR)/parrot-tclsh@exe@
++	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" tcl
++	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
++	$(POD2MAN) README.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
++	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++
+ test: tcl.pbc
+ 	prove -r t
+ 
