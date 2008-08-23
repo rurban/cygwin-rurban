@@ -105,7 +105,7 @@ src_install () {
   #cp ${B}/runtime/parrot/library/config.pir /usr/lib/parrot/library/
   #cp ${B}/runtime/parrot/include/config.fpmc /usr/lib/parrot/include/
 
-  #cygmake installable_perl6.exe -C languages/perl6
+  cygmake installable_perl6.exe -C languages/perl6
   rm $man1/parrot-perl6.1
 
   cd ${B}
@@ -138,7 +138,7 @@ src_install () {
   exeinto /usr/bin
   doexe parrot_config.exe blib/lib/cygparrot${DLLVER}.dll
   #doexe runtime/bin/*.exe
-  #cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
+  cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
 
   insinto /usr/lib
   doins blib/lib/libparrot.dll.a
