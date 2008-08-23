@@ -2189,14 +2189,15 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -1,38 +1,40 @@
+@@ -1,38 +1,41 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
 -PARROT = ../../parrot@exe@
 +LANG   = forth
  PERL   = @perl@
  RM_RF  = @rm_rf@
-+PARROT = ../../parrot@exe@
++PARROT        = ../../parrot@exe@
++PBC_MERGE     = ../../pbc_merge@exe@
 +PBC_TO_EXE    = ../../pbc_to_exe@exe@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
@@ -2240,7 +2241,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  forth.pbc: forth.pir words.pir
  	$(PARROT) -o forth.pbc forth.pir
  
-@@ -47,3 +49,67 @@ virtualstack.pbc: virtualstack.pir
+@@ -47,3 +50,76 @@ virtualstack.pbc: virtualstack.pir
  
  test: all
  	$(PERL) t/harness
@@ -2279,14 +2280,23 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +	cp $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +
-+$(LANG)@exe@: $(LANG).pbc
++$(LANG)_full.pbc: $(DEPENDENCIES)
++        pbc_merge -o $(LANG)_full.pbc $(DEPENDENCIES)
++
++$(LANG)@exe@: $(LANG)_full.pbc
++	mv -f $(LANG).pbc $(LANG)_single.pbc
++	mv $(LANG)_full.pbc $(LANG).pbc
 +	$(PBC_TO_EXE) $(LANG).pbc
++	mv $(LANG)_single.pbc $(LANG).pbc 
 +
 +installable : installable_$(LANG)@exe@
 +	cp installable_$(LANG)@exe@ $(BUILD_DIR)
 +
-+installable_$(LANG)@exe@ : $(LANG).pbc
++installable_$(LANG)@exe@ : $(LANG)_full.pbc
++	mv -f $(LANG).pbc $(LANG)_single.pbc
++	mv $(LANG)_full.pbc $(LANG).pbc
 +	$(PBC_TO_EXE) $(LANG).pbc --install
++	mv $(LANG)_single.pbc $(LANG).pbc 
 +
 +testclean:
 +
