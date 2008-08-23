@@ -1,6 +1,6 @@
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PATCHES/README
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/README	2008-08-21 20:37:27.500000000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/README	2008-08-22 17:13:55.937500000 +0200
 @@ -0,0 +1,868 @@
 +parrot
 +----------------------------------
@@ -872,7 +872,7 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PAT
 +at <cygwin@cygwin.com>
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint src/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint	2008-08-20 15:09:57.906250000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint	2008-08-22 17:13:55.968750000 +0200
 @@ -0,0 +1,5 @@
 +sdesc: "Parrot Virtual Machine development headers and libraries"
 +ldesc: "Libraries and headers needed for development against Parrot"
@@ -881,7 +881,7 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot-devel.hint src/parrot-0.
 +external-source: parrot
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint src/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint	2008-08-20 15:09:57.937500000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint	2008-08-22 17:13:55.984375000 +0200
 @@ -0,0 +1,4 @@
 +sdesc: "libparrot dll"
 +category: Libs
@@ -889,7 +889,7 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/libparrot0.hint src/parrot-0.7.0/C
 +requires: libreadline6 libintl8 libicu38 libgmp3 libgdbm4
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint src/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint	2008-08-20 15:09:57.953125000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint	2008-08-22 17:13:56.000000000 +0200
 @@ -0,0 +1,6 @@
 +sdesc: "Various language implementions on Parrot"
 +ldesc: "parrot-APL parrot-abc parrot-bf parrot-c99 parrot-cardinal parrot-chitchat 
@@ -899,7 +899,7 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-languages.hint src/parrot-0
 +requires: parrot
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint src/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint	2008-08-20 15:09:57.968750000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint	2008-08-22 17:13:56.000000000 +0200
 @@ -0,0 +1,6 @@
 +sdesc: "Rakudo Perl6 via Parrot"
 +ldesc: "This is the Perl 6 compiler for Parrot, called 'Rakudo Perl 6,'
@@ -909,7 +909,7 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot-perl6.hint src/parrot-0.7.0
 +requires: parrot
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint src/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint	2008-08-20 15:09:58.000000000 +0200
++++ src/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint	2008-08-22 17:13:56.015625000 +0200
 @@ -0,0 +1,6 @@
 +sdesc: "Parrot Virtual Machine"
 +ldesc: "Parrot is a virtual machine designed to efficiently compile and
@@ -917,13 +917,3 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/parrot.hint src/parrot-0.7.0/CYGWI
 +and a lot of other languages"
 +category: Interpreters
 +requires: cygwin libparrot0 w32api opengl
-diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/postinstall.sh src/parrot-0.7.0/CYGWIN-PATCHES/postinstall.sh
---- origsrc/parrot-0.7.0/CYGWIN-PATCHES/postinstall.sh	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/postinstall.sh	2008-08-20 15:09:58.015625000 +0200
-@@ -0,0 +1 @@
-+ln -s /usr/lib /usr/runtime
-diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/preremove.sh src/parrot-0.7.0/CYGWIN-PATCHES/preremove.sh
---- origsrc/parrot-0.7.0/CYGWIN-PATCHES/preremove.sh	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/preremove.sh	2008-08-20 15:09:58.031250000 +0200
-@@ -0,0 +1 @@
-+test -l /usr/runtime && rm /usr/runtime

@@ -1,6 +1,6 @@
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/Configure.pl src/parrot-0.7.0/Configure.pl
 --- origsrc/parrot-0.7.0/Configure.pl	2008-08-19 15:17:58.000000000 +0200
-+++ src/parrot-0.7.0/Configure.pl	2008-08-20 15:10:00.453125000 +0200
++++ src/parrot-0.7.0/Configure.pl	2008-08-22 17:13:57.890625000 +0200
 @@ -63,6 +63,8 @@
  
  # from Parrot::Configure::Data
@@ -12,7 +12,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  $conf->{active_configuration} = 1;
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/README_cygwin.pod src/parrot-0.7.0/README_cygwin.pod
 --- origsrc/parrot-0.7.0/README_cygwin.pod	2008-08-19 15:17:58.000000000 +0200
-+++ src/parrot-0.7.0/README_cygwin.pod	2008-08-20 15:10:00.468750000 +0200
++++ src/parrot-0.7.0/README_cygwin.pod	2008-08-22 17:13:57.906250000 +0200
 @@ -6,37 +6,98 @@
  
  =head1 SYNOPSIS
@@ -172,7 +172,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  =cut
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/auto/opengl.pm src/parrot-0.7.0/config/auto/opengl.pm
 --- origsrc/parrot-0.7.0/config/auto/opengl.pm	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/auto/opengl.pm	2008-08-21 13:02:07.406250000 +0200
++++ src/parrot-0.7.0/config/auto/opengl.pm	2008-08-22 17:13:57.921875000 +0200
 @@ -114,14 +114,16 @@
  
  The Cygwin/w32api for native opengl support
@@ -227,7 +227,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      # Fink/macports locations.
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/config_pm/config_lib.in src/parrot-0.7.0/config/gen/config_pm/config_lib.in
 --- origsrc/parrot-0.7.0/config/gen/config_pm/config_lib.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/config_pm/config_lib.in	2008-08-20 15:10:00.484375000 +0200
++++ src/parrot-0.7.0/config/gen/config_pm/config_lib.in	2008-08-22 17:13:57.921875000 +0200
 @@ -12,6 +12,7 @@
  
  	<<PCONFIG>>
@@ -238,7 +238,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  	set P0["prefix"], S1
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/languages.pm src/parrot-0.7.0/config/gen/languages.pm
 --- origsrc/parrot-0.7.0/config/gen/languages.pm	2008-08-19 15:17:26.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/languages.pm	2008-08-20 15:10:00.546875000 +0200
++++ src/parrot-0.7.0/config/gen/languages.pm	2008-08-22 17:13:57.937500000 +0200
 @@ -76,7 +76,7 @@
          }
          elsif ( $language eq 'c99' ) {
@@ -250,7 +250,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
              # tcl has more than one Makefile
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/bcg.in src/parrot-0.7.0/config/gen/makefiles/bcg.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/bcg.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/bcg.in	2008-08-20 15:10:00.640625000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/bcg.in	2008-08-22 17:13:57.953125000 +0200
 @@ -1,25 +1,25 @@
 -RM_F		    = @rm_f@
 -PERL		    = @perl@
@@ -330,7 +330,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/docs.in src/parrot-0.7.0/config/gen/makefiles/docs.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/docs.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/docs.in	2008-08-20 15:10:00.671875000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/docs.in	2008-08-22 17:13:57.953125000 +0200
 @@ -7,6 +7,7 @@
  MKPATH = @mkpath@
  CHMOD  = @chmod@
@@ -363,7 +363,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/dynoplibs.in src/parrot-0.7.0/config/gen/makefiles/dynoplibs.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/dynoplibs.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/dynoplibs.in	2008-08-20 15:10:00.687500000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/dynoplibs.in	2008-08-22 17:13:57.968750000 +0200
 @@ -46,3 +46,9 @@
  distclean: realclean
  
@@ -376,7 +376,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/dynoplibs_pl.in src/parrot-0.7.0/config/gen/makefiles/dynoplibs_pl.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/dynoplibs_pl.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/dynoplibs_pl.in	2008-08-20 15:10:00.703125000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/dynoplibs_pl.in	2008-08-22 17:13:57.984375000 +0200
 @@ -46,7 +46,7 @@
  }
  
@@ -406,7 +406,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  our $NOW = time();
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/dynpmc.in src/parrot-0.7.0/config/gen/makefiles/dynpmc.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/dynpmc.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/dynpmc.in	2008-08-20 15:10:00.718750000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/dynpmc.in	2008-08-22 17:13:57.984375000 +0200
 @@ -72,3 +72,9 @@
  distclean: realclean
  
@@ -419,7 +419,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/dynpmc_pl.in src/parrot-0.7.0/config/gen/makefiles/dynpmc_pl.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/dynpmc_pl.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/dynpmc_pl.in	2008-08-20 15:10:00.734375000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/dynpmc_pl.in	2008-08-22 17:13:58.015625000 +0200
 @@ -72,8 +72,15 @@
  
      my $liblist;
@@ -471,7 +471,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  our $NOW = time();
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/editor.in src/parrot-0.7.0/config/gen/makefiles/editor.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/editor.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/editor.in	2008-08-20 15:10:00.750000000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/editor.in	2008-08-22 17:13:58.031250000 +0200
 @@ -10,10 +10,15 @@
  CP     = @cp@
  MKPATH = @mkpath@
@@ -501,7 +501,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/ext.in src/parrot-0.7.0/config/gen/makefiles/ext.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/ext.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/ext.in	2008-08-20 15:10:00.765625000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/ext.in	2008-08-22 17:13:58.031250000 +0200
 @@ -28,7 +28,14 @@
  	@echo "                This is the default."
  	@echo "  test:         Unified test suite for a lot of languages."
@@ -545,7 +545,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/json.in src/parrot-0.7.0/config/gen/makefiles/json.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/json.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/json.in	2008-08-20 15:10:00.765625000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/json.in	2008-08-22 17:13:58.046875000 +0200
 @@ -3,13 +3,20 @@
  PERL     = @perl@
  RM_F     = @rm_f@
@@ -601,7 +601,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/languages.in src/parrot-0.7.0/config/gen/makefiles/languages.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/languages.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/languages.in	2008-08-20 15:10:00.796875000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/languages.in	2008-08-22 17:13:58.062500000 +0200
 @@ -47,6 +47,12 @@
  	@echo ""
  	@echo "  test-separate: Run 'make test' in the individual lang dirs."
@@ -1047,7 +1047,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/nqp.in src/parrot-0.7.0/config/gen/makefiles/nqp.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/nqp.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/nqp.in	2008-08-20 15:10:00.812500000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/nqp.in	2008-08-22 17:13:58.078125000 +0200
 @@ -4,6 +4,9 @@
  PERL     = @perl@
  RM_F     = @rm_f@
@@ -1098,7 +1098,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/parrot_embed.in src/parrot-0.7.0/config/gen/makefiles/parrot_embed.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/parrot_embed.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/parrot_embed.in	2008-08-20 15:10:00.812500000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/parrot_embed.in	2008-08-22 17:13:58.093750000 +0200
 @@ -1,4 +1,4 @@
 -# Copyright (C) 2007, The Perl Foundation.
 +# Copyright (C) 2007, The Perl Foundation. -*- cperl -*-
@@ -1129,7 +1129,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# vim: expandtab shiftwidth=4:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/pct.in src/parrot-0.7.0/config/gen/makefiles/pct.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/pct.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/pct.in	2008-08-20 15:10:00.828125000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/pct.in	2008-08-22 17:13:58.093750000 +0200
 @@ -9,6 +9,9 @@
  PGE_DIR  = ../../compilers/pge
  TEST_DIR = ../../t/compilers/pct
@@ -1175,7 +1175,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/pge.in src/parrot-0.7.0/config/gen/makefiles/pge.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/pge.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/pge.in	2008-08-20 15:10:00.843750000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/pge.in	2008-08-22 17:13:58.109375000 +0200
 @@ -7,12 +7,15 @@
  PARROT   = ../../parrot@exe@
  TOOL_DIR = ../..
@@ -1223,7 +1223,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/pirc.in src/parrot-0.7.0/config/gen/makefiles/pirc.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/pirc.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/pirc.in	2008-08-20 15:10:00.843750000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/pirc.in	2008-08-22 17:13:58.125000000 +0200
 @@ -4,7 +4,6 @@
  LN_S          = @lns@
  PERL          = @perl@
@@ -1275,7 +1275,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/root.in src/parrot-0.7.0/config/gen/makefiles/root.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/root.in	2008-08-19 17:57:19.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/root.in	2008-08-20 18:35:58.359375000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/root.in	2008-08-22 17:13:58.140625000 +0200
 @@ -19,6 +19,7 @@
  DEVEL           = @DEVEL@
  VERSION         = @VERSION@$(DEVEL)
@@ -1415,7 +1415,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  	$(PERL) tools/dev/manicheck.pl
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/makefiles/tge.in src/parrot-0.7.0/config/gen/makefiles/tge.in
 --- origsrc/parrot-0.7.0/config/gen/makefiles/tge.in	2008-08-19 15:17:25.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/makefiles/tge.in	2008-08-20 15:10:00.875000000 +0200
++++ src/parrot-0.7.0/config/gen/makefiles/tge.in	2008-08-22 17:13:58.593750000 +0200
 @@ -6,22 +6,29 @@
  PERL     = @perl@
  RM_F     = @rm_f@
@@ -1462,7 +1462,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/gen/opengl.pm src/parrot-0.7.0/config/gen/opengl.pm
 --- origsrc/parrot-0.7.0/config/gen/opengl.pm	2008-08-19 15:17:26.000000000 +0200
-+++ src/parrot-0.7.0/config/gen/opengl.pm	2008-08-20 15:10:00.890625000 +0200
++++ src/parrot-0.7.0/config/gen/opengl.pm	2008-08-22 17:13:58.625000000 +0200
 @@ -447,6 +447,9 @@
  #         "$ENV{HOME}/src/osx-insane/usr/X11R6 1/include/GL/*.h",
      );
@@ -1475,7 +1475,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
          if $verbose;
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/init/hints/cygwin.pm src/parrot-0.7.0/config/init/hints/cygwin.pm
 --- origsrc/parrot-0.7.0/config/init/hints/cygwin.pm	2008-08-19 15:17:23.000000000 +0200
-+++ src/parrot-0.7.0/config/init/hints/cygwin.pm	2008-08-20 15:10:02.484375000 +0200
++++ src/parrot-0.7.0/config/init/hints/cygwin.pm	2008-08-22 17:13:59.343750000 +0200
 @@ -13,18 +13,30 @@
      # in the standard installation, so we get rid of it
      my $libs = $conf->data->get('libs');
@@ -1513,7 +1513,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
          ld_load_flags       => '-shared',
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/config/inter/libparrot.pm src/parrot-0.7.0/config/inter/libparrot.pm
 --- origsrc/parrot-0.7.0/config/inter/libparrot.pm	2008-08-19 15:17:23.000000000 +0200
-+++ src/parrot-0.7.0/config/inter/libparrot.pm	2008-08-20 15:10:02.500000000 +0200
++++ src/parrot-0.7.0/config/inter/libparrot.pm	2008-08-22 17:13:59.359375000 +0200
 @@ -46,6 +46,8 @@
      # of the shared parrot library. However, 'libparrot.so' will catch
      # at least some of the problems.
@@ -1542,7 +1542,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      return 1;
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/APL/config/makefiles/root.in src/parrot-0.7.0/languages/APL/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/APL/config/makefiles/root.in	2008-08-19 15:17:34.000000000 +0200
-+++ src/parrot-0.7.0/languages/APL/config/makefiles/root.in	2008-08-21 13:03:39.406250000 +0200
++++ src/parrot-0.7.0/languages/APL/config/makefiles/root.in	2008-08-22 17:13:59.390625000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -1654,7 +1654,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/PIR/config/makefiles/root.in src/parrot-0.7.0/languages/PIR/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/PIR/config/makefiles/root.in	2008-08-19 15:17:30.000000000 +0200
-+++ src/parrot-0.7.0/languages/PIR/config/makefiles/root.in	2008-08-20 15:10:02.546875000 +0200
++++ src/parrot-0.7.0/languages/PIR/config/makefiles/root.in	2008-08-22 17:13:59.406250000 +0200
 @@ -102,7 +102,7 @@
  
  src/pasm/gen_pasm_args.pbc: src/pasm/gen_pasm_args.pir
@@ -1685,7 +1685,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/WMLScript/config/makefiles/root.in src/parrot-0.7.0/languages/WMLScript/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/WMLScript/config/makefiles/root.in	2008-08-19 15:17:47.000000000 +0200
-+++ src/parrot-0.7.0/languages/WMLScript/config/makefiles/root.in	2008-08-20 15:10:03.078125000 +0200
++++ src/parrot-0.7.0/languages/WMLScript/config/makefiles/root.in	2008-08-22 17:13:59.906250000 +0200
 @@ -1,6 +1,7 @@
  # Copyright (C) 2006-2007, The Perl Foundation.
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
@@ -1775,7 +1775,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/Zcode/config/makefiles/root.in src/parrot-0.7.0/languages/Zcode/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/Zcode/config/makefiles/root.in	2008-08-19 15:17:31.000000000 +0200
-+++ src/parrot-0.7.0/languages/Zcode/config/makefiles/root.in	2008-08-20 15:10:03.093750000 +0200
++++ src/parrot-0.7.0/languages/Zcode/config/makefiles/root.in	2008-08-22 17:13:59.921875000 +0200
 @@ -1,11 +1,13 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -1823,7 +1823,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/abc/config/makefiles/root.in src/parrot-0.7.0/languages/abc/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/abc/config/makefiles/root.in	2008-08-19 15:17:47.000000000 +0200
-+++ src/parrot-0.7.0/languages/abc/config/makefiles/root.in	2008-08-21 11:47:48.890625000 +0200
++++ src/parrot-0.7.0/languages/abc/config/makefiles/root.in	2008-08-22 17:14:00.515625000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -1967,7 +1967,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/befunge/config/makefiles/root.in src/parrot-0.7.0/languages/befunge/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/befunge/config/makefiles/root.in	2008-08-19 15:17:54.000000000 +0200
-+++ src/parrot-0.7.0/languages/befunge/config/makefiles/root.in	2008-08-20 15:10:03.218750000 +0200
++++ src/parrot-0.7.0/languages/befunge/config/makefiles/root.in	2008-08-22 17:14:00.546875000 +0200
 @@ -1,31 +1,46 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -2069,7 +2069,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/bf/config/makefiles/root.in src/parrot-0.7.0/languages/bf/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/bf/config/makefiles/root.in	2008-08-19 15:17:29.000000000 +0200
-+++ src/parrot-0.7.0/languages/bf/config/makefiles/root.in	2008-08-20 15:10:03.390625000 +0200
++++ src/parrot-0.7.0/languages/bf/config/makefiles/root.in	2008-08-22 17:14:00.593750000 +0200
 @@ -1,32 +1,70 @@
 +# $Id:$
 +LANG = bf
@@ -2179,7 +2179,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/c99/config/makefiles/cpp.in src/parrot-0.7.0/languages/c99/config/makefiles/cpp.in
 --- origsrc/parrot-0.7.0/languages/c99/config/makefiles/cpp.in	2008-08-19 15:17:50.000000000 +0200
-+++ src/parrot-0.7.0/languages/c99/config/makefiles/cpp.in	2008-08-20 18:10:29.250000000 +0200
++++ src/parrot-0.7.0/languages/c99/config/makefiles/cpp.in	2008-08-22 17:14:00.640625000 +0200
 @@ -4,6 +4,7 @@
  PARROT_ARGS =
  
@@ -2237,7 +2237,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/c99/config/makefiles/root.in src/parrot-0.7.0/languages/c99/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/c99/config/makefiles/root.in	2008-08-19 15:17:50.000000000 +0200
-+++ src/parrot-0.7.0/languages/c99/config/makefiles/root.in	2008-08-21 20:47:08.812500000 +0200
++++ src/parrot-0.7.0/languages/c99/config/makefiles/root.in	2008-08-22 17:14:00.687500000 +0200
 @@ -4,19 +4,26 @@
  PARROT_ARGS =
  
@@ -2360,7 +2360,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/cardinal/README src/parrot-0.7.0/languages/cardinal/README
 --- origsrc/parrot-0.7.0/languages/cardinal/README	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/languages/cardinal/README	2008-08-20 15:10:03.500000000 +0200
++++ src/parrot-0.7.0/languages/cardinal/README	2008-08-22 17:14:00.718750000 +0200
 @@ -0,0 +1,4 @@
 +Cardinal - Ruby for the Parrot VM
 +
@@ -2369,7 +2369,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 \ No newline at end of file
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/cardinal/config/makefiles/root.in src/parrot-0.7.0/languages/cardinal/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/cardinal/config/makefiles/root.in	2008-08-19 15:17:34.000000000 +0200
-+++ src/parrot-0.7.0/languages/cardinal/config/makefiles/root.in	2008-08-20 15:42:47.937500000 +0200
++++ src/parrot-0.7.0/languages/cardinal/config/makefiles/root.in	2008-08-22 17:14:00.765625000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -2473,7 +2473,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/chitchat/config/makefiles/root.in src/parrot-0.7.0/languages/chitchat/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/chitchat/config/makefiles/root.in	2008-08-19 15:17:29.000000000 +0200
-+++ src/parrot-0.7.0/languages/chitchat/config/makefiles/root.in	2008-08-21 20:50:29.484375000 +0200
++++ src/parrot-0.7.0/languages/chitchat/config/makefiles/root.in	2008-08-22 17:14:00.812500000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -2614,7 +2614,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/cola/config/makefiles/root.in src/parrot-0.7.0/languages/cola/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/cola/config/makefiles/root.in	2008-08-19 15:17:54.000000000 +0200
-+++ src/parrot-0.7.0/languages/cola/config/makefiles/root.in	2008-08-20 15:10:03.625000000 +0200
++++ src/parrot-0.7.0/languages/cola/config/makefiles/root.in	2008-08-22 17:14:00.843750000 +0200
 @@ -2,6 +2,16 @@
  
  # Makefile for languages/cola
@@ -2743,7 +2743,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/dotnet/config/Makefile.in src/parrot-0.7.0/languages/dotnet/config/Makefile.in
 --- origsrc/parrot-0.7.0/languages/dotnet/config/Makefile.in	2008-08-19 15:17:49.000000000 +0200
-+++ src/parrot-0.7.0/languages/dotnet/config/Makefile.in	2008-08-20 20:19:29.671875000 +0200
++++ src/parrot-0.7.0/languages/dotnet/config/Makefile.in	2008-08-22 17:14:00.890625000 +0200
 @@ -16,6 +16,7 @@
  PARROT   = ${trans_parrot_path}${slash}parrot${exe}
  MONOLIB  = ${trans_mono_lib_path}
@@ -2814,7 +2814,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  # ###############
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/dotnet/ops/dotnet.ops src/parrot-0.7.0/languages/dotnet/ops/dotnet.ops
 --- origsrc/parrot-0.7.0/languages/dotnet/ops/dotnet.ops	2008-08-19 15:17:48.000000000 +0200
-+++ src/parrot-0.7.0/languages/dotnet/ops/dotnet.ops	2008-08-20 21:35:51.937500000 +0200
++++ src/parrot-0.7.0/languages/dotnet/ops/dotnet.ops	2008-08-22 17:14:00.937500000 +0200
 @@ -88,7 +88,10 @@
      PMC *ex_pmc = pmc_new(interp, enum_class_Exception);
      VTABLE_set_string_native(interp, ex_pmc,
@@ -2829,7 +2829,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/dotnet/pmc/dotnetassembly.pmc src/parrot-0.7.0/languages/dotnet/pmc/dotnetassembly.pmc
 --- origsrc/parrot-0.7.0/languages/dotnet/pmc/dotnetassembly.pmc	2008-08-19 15:17:48.000000000 +0200
-+++ src/parrot-0.7.0/languages/dotnet/pmc/dotnetassembly.pmc	2008-08-20 21:20:35.265625000 +0200
++++ src/parrot-0.7.0/languages/dotnet/pmc/dotnetassembly.pmc	2008-08-22 17:14:00.968750000 +0200
 @@ -1848,7 +1848,7 @@
          free(filename);
  
@@ -2856,7 +2856,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
                  ass->entry_point);
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/eclectus/config/makefiles/root.in src/parrot-0.7.0/languages/eclectus/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/eclectus/config/makefiles/root.in	2008-08-19 15:17:51.000000000 +0200
-+++ src/parrot-0.7.0/languages/eclectus/config/makefiles/root.in	2008-08-21 13:26:23.421875000 +0200
++++ src/parrot-0.7.0/languages/eclectus/config/makefiles/root.in	2008-08-22 17:14:00.984375000 +0200
 @@ -1,19 +1,26 @@
 -# Copyright (C) 2007-2008, The Perl Foundation.
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
@@ -2992,7 +2992,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/ecmascript/config/makefiles/root.in src/parrot-0.7.0/languages/ecmascript/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/ecmascript/config/makefiles/root.in	2008-08-19 15:17:31.000000000 +0200
-+++ src/parrot-0.7.0/languages/ecmascript/config/makefiles/root.in	2008-08-20 15:10:03.734375000 +0200
++++ src/parrot-0.7.0/languages/ecmascript/config/makefiles/root.in	2008-08-22 17:14:01.000000000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -3100,14 +3100,15 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/forth/config/makefiles/root.in src/parrot-0.7.0/languages/forth/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/forth/config/makefiles/root.in	2008-08-19 15:17:27.000000000 +0200
-+++ src/parrot-0.7.0/languages/forth/config/makefiles/root.in	2008-08-20 15:43:51.359375000 +0200
-@@ -1,27 +1,34 @@
++++ src/parrot-0.7.0/languages/forth/config/makefiles/root.in	2008-08-22 17:08:43.703125000 +0200
+@@ -1,38 +1,40 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
+-PARROT = ../../parrot@exe@
 +LANG   = forth
- PARROT = ../../parrot@exe@
  PERL   = @perl@
  RM_RF  = @rm_rf@
++PARROT = ../../parrot@exe@
 +PBC_TO_EXE    = ../../pbc_to_exe@exe@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
@@ -3126,10 +3127,12 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      tokenstream.pbc \
      variablestack.pbc \
      virtualstack.pbc
--
 +DOCS = MAINTAINER
  
- all: $(DEPENDENCIES)
++build: $(DEPENDENCIES)
+ 
+-all: $(DEPENDENCIES)
++all: $(DEPENDENCIES) forth@exe@ installable
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
@@ -3138,7 +3141,18 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  prompt: all
  	$(PARROT) forth.pbc
-@@ -47,3 +54,61 @@
+ 
+-clean:
+-	$(RM_RF) $(DEPENDENCIES)
+-
+-realclean: clean
+-	$(RM_RF) Makefile
+-
+-
+ forth.pbc: forth.pir words.pir
+ 	$(PARROT) -o forth.pbc forth.pir
+ 
+@@ -47,3 +49,67 @@
  
  test: all
  	$(PERL) t/harness
@@ -3148,7 +3162,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +	@echo ""
 +	@echo "Following targets are available for the user:"
 +	@echo ""
-+	@echo "  all:               js.pbc"
++	@echo "  all:               force.pbc"
 +	@echo "                     This is the default."
 +	@echo "  installable:       Create self-hosting bins and libs."
 +	@echo "  install:           Install the installable targets and docs."
@@ -3193,6 +3207,12 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +  *.pbc \
 +  $(LANG)@exe@ \
 +
++clean:
++	$(RM_RF) $(CLEANUPS)
++
++realclean: clean
++	$(RM_RF) Makefile
++
 +distclean: realclean
 +
 +#
@@ -3202,7 +3222,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/hq9plus/config/makefiles/root.in src/parrot-0.7.0/languages/hq9plus/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/hq9plus/config/makefiles/root.in	2008-08-19 15:17:32.000000000 +0200
-+++ src/parrot-0.7.0/languages/hq9plus/config/makefiles/root.in	2008-08-21 21:20:58.000000000 +0200
++++ src/parrot-0.7.0/languages/hq9plus/config/makefiles/root.in	2008-08-22 17:14:01.015625000 +0200
 @@ -4,14 +4,22 @@
  PARROT_ARGS =
  
@@ -3297,7 +3317,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/jako/config/makefiles/root.in src/parrot-0.7.0/languages/jako/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/jako/config/makefiles/root.in	2008-08-19 15:17:27.000000000 +0200
-+++ src/parrot-0.7.0/languages/jako/config/makefiles/root.in	2008-08-20 15:10:03.781250000 +0200
++++ src/parrot-0.7.0/languages/jako/config/makefiles/root.in	2008-08-22 17:14:01.031250000 +0200
 @@ -1,21 +1,28 @@
 +# $Id: root.in 28657 2008-06-23 00:33:41Z coke $ -*- Makefile -*-
  #
@@ -3392,7 +3412,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  # End of file.
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/json/config/makefiles/root.in src/parrot-0.7.0/languages/json/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/json/config/makefiles/root.in	2008-08-19 15:17:33.000000000 +0200
-+++ src/parrot-0.7.0/languages/json/config/makefiles/root.in	2008-08-21 20:52:57.171875000 +0200
++++ src/parrot-0.7.0/languages/json/config/makefiles/root.in	2008-08-22 17:14:01.046875000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -3531,7 +3551,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/lazy-k/config/makefiles/root.in src/parrot-0.7.0/languages/lazy-k/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/lazy-k/config/makefiles/root.in	2008-08-19 15:17:51.000000000 +0200
-+++ src/parrot-0.7.0/languages/lazy-k/config/makefiles/root.in	2008-08-20 15:10:03.796875000 +0200
++++ src/parrot-0.7.0/languages/lazy-k/config/makefiles/root.in	2008-08-22 17:14:01.062500000 +0200
 @@ -1,47 +1,94 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -3641,7 +3661,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/lisp/config/makefiles/root.in src/parrot-0.7.0/languages/lisp/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/lisp/config/makefiles/root.in	2008-08-19 15:17:32.000000000 +0200
-+++ src/parrot-0.7.0/languages/lisp/config/makefiles/root.in	2008-08-21 20:54:48.765625000 +0200
++++ src/parrot-0.7.0/languages/lisp/config/makefiles/root.in	2008-08-22 17:14:01.062500000 +0200
 @@ -1,41 +1,91 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -3764,7 +3784,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/lolcode/config/makefiles/root.in src/parrot-0.7.0/languages/lolcode/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/lolcode/config/makefiles/root.in	2008-08-19 15:17:42.000000000 +0200
-+++ src/parrot-0.7.0/languages/lolcode/config/makefiles/root.in	2008-08-21 20:57:14.390625000 +0200
++++ src/parrot-0.7.0/languages/lolcode/config/makefiles/root.in	2008-08-22 17:14:01.078125000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -3899,7 +3919,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/lua/config/makefiles/root.in src/parrot-0.7.0/languages/lua/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/lua/config/makefiles/root.in	2008-08-19 15:17:41.000000000 +0200
-+++ src/parrot-0.7.0/languages/lua/config/makefiles/root.in	2008-08-21 16:34:59.875000000 +0200
++++ src/parrot-0.7.0/languages/lua/config/makefiles/root.in	2008-08-22 17:14:01.093750000 +0200
 @@ -2,6 +2,7 @@
  # $Id: root.in 30251 2008-08-15 14:04:45Z fperrad $
  
@@ -4046,7 +4066,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/m4/config/makefiles/root.in src/parrot-0.7.0/languages/m4/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/m4/config/makefiles/root.in	2008-08-19 15:17:26.000000000 +0200
-+++ src/parrot-0.7.0/languages/m4/config/makefiles/root.in	2008-08-21 20:58:24.234375000 +0200
++++ src/parrot-0.7.0/languages/m4/config/makefiles/root.in	2008-08-22 17:14:01.109375000 +0200
 @@ -1,6 +1,7 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -4150,8 +4170,8 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/ook/config/makefiles/root.in src/parrot-0.7.0/languages/ook/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/ook/config/makefiles/root.in	2008-08-19 15:17:48.000000000 +0200
-+++ src/parrot-0.7.0/languages/ook/config/makefiles/root.in	2008-08-20 15:10:05.265625000 +0200
-@@ -1,9 +1,10 @@
++++ src/parrot-0.7.0/languages/ook/config/makefiles/root.in	2008-08-23 09:15:10.015625000 +0200
+@@ -1,11 +1,14 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
  # Makefile for languages/ook
@@ -4160,10 +4180,14 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  # Set up of commands
 -PARROT        = ../../parrot
 +PARROT        = ../../parrot@exe@
++PBC_TO_EXE    = ../../pbc_to_exe@exe@
  PERL          = @perl@
  RM_F          = @rm_f@
++POD2MAN       = pod2man
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
-@@ -13,6 +14,12 @@
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+@@ -13,6 +16,12 @@
  
  # Set up directories
  BUILD_DIR     = @build_dir@
@@ -4176,7 +4200,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  default: all
  
-@@ -33,15 +40,34 @@
+@@ -33,15 +42,34 @@
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
@@ -4214,7 +4238,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  clean:
  	$(RM_F) core \
-@@ -52,3 +78,9 @@
+@@ -52,3 +80,9 @@
  
  realclean: clean
  	$(RM_F) Makefile
@@ -4226,7 +4250,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/parrot_compiler/config/makefiles/root.in src/parrot-0.7.0/languages/parrot_compiler/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/parrot_compiler/config/makefiles/root.in	2008-08-19 15:17:50.000000000 +0200
-+++ src/parrot-0.7.0/languages/parrot_compiler/config/makefiles/root.in	2008-08-20 15:10:05.296875000 +0200
++++ src/parrot-0.7.0/languages/parrot_compiler/config/makefiles/root.in	2008-08-22 17:14:02.125000000 +0200
 @@ -55,3 +55,8 @@
  parrot_compiler.pasm : parrot_compiler.pir
  	$(PARROT) -o parrot_compiler.pasm parrot_compiler.pir
@@ -4238,7 +4262,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/perl6/config/makefiles/root.in src/parrot-0.7.0/languages/perl6/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/perl6/config/makefiles/root.in	2008-08-19 15:17:29.000000000 +0200
-+++ src/parrot-0.7.0/languages/perl6/config/makefiles/root.in	2008-08-21 15:56:49.015625000 +0200
++++ src/parrot-0.7.0/languages/perl6/config/makefiles/root.in	2008-08-22 17:14:02.640625000 +0200
 @@ -1,4 +1,4 @@
 -# $Id: root.in 30266 2008-08-16 12:51:13Z jonathan $
 +# $Id: root.in 30371 2008-08-20 06:01:43Z pmichaud $
@@ -4358,7 +4382,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/perl6/config/makefiles/utils.in src/parrot-0.7.0/languages/perl6/config/makefiles/utils.in
 --- origsrc/parrot-0.7.0/languages/perl6/config/makefiles/utils.in	2008-08-19 15:17:29.000000000 +0200
-+++ src/parrot-0.7.0/languages/perl6/config/makefiles/utils.in	2008-08-21 13:51:36.250000000 +0200
++++ src/parrot-0.7.0/languages/perl6/config/makefiles/utils.in	2008-08-22 17:14:02.656250000 +0200
 @@ -1,12 +1,17 @@
  # $Id: utils.in 25400 2008-02-01 07:32:20Z chromatic $
  
@@ -4420,7 +4444,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/perl6/docs/running.pod src/parrot-0.7.0/languages/perl6/docs/running.pod
 --- origsrc/parrot-0.7.0/languages/perl6/docs/running.pod	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/languages/perl6/docs/running.pod	2008-08-20 15:10:05.843750000 +0200
++++ src/parrot-0.7.0/languages/perl6/docs/running.pod	2008-08-22 17:14:02.671875000 +0200
 @@ -0,0 +1,15 @@
 +=head1 NAME
 +
@@ -4439,7 +4463,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +  -v, --version        display version information
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/perl6/src/builtins/eval.pir src/parrot-0.7.0/languages/perl6/src/builtins/eval.pir
 --- origsrc/parrot-0.7.0/languages/perl6/src/builtins/eval.pir	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/languages/perl6/src/builtins/eval.pir	2008-08-21 11:45:43.984375000 +0200
++++ src/parrot-0.7.0/languages/perl6/src/builtins/eval.pir	2008-08-22 17:14:03.234375000 +0200
 @@ -0,0 +1,142 @@
 +## $Id: eval.pir 30371 2008-08-20 06:01:43Z pmichaud $
 +
@@ -4585,8 +4609,8 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/pheme/config/makefiles/root.in src/parrot-0.7.0/languages/pheme/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/pheme/config/makefiles/root.in	2008-08-19 15:17:50.000000000 +0200
-+++ src/parrot-0.7.0/languages/pheme/config/makefiles/root.in	2008-08-21 21:01:08.328125000 +0200
-@@ -1,7 +1,12 @@
++++ src/parrot-0.7.0/languages/pheme/config/makefiles/root.in	2008-08-23 09:21:14.234375000 +0200
+@@ -1,22 +1,32 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
  # configuration settings
@@ -4599,11 +4623,13 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  # Setup some commands
  PERL          = @perl@
-@@ -10,11 +15,15 @@
+ RM_F          = @rm_f@
++EXE           = @exe@
+ PARROT        = ../../parrot@exe@
++PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
  TGE_DIR       = ../../compilers/tge
  PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
  PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
  #CONDITIONED_LINE(darwin):
@@ -4613,9 +4639,12 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +DOCS = MAINTAINER MANIFEST README TODO
 +
  # the default target
- all: pheme.pbc
+-all: pheme.pbc
++all: pheme.pbc Makefile pheme$(EXE) installable
  
-@@ -28,6 +37,12 @@
+ lib/pheme_grammar_gen.pir: lib/pheme.g
+ 	$(PARROT) $(PERL6GRAMMAR) \
+@@ -28,6 +38,12 @@
  pheme.pbc: pheme.pir lib/PhemeSymbols.pir lib/PhemeObjects.pir lib/ASTGrammar.pir lib/pheme_grammar_gen.pir
  	$(PARROT) -o pheme.pbc pheme.pir
  
@@ -4628,7 +4657,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=pheme
-@@ -39,6 +54,9 @@
+@@ -39,6 +55,9 @@
  	@echo ""
  	@echo "  all:               pheme.pbc"
  	@echo "                     This is the default."
@@ -4638,7 +4667,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -58,6 +76,20 @@
+@@ -58,6 +77,20 @@
  testclean:
  	$(RM_F) "t/*.out"
  
@@ -4659,7 +4688,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  clean: testclean
  	$(RM_F) pheme.pbc
  	$(RM_F) lib/pheme_grammar_gen.pir
-@@ -68,3 +100,9 @@
+@@ -68,3 +101,9 @@
  	$(RM_F) Makefile
  
  distclean: realclean
@@ -4671,7 +4700,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/pipp/config/makefiles/root.in src/parrot-0.7.0/languages/pipp/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/pipp/config/makefiles/root.in	2008-08-19 15:17:52.000000000 +0200
-+++ src/parrot-0.7.0/languages/pipp/config/makefiles/root.in	2008-08-21 13:53:20.843750000 +0200
++++ src/parrot-0.7.0/languages/pipp/config/makefiles/root.in	2008-08-22 17:14:03.328125000 +0200
 @@ -1,6 +1,7 @@
  # $Id: root.in 29286 2008-07-11 09:59:51Z bernhard $
  
@@ -4740,7 +4769,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/punie/config/makefiles/root.in src/parrot-0.7.0/languages/punie/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/punie/config/makefiles/root.in	2008-08-19 15:17:35.000000000 +0200
-+++ src/parrot-0.7.0/languages/punie/config/makefiles/root.in	2008-08-21 21:09:53.718750000 +0200
++++ src/parrot-0.7.0/languages/punie/config/makefiles/root.in	2008-08-22 17:14:03.359375000 +0200
 @@ -1,15 +1,22 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -4833,7 +4862,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/pynie/config/makefiles/root.in src/parrot-0.7.0/languages/pynie/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/pynie/config/makefiles/root.in	2008-08-19 15:17:46.000000000 +0200
-+++ src/parrot-0.7.0/languages/pynie/config/makefiles/root.in	2008-08-21 21:11:55.015625000 +0200
++++ src/parrot-0.7.0/languages/pynie/config/makefiles/root.in	2008-08-22 17:14:03.375000000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -4935,7 +4964,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/regex/config/makefiles/root.in src/parrot-0.7.0/languages/regex/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/regex/config/makefiles/root.in	2008-08-19 15:17:33.000000000 +0200
-+++ src/parrot-0.7.0/languages/regex/config/makefiles/root.in	2008-08-20 15:10:06.218750000 +0200
++++ src/parrot-0.7.0/languages/regex/config/makefiles/root.in	2008-08-22 17:14:03.406250000 +0200
 @@ -80,3 +80,8 @@
  
  distclean: realclean
@@ -4947,7 +4976,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/scheme/config/makefiles/root.in src/parrot-0.7.0/languages/scheme/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/scheme/config/makefiles/root.in	2008-08-19 15:17:50.000000000 +0200
-+++ src/parrot-0.7.0/languages/scheme/config/makefiles/root.in	2008-08-20 15:10:06.250000000 +0200
++++ src/parrot-0.7.0/languages/scheme/config/makefiles/root.in	2008-08-22 17:14:03.406250000 +0200
 @@ -2,6 +2,7 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -5003,7 +5032,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/squaak/config/makefiles/root.in src/parrot-0.7.0/languages/squaak/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/squaak/config/makefiles/root.in	2008-08-19 15:17:47.000000000 +0200
-+++ src/parrot-0.7.0/languages/squaak/config/makefiles/root.in	2008-08-21 21:14:22.359375000 +0200
++++ src/parrot-0.7.0/languages/squaak/config/makefiles/root.in	2008-08-22 17:14:03.515625000 +0200
 @@ -4,9 +4,14 @@
  PARROT_ARGS =
  
@@ -5149,9 +5178,39 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# mode: makefile
 +# ex: ft=make
 +# End:
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/tcl/config/makefiles/examples.in src/parrot-0.7.0/languages/tcl/config/makefiles/examples.in
+--- origsrc/parrot-0.7.0/languages/tcl/config/makefiles/examples.in	2008-08-19 15:17:45.000000000 +0200
++++ src/parrot-0.7.0/languages/tcl/config/makefiles/examples.in	2008-08-22 17:07:09.984375000 +0200
+@@ -1,16 +1,22 @@
+ PARROT = ../../../parrot@exe@
+-PARROT_ARRGS = --gc-debug
++PARROT_ARGS = --gc-debug
+ 
+ default:
+ 	@echo "to run <foo>.tcl, type 'make <foo>'"
+ 	@echo "to run an interactive tclsh, type 'make tclsh'"
+ 
+ %:%.tcl
+-	$(PARROT) $(PARROT_ARRGS)  ../tcl.pbc $@.tcl
++	$(PARROT) $(PARROT_ARGS)  ../tcl.pbc $@.tcl
+ 
+ tclsh:
+-	$(PARROT) $(PARROT_ARRGS) ../tcl.pbc
++	$(PARROT) $(PARROT_ARGS) ../tcl.pbc
+ 
+ # (for development testing)
+ test:
+-	$(PARROT) -tf $(PARROT_ARRGS) ../tcl.pbc foo.tcl
++	$(PARROT) -tf $(PARROT_ARGS) ../tcl.pbc foo.tcl
++
++#
++# Local variables:
++# mode: makefile
++# ex: ft=make
++# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/tcl/config/makefiles/root.in src/parrot-0.7.0/languages/tcl/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/tcl/config/makefiles/root.in	2008-08-19 15:17:45.000000000 +0200
-+++ src/parrot-0.7.0/languages/tcl/config/makefiles/root.in	2008-08-20 23:27:02.281250000 +0200
++++ src/parrot-0.7.0/languages/tcl/config/makefiles/root.in	2008-08-22 17:07:10.046875000 +0200
 @@ -1,3 +1,5 @@
 +# $Id: $
 +LANG    = tcl
@@ -5212,7 +5271,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  runtime/builtins.pir: $(DEPS) tools/gen_builtins.pl
  	$(PERL) tools/gen_builtins.pl > runtime/builtins.pir
-@@ -118,6 +125,24 @@
+@@ -118,6 +125,42 @@
  $(PBC_TO_EXE):
  	$(MAKE) $(BUILD_DIR) ./pbc_to_exe@exe@
  
@@ -5234,10 +5293,28 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +
++installable : installable_tclsh@exe@
++
++installable_tclsh@exe@: tcl.pbc
++	$(PBC_TO_EXE) tcl.pbc --install
++	$(RENAME) installable_tcl@exe@ installable_tclsh@exe@
++
++# TODO: rename build_dir. basic run for missing libs
++test-installable : installable
++	./installable_tclsh@exe@ tcl_misc_28.tcl
++
++install : installable
++	$(CP) installable_tclsh@exe@ $(DESTDIR)$(BIN_DIR)/parrot-tclsh@exe@
++	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" tcl
++	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
++	$(POD2MAN) README.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
++	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++
  test: tcl.pbc
  	prove -r t
  
-@@ -311,7 +336,9 @@
+@@ -311,7 +354,9 @@
  "$(OPSDIR)/*.lib" \
  "$(OPSDIR)/*.pdb" \
  "$(TCL_LIB)/*.pir" \
@@ -5248,7 +5325,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
  # that last line should be cleaned up for x-platform.
  
-@@ -327,3 +354,9 @@
+@@ -327,3 +372,9 @@
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=tcl
  
@@ -5260,7 +5337,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/unlambda/config/makefiles/root.in src/parrot-0.7.0/languages/unlambda/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/unlambda/config/makefiles/root.in	2008-08-19 15:17:27.000000000 +0200
-+++ src/parrot-0.7.0/languages/unlambda/config/makefiles/root.in	2008-08-20 15:10:06.359375000 +0200
++++ src/parrot-0.7.0/languages/unlambda/config/makefiles/root.in	2008-08-22 17:14:03.593750000 +0200
 @@ -4,11 +4,19 @@
  # Makefile for languages/unlambda
  
@@ -5294,7 +5371,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/languages/urm/config/makefiles/root.in src/parrot-0.7.0/languages/urm/config/makefiles/root.in
 --- origsrc/parrot-0.7.0/languages/urm/config/makefiles/root.in	2008-08-19 15:17:31.000000000 +0200
-+++ src/parrot-0.7.0/languages/urm/config/makefiles/root.in	2008-08-20 15:10:06.390625000 +0200
++++ src/parrot-0.7.0/languages/urm/config/makefiles/root.in	2008-08-22 17:14:03.609375000 +0200
 @@ -1,6 +1,7 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
@@ -5373,7 +5450,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
 +# End:
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/lib/Parrot/Configure/Step/Methods.pm src/parrot-0.7.0/lib/Parrot/Configure/Step/Methods.pm
 --- origsrc/parrot-0.7.0/lib/Parrot/Configure/Step/Methods.pm	2008-08-19 15:17:09.000000000 +0200
-+++ src/parrot-0.7.0/lib/Parrot/Configure/Step/Methods.pm	2008-08-20 15:10:06.437500000 +0200
++++ src/parrot-0.7.0/lib/Parrot/Configure/Step/Methods.pm	2008-08-22 17:14:03.703125000 +0200
 @@ -119,6 +119,7 @@
          cc              => $cc,
          win32_gcc       => '-lalpha32 -lalpha32 -lopenalpha32',
@@ -5425,7 +5502,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
          :  $args->{osname} =~ /mswin32/i    ? 'win32_nongcc'
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/runtime/parrot/library/config.pir src/parrot-0.7.0/runtime/parrot/library/config.pir
 --- origsrc/parrot-0.7.0/runtime/parrot/library/config.pir	2008-08-19 15:16:59.000000000 +0200
-+++ src/parrot-0.7.0/runtime/parrot/library/config.pir	2008-08-20 15:10:06.484375000 +0200
++++ src/parrot-0.7.0/runtime/parrot/library/config.pir	2008-08-22 17:14:03.718750000 +0200
 @@ -48,12 +48,28 @@
  .sub _config
      .local pmc CONF
@@ -5457,7 +5534,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      printerr "': "
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/runtime/parrot/library/parrotlib.pir src/parrot-0.7.0/runtime/parrot/library/parrotlib.pir
 --- origsrc/parrot-0.7.0/runtime/parrot/library/parrotlib.pir	2008-08-19 15:16:59.000000000 +0200
-+++ src/parrot-0.7.0/runtime/parrot/library/parrotlib.pir	2008-08-20 15:10:06.515625000 +0200
++++ src/parrot-0.7.0/runtime/parrot/library/parrotlib.pir	2008-08-22 17:14:03.734375000 +0200
 @@ -24,14 +24,13 @@
      .local pmc includes
      .local string root
@@ -5500,7 +5577,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      if $I0 goto END
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/src/library.c src/parrot-0.7.0/src/library.c
 --- origsrc/parrot-0.7.0/src/library.c	2008-08-19 15:17:04.000000000 +0200
-+++ src/parrot-0.7.0/src/library.c	2008-08-20 15:10:06.562500000 +0200
++++ src/parrot-0.7.0/src/library.c	2008-08-22 17:14:03.765625000 +0200
 @@ -121,64 +121,108 @@
  Platform code may add, delete, or replace search path entries as needed. See
  also F<include/parrot/library.h> for C<enum_lib_paths>.
@@ -5650,7 +5727,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
  
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/tools/dev/install_files.pl src/parrot-0.7.0/tools/dev/install_files.pl
 --- origsrc/parrot-0.7.0/tools/dev/install_files.pl	2008-08-19 15:17:08.000000000 +0200
-+++ src/parrot-0.7.0/tools/dev/install_files.pl	2008-08-21 20:30:04.296875000 +0200
++++ src/parrot-0.7.0/tools/dev/install_files.pl	2008-08-22 17:14:03.781250000 +0200
 @@ -126,7 +126,7 @@
      bindir      => '/usr/bin',
      libdir      => '/usr/lib',
@@ -5696,7 +5773,7 @@ diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x
      }
 diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4~' -x aclocal.m4t -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x '*config.h.in' -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x 'parrot-0.7.0-1.cygport~' -x 'parrot-0.7.0-1.src.patch~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x libtool.m4 -x ltoptions.m4 -x ltsugar.m4 -x ltversion.m4 -x 'lt~obsolete.m4' -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x 'MANIFEST.*' -x parrot.pc -x myconfig -x config_lib.pasm -x Makefile -x TAGS origsrc/parrot-0.7.0/tools/dev/mk_language_shell.pl src/parrot-0.7.0/tools/dev/mk_language_shell.pl
 --- origsrc/parrot-0.7.0/tools/dev/mk_language_shell.pl	2008-08-19 15:17:08.000000000 +0200
-+++ src/parrot-0.7.0/tools/dev/mk_language_shell.pl	2008-08-20 15:10:06.671875000 +0200
++++ src/parrot-0.7.0/tools/dev/mk_language_shell.pl	2008-08-22 17:14:03.812500000 +0200
 @@ -142,9 +142,14 @@
  PARROT_ARGS =
  
