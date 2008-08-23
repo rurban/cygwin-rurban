@@ -1,7 +1,7 @@
 diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PATCHES/README
 --- origsrc/parrot-0.7.0/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-0.7.0/CYGWIN-PATCHES/README	2008-08-22 17:13:55.937500000 +0200
-@@ -0,0 +1,868 @@
++++ src/parrot-0.7.0/CYGWIN-PATCHES/README	2008-08-23 15:26:20.906250000 +0200
+@@ -0,0 +1,903 @@
 +parrot
 +----------------------------------
 +Parrot is a virtual machine designed to efficiently compile and
@@ -56,8 +56,6 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PAT
 +
 +Files included in the =parrot= package:
 +
-+  /etc/postinstall/parrot.sh
-+  /etc/preremove/parrot.sh
 +  /usr/bin/parrot.exe
 +  /usr/bin/parrot_debugger.exe
 +  /usr/bin/pbc_info.exe
@@ -775,7 +773,15 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PAT
 +
 +  /usr/bin/perl6.exe
 +  /usr/lib/parrot/dynext/perl6_group.dll
-+  /usr/share/doc/parrot-0.7.0/languages/perl6/*
++  /usr/share/doc/parrot-0.7.0/languages/perl6/
++  /usr/share/doc/parrot-0.7.0/languages/perl6/compiler_overview.pod
++  /usr/share/doc/parrot-0.7.0/languages/perl6/glossary.pod
++  /usr/share/doc/parrot-0.7.0/languages/perl6/MAINTAINER
++  /usr/share/doc/parrot-0.7.0/languages/perl6/README
++  /usr/share/doc/parrot-0.7.0/languages/perl6/running.pod
++  /usr/share/doc/parrot-0.7.0/languages/perl6/spectest-progress.csv
++  /usr/share/doc/parrot-0.7.0/languages/perl6/STATUS
++  /usr/share/man/man1/perl6.1.gz
 +
 +Files included in the =parrot-languages= package:
 +
@@ -787,41 +793,67 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PAT
 +  /usr/bin/parrot-c99.exe
 +  /usr/bin/parrot-cardinal.exe
 +  /usr/bin/parrot-chitchat.exe
++  /usr/bin/parrot-cpp.exe
 +  /usr/bin/parrot-forth.exe
 +  /usr/bin/parrot-hq9plus.exe
++  /usr/bin/parrot-json.exe
 +  /usr/bin/parrot-lisp.exe
 +  /usr/bin/parrot-lolcode.exe
-+  /usr/bin/parrot-lua.exe
-+  /usr/bin/parrot-m4.exe
 +  /usr/bin/parrot-ook.exe
 +  /usr/bin/parrot-pheme.exe
 +  /usr/bin/parrot-pipp.exe
 +  /usr/bin/parrot-punie.exe
 +  /usr/bin/parrot-pynie.exe
 +  /usr/bin/parrot-squaak.exe
-+  /usr/bin/parrot-tcl.exe
++  /usr/bin/parrot-tclsh.exe
 +  /usr/lib/parrot/dynext/apl_group.dll
-+  /usr/lib/parrot/dynext/eclectus_group.dll
 +  /usr/lib/parrot/dynext/dotnet.dll
 +  /usr/lib/parrot/dynext/dotnet_ops.dll
 +  /usr/lib/parrot/dynext/dotnet_ops_cg.dll
 +  /usr/lib/parrot/dynext/dotnet_ops_cgp.dll
 +  /usr/lib/parrot/dynext/dotnet_ops_switch.dll
 +  /usr/lib/parrot/dynext/dotnet_runtime.dll
++  /usr/lib/parrot/dynext/eclectus_group.dll
 +  /usr/lib/parrot/dynext/lua_group.dll
++  /usr/lib/parrot/dynext/php_group.dll
 +  /usr/lib/parrot/dynext/tcl_group.dll
++  /usr/lib/parrot/dynext/tcl_ops.dll
++  /usr/lib/parrot/dynext/tcl_ops_cg.dll
++  /usr/lib/parrot/dynext/tcl_ops_cgp.dll
++  /usr/lib/parrot/dynext/tcl_ops_switch.dll
 +  /usr/lib/parrot/dynext/wmls_group.dll
 +  /usr/lib/parrot/dynext/wmls_ops.dll
 +  /usr/lib/parrot/dynext/wmls_ops_cg.dll
 +  /usr/lib/parrot/dynext/wmls_ops_cgp.dll
 +  /usr/lib/parrot/dynext/wmls_ops_switch.dll
++  /usr/lib/parrot/library/php_ctype.pbc
++  /usr/lib/parrot/library/php_gmp.pbc
++  /usr/lib/parrot/library/php_pcre.pbc
++  /usr/lib/parrot/library/pipplib.pbc
++  /usr/lib/parrot/library/tcllib.pbc
 +  /usr/share/doc/parrot-0.7.0/languages/*
++  /usr/share/man/man1/parrot-APL.1.gz
++  /usr/share/man/man1/parrot-abc.1.gz
++  /usr/share/man/man1/parrot-c99.1.gz
++  /usr/share/man/man1/parrot-cardinal.1.gz
++  /usr/share/man/man1/parrot-chitchat.1.gz
++  /usr/share/man/man1/parrot-cpp.1.gz
++  /usr/share/man/man1/parrot-hq9plus.1.gz
++  /usr/share/man/man1/parrot-json.1.gz
++  /usr/share/man/man1/parrot-lisp.1.gz
++  /usr/share/man/man1/parrot-lolcode.1.gz
++  /usr/share/man/man1/parrot-lua.1.gz
++  /usr/share/man/man1/parrot-pheme.1.gz
++  /usr/share/man/man1/parrot-punie.1.gz
++  /usr/share/man/man1/parrot-pynie.1.gz
++  /usr/share/man/man1/parrot-squaak.1.gz
 +
 +-------------------------------------------------------------------------------
 +
 +Port Notes:
 +
 +----- version parrot-0.7.0-1 -----
++* removed /usr/runtime and its preremove and postinstall scripts
 +* added parrot_exists_check to .cygport. Already installed parrot 
 +  still not supported, despite my #39742 patch
 +* other minor .cygport improvements: export PATH in seperate lines to fix check
@@ -835,7 +867,10 @@ diff -urN origsrc/parrot-0.7.0/CYGWIN-PATCHES/README src/parrot-0.7.0/CYGWIN-PAT
 +  [perl #56544] [PATCH] install_files.pl
 +  [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
 +  [perl #57006] [PATCH] add cygwin opengl config quirks
-+  [perl #57296] [TODO]  make install -C languages  
++  [perl #57296] [TODO]  make install -C languages
++* removed m4,
++* fixed force, pipp, perl6, pheme, tcl installables. added pcbc's to library  
++* not working: pheme
 +
 +----- version parrot-0.6.4-2 -----
 +* fixed invalid parrot languages and perl6 paths referencing the build_dir
