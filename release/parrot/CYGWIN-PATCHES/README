@@ -52,6 +52,8 @@ source directory.
 
 Files included in the =parrot= package:
 
+  /etc/postinstall/parrot.sh
+  /etc/preremove/parrot.sh
   /usr/bin/parrot.exe
   /usr/bin/parrot_debugger.exe
   /usr/bin/pbc_info.exe
@@ -618,6 +620,20 @@ Files included in the =parrot= package:
   /usr/share/doc/parrot-0.7.0/examples/tutorial/82_coroutine.pir
   /usr/share/doc/parrot-0.7.0/examples/tutorial/83_external_libraries.pir
   /usr/share/doc/parrot-0.7.0/examples/tutorial/90_writing_tests.pir
+  /usr/share/emacs/site-lisp/parrot.el
+  /usr/share/emacs/site-lisp/parrot.README
+  /usr/share/emacs/site-lisp/pasm.el
+  /usr/share/emacs/site-lisp/pir-mode.el
+  /usr/share/man/man1/parrot.1.gz
+  /usr/share/man/man1/parrot_debugger.1.gz
+  /usr/share/man/man1/pbc_disassemble.1.gz
+  /usr/share/man/man1/pbc_info.1.gz
+  /usr/share/man/man1/pbc_merge.1.gz
+  /usr/share/man/man1/pbc_to_exe.1.gz
+  /usr/share/vim/vimfiles/ftplugin/parrot.vim
+  /usr/share/vim/vimfiles/syntax/pasm.vim
+  /usr/share/vim/vimfiles/syntax/pir.vim
+  /usr/share/vim/vimfiles/syntax/pmc.vim
 
 Files included in the =libparrot0= package:
 
@@ -795,6 +811,9 @@ Files included in the =parrot-languages= package:
   /usr/lib/parrot/dynext/wmls_ops_cg.dll
   /usr/lib/parrot/dynext/wmls_ops_cgp.dll
   /usr/lib/parrot/dynext/wmls_ops_switch.dll
+  /usr/lib/parrot/library/php_*.pbc
+  /usr/lib/parrot/library/pipplib.pbc
+  /usr/lib/parrot/library/tcllib.pbc
   /usr/share/doc/parrot-0.7.0/languages/*
 
 -------------------------------------------------------------------------------
@@ -802,6 +821,7 @@ Files included in the =parrot-languages= package:
 Port Notes:
 
 ----- version parrot-0.7.0-1 -----
+* removed /usr/runtime and its preremove and postinstall scripts
 * added parrot_exists_check to .cygport. Already installed parrot 
   still not supported, despite my #39742 patch
 * other minor .cygport improvements: export PATH in seperate lines to fix check
@@ -815,7 +835,8 @@ Port Notes:
   [perl #56544] [PATCH] install_files.pl
   [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
   [perl #57006] [PATCH] add cygwin opengl config quirks
-  [perl #57296] [TODO]  make install -C languages  
+  [perl #57296] [TODO]  make install -C languages
+* fixed pipp, perl6, pheme, tcl installables. added pcbc's to library  
 
 ----- version parrot-0.6.4-2 -----
 * fixed invalid parrot languages and perl6 paths referencing the build_dir
