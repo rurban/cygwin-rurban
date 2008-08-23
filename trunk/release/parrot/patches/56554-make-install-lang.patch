@@ -3487,7 +3487,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
 +install : installable
 +	cp installable_$(LANG)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(LANG)@exe@
 +	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
-+	cp $(PHP_EXT) $(DESTDIR)$(LIB_DIR)/parrot/library
++	cp src/common/pipplib.pbc $(PHP_EXT) $(DESTDIR)$(LIB_DIR)/parrot/library
 +	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +	cp $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +
