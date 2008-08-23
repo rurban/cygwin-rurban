@@ -3332,19 +3332,13 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  TGE_DIR       = ../../compilers/tge
  PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
  PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
-@@ -15,8 +23,18 @@ RECONFIGURE   = $(PERL) $(BUILD_DIR)/too
+@@ -15,8 +23,12 @@ RECONFIGURE   = $(PERL) $(BUILD_DIR)/too
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
 -# the default target
 -all: pheme.pbc
 +DOCS = MAINTAINER MANIFEST README TODO
-+TGE_DEPS = \
-+    $(BUILD_DIR)/compilers/tge/TGE/Rule.pbc \
-+    $(BUILD_DIR)/compilers/tge/TGE/Tree.pbc \
-+    $(BUILD_DIR)/compilers/tge/TGE/Parser.pbc \
-+    $(BUILD_DIR)/compilers/tge/TGE/Grammar.pbc \
-+    $(BUILD_DIR)/compilers/tge/TGE/Compiler.pbc
 +
 +# the default targets
 +build: pheme.pbc Makefile
@@ -3353,7 +3347,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  
  lib/pheme_grammar_gen.pir: lib/pheme.g
  	$(PARROT) $(PERL6GRAMMAR) \
-@@ -28,6 +46,12 @@ lib/ASTGrammar.pir: lib/pge2past.tg
+@@ -28,6 +40,12 @@ lib/ASTGrammar.pir: lib/pge2past.tg
  pheme.pbc: pheme.pir lib/PhemeSymbols.pir lib/PhemeObjects.pir lib/ASTGrammar.pir lib/pheme_grammar_gen.pir
  	$(PARROT) -o pheme.pbc pheme.pir
  
@@ -3366,7 +3360,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=pheme
-@@ -39,6 +63,9 @@ help:
+@@ -39,6 +57,9 @@ help:
  	@echo ""
  	@echo "  all:               pheme.pbc"
  	@echo "                     This is the default."
@@ -3376,7 +3370,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -58,6 +85,20 @@ test: all
+@@ -58,6 +79,20 @@ test: all
  testclean:
  	$(RM_F) "t/*.out"
  
@@ -3397,7 +3391,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  clean: testclean
  	$(RM_F) pheme.pbc
  	$(RM_F) lib/pheme_grammar_gen.pir
-@@ -68,3 +109,9 @@ realclean: clean
+@@ -68,3 +103,9 @@ realclean: clean
  	$(RM_F) Makefile
  
  distclean: realclean
@@ -4322,31 +4316,48 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/tcl/config/makefiles/root.in
 +++ parrot-svn/languages/tcl/config/makefiles/root.in
-@@ -143,6 +143,24 @@ install : installable
- 	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
- 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
+@@ -2,11 +2,12 @@
+ LANG    = tcl
+ RM_F    = @rm_f@
+ PERL    = @perl@
+-PARROT  = ../../parrot@exe@
++POD2MAN = pod2man
  
-+installable : installable_tclsh@exe@
+ BUILD_DIR   = @build_dir@
++PARROT      = $(BUILD_DIR)/parrot@exe@
++PBC_TO_EXE  = $(BUILD_DIR)/pbc_to_exe@exe@
+ RECONFIGURE = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+-PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe@exe@
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
+@@ -66,7 +67,9 @@ src/grammar/expr/pge2past.pir \
+ $(TCL_LIB)/parray.tcl \
+ $(RUNTIME_PIR)
+ 
+-all: tcl.pbc
++build: tcl.pbc
 +
-+installable_tclsh@exe@: tcl.pbc
-+	$(PBC_TO_EXE) tcl.pbc --install
-+	$(RENAME) installable_tcl@exe@ installable_tclsh@exe@
-+
-+# TODO: rename build_dir. basic run for missing libs
-+test-installable : installable
-+	./installable_tclsh@exe@ tcl_misc_28.tcl
-+
-+install : installable
-+	$(CP) installable_tclsh@exe@ $(DESTDIR)$(BIN_DIR)/parrot-tclsh@exe@
-+	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" tcl
-+	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
-+	$(POD2MAN) README.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
-+	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
-+
++all: tcl.pbc Makefile installable
+ 
+ tcl.pbc: $(PARROT) pmcs ops runtime/tcllib.pbc src/tclsh.pir
+ 	$(PARROT) --output=tcl.pbc src/tclsh.pir
+@@ -136,12 +139,13 @@ test-installable : installable
+ 	./installable_tclsh@exe@ tcl_misc_28.tcl
+ 
+ install : installable
+-	$(CP) installable_tclsh@exe@ $(DESTDIR)$(BIN_DIR)/parrot-tclsh@exe@
++	$(COPY) installable_tclsh@exe@ $(DESTDIR)$(BIN_DIR)/parrot-tclsh@exe@
+ 	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" tcl
+ 	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
++	$(COPY) runtime/tcllib.pbc $(DESTDIR)$(LIB_DIR)/parrot/library
+ 	$(POD2MAN) README.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
+ 	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
+-	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++	$(COPY) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
+ 
  test: tcl.pbc
  	prove -r t
- 
 Index: parrot-svn/compilers/ncigen/config/makefiles/ncigen.in
 ===================================================================
 --- parrot-svn.orig/compilers/ncigen/config/makefiles/ncigen.in
@@ -4478,3 +4489,41 @@ Index: parrot-svn/languages/pipp/src/common/pipp.pir
      load_bytecode pbc_fn
  
      load_bytecode 'CGI/QueryHash.pbc'
+Index: parrot-svn/languages/tcl/src/tclsh.pir
+===================================================================
+--- parrot-svn.orig/languages/tcl/src/tclsh.pir
++++ parrot-svn/languages/tcl/src/tclsh.pir
+@@ -11,6 +11,12 @@
+ .include 'languages/tcl/src/returncodes.pasm'
+ .include 'languages/tcl/src/macros.pir'
+ 
++.sub '__onload' :load :init
++
++
++
++.end
++
+ .macro set_tcl_argv()
+   argc = argv # update
+   .local pmc tcl_argv
+@@ -32,7 +38,19 @@
+ .sub _main :main
+   .param pmc argv
+ 
+-  load_bytecode 'languages/tcl/runtime/tcllib.pbc'
++  # determine location of libs from the Parrot config
++  .local pmc cfg
++  cfg  = _config()
++  .local string installed, lib_dir, pbc_fn
++  lib_dir = ''
++  installed = cfg['installed']
++  if installed goto inst
++
++  lib_dir = cfg['build_dir']
++  lib_dir .= 'languages/tcl/runtime/'
++inst:
++  pbc_fn = concat lib_dir, 'tcllib.pbc'
++  load_bytecode pbc_fn
+ 
+   .local pmc retval
+   .local string mode,contents,filename
