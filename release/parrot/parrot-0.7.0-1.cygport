@@ -10,7 +10,6 @@ SRC_URI=${SRC_URI:-"http://search.cpan.org/CPAN/authors/id/R/RG/RGRJR/parrot-${P
 # SRC_DIR="parrot-${PV}"
 LICENSE="Artistic2"
 DIFF_EXCLUDES="MANIFEST.* parrot.pc myconfig config_lib.pasm Makefile TAGS"
-#SIG=0
 DLLVER=$(echo $PV|sed -e's,\.,_,g')
 
 PKG_NAMES="${PN} lib${PN}0 lib${PN}-devel ${PN}-perl6 ${PN}-languages"
@@ -94,18 +93,7 @@ src_install () {
   # already in core now
   PATH=${B}/blib/lib:$PATH make reallyinstall DESTDIR=${D} DOC_DIR="/usr/share/doc/${P}"
 
-  # These files *probably* aren't needed. Says fedora. Now patched in install_files.pl
-  # rm -rf ${D}/usr/lib/parrot/{compilers,config,src,language,tools}
-  # mv ${D}/usr/lib/parrot/lib/parrot/* ${D}/usr/lib/parrot/
-  # rm -rf ${D}/usr/lib/parrot/lib
-  # rm -rf ${D}/usr/incoming/parrot/src
-
-  # have to copy the pbc's into the final location
-  #cp -r ${D}/usr/lib /usr/
-  #cp ${B}/runtime/parrot/library/config.pir /usr/lib/parrot/library/
-  #cp ${B}/runtime/parrot/include/config.fpmc /usr/lib/parrot/include/
-
-  cygmake installable_perl6.exe -C languages/perl6
+  #cygmake installable_perl6.exe -C languages/perl6
   rm $man1/parrot-perl6.1
 
   cd ${B}
@@ -137,8 +125,7 @@ src_install () {
 
   exeinto /usr/bin
   doexe parrot_config.exe blib/lib/cygparrot${DLLVER}.dll
-  #doexe runtime/bin/*.exe
-  cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
+  #cp languages/perl6/installable_perl6.exe ${D}/usr/bin/perl6.exe
 
   insinto /usr/lib
   doins blib/lib/libparrot.dll.a
@@ -197,8 +184,9 @@ src_install () {
 
     test -d examples && (insinto /usr/share/doc/${P}/languages/${lang}/examples; doins examples/*)
     cd ${B}
-
   done
+  # not yet ready
+  rm $man1/parrot-forth.1
 }
 
 # parrot
@@ -215,6 +203,9 @@ PKG_CONTENTS[0]=" \
 --exclude=usr/lib/parrot/dynext/php_*.dll \
 --exclude=usr/lib/parrot/dynext/tcl_*.dll \
 --exclude=usr/lib/parrot/dynext/wmls_*.dll \
+--exclude=usr/lib/parrot/library/php_*.pbc \
+--exclude=usr/lib/parrot/library/pipplib.pbc \
+--exclude=usr/lib/parrot/library/tcllib.pbc \
 --exclude=usr/share/doc/${P}/languages \
 --exclude=usr/share/doc/${P}/docs/dev \
 --exclude=usr/share/doc/${P}/docs/project \
@@ -222,8 +213,6 @@ PKG_CONTENTS[0]=" \
 --exclude=usr/share/doc/${P}/PBC_COMPAT \
 --exclude=usr/share/man/man1/parrot-*1.gz \
 --exclude=usr/share/man/man1/perl6.1.gz \
-etc/postinstall \
-etc/preremove \
 usr/bin \
 usr/share \
 usr/lib/parrot/config_lib.pasm \
@@ -277,6 +266,9 @@ usr/lib/parrot/dynext/lua_*.dll \
 usr/lib/parrot/dynext/php_*.dll \
 usr/lib/parrot/dynext/tcl_*.dll \
 usr/lib/parrot/dynext/wmls_*.dll \
+usr/lib/parrot/library/php_*.pbc \
+usr/lib/parrot/library/pipplib.pbc \
+usr/lib/parrot/library/tcllib.pbc \
 usr/share/doc/${P}/languages \
 usr/share/man/man1/parrot-*1.gz \
 "
