@@ -2204,7 +2204,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -1,38 +1,41 @@
+@@ -1,38 +1,44 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
 -PARROT = ../../parrot@exe@
@@ -2231,6 +2231,9 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
      tokenstream.pbc \
      variablestack.pbc \
      virtualstack.pbc
++PBCS = tokenstream.pbc \
++    variablestack.pbc \
++    virtualstack.pbc
 +DOCS = MAINTAINER
  
 +build: $(DEPENDENCIES)
@@ -2256,7 +2259,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  forth.pbc: forth.pir words.pir
  	$(PARROT) -o forth.pbc forth.pir
  
-@@ -47,3 +50,76 @@ virtualstack.pbc: virtualstack.pir
+@@ -47,3 +53,69 @@ virtualstack.pbc: virtualstack.pir
  
  test: all
  	$(PERL) t/harness
@@ -2291,27 +2294,20 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +
 +install : installable
 +	cp installable_$(LANG)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(LANG)@exe@
-+	$(POD2MAN) $(LANG).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(LANG).1
-+	mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
++	cp tokenstream.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_tokenstream.pbc
++	cp variablestack.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_variablestack.pbc
++	cp virtualstack.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_virtualstack.pbc
++	-mkdir $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +	cp $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(LANG)
 +
-+$(LANG)_full.pbc: $(DEPENDENCIES)
-+        pbc_merge -o $(LANG)_full.pbc $(DEPENDENCIES)
-+
-+$(LANG)@exe@: $(LANG)_full.pbc
-+	mv -f $(LANG).pbc $(LANG)_single.pbc
-+	mv $(LANG)_full.pbc $(LANG).pbc
++$(LANG)@exe@: $(LANG).pbc
 +	$(PBC_TO_EXE) $(LANG).pbc
-+	mv $(LANG)_single.pbc $(LANG).pbc
 +
 +installable : installable_$(LANG)@exe@
 +	cp installable_$(LANG)@exe@ $(BUILD_DIR)
 +
-+installable_$(LANG)@exe@ : $(LANG)_full.pbc
-+	mv -f $(LANG).pbc $(LANG)_single.pbc
-+	mv $(LANG)_full.pbc $(LANG).pbc
++installable_$(LANG)@exe@ : $(LANG).pbc
 +	$(PBC_TO_EXE) $(LANG).pbc --install
-+	mv $(LANG)_single.pbc $(LANG).pbc
 +
 +testclean:
 +
@@ -4527,3 +4523,36 @@ Index: parrot-svn/languages/tcl/src/tclsh.pir
  
    .local pmc retval
    .local string mode,contents,filename
+Index: parrot-svn/languages/forth/forth.pir
+===================================================================
+--- parrot-svn.orig/languages/forth/forth.pir
++++ parrot-svn/languages/forth/forth.pir
+@@ -5,10 +5,25 @@
+ .include 'languages/forth/words.pir'
+ 
+ .sub ' init' :load
++
++    # determine location of libs from the Parrot config
++    .local pmc cfg
++    cfg  = _config()
++    .local string installed, lib_dir, pbc_fn
++    lib_dir = 'forth_'
++    installed = cfg['installed']
++    if installed goto inst
++
++    lib_dir = cfg['build_dir']
++    lib_dir .= 'languages/forth/'
++inst:
+     # load the libraries we depend on
+-    load_bytecode 'languages/forth/tokenstream.pbc'
+-    load_bytecode 'languages/forth/variablestack.pbc'
+-    load_bytecode 'languages/forth/virtualstack.pbc'
++    pbc_fn = concat lib_dir, 'tokenstream.pbc'
++    load_bytecode pbc_fn
++    pbc_fn = concat lib_dir, 'variablestack.pbc'
++    load_bytecode pbc_fn
++    pbc_fn = concat lib_dir, 'virtualstack.pbc'
++    load_bytecode pbc_fn
+ 
+     # initialize the rstack
+     .local pmc stack
