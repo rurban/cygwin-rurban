@@ -737,22 +737,26 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/befunge/config/makefiles/root.in
 +++ parrot-svn/languages/befunge/config/makefiles/root.in
-@@ -1,31 +1,46 @@
+@@ -1,31 +1,49 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
  # Makefile for languages/befunge
 +LANG = befunge
 +
 +## configuration settings
++BUILD_DIR     = @build_dir@
 +BIN_DIR       = @bin_dir@
 +LIB_DIR       = @lib_dir@
 +DOC_DIR       = @doc_dir@
 +MANDIR	      = @mandir@
  
  # Setup of some commands
- PARROT     = ../../parrot
+-PARROT     = ../../parrot
  PERL       = @perl@
  RM_F       = @rm_f@
++PARROT        = ../../parrot
++PBC_TO_EXE    = ../../pbc_to_exe@exe@
++RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
@@ -791,7 +795,7 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
  
  
  all: build
-@@ -35,14 +50,42 @@ build: befunge.pbc
+@@ -35,14 +53,42 @@ build: befunge.pbc
  befunge.pbc: befunge.pasm debug.pasm flow.pasm io.pasm load.pasm maths.pasm stack.pasm
  	$(PARROT) -o befunge.pbc befunge.pasm
  
@@ -3036,7 +3040,15 @@ Index: parrot-svn/config/gen/makefiles/docs.in
 ===================================================================
 --- parrot-svn.orig/config/gen/makefiles/docs.in
 +++ parrot-svn/config/gen/makefiles/docs.in
-@@ -52,3 +52,8 @@ html:
+@@ -8,6 +8,7 @@ MKPATH = @mkpath@
+ CHMOD  = @chmod@
+ PERLDOC = @perldoc@
+ BUILD_DIR = @build_dir@
++RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ 
+ # long list of .pod files
+ POD = @pod@
+@@ -52,3 +53,8 @@ html:
  html-clean:
  	$(PERL) -I../lib -MParrot::Distribution -e "Parrot::Distribution->new()->delete_html_docs()"
  
@@ -3402,7 +3414,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
 --- parrot-svn.orig/languages/pipp/config/makefiles/root.in
 +++ parrot-svn/languages/pipp/config/makefiles/root.in
 @@ -1,6 +1,7 @@
- # $Id: root.in 29286 2008-07-11 09:59:51Z bernhard $
+ # $Id: root.in 30479 2008-08-23 14:21:49Z bernhard $
  
  # Set up extensions
 +LANG          = pipp
@@ -3485,7 +3497,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
  test:     all test-pct
  
  test-all: all test-php test-phc test-antlr3 test-pct test-pmc
-@@ -265,3 +289,9 @@ clean-test:
+@@ -273,3 +297,9 @@ clean-test:
  
  realclean: clean
  	$(RM_F) Makefile
@@ -4153,13 +4165,14 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/Zcode/config/makefiles/root.in
 +++ parrot-svn/languages/Zcode/config/makefiles/root.in
-@@ -1,11 +1,13 @@
+@@ -1,11 +1,14 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
  # Makefile for languages/Zcode
 +LANG	      = Zcode
  
  # Setup of some commands
++BUILD_DIR  = @build_dir@
  PARROT     = ../../parrot@exe@
  PERL       = @perl@
  RM_F       = @rm_f@
@@ -4167,7 +4180,7 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -27,9 +29,7 @@ help :
+@@ -27,9 +30,7 @@ help :
  	@echo "                     Requires an Inform compiler!"
  	@echo ""
  	@echo "  clean:             clean up temporary files (none presently)"
@@ -4177,7 +4190,7 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
  	@echo "  maintclean:        clean up Z-code files"
  	@echo ""
  	@echo "  help:              print this help message"
-@@ -54,6 +54,10 @@ examples: $(EXAMPLES)
+@@ -54,6 +55,10 @@ examples: $(EXAMPLES)
  .inf.z3:
  	inform $< $@
  
@@ -4188,7 +4201,7 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
  clean:
  	@echo "No temp files to clean"
  
-@@ -64,3 +68,9 @@ realclean: clean
+@@ -64,3 +69,9 @@ realclean: clean
  
  maintclean: realclean
  	$(RM_F) $(EXAMPLES) $(TEST_ZFILES)
