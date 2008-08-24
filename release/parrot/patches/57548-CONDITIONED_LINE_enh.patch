@@ -185,7 +185,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  ALL_PARROT_LIBS     = @libparrot_ldflags@ $(ICU_SHARED) $(C_LIBS)
  
  # dynamic extensions
-@@ -557,7 +557,7 @@ all : \
+@@ -557,8 +557,8 @@ all : \
      runtime/parrot/include/config.fpmc \
      docs \
      $(LIBNCI_TEST_SO) \
@@ -194,17 +194,6 @@ Index: parrot-svn/config/gen/makefiles/root.in
      $(GEN_LIBRARY) \
      dynpmc \
      dynoplibs \
-@@ -627,6 +627,10 @@ vtable.dump : src/vtable.tbl
- Makefile: config/gen/makefiles/root.in
- 	$(RECONFIGURE) --step=gen::makefiles --target=Makefile
- 
-+# regenerate the Makefile
-+Makefile : config/gen/makefiles/root.in
-+	$(RECONFIGURE) --step=gen::makefiles --target=Makefile
-+
- # This is a listing of all targets meant to be called by users
- help :
- 	@echo ""
 @@ -786,7 +790,7 @@ $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HE
  	$(LINK) @ld_out@$@ \
  	$(SRC_DIR)/main$(O) $(SRC_DIR)/parrot_config$(O) \
