@@ -2208,7 +2208,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -1,38 +1,44 @@
+@@ -1,38 +1,40 @@
  # $Id: root.in 28657 2008-06-23 00:33:41Z coke $
  
 -PARROT = ../../parrot@exe@
@@ -2230,14 +2230,13 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +DOC_DIR       = @doc_dir@
 +MANDIR	      = @mandir@
  
- DEPENDENCIES = \
-     forth.pbc \
-     tokenstream.pbc \
+-DEPENDENCIES = \
+-    forth.pbc \
+-    tokenstream.pbc \
++PBCS = tokenstream.pbc \
      variablestack.pbc \
      virtualstack.pbc
-+PBCS = tokenstream.pbc \
-+    variablestack.pbc \
-+    virtualstack.pbc
++DEPENDENCIES = forth.pbc $(PBCS)
 +DOCS = MAINTAINER
  
 +build: $(DEPENDENCIES)
@@ -2263,7 +2262,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  forth.pbc: forth.pir words.pir
  	$(PARROT) -o forth.pbc forth.pir
  
-@@ -47,3 +53,69 @@ virtualstack.pbc: virtualstack.pir
+@@ -47,3 +49,69 @@ virtualstack.pbc: virtualstack.pir
  
  test: all
  	$(PERL) t/harness
