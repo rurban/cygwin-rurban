@@ -2,9 +2,9 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 ===================================================================
 --- parrot-svn.orig/lib/Parrot/Configure/Compiler.pm
 +++ parrot-svn/lib/Parrot/Configure/Compiler.pm
-@@ -189,17 +189,43 @@ to '#', C<replace_slashes> to enabled, a
- If the name of the file being generated ends in C<Makefile>, this option
- defaults to true.
+@@ -210,17 +210,42 @@ enabled, and C<conditioned_lines> to ena
+ Its value will be detected automatically by target file name unless you set
+ it to a special value C<none>.
  
 -=item conditioned_lines
 +=item conditioned_lines and #+(): #-():
@@ -44,15 +44,14 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +
 +will be skipped if the platform is win32 or cygwin.
 +
-+TODO:
 +  #+(and win32 glut (not cygwin)):
 +
-+will be used on win32 and if glut is defined, but not on cygwin. (NYI)
++will be used on win32 and if glut is defined, but not on cygwin.
 +
  =item comment_type
  
  This option takes has two possible values, C<#> or C</*>. If present and
-@@ -329,12 +355,20 @@ sub genfile {
+@@ -381,12 +406,20 @@ sub genfile {
              last;
          }
          if ( $options{conditioned_lines} ) {
@@ -76,7 +75,7 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
                  $line = $2;
              }
          }
-@@ -434,6 +468,62 @@ sub genfile {
+@@ -486,6 +519,63 @@ sub genfile {
      move_if_diff( "$target.tmp", $target, $options{ignore_pattern} );
  }
  
@@ -87,13 +86,14 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +sub next_expr {
 +    my $s = $_[0];
 +    return "" unless $s;
-+    if ($s =~ /^\((.+)\)\s*(.*)/) { # longest match to closing paren
-+	$_[0] = $2 ? $2 : "";
++    if ($s =~ /^\((.+)\)\s*(.*)/) { # longest match to matching closing paren
++	$_[0] = $2 ? $2 : "";	    # modify the 2nd arg
 +	#print "** \"$s\" => (\"$1\",\"$_[0]\")\n";
 +	return $1;
 +    } else {
-+	$s =~ m/^([^ \(]+)\s*(.*)?/;   # shortest match to next whitespace or open paren
-+	$_[0] = $2 ? $2 : "";
++	$s =~ s/^\s+//;    		# left-trim to make it more robust
++	$s =~ m/^([^ \(]+)\s*(.*)?/;    # shortest match to next whitespace or open paren
++	$_[0] = $2 ? $2 : "";		# modify the 2nd arg
 +	#print "** \"$s\" => (\"$1\",\"$_[0]\")\n";
 +	return $1;
 +    }
@@ -104,11 +104,11 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +# Also check the platform name if the hash key does not exist.
 +# Also check for key=value, like #+(ld=gcc)
 +sub cond_eval {
-+    my $conf = shift;
-+    my $expr = shift;
-+    my @keys = split /\s+/, $expr;
++    my $conf = $_[0];
++    my $expr = $_[1];
 +    my $key = $expr;
-+    if (@keys > 1) { # multiple keys: recurse into
++    my @count = split /\s+/, $expr;
++    if (@count > 1) { # multiple keys: recurse into
 +	my $truth;
 +	my $op = next_expr($expr);
 +	if ($op =~ /^(or|and|not)$/i) {
@@ -162,10 +162,10 @@ Index: parrot-svn/config/gen/makefiles/root.in
      Makefile \
 -#CONDITIONED_LINE(has_perldoc):    docs/Makefile \
 +#+(has_perldoc):    docs/Makefile \
-     compilers/nqp/Makefile \
-     compilers/pct/Makefile \
-     compilers/pge/Makefile \
-@@ -166,9 +166,9 @@ GEN_CONFIGS = \
+     compilers/bcg/Makefile \
+     compilers/json/Makefile \
+     compilers/ncigen/Makefile \
+@@ -167,9 +167,9 @@ GEN_CONFIGS = \
      lib/Parrot/PMC.pm \
      runtime/parrot/include/config.fpmc \
      $(SRC_DIR)/platform.c \
@@ -178,7 +178,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      $(SRC_DIR)/core_pmcs.c \
      CFLAGS \
      $(IMCC_DIR)/CFLAGS \
-@@ -185,8 +185,8 @@ GEN_CONFIGS = \
+@@ -186,8 +186,8 @@ GEN_CONFIGS = \
  
  GEN_PASM_INCLUDES = \
      runtime/parrot/include/signal.pasm \
@@ -189,7 +189,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      @TEMP_gen_pasm_includes@
  
  CONFIGURE_GENERATED_FILES = \
-@@ -254,7 +254,7 @@ GEN_LIBRARY = \
+@@ -255,7 +255,7 @@ GEN_LIBRARY = \
      $(LIBRARY_DIR)/MIME/Base64.pbc \
      $(LIBRARY_DIR)/NCI/call_toolkit_init.pbc \
      $(LIBRARY_DIR)/ncurses.pbc \
@@ -198,7 +198,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      $(LIBRARY_DIR)/P6object.pbc \
      $(LIBRARY_DIR)/parrotlib.pbc \
      $(LIBRARY_DIR)/pcre.pbc \
-@@ -372,7 +372,7 @@ INTERP_O_FILES = \
+@@ -373,7 +373,7 @@ INTERP_O_FILES = \
      $(OPS_DIR)/core_ops$(O) \
      $(OPS_DIR)/core_ops_switch$(O) \
      \
@@ -207,7 +207,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      $(SRC_DIR)/byteorder$(O) \
      $(SRC_DIR)/charset$(O) \
      $(SRC_DIR)/core_pmcs$(O) \
-@@ -444,7 +444,7 @@ INTERP_O_FILES = \
+@@ -445,7 +445,7 @@ INTERP_O_FILES = \
      @TEMP_atomic_o@ \
      @TEMP_jit_o@ \
      @TEMP_gc_o@ \
@@ -216,7 +216,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  O_FILES = \
      $(INTERP_O_FILES) \
-@@ -486,14 +486,14 @@ INSTALLABLEPDB      = $(CUR_DIR)/install
+@@ -487,14 +487,14 @@ INSTALLABLEPDB      = $(CUR_DIR)/install
  
  # Libraries
  LIBPARROT_STATIC    = @blib_dir@/@libparrot_static@
@@ -235,7 +235,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  ALL_PARROT_LIBS     = @libparrot_ldflags@ $(ICU_SHARED) $(C_LIBS)
  
  # dynamic extensions
-@@ -557,7 +557,7 @@ all : \
+@@ -558,7 +558,7 @@ all : \
      runtime/parrot/include/config.fpmc \
      docs \
      $(LIBNCI_TEST_SO) \
@@ -244,7 +244,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      $(GEN_LIBRARY) \
      dynpmc \
      dynoplibs \
-@@ -786,7 +786,7 @@ $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HE
+@@ -787,7 +787,7 @@ $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HE
  	$(LINK) @ld_out@$@ \
  	$(SRC_DIR)/main$(O) $(SRC_DIR)/parrot_config$(O) \
  	@rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS) $(LINK_DYNAMIC)
@@ -253,7 +253,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  pbc_to_exe.pir : $(PARROT) tools/dev/pbc_to_exe_gen.pl
  	$(PERL) tools/dev/pbc_to_exe_gen.pl \
-@@ -801,7 +801,7 @@ $(PARROT_CONFIG) : tools/util/parrot-con
+@@ -802,7 +802,7 @@ $(PARROT_CONFIG) : tools/util/parrot-con
  	$(SHRPENV) $(PARROT) pbc_to_exe.pir parrot_config.pbc
  
  # HLL Executable targets
@@ -262,7 +262,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(PERL6) : compilers $(PBC_TO_EXE)
  	$(MAKE) languages/perl6 perl6$(EXE)
-@@ -815,7 +815,7 @@ $(MINIPARROT) : $(SRC_DIR)/main$(O) $(GE
+@@ -816,7 +816,7 @@ $(MINIPARROT) : $(SRC_DIR)/main$(O) $(GE
      lib/Parrot/OpLib/core.pm $(SRC_DIR)/null_config$(O)
  	$(LINK) @ld_out@$@ $(SRC_DIR)/main$(O) $(SRC_DIR)/null_config$(O) \
  	@rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -271,7 +271,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) \
      lib/Parrot/OpLib/core.pm $(SRC_DIR)/install_config$(O) \
-@@ -823,7 +823,7 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
+@@ -824,7 +824,7 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/main$(O) $(SRC_DIR)/install_config$(O) \
      $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -280,7 +280,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(INC_DIR)/parrot.h : $(INC_DIR)/pbcversion.h $(INC_DIR)/vtable.h
  
-@@ -881,22 +881,22 @@ check_source : $(GENERAL_H_FILES)
+@@ -882,22 +882,22 @@ check_source : $(GENERAL_H_FILES)
  # so always delete the lib -leo
  
  PARROT_LIBS: \
@@ -309,7 +309,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  #
-@@ -910,14 +910,14 @@ $(PDB) : $(SRC_DIR)/parrot_debugger$(O) 
+@@ -911,14 +911,14 @@ $(PDB) : $(SRC_DIR)/parrot_debugger$(O) 
      $(SRC_DIR)/parrot_debugger$(O) \
      $(SRC_DIR)/parrot_config$(O) \
      @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -326,7 +326,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  #
  # Parrot Disassembler
-@@ -929,13 +929,13 @@ $(DIS) : $(SRC_DIR)/pbc_disassemble$(O) 
+@@ -930,13 +930,13 @@ $(DIS) : $(SRC_DIR)/pbc_disassemble$(O) 
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/pbc_disassemble$(O) \
      @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -342,7 +342,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  #
  # Parrot Dump
-@@ -945,7 +945,7 @@ $(PDUMP) : $(SRC_DIR)/pdump$(O) $(SRC_DI
+@@ -946,7 +946,7 @@ $(PDUMP) : $(SRC_DIR)/pdump$(O) $(SRC_DI
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/pdump$(O) \
      $(SRC_DIR)/packdump$(O) @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -351,7 +351,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(SRC_DIR)/pdump$(O) : $(GEN_HEADERS)
  
-@@ -953,7 +953,7 @@ $(INSTALLABLEPDUMP) : $(SRC_DIR)/pdump$(
+@@ -954,7 +954,7 @@ $(INSTALLABLEPDUMP) : $(SRC_DIR)/pdump$(
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/pdump$(O) \
      $(SRC_DIR)/packdump$(O) $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -360,7 +360,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  # pbc_info
-@@ -961,7 +961,7 @@ $(PINFO) : $(SRC_DIR)/pbc_info$(O) $(LIB
+@@ -962,7 +962,7 @@ $(PINFO) : $(SRC_DIR)/pbc_info$(O) $(LIB
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/pbc_info$(O) \
      @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -369,7 +369,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(SRC_DIR)/pbc_info$(O) : $(GEN_HEADERS)
  
-@@ -969,7 +969,7 @@ $(INSTALLABLEPINFO) : $(SRC_DIR)/pbc_inf
+@@ -970,7 +970,7 @@ $(INSTALLABLEPINFO) : $(SRC_DIR)/pbc_inf
  	$(LINK) @ld_out@$@ \
      $(SRC_DIR)/pbc_info$(O) \
      $(ALL_PARROT_LIBS) $(LINKFLAGS)
@@ -378,7 +378,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  #
  # Parrot Bytecode File Merger
-@@ -980,14 +980,14 @@ $(PBCMERGE) : $(SRC_DIR)/pbc_merge$(O) $
+@@ -981,14 +981,14 @@ $(PBCMERGE) : $(SRC_DIR)/pbc_merge$(O) $
      $(SRC_DIR)/pbc_merge$(O) \
      $(SRC_DIR)/parrot_config$(O) \
      @rpath_blib@ $(ALL_PARROT_LIBS) $(LINK_DYNAMIC) $(LINKFLAGS)
@@ -395,7 +395,28 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  ###############################################################################
-@@ -1108,8 +1108,8 @@ $(SRC_DIR)/hll$(O) : $(GENERAL_H_FILES) 
+@@ -1003,20 +1003,6 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
+     lib/Parrot/OpsFile.pm lib/Parrot/Op.pm $(OPS_DIR)/ops.num $(OPS_DIR)/ops.skip
+ 	$(PERL) $(BUILD_TOOLS_DIR)/ops2pm.pl $(OPS_FILES)
+ 
+-# FIXME: This creates a cycle sometimes
+-#lib/Parrot/Config/Generated.pm \
+-#    $(SRC_DIR)/platform.c \
+-##CONDITIONED_LINE(platform_asm):    $(SRC_DIR)/platform_asm.s \
+-##CONDITIONED_LINE(has_opengl):    config/gen/call_list/opengl.in \
+-##CONDITIONED_LINE(has_glut):    $(SRC_DIR)/glut_callbacks.c \
+-#    config_lib.pasm \
+-#    $(BUILD_TOOLS_DIR)/dynpmc.pl \
+-#    $(BUILD_TOOLS_DIR)/dynoplibs.pl \
+-# : Configure.pl lib/Parrot/Configure.pm \
+-#   lib/Parrot/Configure/Step/List.pm lib/Parrot/Configure/Step/Methods.pm
+-#	@echo "  Makefile out-of-date: reconfigure"
+-#	$(PERL) Configure.pl $(CONFIG_ARGS)
+-
+ ###############################################################################
+ #
+ # Examples (Assembly):
+@@ -1109,8 +1095,8 @@ $(SRC_DIR)/hll$(O) : $(GENERAL_H_FILES) 
  
  $(SRC_DIR)/platform$(O) : $(GENERAL_H_FILES)
  
@@ -406,7 +427,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  $(SRC_DIR)/core_pmcs$(O) : $(GENERAL_H_FILES)
  
  $(SRC_DIR)/trace$(O) : $(GENERAL_H_FILES)
-@@ -1298,11 +1298,11 @@ $(IMCC_O_FILES) : $(IMCC_H_FILES) $(ALL_
+@@ -1299,11 +1285,11 @@ $(IMCC_O_FILES) : $(IMCC_H_FILES) $(ALL_
  #
  ###############################################################################
  
@@ -422,7 +443,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  html.stub:
  	@echo "Perldoc is required, but not detected."
-@@ -1498,10 +1498,10 @@ check : test
+@@ -1499,10 +1485,10 @@ check : test
  # when the needed runcores are available
  fulltest :
  	-@make@ testb
@@ -436,7 +457,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  	-@make@ testr
  	-@make@ testS
  	-@make@ src_tests
-@@ -1613,15 +1613,15 @@ clean : \
+@@ -1614,15 +1600,15 @@ clean : \
      prog-clean \
      dynext-clean \
      languages-clean \
@@ -455,7 +476,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      editor-clean
  	@TEMP_cg_r@
  	$(RM_F) chartypes "*.s" "*~"
-@@ -2078,10 +2078,10 @@ COVER_DIRS = \
+@@ -2082,10 +2068,10 @@ COVER_DIRS = \
  cover: \
      cover.dummy \
      cover-testb \
@@ -776,7 +797,7 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/Zcode/config/makefiles/root.in
 +++ parrot-svn/languages/Zcode/config/makefiles/root.in
-@@ -9,9 +9,9 @@ PARROT     = ../../parrot@exe@
+@@ -8,9 +8,9 @@ PARROT     = ../../parrot@exe@
  PERL       = @perl@
  RM_F       = @rm_f@
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -810,9 +831,9 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/befunge/config/makefiles/root.in
 +++ parrot-svn/languages/befunge/config/makefiles/root.in
-@@ -17,9 +17,9 @@ PARROT        = ../../parrot
- PBC_TO_EXE    = ../../pbc_to_exe@exe@
- RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+@@ -14,9 +14,9 @@ PARROT     = ../../parrot
+ PERL       = @perl@
+ RM_F       = @rm_f@
  POD2MAN	      = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
@@ -1252,10 +1273,10 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/tcl/config/makefiles/root.in
 +++ parrot-svn/languages/tcl/config/makefiles/root.in
-@@ -8,9 +8,9 @@ BUILD_DIR   = @build_dir@
- PARROT      = $(BUILD_DIR)/parrot@exe@
+@@ -9,9 +9,9 @@ PARROT      = $(BUILD_DIR)/parrot@exe@
  PBC_TO_EXE  = $(BUILD_DIR)/pbc_to_exe@exe@
  RECONFIGURE = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+ PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe@exe@
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1265,7 +1286,7 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  TCL_LIB   = library
  PMCBUILD  = $(PERL) @build_dir@/tools/build/dynpmc.pl
-@@ -317,7 +317,7 @@ runtime/builtins.pir \
+@@ -318,7 +318,7 @@ runtime/builtins.pir \
  "$(PMCDIR)/*_group.h" \
  "$(PMCDIR)/*$(LOAD_EXT)" \
  "$(PMCDIR)/*.dump" \
@@ -1312,50 +1333,75 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
 ===================================================================
 --- parrot-svn.orig/t/steps/gen_makefiles-01.t
 +++ parrot-svn/t/steps/gen_makefiles-01.t
-@@ -5,9 +5,9 @@
+@@ -5,9 +5,42 @@
  
  use strict;
  use warnings;
 -use Test::More tests =>  7;
-+use Test::More tests =>  28;
++my @cond_tests;
++my @conf_args = ( dummy1 => 1, dummy2 => 0, dummy3 => 'xx' );
++BEGIN {
++    @cond_tests =
++      (# test                true or false
++       ["+(dummy1)", 		1],
++       ["+(dummy2)", 		0],
++       ["+(dummy1 dummy2)",	1],
++       ["+(and dummy1 dummy2)", 0],
++       ["-(dummy1)",		0],
++       ["-(dummy2)",		1],
++       ["-(dummy1 dummy2)",	0],
++       ["-(and dummy1 dummy2)",	1],
++       ["+(dummy3=xx)",		1],
++       ["+(dummy3=xxy)",	0],
++       ["-(dummy3=xx)",		0],
++       ["-(dummy3=xxy)",	1],
++       ["+(dummy1=1)",		1],
++       ["+(dummy2=0)",		1],
++       ["+($^O)",		1],
++       ["+(not$^O)",		0],
++       ["-($^O)",		0],
++       ["-(not$^O)",		1],
++       ["+(or dummy1 dummy2)",	1],
++       ["-(or dummy1 dummy2)",	0],
++       ["+(or dummy1 (not dummy2))",	1],
++       ["+(and dummy1 (not dummy2))",	1],
++       ["+(and (not dummy2) dummy1)",	1],
++       # break it with whitespace
++       ["+( or dummy1(not dummy2))",	1],
++       ["+(or dummy1(not dummy2))",	1],
++      );
++}
++use Test::More tests => (7 + scalar(@cond_tests));
  use Carp;
 -use lib qw( lib );
 +use lib qw( . lib );
  use_ok('config::gen::makefiles');
  use Parrot::Configure;
  use Parrot::Configure::Options qw( process_options );
-@@ -38,6 +38,65 @@ foreach my $k ( keys %makefiles ) {
+@@ -38,6 +71,40 @@ foreach my $k ( keys %makefiles ) {
  is($missing_SOURCE, 0, "No Makefile source file missing");
  ok(-f $step->{CFLAGS_source}, "CFLAGS source file located");
  
-+# test #+(keys):line
-+$conf->data->set( dummy1 => 1, dummy2 => 0, dummy3 => 'xx' );
++sub result {
++    my $c = shift;
++    my $s = $c->[0];
++    $s =~ s/^\+/plus_/;
++    $s =~ s/^\-/minus_/;
++    $s =~ s/[\()]//g;
++    $s =~ s/ /_/g;
++    return $s."=".($c->[1]?"true":"false");
++}
++# test #+(keys):line RT #57548
++$conf->data->set( @conf_args );
 +open IN, ">", "Makefile_$$.in";
-+print IN "#+(dummy1):+dummy1\n";
-+print IN "#+(dummy2):+dummy2\n";
-+print IN "#+(dummy1 dummy2):+dummy1_2\n";
-+print IN "#+(and dummy1 dummy2):+dummy1_and_2\n";
-+print IN "#-(dummy1):-dummy1\n";
-+print IN "#-(dummy2):-dummy2\n";
-+print IN "#-(dummy1 dummy2):-dummy1_2\n";
-+print IN "#-(and dummy1 dummy2):-dummy1_and_2\n";
-+print IN "#+(dummy3=xx):+dummy3=xx\n";
-+print IN "#+(dummy3=xxy):+dummy3=xxy\n";
-+print IN "#-(dummy3=xx):-dummy3=xx\n";
-+print IN "#-(dummy3=xxy):-dummy3=xxy\n";
-+print IN "#+(dummy1=1):+dummy1=1\n";
-+print IN "#+(dummy2=0):+dummy2=0\n";
-+print IN "#+($^O):+ok$^O\n";
-+print IN "#+(not$^O):+nok$^O\n";
-+print IN "#-($^O):-ok$^O\n";
-+print IN "#-(not$^O):-nok$^O\n";
-+print IN "#+(or dummy1 dummy2):+dummy1_or_2\n";
-+print IN "#-(or dummy1 dummy2):-dummy1_or_2\n";
-+print IN "#+(or dummy1 (not dummy2)):+dummy1_or_not_2\n";
-+print IN "#+(and dummy1 (not dummy2)):+dummy1_and_not_2\n";
-+print IN "#+(and (not dummy2) dummy1):+not_dummy2_and_1\n";
++print IN "# There should only be true results in .out\n";
++for my $c (@cond_tests) {
++    my $result = result($c);
++    print IN "#$c->[0]:$result\n";
++}
 +close IN;
-+$conf->genfile("Makefile_$$.in", "Makefile_$$.out", (makefile => 1));
++$conf->genfile("Makefile_$$.in", "Makefile_$$.out",
++	       (makefile => 1, conditioned_lines => 1));
 +open OUT, "<", "Makefile_$$.out";
 +my $f;
 +{
@@ -1365,36 +1411,20 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
 +END {
 +    unlink "Makefile_$$.in", "Makefile_$$.out";
 +}
-+ok($f =~ /^\+dummy1$/m, 	"+dummy1");
-+ok($f !~ /^\+dummy2$/m, 	"+dummy2");
-+ok($f =~ /^\+dummy1_2$/m, 	"+dummy1_2");
-+ok($f !~ /^\+dummy1_and_2$/m, 	"+dummy1_and_2");
-+ok($f !~ /^\-dummy1$/m, 	"-dummy1");
-+ok($f =~ /^\-dummy2$/m,     	"-dummy2");
-+ok($f !~ /^\-dummy1_2$/m,   	"-dummy1_2");
-+ok($f =~ /^\-dummy1_and_2$/m, 	"-dummy1_and_2");
-+ok($f =~ /^\+dummy3=xx$/m,  	"+dummy3=xx");
-+ok($f !~ /^\+dummy3=xxy$/m,  	"+dummy3=xxy");
-+ok($f !~ /^\-dummy3=xx$/m,  	"-dummy3=xx");
-+ok($f =~ /^\-dummy3=xxy$/m, 	"-dummy3=xxy");
-+ok($f =~ /^\+ok$^O$/m,  	"+ok$^O");
-+ok($f !~ /^\+nok$^O$/m, 	"+nok$^O");
-+ok($f !~ /^\-ok$^O$/m,  	"-ok$^O");
-+ok($f =~ /^\-nok$^O$/m, 	"-nok$^O");
-+ok($f =~ /^\+dummy1_or_2$/m, 	"+dummy1_or_2");
-+ok($f !~ /^\-dummy1_or_2$/m, 	"-dummy1_or_2");
-+ok($f =~ /^\+dummy1_or_not_2$/m, "+dummy1_or_not_2");
-+ok($f =~ /^\+dummy1_and_not_2$/m,"+dummy1_and_not_2");
-+ok($f =~ /^\+not_dummy2_and_1$/m, "+not_dummy2_and_1");
++for my $c (@cond_tests) {
++    my $result = result($c);
++    ok(($c->[1] ? $f =~ /^$result$/m : $f !~ /^$result$/m), "$result");
++}
 +
  pass("Completed all tests in $0");
  
  ################### DOCUMENTATION ###################
-@@ -59,6 +118,7 @@ The tests in this file test gen::makefil
- =head1 AUTHOR
+@@ -60,6 +127,8 @@ The tests in this file test gen::makefil
  
  James E Keenan
-+Reini Urban (conditioned_lines)
  
++Reini Urban (#+, #-)
++
  =head1 SEE ALSO
  
+ config::gen::makefiles, F<Configure.pl>.
