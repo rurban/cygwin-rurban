@@ -11,27 +11,26 @@ Index: parrot-svn/runtime/parrot/library/config.pir
 ===================================================================
 --- parrot-svn.orig/runtime/parrot/library/config.pir
 +++ parrot-svn/runtime/parrot/library/config.pir
-@@ -48,12 +48,28 @@ undefined values) is undefined, and may 
+@@ -48,12 +48,26 @@ undefined values) is undefined, and may 
  .sub _config
      .local pmc CONF
      .local string conf_file
 +
++    # FIXME: we should check if a linked frozen hash already exists
++    # and return that instead. See RT #57418
 +    #unless find_sub('_config') goto runtime
 +    #$P0 = _config()
 +    #.return( $P0 )
 +
 +runtime:
-+    # conf_file = Parrot_locate_runtime_file_str(interp, "config.fpmc", 2)
      conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
-     conf_file .= "/runtime/parrot/include/config.fpmc"
+-    conf_file .= "/runtime/parrot/include/config.fpmc"
++    conf_file .= "/lib/parrot/include/config.fpmc"
 +    stat $I0, conf_file, 0
 +    if $I0 goto conf
  
-+    # If installed into /usr/lib/parrot, not /usr/runtime/parrot
-+    # This logic has to be reversed when installed versions should run faster
-+    # than source builds.
 +    conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
-+    conf_file .= "/lib/parrot/include/config.fpmc"
++    conf_file .= "/runtime/parrot/include/config.fpmc"
 +conf:
      open CONF, conf_file, "<"
      $I0 = defined CONF
@@ -250,7 +249,12 @@ Index: parrot-svn/config/gen/config_pm/config_lib.in
 ===================================================================
 --- parrot-svn.orig/config/gen/config_pm/config_lib.in
 +++ parrot-svn/config/gen/config_pm/config_lib.in
-@@ -12,6 +12,7 @@ no_arg:
+@@ -1,3 +1,4 @@
++
+ .pcc_sub main:
+         get_params "(0)", P5
+ 	set I10, P5     # argv
+@@ -12,6 +13,7 @@ no_arg:
  
  	<<PCONFIG>>
  
@@ -258,3 +262,13 @@ Index: parrot-svn/config/gen/config_pm/config_lib.in
  	if I11, is_install
  	set S1, "<<PWD>>"
  	set P0["prefix"], S1
+@@ -19,3 +21,9 @@ is_install:
+ 	freeze S0, P0
+ 	print S0
+ 	end
++
++# Local Variables:
++#   mode: pir
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4 ft=pir:
