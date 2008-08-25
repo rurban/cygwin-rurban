@@ -837,10 +837,10 @@ sub list {
 
 sub name_ver($) {
     my $pkg = shift || return ();
-    if ($pkg =~ /-src\.tar\.bz2$/) {
-	$pkg =~ s/-src\.tar\.bz2$//;
+    if ($pkg =~ /-src\.tar\.(bz2|lzma)$/) {
+	$pkg =~ s/-src\.tar\.(bz2|lzma)$//;
     } else {
-	$pkg =~ s/\.tar\.bz2$//;
+	$pkg =~ s/\.tar\.(bz2|lzma)$//;
     }
     my ( $name, $ver ) = $pkg =~ m/^(.+)-(\d[.\w]+-\d+)$/;
     unless ($name) {
@@ -867,7 +867,7 @@ sub find_names($) {
     my (@names, $pkg);
     # first exact search
     if ($pkg = $db{$path}) {
-	$pkg =~ s/\.tar\.bz2$//;
+	$pkg =~ s/\.tar\.(bz2|lzma)$//;
 	push @names, ($pkg); 	# already installed
     }
     unless ($opt{erase}) {
@@ -883,7 +883,7 @@ sub find_names($) {
     foreach my $s ( keys %db ) {
 	if ($s =~ $qr) {
 	    $pkg = $db{$s};
-	    $pkg =~ s/\.tar\.bz2$//;
+	    $pkg =~ s/\.tar\.(bz2|lzma)$//;
 	    push @names, ($pkg) unless grep /^$pkg$/, @names;
 	}
     }
@@ -898,7 +898,7 @@ sub find_names($) {
     foreach my $s ( keys %db ) {
 	if ($s =~ $qr) {
 	    $pkg = $db{$s};
-	    $pkg =~ s/\.tar\.bz2$//;
+	    $pkg =~ s/\.tar\.(bz2|lzma)$//;
 	    push @names, ($pkg) unless grep /^$pkg$/, @names;
 	}
     }
@@ -1000,12 +1000,12 @@ sub main {
             #}
         #}
         my $pkg = basename($path);
-        if ($pkg =~ /-src\.tar\.bz2$/) {
-	    $pkg =~ s/-src\.tar\.bz2$//;
+        if ($pkg =~ /-src\.tar\.(bz2|lzma)$/) {
+	    $pkg =~ s/-src\.tar\.(bz2|lzma)$//;
 	    $issrc = 1;
 	    next if $opt{nosrc};
 	} else {
-	    $pkg =~ s/\.tar\.bz2$//;
+	    $pkg =~ s/\.tar\.(bz2|lzma)$//;
 	}
         my ( $name, $ver ) = name_ver($pkg);
         #$pkg .= $issrc ? "-src.tar.bz2" : ".tar.bz2";
