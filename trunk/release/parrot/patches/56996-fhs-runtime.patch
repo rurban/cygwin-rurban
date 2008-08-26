@@ -11,16 +11,17 @@ Index: parrot-svn/runtime/parrot/library/config.pir
 ===================================================================
 --- parrot-svn.orig/runtime/parrot/library/config.pir
 +++ parrot-svn/runtime/parrot/library/config.pir
-@@ -48,12 +48,26 @@ undefined values) is undefined, and may 
+@@ -48,12 +48,27 @@ undefined values) is undefined, and may 
  .sub _config
      .local pmc CONF
      .local string conf_file
 +
-+    # FIXME: we should check if a linked frozen hash already exists
++    # We should check if a linked frozen hash already exists
 +    # and return that instead. See RT #57418
-+    #unless find_sub('_config') goto runtime
-+    #$P0 = _config()
-+    #.return( $P0 )
++    find_global $P0, "config", "_config"
++    unless $P0 goto runtime
++    $P0 = _config()
++    .return( $P0 )
 +
 +runtime:
      conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX

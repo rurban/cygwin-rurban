@@ -533,7 +533,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  ###############################################################################
  #
-@@ -531,10 +533,10 @@ MAKE = @make_c@
+@@ -532,10 +534,10 @@ MAKE = @make_c@
  # here, though. Ignored on Mac OS X, at least.
  
  .pir.pbc :
@@ -546,7 +546,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  ###############################################################################
-@@ -547,6 +549,7 @@ MAKE = @make_c@
+@@ -548,6 +550,7 @@ MAKE = @make_c@
  
  all : \
      flags_dummy \
@@ -554,7 +554,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
      PARROT_LIBS \
      $(PARROT) \
      runtime/parrot/include/parrotlib.pbc \
-@@ -619,6 +622,10 @@ PMC2CV = $(PERL) $(BUILD_TOOLS_DIR)/pmc2
+@@ -620,6 +623,10 @@ PMC2CV = $(PERL) $(BUILD_TOOLS_DIR)/pmc2
  vtable.dump : src/vtable.tbl
  	$(PMC2CV)
  
@@ -565,7 +565,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  # This is a listing of all targets meant to be called by users
  help :
  	@echo ""
-@@ -765,7 +772,7 @@ flags_dummy :
+@@ -766,7 +773,7 @@ flags_dummy :
  	@$(PERL) tools/dev/cc_flags.pl $(CUR_DIR)/CFLAGS echo $(CC) $(CFLAGS) -I$(@D) @cc_o_out@ xx$(O) -c xx.c
  
  runtime/parrot/include/parrotlib.pbc: runtime/parrot/library/parrotlib.pir $(PARROT)
@@ -574,7 +574,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  runtime/parrot/include/config.fpmc : myconfig config_lib.pasm $(MINIPARROT)
  	@cygchkdll@
-@@ -785,12 +792,12 @@ pbc_to_exe.pir : $(PARROT) tools/dev/pbc
+@@ -786,12 +793,12 @@ pbc_to_exe.pir : $(PARROT) tools/dev/pbc
      > pbc_to_exe.pir
  
  $(PBC_TO_EXE) : pbc_to_exe.pir $(PARROT)
@@ -591,7 +591,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # HLL Executable targets
  #CONDITIONED_LINE(win32):perl6 : $(PERL6)
-@@ -813,8 +820,8 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
+@@ -814,8 +821,8 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
      lib/Parrot/OpLib/core.pm $(SRC_DIR)/install_config$(O) \
      $(PARROT)
  	$(LINK) @ld_out@$@ \
@@ -602,7 +602,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  #CONDITIONED_LINE(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
  
  $(INC_DIR)/parrot.h : $(INC_DIR)/pbcversion.h $(INC_DIR)/vtable.h
-@@ -840,7 +847,7 @@ $(SRC_DIR)/null_config.c : myconfig $(BU
+@@ -841,7 +848,7 @@ $(SRC_DIR)/null_config.c : myconfig $(BU
  
  install_config.fpmc : myconfig config_lib.pasm $(PARROT)
  	@echo "Invoking Parrot to generate install_config.fpmc"
@@ -611,7 +611,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(SRC_DIR)/parrot_config$(O) : $(SRC_DIR)/parrot_config.c
  
-@@ -1013,10 +1020,10 @@ hello: test_prep examples/pasm/hello$(EX
+@@ -1018,10 +1025,10 @@ hello: test_prep examples/pasm/hello$(EX
  	$(CUR_DIR)/examples/pasm/hello$(EXE) "from your friendly makefile"
  
  examples/pasm/hello.pbc: examples/pasm/hello.pasm
