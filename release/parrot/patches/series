@@ -1,5 +1,6 @@
 #57476-pdb-version.patch
 #57546-tags-xemacs.patch
+58354-installable_parrot_config.patch
 39742-installed-conflict.patch
 56544-install_files.patch
 57006-opengl-cyg.patch -p0
