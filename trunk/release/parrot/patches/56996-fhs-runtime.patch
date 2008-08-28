@@ -88,7 +88,7 @@ Index: parrot-svn/src/library.c
 ===================================================================
 --- parrot-svn.orig/src/library.c
 +++ parrot-svn/src/library.c
-@@ -121,64 +121,108 @@ if will be called as a function with thi
+@@ -121,64 +121,111 @@ if will be called as a function with thi
  Platform code may add, delete, or replace search path entries as needed. See
  also F<include/parrot/library.h> for C<enum_lib_paths>.
  
@@ -143,7 +143,8 @@ Index: parrot-svn/src/library.c
 +        entry = CONST_STRING(interp, "lib/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
 +#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
-+    } else {
++    }
++    else {
 +#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/include/");
 +        VTABLE_push_string(interp, paths, entry);
@@ -175,7 +176,8 @@ Index: parrot-svn/src/library.c
 +        entry = CONST_STRING(interp, "lib/parrot/");
 +        VTABLE_push_string(interp, paths, entry);
 +#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
-+    } else {
++    }
++    else {
 +#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/library/");
 +        VTABLE_push_string(interp, paths, entry);
@@ -203,7 +205,8 @@ Index: parrot-svn/src/library.c
 +        entry = CONST_STRING(interp, "lib/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
 +#ifdef ENABLE_PARROT_LIBRARY_INSTALLED
-+    } else {
++    }
++    else {
 +#endif
 +        entry = CONST_STRING(interp, "runtime/parrot/dynext/");
 +        VTABLE_push_string(interp, paths, entry);
@@ -217,7 +220,7 @@ Index: parrot-svn/src/library.c
  
      /* shared exts */
      paths = pmc_new(interp, enum_class_ResizableStringArray);
-@@ -202,7 +246,16 @@ parrot_init_library_paths(PARROT_INTERP)
+@@ -202,7 +249,16 @@ parrot_init_library_paths(PARROT_INTERP)
  
  =item C<static PMC* get_search_paths>
  
@@ -235,7 +238,7 @@ Index: parrot-svn/src/library.c
  
  =cut
  
-@@ -573,7 +626,9 @@ Parrot_locate_runtime_file_str(PARROT_IN
+@@ -573,7 +629,9 @@ Parrot_locate_runtime_file_str(PARROT_IN
  
  =item C<char* Parrot_locate_runtime_file>
  
