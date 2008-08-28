@@ -1567,7 +1567,7 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
 ===================================================================
 --- parrot-svn.orig/t/steps/gen_makefiles-01.t
 +++ parrot-svn/t/steps/gen_makefiles-01.t
-@@ -1,13 +1,89 @@
+@@ -1,13 +1,91 @@
  #! perl
  # Copyright (C) 2007, The Perl Foundation.
 -# $Id: gen_makefiles-01.t 29867 2008-07-30 03:29:47Z jkeenan $
@@ -1604,9 +1604,11 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
 +       ["ELSIF(dummy2)", 	0],
 +       ["ELSE", 	        1],
 +       # no ws, strangle the parser
-+       #["IF(dummy1 and (!dummy2 and dummy3))",  1], #TODO
-+       ["IF(dummy2 or (!dummy2 and dummy3))",   1],
++       ["IF(dummy1 and (!dummy2 and dummy3))",  1],
++       ["IF(dummy1 and (!dummy2) and dummy3)",  1],
++       ["IF(dummy1 and !dummy2 and dummy3)",    1],
 +       ["IF(dummy1&!dummy2&dummy3)",            1],
++       #["IF(dummy2 or (!dummy2 and dummy3))",   1], # TODO
 +       ["UNLESS(!(dummy1&!dummy2&dummy3))",     1],
 +       ["IF(dummy1&(!dummy2&dummy3))",          1],
 +       ["IF(dummy1 & (dummy3=xx & (!dummy2)))", 1],
@@ -1660,7 +1662,7 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
  use_ok('config::gen::makefiles');
  use Parrot::Configure;
  use Parrot::Configure::Options qw( process_options );
-@@ -38,6 +114,46 @@ foreach my $k ( keys %makefiles ) {
+@@ -38,6 +116,46 @@ foreach my $k ( keys %makefiles ) {
  is($missing_SOURCE, 0, "No Makefile source file missing");
  ok(-f $step->{CFLAGS_source}, "CFLAGS source file located");
  
@@ -1707,7 +1709,7 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
  pass("Completed all tests in $0");
  
  ################### DOCUMENTATION ###################
-@@ -60,6 +176,8 @@ The tests in this file test gen::makefil
+@@ -60,6 +178,8 @@ The tests in this file test gen::makefil
  
  James E Keenan
  
