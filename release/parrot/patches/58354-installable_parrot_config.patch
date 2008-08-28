@@ -15,7 +15,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/config/gen/makefiles/root.in
 +++ parrot-svn/config/gen/makefiles/root.in
-@@ -468,7 +468,7 @@ PINFO               = $(CUR_DIR)/pbc_inf
+@@ -469,7 +469,7 @@ PINFO               = $(CUR_DIR)/pbc_inf
  PBCMERGE            = $(CUR_DIR)/pbc_merge$(EXE)
  PDB                 = $(CUR_DIR)/parrot_debugger$(EXE)
  PBC_TO_EXE          = $(CUR_DIR)/pbc_to_exe$(EXE)
@@ -24,7 +24,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # HLL Executables
  PERL6               = $(CUR_DIR)/perl6$(EXE)
-@@ -480,6 +480,7 @@ INSTALLABLEPDUMP    = $(CUR_DIR)/install
+@@ -481,6 +481,7 @@ INSTALLABLEPDUMP    = $(CUR_DIR)/install
  INSTALLABLEPINFO    = $(CUR_DIR)/installable_pbc_info$(EXE)
  INSTALLABLEPBCMERGE = $(CUR_DIR)/installable_pbc_merge$(EXE)
  INSTALLABLEPDB      = $(CUR_DIR)/installable_parrot_debugger$(EXE)
@@ -32,7 +32,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # Libraries
  LIBPARROT_STATIC    = @blib_dir@/@libparrot_static@
-@@ -757,7 +758,7 @@ world : all parrot_utils
+@@ -758,7 +759,7 @@ world : all parrot_utils
  
  parrot_utils : $(PDUMP) $(DIS) $(PINFO) $(PDB) $(PBCMERGE) $(PBC_TO_EXE) $(PARROT_CONFIG)
  
@@ -41,7 +41,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  flags_dummy :
-@@ -891,6 +892,10 @@ $(LIBPARROT_SHARED) : $(O_FILES)
+@@ -892,6 +893,10 @@ $(LIBPARROT_SHARED) : $(O_FILES)
  #CONDITIONED_LINE(libparrot_shared_alias):	( cd @blib_dir@ ; ln -sf @libparrot_shared@ @libparrot_shared_alias@ )
  
  
@@ -52,7 +52,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  #
  # Parrot Debugger
  #
-@@ -1657,6 +1662,7 @@ archclean: dynoplibs-clean dynpmc-clean 
+@@ -1658,6 +1663,7 @@ archclean: dynoplibs-clean dynpmc-clean 
      $(INSTALLABLEPINFO) \
      $(INSTALLABLEPBCMERGE) \
      $(INSTALLABLEPDB) \
