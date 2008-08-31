@@ -2,13 +2,6 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 ===================================================================
 --- parrot-svn.orig/docs/pdds/draft/pdd30_install.pod
 +++ parrot-svn/docs/pdds/draft/pdd30_install.pod
-@@ -1,5 +1,5 @@
- # Copyright (C) 2008, The Perl Foundation.
--# $Id: pdd30_install.pod 30255 2008-08-23 12:15:46Z rurban $
-+# $Id: pdd30_install.pod 30255 2008-08-28 15:15:46Z rurban $
- 
- =head1 NAME
- 
 @@ -8,10 +8,10 @@ docs/pdds/draft/pdd30_install.pod - Parr
  =head1 ABSTRACT
  
@@ -24,7 +17,7 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
  
  =head1 VERSION
  
-@@ -27,19 +27,19 @@ $Revision: 30459 $
+@@ -27,22 +27,23 @@ $Revision: 30644 $
  =head1 DESCRIPTION
  
  Parrot installation mechanisms are more powerful than perl5's.
@@ -52,7 +45,22 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
  
  The same problem is for every .include, .loadlib and .load_bytecode statement
  in installed files where the target is not installed. This could be solved with
-@@ -63,15 +63,61 @@ have a similar packaging problem, which 
++fixing .load_bytecode for not installed pbc's, install all missing pbc's, 
+ a module system or with pbc_merge removing not needed .load_bytecode statements.
+ 
+ Test executables are binary different to installable executables because of
+@@ -53,6 +54,10 @@ There are's also a long-standing conflic
+ installed shared libparrot.so. See #39742-installed-conflict.patch which adds
+ the blib/lib path to PATH resp. LD_RUN_PATH.
+ 
++The names of the parrot executables and its utils is sound now. What is
++missing is the final destination of the language executables, for the pbc and
++the installable exe.
++
+ =head1 DEFINITIONS
+ 
+ An B<installable> is a pbc or exe which must not access the build_dir
+@@ -63,15 +68,75 @@ have a similar packaging problem, which 
  B<build_dir> is the full path where parrot was built. It is defined in the
  config hash. When building from source build_dir is also the PARROT_RUNTIME prefix.
  
@@ -73,68 +81,113 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
 +The destination paths for make install files is a string concat of
 +
 +* the $(DESTDIR) as defined per Makefile argument,
-+* plus the respective Configure defined directoy (prefix, bin_dir, lib_dir, include_dir, mandir, doc_dir, ...)
++
++* plus the respective Configure defined directoy (prefix, bin_dir, lib_dir, 
++  include_dir, mandir, doc_dir, ...)
 +
 + where the directores are defined by default to follow the FHS convention
 + and optional Configure.pl arguments,
 + and the files as defined in one of the three MANIFEST files in the format
-+ <filename> \t []lib,doc,include,bin - files from the [library] package go to prefix/lib_dir and either dynext, library or include,
++ <filename> \t []lib,doc,include,bin - files from the [library] package go 
++ to prefix/lib_dir and either dynext, library or include.
 +
 +* plus the filename as defined by the three MANIFEST files.
 +
 +There's additional logic in the tools/dev/install_files.pl script.
 +
-+prefix defaults to "/usr/local" and packages define them as "/usr"
-+lib_dir defaults to prefix + "/lib"
-+ and libraries go to parrot/dynext for shared libs (flat)
-+ parrot/library for pbc files
-+ (structured according to the namespace)
-+ parrot/include for pir and pasm files (flat)
-+bin_dir to prefix + "/bin"
-+doc_dir to prefix + "/share/doc/parrot"
-+mandir to prefix + "/man", but it should be prefix + "/share/man"
-+according to the FHS
-+include_dir to prefix + "/include/parrot"
-+pkgconfig_dir to prefix + "/lib/pkgconfig"
++Defaults:
 +
-+What is missing is the end location of language pbc's and installable exe's.
++  prefix defaults to "/usr/local" and packages define them as "/usr"
++  lib_dir defaults to prefix + "/lib"
++    and libraries go to parrot/dynext for shared libs (flat)
++    parrot/library for pbc files
++    (structured according to the namespace)
++    parrot/include for pir and pasm files (flat)
++  bin_dir to prefix + "/bin"
++  doc_dir to prefix + "/share/doc/parrot"
++  mandir to prefix + "/man", but it should be prefix + "/share/man"
++    according to the FHS
++  include_dir to prefix + "/include/parrot"
++  pkgconfig_dir to prefix + "/lib/pkgconfig"
++
++What is missing is the destination path of language pbc's and installable exe's.
 +The convention by fedora and cygwin for parrot-language installables is
 + $(DESTDIR)@bin_dir@/parrot-$(LANG)@exe@
-+
-+B<Open problem:>
-+For language pbc's a new dir like script_dir or lib_dir/parrot/bin would be required.
-+They could also be copied $(DESTDIR)@lib_dir@/parrot/library where the other
-+pbc's are, which would make the required to make HLL interoperatibility work.
-+(See L<pdds/draft/pdd31_hll_interop>.
-+So each language will need its root namespace reserved for it's <lang>.pbc.
-+We could thing of symlinking it to runtime/parrot/library
-+at make languages, so hll_interop can be tested.
++and the pbc's should be copied to $(DESTDIR)@lib_dir@/parrot/library/
 +
 +The language-specific group- and op- shared libs go to
 +$(DESTDIR)@lib_dir@/parrot/dynext.
 +
++=head2 Open problems
++
++* Each language will need its root namespace reserved for it's <lang>.pbc.
++
++* We should F<ln -s> every languages/lang.pbc to runtime/parrot/library/lang.pbc
++  at make languages, so pdd31_hll_interop can be tested.
++
++* For each such pbc it should be possible to F<ln -s> it to F</usr/bin/parrot>
++  on unix-like platforms, taking advantage of the $0 executable name information 
++  to set up certain configuration for the runtime environment. (TBD in src/main.c)
++  The configuration file for each language will need to specify a .pbc/.pir module 
++  to load when starting up the language, then Parrot will start by running the 
++  :main PIR function from that module. This .pbc/.pir module must have the same 
++  name as the language directory, the <<lang>> name for consistency. The tcl 
++  excutable is named tclsh.pbc or parrot-tclsh, but the main startup module must 
++  be named tcl.pbc.
++  Using PCT::HLLCompiler won't be a requirement for using the feature. 
 +
  =head1 IMPLEMENTATION
  
  =head2 make install
-@@ -92,13 +138,13 @@ libparrot.so on most platforms. There's 
- make install actions for a language lang:
+@@ -79,26 +144,38 @@ executable (F<install_config.fpmc>) or e
+ The parrot build system is optimized for building and testing in the
+ build_dir, but not for building with an already installed parrot due to simple
+ build system bugs, and not optimized to build and test installables, which should
+-not access the libraries in the build_dir, but in the DESTDIR.
++not access the libraries in the build_dir, but in DESTDIR/prefix.
  
-  copy installables to DESTDIR/bin_dir as parrot-lang
+ The goal is to make install work for parrot, the utils, and all the languages.
+ For parrot and its utils the install actions are defined in the main Makefile,
+ for the languages the install actions should be defined in its Makefiles and
+ is implemented in #56554-make-install-lang.patch.
+ 
+-C<make install> currently does not work with an already installed shared
++C<make> currently does not work with an already installed shared
+ libparrot.so on most platforms. There's a patch at #39742.
+ 
+-make install actions for a language lang:
++C<make install> for parrot:
+ 
+- copy installables to DESTDIR/bin_dir as parrot-lang
 - optionally copy lang.pbc to DESTDIR/script_dir (/usr/lib/parrot/bin/ ?)
-+ optionally copy lang.pbc to DESTDIR/script_dir (/usr/lib/parrot/bin/ ?) or DESTDIR/lib_dir/parrot/library/
-  copy libraries to DESTDIR/lib_dir/parrot/dynext/
+- copy libraries to DESTDIR/lib_dir/parrot/dynext/
++ generate all installables (linked to install_config.fpmc) and documentation
++ copy installable_*.exe to DESTDIR/bin_dir as *.exe
++   do not use parrot-* as this is reserved for languages, use parrot_*
++ copy runtime/* to DESTDIR/lib_dir/
++ continue with all MANIFEST locations ánd leave out not be installed files.
++
++C<make install> actions for a language <<lang>>:
++
++It should be a configuration option to install aliases for executables with
++the language "nicknames". The user could also easily create their own F<ln -s> 
++aliases.
++
++ copy installable_<<lang>>.exe to DESTDIR/bin_dir as parrot-<<lang>>.exe
++ copy <<lang>>.pbc to DESTDIR/lib_dir/parrot/library/
++ copy shared libraries to DESTDIR/lib_dir/parrot/dynext/
   optionally copy pbc's to DESTDIR/lib_dir/parrot/library/ (only php_ext)
   optionally copy include pasm and pirs to DESTDIR/lib_dir/parrot/include/ (not yet)
-  copy docs to DESTDIR/doc_dir/
+- copy docs to DESTDIR/doc_dir/
 - generate a man(1) page and copy to DESTDIR/man_dir/
 - optionally generate html and copy to DESTDIR/html_dir/lang/
++ copy docs to DESTDIR/doc_dir/<<lang>>/
 + generate a man(1) page and copy to DESTDIR/mandir/
-+ optionally generate html and copy to DESTDIR/htmldir/lang/
++ optionally generate html and copy to DESTDIR/htmldir/parrot/<<lang>>/
  
  =head2 make installable -C languages/lang
  
-@@ -131,8 +177,7 @@ extending the current automake-like fram
+@@ -131,8 +208,7 @@ extending the current automake-like fram
  
  Bootstrapping the config hash should not read a config file when the hash is
  already contained in the pmc or executable.
@@ -144,7 +197,7 @@ Index: parrot-svn/docs/pdds/draft/pdd30_install.pod
  
  =head2 Accessing not-installed files
  
-@@ -199,9 +244,9 @@ None.
+@@ -201,9 +277,9 @@ None.
  
  =head1 REFERENCES
  
