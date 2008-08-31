@@ -622,7 +622,7 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/APL/config/makefiles/root.in
 +++ parrot-svn/languages/APL/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,19 +1,29 @@
 -## $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -630,7 +630,7 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL	      = APL
++HLLNAME	      = APL
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -644,48 +644,59 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
  PERL          = @perl@
  RM_F          = @rm_f@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -42,11 +50,15 @@ SOURCES = APL.pir \
+@@ -42,11 +52,15 @@ SOURCES = APL.pir \
  
  PMCS = aplvector
  PMC_SOURCES = $(PMC_DIR)/aplvector.pmc
 +DOCS = MAINTAINER README STATUS
  
  # the default target
- APL.pbc: $(PARROT) $(SOURCES) $(APL_GROUP)
+-APL.pbc: $(PARROT) $(SOURCES) $(APL_GROUP)
++APL.pbc:  $(SOURCES) $(APL_GROUP)
  	$(PARROT) $(PARROT_ARGS) -o APL.pbc APL.pir
  
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --encoding=utf8 \
-@@ -66,9 +78,16 @@ $(APL_GROUP): $(PARROT) $(PMC_SOURCES)
+@@ -60,15 +74,22 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ src/gen_builtins.pir: tools/gen_operator_defs.pl
+ 	$(PERL) tools/gen_operator_defs.pl >src/gen_builtins.pir
+ 
+-$(APL_GROUP): $(PARROT) $(PMC_SOURCES)
++$(APL_GROUP):  $(PMC_SOURCES)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
  	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
  	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
  
-+installable : installable_$(TMPL)@exe@ $(ABC_GROUP)
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@ $(ABC_GROUP)
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
 +
-+installable_$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=APL
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -77,8 +96,11 @@ help:
+@@ -77,8 +98,11 @@ help:
  	@echo ""
  	@echo "  all:               APL.pbc"
  	@echo "                     This is the default."
@@ -697,34 +708,34 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -93,6 +115,17 @@ help:
+@@ -93,6 +117,17 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: test for installed libs, rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ demo.apl
++	./installable_$(HLLNAME)@exe@ demo.apl
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  testclean:
  	$(RM_F) t/*.pir
  
-@@ -111,6 +144,8 @@ CLEANUPS = \
+@@ -111,6 +146,8 @@ CLEANUPS = \
    $(PMC_DIR)/*.manifest \
    $(PMC_DIR)/*.pdb \
    $(PMC_DIR)/*.lib \
-+  $(TMPL)@exe@ \
-+  installable_$(TMPL)@exe@ \
++  $(HLLNAME)@exe@ \
++  installable_$(HLLNAME)@exe@ \
  
  
  clean: testclean
-@@ -121,4 +156,8 @@ realclean: clean
+@@ -121,4 +158,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -738,7 +749,7 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/abc/config/makefiles/root.in
 +++ parrot-svn/languages/abc/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,19 +1,29 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -746,7 +757,7 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = abc
++HLLNAME       = abc
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -760,14 +771,17 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -28,28 +36,25 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
+@@ -28,28 +38,25 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
  NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
  PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
  
@@ -791,16 +805,17 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
 +DOCS = MAINTAINER README TODO
  
  # the default target
- abc.pbc: $(PARROT) $(SOURCES)
+-abc.pbc: $(PARROT) $(SOURCES)
++abc.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o abc.pbc abc.pir
  
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -63,15 +68,15 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -63,15 +70,15 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -809,20 +824,20 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
 -	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
 -	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
 -	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=abc
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -80,8 +85,12 @@ help:
+@@ -80,8 +87,12 @@ help:
  	@echo ""
  	@echo "  all:               abc.pbc"
  	@echo "                     This is the default."
@@ -835,24 +850,24 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -96,6 +105,16 @@ help:
+@@ -96,6 +107,16 @@ help:
  test: all
  	prove -r t
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "2-1" | ./installable_$(TMPL)@exe@
++	echo "2-1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  testclean:
  	$(RM_RF) "t/*.pir" "t/*.out"
  
-@@ -104,17 +123,8 @@ CLEANUPS = \
+@@ -104,17 +125,8 @@ CLEANUPS = \
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/gen_builtins.pir \
@@ -867,12 +882,12 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
 -  $(PMC_DIR)/*.pdb \
 -  $(PMC_DIR)/*.lib \
 -
-+  $(TMPL)@exe@ \
-+  installable_$(TMPL)@exe@
++  $(HLLNAME)@exe@ \
++  installable_$(HLLNAME)@exe@
  
  clean: testclean
  	$(RM_RF) $(CLEANUPS)
-@@ -123,3 +133,9 @@ realclean: clean
+@@ -123,3 +135,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -886,12 +901,12 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/befunge/config/makefiles/root.in
 +++ parrot-svn/languages/befunge/config/makefiles/root.in
-@@ -1,31 +1,49 @@
+@@ -1,14 +1,31 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/befunge
-+TMPL = befunge
++HLLNAME       = befunge
 +
 +## configuration settings
 +BUILD_DIR     = @build_dir@
@@ -902,21 +917,27 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
  
  # Setup of some commands
 -PARROT     = ../../parrot
- PERL       = @perl@
- RM_F       = @rm_f@
-+PARROT        = ../../parrot
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+-PERL       = @perl@
+-RM_F       = @rm_f@
++PERL          = @perl@
++RM_F          = @rm_f@
++CP            = @cp@
++MKPATH        = @mkpath@
 +POD2MAN	      = pod2man
++RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
- 
-+DOCS = MAINTAINER README Changes
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +
++DOCS = MAINTAINER README Changes
+ 
  default: all
  
- help :
+@@ -16,16 +33,21 @@ help :
  	@echo ""
  	@echo "Following targets are available for the user:"
  	@echo ""
@@ -945,40 +966,40 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
  
  
  all: build
-@@ -35,14 +53,42 @@ build: befunge.pbc
+@@ -35,14 +57,42 @@ build: befunge.pbc
  befunge.pbc: befunge.pasm debug.pasm flow.pasm io.pasm load.pasm maths.pasm stack.pasm
  	$(PARROT) -o befunge.pbc befunge.pasm
  
 +# regenerate the Makefile
 +Makefile: config/makefiles/root.in
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
 +
-+installable_$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
  test: befunge.pbc
 -	cd .. && $(PERL) t/harness --languages=befunge
-+	cd .. && $(PERL) t/harness --languages=$(TMPL)
++	cd .. && $(PERL) t/harness --languages=$(HLLNAME)
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ test.bef
++	./installable_$(HLLNAME)@exe@ test.bef
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
  clean:
  	$(RM_F) core \
      "*.pbc" \
 -    "*~"
 +    "*~" \
-+    "installable_$(TMPL)@exe@"
++    "installable_$(HLLNAME)@exe@"
  
  realclean: clean
  	$(RM_F) Makefile
@@ -994,12 +1015,12 @@ Index: parrot-svn/languages/bf/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/bf/config/makefiles/root.in
 +++ parrot-svn/languages/bf/config/makefiles/root.in
-@@ -1,32 +1,72 @@
+@@ -1,32 +1,75 @@
 -RM_F = @rm_f@
 -PERL = @perl@
 -PARROT=../../parrot
 +# $Id: root.in 30600 2008-08-27 19:51:44Z moritz $
-+TMPL = bf
++HLLNAME       = bf
 +BIN_DIR       = @bin_dir@
 +LIB_DIR       = @lib_dir@
 +DOC_DIR       = @doc_dir@
@@ -1007,13 +1028,16 @@ Index: parrot-svn/languages/bf/config/makefiles/root.in
 +
 +RM_F          = @rm_f@
 +PERL          = @perl@
++CP            = @cp@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
-+PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
 -default: build
 +DOCS = MAINTAINER README
@@ -1077,7 +1101,7 @@ Index: parrot-svn/languages/bf/config/makefiles/root.in
  bf.pbc: bf.pasm
  	$(PARROT) -o bf.pbc bf.pasm
  
-@@ -36,9 +76,27 @@ bfc.pbc: bfc.pir
+@@ -36,9 +79,27 @@ bfc.pbc: bfc.pir
  bfco.pbc: bfco.pir
  	$(PARROT) -o bfco.pbc bfco.pir
  
@@ -1088,11 +1112,11 @@ Index: parrot-svn/languages/bf/config/makefiles/root.in
 +	./installable_bfco@exe@ test.bf
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	$(CP) installable_bfc@exe@ $(DESTDIR)$(BIN_DIR)/parrot-bfc@exe@
 +	$(CP) installable_bfco@exe@ $(DESTDIR)$(BIN_DIR)/parrot-bfco@exe@
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  clean:
  	$(RM_F) core "*.pbc" "*~"
@@ -1109,7 +1133,7 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/c99/config/makefiles/root.in
 +++ parrot-svn/languages/c99/config/makefiles/root.in
-@@ -1,22 +1,31 @@
+@@ -1,25 +1,36 @@
 -## $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -1117,7 +1141,7 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL	      = c99
++HLLNAME	      = c99
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -1134,8 +1158,6 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
 -PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
-+PARROT        = $(BUILD_DIR)/parrot@exe@
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -1143,7 +1165,14 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -29,28 +38,39 @@ NQP           = $(BUILD_DIR)/compilers/n
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -29,28 +40,39 @@ NQP           = $(BUILD_DIR)/compilers/n
  PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
  
  PMC_DIR       = src/pmc
@@ -1168,7 +1197,8 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
 -# PMC_SOURCES = $(PMC_DIR)/c.pmc
 -
  # the default target
- c99.pbc: $(PARROT) $(SOURCES)
+-c99.pbc: $(PARROT) $(SOURCES)
++c99.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o c99.pbc c99.pir
  	cd src/cpp; $(MAKE)
  
@@ -1189,7 +1219,7 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -63,15 +83,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -63,15 +85,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -1206,7 +1236,7 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -80,6 +94,9 @@ help:
+@@ -80,6 +96,9 @@ help:
  	@echo ""
  	@echo "  all:               c.pbc"
  	@echo "                     This is the default."
@@ -1216,27 +1246,27 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -96,6 +113,19 @@ help:
+@@ -96,6 +115,19 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ t/spi.t
++	./installable_$(HLLNAME)@exe@ t/spi.t
 +	./installable_cpp@exe@ t/spi.t
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	$(CP) installable_cpp@exe@ $(DESTDIR)$(BIN_DIR)/parrot-cpp@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
 +	$(POD2MAN) src/cpp/cpp.pir > $(DESTDIR)$(MANDIR)/man1/parrot-cpp.1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  # this target has nothing to do
  testclean:
  
-@@ -104,21 +134,11 @@ CLEANUPS = \
+@@ -104,21 +136,11 @@ CLEANUPS = \
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/gen_builtins.pir \
@@ -1260,7 +1290,7 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
  
  clean:
  	$(RM_RF) $(CLEANUPS)
-@@ -128,4 +148,8 @@ realclean: clean
+@@ -128,4 +150,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -1274,15 +1304,11 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/cardinal/config/makefiles/root.in
 +++ parrot-svn/languages/cardinal/config/makefiles/root.in
-@@ -1,19 +1,27 @@
--## $Id: root.in 30595 2008-08-27 15:42:38Z tene $
-+## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
- 
- ## arguments we want to run parrot with
+@@ -4,16 +4,26 @@
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = cardinal
++HLLNAME       = cardinal
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -1296,14 +1322,17 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -37,8 +45,7 @@ CARDINAL_GROUP = $(PMC_DIR)/cardinal_gro
+@@ -37,8 +47,7 @@ CARDINAL_GROUP = $(PMC_DIR)/cardinal_gro
  SOURCES = cardinal.pir \
    src/gen_grammar.pir \
    src/gen_actions.pir \
@@ -1313,7 +1342,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  
  BUILTINS_PIR = \
    src/builtins/guts.pir \
-@@ -51,13 +58,18 @@ BUILTINS_PIR = \
+@@ -51,13 +60,18 @@ BUILTINS_PIR = \
    src/classes/Array.pir \
    src/classes/Hash.pir \
  
@@ -1322,7 +1351,8 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
 +DOCS          = README
  
  # the default target
- cardinal.pbc: $(PARROT) $(SOURCES)
+-cardinal.pbc: $(PARROT) $(SOURCES)
++cardinal.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o cardinal.pbc cardinal.pir
  
 +cardinal@exe@: cardinal.pbc
@@ -1334,7 +1364,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -70,15 +82,12 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -70,15 +84,12 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -1347,14 +1377,14 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=cardinal
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -87,8 +96,12 @@ help:
+@@ -87,8 +98,12 @@ help:
  	@echo ""
  	@echo "  all:               cardinal.pbc"
  	@echo "                     This is the default."
@@ -1367,19 +1397,19 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -106,8 +119,20 @@ test: all
+@@ -112,8 +127,20 @@ hashtest: all
  # this target has nothing to do
  testclean:
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ t/00-sanity.t
++	./installable_$(HLLNAME)@exe@ t/00-sanity.t
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  CLEANUPS = \
    cardinal.pbc \
@@ -1388,7 +1418,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/gen_builtins.pir \
-@@ -131,4 +156,8 @@ realclean: clean
+@@ -137,4 +164,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -1402,11 +1432,18 @@ Index: parrot-svn/languages/dotnet/config/Makefile.in
 ===================================================================
 --- parrot-svn.orig/languages/dotnet/config/Makefile.in
 +++ parrot-svn/languages/dotnet/config/Makefile.in
-@@ -16,9 +16,10 @@ RM_F     = ${rm_f}
- PARROT   = ${trans_parrot_path}${slash}parrot${exe}
+@@ -13,12 +13,15 @@
+ # #########################
+ PERL     = ${perl}
+ RM_F     = ${rm_f}
+-PARROT   = ${trans_parrot_path}${slash}parrot${exe}
  MONOLIB  = ${trans_mono_lib_path}
- PBCMERGE = ${trans_parrot_path}${slash}pbc_merge${exe}
-+PBC_TO_EXE = ${trans_parrot_path}${slash}pbc_to_exe.exe
+-PBCMERGE = ${trans_parrot_path}${slash}pbc_merge${exe}
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT     = $(SHRPENV) ${trans_parrot_path}${slash}parrot${exe}
++PBCMERGE   = $(SHRPENV) ${trans_parrot_path}${slash}pbc_merge${exe}
++PBC_TO_EXE = $(SHRPENV) ${trans_parrot_path}${slash}pbc_to_exe.exe
  PMCBUILD = $(PERL) ${build_dir}${slash}tools${slash}build${slash}dynpmc.pl
  OPSBUILD = $(PERL) ${build_dir}${slash}tools${slash}build${slash}dynoplibs.pl
 -DESTDIR  = ${build_dir}${slash}runtime${slash}parrot${slash}dynext
@@ -1414,7 +1451,7 @@ Index: parrot-svn/languages/dotnet/config/Makefile.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -33,6 +34,10 @@ A        = ${a}
+@@ -33,6 +36,10 @@ A        = ${a}
  
  # DIRECTORIES AND FILES
  # #####################
@@ -1425,7 +1462,7 @@ Index: parrot-svn/languages/dotnet/config/Makefile.in
  PMCDIR    = pmc
  PMCS      = dotnetassembly dotnetclassmetadata dotnetmethodmetadata \
              dotnetfieldmetadata dotnetparammetadata dotnetsignature \
-@@ -60,17 +65,19 @@ TRAN_PBC  = src/translator.pbc src/metho
+@@ -60,17 +67,19 @@ TRAN_PBC  = src/translator.pbc src/metho
  all : pmc/dotnet$(LOAD_EXT) ops/dotnet_ops$(LOAD_EXT) src/it.pbc \
        src/builtins.pbc src/translib.pbc net2pbc.pbc
  
@@ -1447,7 +1484,7 @@ Index: parrot-svn/languages/dotnet/config/Makefile.in
  
  src/it.pbc : src/translation.rules build/translator.pl build/SRM/Stack.pm \
               build/SRM/Register.pm build/SRM/OptRegister.pm
-@@ -91,7 +98,17 @@ net2pbc.pbc : pmc/dotnet$(LOAD_EXT) src/
+@@ -91,7 +100,17 @@ net2pbc.pbc : pmc/dotnet$(LOAD_EXT) src/
  	$(PBCMERGE) -o net2pbc.pbc src/net2pbc.pbc src/translib.pbc
  
  class-library : net2pbc.pbc
@@ -1466,7 +1503,7 @@ Index: parrot-svn/languages/dotnet/config/Makefile.in
  
  
  # PER FILE RULES AND DEPENDENCIES
-@@ -133,6 +150,20 @@ src/build/SRM/Stack.pm :
+@@ -133,6 +152,20 @@ src/build/SRM/Stack.pm :
  test : all
  	$(PERL) -It t/harness
  
@@ -1491,33 +1528,43 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lua/config/makefiles/root.in
 +++ parrot-svn/languages/lua/config/makefiles/root.in
-@@ -1,7 +1,8 @@
+@@ -1,29 +1,38 @@
  # Copyright (C) 2005-2008, The Perl Foundation.
 -# $Id: root.in 30251 2008-08-15 14:04:45Z fperrad $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  ## configuration settings
-+TMPL     = lua
- O        = @o@
- LOAD_EXT = @load_ext@
+-O        = @o@
+-LOAD_EXT = @load_ext@
++HLLNAME     = lua
++O           = @o@
++LOAD_EXT    = @load_ext@
  
-@@ -10,10 +11,10 @@ MAKE    = @make_c@
- RM_F    = @rm_f@
- PERL    = @perl@
- PARROT  = ../../parrot@exe@
+ ## Setup some commands
+-MAKE    = @make_c@
+-RM_F    = @rm_f@
+-PERL    = @perl@
+-PARROT  = ../../parrot@exe@
 -PBC_MERGE = ../../pbc_merge@exe@
 -PGE      = $(PARROT) ../../runtime/parrot/library/PGE/Perl6Grammar.pir
 -TGE      = $(PARROT) ../../compilers/tge/tgc.pir
 -PBC_TO_EXE = ../../pbc_to_exe@exe@
-+PBC_MERGE   = ../../pbc_merge@exe@
-+PBC_TO_EXE  = ../../pbc_to_exe@exe@
++MAKE        = @make_c@
++RM_F        = @rm_f@
++PERL        = @perl@
 +PGE         = $(PARROT) ../../runtime/parrot/library/PGE/Perl6Grammar.pir
 +TGE         = $(PARROT) ../../compilers/tge/tgc.pir
  RECONFIGURE = $(PERL) @build_dir@/tools/dev/reconfigure.pl
- PMCBUILD = $(PERL) @build_dir@/tools/build/dynpmc.pl
+-PMCBUILD = $(PERL) @build_dir@/tools/build/dynpmc.pl
++PMCBUILD    = $(PERL) @build_dir@/tools/build/dynpmc.pl
  #CONDITIONED_LINE(darwin):
-@@ -21,9 +22,15 @@ PMCBUILD = $(PERL) @build_dir@/tools/bui
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT      = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE  = $(SHRPENV) ../../pbc_to_exe@exe@
++PBC_MERGE   = $(SHRPENV) ../../pbc_merge@exe@
  
  ## places to look for things
 -LIBPATH  = src/lib
@@ -1534,7 +1581,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  
  PMCS = \
   lua \
-@@ -96,6 +103,8 @@ GEN_PIR = \
+@@ -96,6 +105,8 @@ GEN_PIR = \
  GEN_PBC = \
   lua.pbc
  
@@ -1543,24 +1590,24 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  all: \
   $(PMCDIR)/lua_group$(LOAD_EXT) \
   $(LIB_PBCS) \
-@@ -117,6 +126,16 @@ all: \
+@@ -117,6 +128,16 @@ all: \
   $(GEN_PBC) \
   src/yapp/Lua/parser.pm
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "a=1" | ./installable_$(TMPL)@exe@
++	echo "a=1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
-+	$(POD2MAN) doc/running.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(POD2MAN) doc/running.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
  src/lua51_testlex_gen.pir: src/lua51_testlex.pg
  	$(PGE) --output=src/lua51_testlex_gen.pir src/lua51_testlex.pg
-@@ -134,11 +153,17 @@ src/POSTGrammar_gen.pir: src/POSTGrammar
+@@ -134,11 +155,17 @@ src/POSTGrammar_gen.pir: src/POSTGrammar
  	$(TGE) --output=src/POSTGrammar_gen.pir src/POSTGrammar.tg
  
  lua.pbc: lua.pir src/lua51.pir src/grammar51.pir src/lua51_gen.pir src/PASTGrammar_gen.pir src/POSTGrammar_gen.pir $(LIB_SRCS)
@@ -1579,16 +1626,16 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  $(LIBPATH)/lualibs.pbc: $(LIB_PBCS)
  	$(PBC_MERGE) -o $(LIBPATH)/lualibs.pbc $(LIB_PBCS)
  
-@@ -241,7 +266,7 @@ src/yapp/Lua/parser.pm: src/yapp/Lua/lua
+@@ -241,7 +268,7 @@ src/yapp/Lua/parser.pm: src/yapp/Lua/lua
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd ../.. && $(RECONFIGURE) --step=gen::languages --languages=lua
-+	cd ../.. && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd ../.. && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  help:
  	@echo ""
-@@ -249,8 +274,12 @@ help:
+@@ -249,8 +276,12 @@ help:
  	@echo ""
  	@echo "  all:"
  	@echo "                     This is the default."
@@ -1601,7 +1648,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -265,7 +294,6 @@ help:
+@@ -265,7 +296,6 @@ help:
  test: all
  	cd .. && $(PERL) t/harness --languages=lua
  
@@ -1609,7 +1656,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  TEST_CLEANERS = \
   "t/pmc/*.pir" \
   "t/*.pir" \
-@@ -279,6 +307,7 @@ testclean:
+@@ -279,6 +309,7 @@ testclean:
  
  BUILD_CLEANERS = \
   lua@exe@ \
@@ -1617,17 +1664,17 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
   lua$(O) \
   lua.c \
   "*.pbc" \
-@@ -289,7 +318,8 @@ BUILD_CLEANERS = \
+@@ -289,7 +320,8 @@ BUILD_CLEANERS = \
   "$(PMCDIR)/*_group.h" \
   "$(PMCDIR)/*$(LOAD_EXT)" \
   "$(PMCDIR)/*$(O)" \
 - "$(LIBPATH)/*.pbc"
 + "$(LIBPATH)/*.pbc" \
-+ installable_$(TMPL)@exe@ \
++ installable_$(HLLNAME)@exe@ \
  
  clean:
  	$(RM_F) $(BUILD_CLEANERS) $(TEST_CLEANERS)
-@@ -298,3 +328,9 @@ realclean: clean
+@@ -298,3 +330,9 @@ realclean: clean
  	$(RM_F) Makefile
  
  distclean: realclean
@@ -1657,15 +1704,15 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
 +MANDIR	      = @mandir@
  
  # Set up extensions
-+TMPL          = perl6
++HLLNAME       = perl6
  LOAD_EXT      = @load_ext@
  O             = @o@
  EXE           = @exe@
-@@ -25,16 +30,19 @@ MAKE          = @make_c@
+@@ -24,17 +29,23 @@ EXE           = @exe@
+ MAKE          = @make_c@
  PERL          = @perl@
  RM_F          = @rm_f@
- PARROT        = ../../parrot$(EXE)
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
+-PARROT        = ../../parrot$(EXE)
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  BUILD_DYNOPS  = $(PERL) $(BUILD_DIR)/tools/build/dynoplibs.pl
@@ -1674,16 +1721,21 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+-all: perl6.pbc Test.pir
 +DOCS = README MAINTAINER ROADMAP docs/compiler_overview.pod docs/glossary.pod docs/STATUS
 +
 +build: perl6.pbc Test.pir
- 
--all: perl6.pbc Test.pir
++
 +all: build perl6$(EXE) installable
  
  xmas: perl6$(EXE)
  
-@@ -106,6 +114,7 @@ PMCS        = perl6str mutable perl6scal
+@@ -106,6 +117,7 @@ PMCS        = perl6str mutable perl6scal
  PMC_SOURCES = $(PMC_DIR)/perl6str.pmc $(PMC_DIR)/mutable.pmc $(PMC_DIR)/perl6scalar.pmc \
                $(PMC_DIR)/mutablevar.pmc $(PMC_DIR)/perl6multisub.pmc
  PERL6_GROUP = $(PMC_DIR)/perl6_group$(LOAD_EXT)
@@ -1691,7 +1743,16 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
  
  # targets for building a standalone perl6.
  # (We're not quite ready to make this a default target.)
-@@ -122,6 +131,9 @@ installable_perl6$(EXE): perl6.pbc
+@@ -113,7 +125,7 @@ perl6$(EXE): perl6.pbc
+ 	$(PBC_TO_EXE) perl6.pbc
+ 
+ # the default target
+-perl6.pbc: $(PARROT) $(SOURCES)
++perl6.pbc:  $(SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) -o perl6.pbc perl6.pir
+ 
+ installable_perl6$(EXE): perl6.pbc
+@@ -122,6 +134,9 @@ installable_perl6$(EXE): perl6.pbc
  Test.pir: Test.pm perl6.pbc
  	$(PARROT) $(PARROT_ARGS) perl6.pbc --target=pir --output=Test.pir Test.pm
  
@@ -1701,7 +1762,16 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -159,6 +171,8 @@ help:
+@@ -134,7 +149,7 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ src/gen_builtins.pir: $(BUILTINS_PIR)
+ 	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
+ 
+-$(PERL6_GROUP): $(PARROT) $(PMC_SOURCES)
++$(PERL6_GROUP):  $(PMC_SOURCES)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
+@@ -159,6 +174,8 @@ help:
  	@echo "                     This is the default."
  	@echo "  perl6$(EXE):       Some want a pony, others are satisfied with an executable."
  	@echo "  xmas:              Christmas is when Perl 6 is released. Alias of perl6$(EXE)."
@@ -1710,7 +1780,7 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
  	@echo ""
  	@echo "Testing:"
  	@echo "  test:              Run coretest and codetest."
-@@ -169,6 +183,7 @@ help:
+@@ -169,6 +186,7 @@ help:
  	@echo "  spectest_regression:  Run the tests of the official test suite that are known to pass."
  	@echo "  localtest:         Run the official tests given in t/localtest.data."
  	@echo "  fulltest:          Run coretest, spectest_regression, and codetest."
@@ -1718,31 +1788,31 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
  	@echo ""
  	@echo "Cleaning:"
  	@echo "  clean:             Basic cleaning up."
-@@ -232,6 +247,23 @@ t/localtest.data:
+@@ -232,6 +250,23 @@ t/localtest.data:
  t/spec:
  	svn co http:////svn.pugscode.org//pugs//t//spec t/spec
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ -e'say 1'
++	./installable_$(HLLNAME)@exe@ -e'say 1'
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/perl6@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/perl6@exe@
 +	@cd $(PMC_DIR) && $(BUILD_DYNPMC) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
 +	@cd $(OPSDIR)  && $(BUILD_DYNOPS) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(OPSLIB)
 +	$(POD2MAN) doc/running.pod > $(DESTDIR)$(MANDIR)/man1/perl6.1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+installable : installable_$(TMPL)@exe@ $(PERL6_GROUP)
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@ $(PERL6_GROUP)
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +	@cd $(PMC_DIR) && $(BUILD_DYNPMC) copy "--destination=$(PARROT_DYNEXT)" $(PMCS)
 +	@cd $(OPSDIR)  && $(BUILD_DYNOPS) copy "--destination=$(PARROT_DYNEXT)" $(OPSLIB)
 +
  CLEANUPS = \
    perl6.pbc \
    perl6.c \
-@@ -265,3 +297,9 @@ realclean: clean
+@@ -265,3 +300,9 @@ realclean: clean
  	$(RM_F) src/utils/Makefile Makefile
  
  distclean: realclean
@@ -1881,7 +1951,7 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/chitchat/config/makefiles/root.in
 +++ parrot-svn/languages/chitchat/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,25 +1,35 @@
 -## $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -1889,7 +1959,7 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = chitchat
++HLLNAME          = chitchat
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -1903,14 +1973,23 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -28,24 +36,18 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -28,26 +38,20 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
  NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
  PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
  
@@ -1934,9 +2013,12 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
 -# PMC_SOURCES = $(PMC_DIR)/chitchat.pmc
 -
  # the default target
- chitchat.pbc: $(PARROT) $(SOURCES)
+-chitchat.pbc: $(PARROT) $(SOURCES)
++chitchat.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o chitchat.pbc chitchat.pir
-@@ -62,15 +64,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
+@@ -62,15 +66,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -1949,11 +2031,11 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=chitchat
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -79,8 +75,12 @@ help:
+@@ -79,8 +77,12 @@ help:
  	@echo ""
  	@echo "  all:               chitchat.pbc"
  	@echo "                     This is the default."
@@ -1966,33 +2048,33 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -95,6 +95,25 @@ help:
+@@ -95,6 +97,25 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "2-1" | ./installable_$(TMPL)@exe@
++	echo "2-1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  # this target has nothing to do
  testclean:
  
-@@ -103,17 +122,8 @@ CLEANUPS = \
+@@ -103,17 +124,8 @@ CLEANUPS = \
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/gen_builtins.pir \
@@ -2007,12 +2089,12 @@ Index: parrot-svn/languages/chitchat/config/makefiles/root.in
 -  $(PMC_DIR)/*.pdb \
 -  $(PMC_DIR)/*.lib \
 -
-+  $(TMPL)@exe@ \
-+  installable_$(TMPL)@exe@ \
++  $(HLLNAME)@exe@ \
++  installable_$(HLLNAME)@exe@ \
  
  clean:
  	$(RM_RF) $(CLEANUPS)
-@@ -123,4 +133,8 @@ realclean: clean
+@@ -123,4 +135,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -2026,14 +2108,14 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/cola/config/makefiles/root.in
 +++ parrot-svn/languages/cola/config/makefiles/root.in
-@@ -1,7 +1,17 @@
+@@ -1,27 +1,33 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/cola
  
 +## configuration settings
-+TMPL          = cola
++HLLNAME       = cola
 +BUILD_DIR     = @build_dir@
 +O             = @o@
 +EXE           = @exe@
@@ -2045,7 +2127,11 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
  # Set up commands
  PERL          = @perl@
  RM_F          = @rm_f@
-@@ -11,17 +21,11 @@ DEBUG         = @cc_debug@
+ CHMOD         = @chmod@
++CP            = @cp@
++MKPATH        = @mkpath@
+ CC            = @cc@
+ DEBUG         = @cc_debug@
  YACC          = @yacc@
  LEX           = @lex@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
@@ -2064,7 +2150,7 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
  # Libraries:  Ordinarily, no special libraries are needed
  # for cola, but one of the following settings might be helpful
  # in some cases.
-@@ -44,8 +48,9 @@ LIBS    =
+@@ -44,8 +50,9 @@ LIBS    =
  # LIBS = -lefence
  
  HEADERS = cola.h parser.h
@@ -2075,7 +2161,7 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
  	$(MAKE) colacc$(EXE)
  	-$(CHMOD) 775 colacc$(EXE)
  
-@@ -53,22 +58,27 @@ help :
+@@ -53,22 +60,27 @@ help :
  	@echo ""
  	@echo "Following targets are available for the user:"
  	@echo ""
@@ -2108,11 +2194,11 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=cola
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  nogen : gen$(O) semant$(O) sym$(O) type$(O)
  	$(CC) $(DEBUG) -c parser.c
-@@ -93,11 +103,11 @@ superclean: realclean
+@@ -93,11 +105,11 @@ superclean: realclean
  	$(RM_F) parser.h
  	$(RM_F) lexer.c parser.c
  
@@ -2129,12 +2215,12 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
  
  parser.c : cola.y
  	$(YACC) -d -o parser.c cola.y
-@@ -127,5 +137,23 @@ colacc$(EXE) : parser$(O) lexer$(O) gen$
+@@ -127,5 +139,23 @@ colacc$(EXE) : parser$(O) lexer$(O) gen$
  	$(CC) $(DEBUG) -o colacc$(EXE) parser$(O) lexer$(O) gen$(O) semant$(O) sym$(O) type$(O) $(LIBS)
  
  test: default
 -	cd .. && $(PERL) t/harness --languages=cola
-+	cd .. && $(PERL) t/harness --languages=$(TMPL)
++	cd .. && $(PERL) t/harness --languages=$(HLLNAME)
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
@@ -2143,8 +2229,8 @@ Index: parrot-svn/languages/cola/config/makefiles/root.in
 +install : installable
 +	$(CP) colacc$(EXE) $(DESTDIR)$(BIN_DIR)/parrot-colacc$(EXE)
 +	ascii2man README > $(DESTDIR)$(MANDIR)/man1/parrot-colacc.1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
 +installable : colacc$(EXE)
 +	$(CP) colacc$(EXE) $(BUILD_DIR)/installable_colacc$(EXE)
@@ -2158,7 +2244,7 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/eclectus/config/makefiles/root.in
 +++ parrot-svn/languages/eclectus/config/makefiles/root.in
-@@ -1,19 +1,29 @@
+@@ -1,22 +1,34 @@
  # Copyright (C) 2007-2008, The Perl Foundation.
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
@@ -2169,7 +2255,7 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
 -BUILD_DIR       = @build_dir@
 -LOAD_EXT        = @load_ext@
 -O               = @o@
-+TMPL          = eclectus
++HLLNAME          = eclectus
 +BUILD_DIR     = @build_dir@
 +LOAD_EXT      = @load_ext@
 +O             = @o@
@@ -2184,8 +2270,6 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
 -RM_F            = @rm_f@
 -RECONFIGURE     = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -BUILD_DYNPMC    = $(PERL) @build_dir@/tools/build/dynpmc.pl
-+PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
 +PERL          = @perl@
 +RM_F          = @rm_f@
 +RENAME        = @mv@
@@ -2197,7 +2281,14 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -39,29 +49,37 @@ PMC_SOURCES     = \
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ # Set up directories
+ PARROT_DYNEXT   = @build_dir@/runtime/parrot/dynext
+@@ -39,34 +51,42 @@ PMC_SOURCES     = \
      $(PMC_DIR)/eclectuspair.pmc \
      $(PMC_DIR)/eclectusstring.pmc \
      $(PMC_DIR)/eclectusvector.pmc
@@ -2236,53 +2327,59 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=eclectus
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # Compilation:
  build: $(ECLECTUS_GROUP) driver_nqp.pbc
-@@ -78,6 +96,29 @@ driver_nqp.pbc: src/builtins/all.pbc dri
+ 
+-$(ECLECTUS_GROUP): $(PARROT) $(PMC_SOURCES)
++$(ECLECTUS_GROUP):  $(PMC_SOURCES)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
+@@ -78,6 +98,29 @@ driver_nqp.pbc: src/builtins/all.pbc dri
  src/builtins/all.pbc: src/builtins/all.pir
  	$(PARROT) -o src/builtins/all.pbc src/builtins/all.pir
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ tests-driver.scm
++	./installable_$(HLLNAME)@exe@ tests-driver.scm
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
-+	$(POD2MAN) docs/eclectus.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(POD2MAN) docs/eclectus.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: driver_nqp.pbc
++$(HLLNAME)@exe@: driver_nqp.pbc
 +	$(PBC_TO_EXE) driver_nqp.pbc
-+	$(RENAME) driver_nqp@exe@ $(TMPL)@exe@
++	$(RENAME) driver_nqp@exe@ $(HLLNAME)@exe@
 +
-+installable : installable_$(TMPL)@exe@ $(ECLECTUS_GROUP)
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@ $(ECLECTUS_GROUP)
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : driver_nqp.pbc
++installable_$(HLLNAME)@exe@ : driver_nqp.pbc
 +	$(PBC_TO_EXE) driver_nqp.pbc --install
-+	$(RENAME) driver_nqp@exe@ installable_$(TMPL)@exe@
++	$(RENAME) driver_nqp@exe@ installable_$(HLLNAME)@exe@
 +
 +
  # cleaning up
  
  clean: dynext-clean test-clean
-@@ -97,8 +138,9 @@ dynext-clean:
+@@ -97,8 +140,9 @@ dynext-clean:
    $(PMC_DIR)/*.ilk \
    $(PMC_DIR)/*.manifest \
    $(PMC_DIR)/*.pdb \
 -  $(PMC_DIR)/*.lib
 -
 +  $(PMC_DIR)/*.lib \
-+  installable_$(TMPL)@exe@ \
-+  $(TMPL)@exe@ \
++  installable_$(HLLNAME)@exe@ \
++  $(HLLNAME)@exe@ \
  
  realclean: clean
  	$(RM_F) Makefile
-@@ -110,3 +152,11 @@ test: build
+@@ -110,3 +154,11 @@ test: build
  test-clean:
  	$(RM_F) t/*.nqp
  	$(RM_F) t/*.pir
@@ -2306,7 +2403,7 @@ Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = ecmascript
++HLLNAME       = ecmascript
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -2317,18 +2414,27 @@ Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
  
  # Setup some commands
  LN_S          = @lns@
-@@ -14,7 +19,10 @@ PERL          = @perl@
+@@ -14,13 +19,18 @@ PERL          = @perl@
  RM_F          = @rm_f@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -41,6 +49,7 @@ SOURCES = \
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -41,6 +51,7 @@ SOURCES = \
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/builtin/builtins.pir \
@@ -2336,16 +2442,25 @@ Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
  
  #PMCS = \
  #  jsobject \
-@@ -104,7 +113,7 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -85,7 +96,7 @@ js@exe@: js.pbc
+ 	$(PBC_TO_EXE) js.pbc
+ 
+ # the default target
+-js.pbc: $(PARROT) $(SOURCES)
++js.pbc:  $(SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) -o js.pbc js.pir
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg 
+@@ -104,7 +115,7 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=ecmascript
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -113,8 +122,12 @@ help:
+@@ -113,8 +124,12 @@ help:
  	@echo ""
  	@echo "  all:               js.pbc"
  	@echo "                     This is the default."
@@ -2358,32 +2473,32 @@ Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -129,12 +142,38 @@ help:
+@@ -129,12 +144,38 @@ help:
  test: all
  	$(PERL) t/harness t
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "2-1" | ./installable_$(TMPL)@exe@
++	echo "2-1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL).pbc : js.pbc
-+	$(CP) js.pbc $(TMPL).pbc
++$(HLLNAME).pbc : js.pbc
++	$(CP) js.pbc $(HLLNAME).pbc
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  testclean:
  	$(RM_F) "t/*.js" "t/*.out"
@@ -2391,13 +2506,13 @@ Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
  CLEANUPS = \
    js.pbc \
    js@exe@ \
-+  installable_$(TMPL)@exe@ \
-+  $(TMPL).pbc \
-+  $(TMPL)@exe@ \
++  installable_$(HLLNAME)@exe@ \
++  $(HLLNAME).pbc \
++  $(HLLNAME)@exe@ \
    js.c \
    src/gen_grammar.pir \
    src/gen_actions.pir \
-@@ -159,3 +198,9 @@ realclean: clean
+@@ -159,3 +200,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -2411,22 +2526,28 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -1,38 +1,40 @@
+@@ -1,38 +1,44 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
 -PARROT = ../../parrot@exe@
-+TMPL   = forth
- PERL   = @perl@
- RM_RF  = @rm_rf@
-+PARROT        = ../../parrot@exe@
-+PBC_MERGE     = ../../pbc_merge@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
- RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+-PERL   = @perl@
+-RM_RF  = @rm_rf@
++HLLNAME       = forth
++PERL          = @perl@
++RM_RF         = @rm_rf@
++CP            = @cp@
++MKPATH        = @mkpath@
 +POD2MAN	      = pod2man
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
++PBC_MERGE     = $(SHRPENV) ../../pbc_merge@exe@
  
  BUILD_DIR     = @build_dir@
 +BIN_DIR       = @bin_dir@
@@ -2451,7 +2572,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=forth
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  prompt: all
  	$(PARROT) forth.pbc
@@ -2466,7 +2587,7 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
  forth.pbc: forth.pir words.pir
  	$(PARROT) -o forth.pbc forth.pir
  
-@@ -47,3 +49,69 @@ virtualstack.pbc: virtualstack.pir
+@@ -47,3 +53,69 @@ virtualstack.pbc: virtualstack.pir
  
  test: all
  	$(PERL) t/harness
@@ -2497,31 +2618,31 @@ Index: parrot-svn/languages/forth/config/makefiles/root.in
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "2-1" | ./installable_$(TMPL)@exe@
++	echo "2-1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	$(CP) tokenstream.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_tokenstream.pbc
 +	$(CP) variablestack.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_variablestack.pbc
 +	$(CP) virtualstack.pbc $(DESTDIR)$(LIB_DIR)/parrot/library/forth_virtualstack.pbc
-+	-$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	-$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
 +testclean:
 +
 +CLEANUPS = \
-+  installable_$(TMPL)@exe@ \
++  installable_$(HLLNAME)@exe@ \
 +  *.pbc \
-+  $(TMPL)@exe@ \
++  $(HLLNAME)@exe@ \
 +
 +clean:
 +	$(RM_RF) $(CLEANUPS)
@@ -2540,7 +2661,7 @@ Index: parrot-svn/languages/hq9plus/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/hq9plus/config/makefiles/root.in
 +++ parrot-svn/languages/hq9plus/config/makefiles/root.in
-@@ -1,15 +1,24 @@
+@@ -1,20 +1,32 @@
 -## $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -2548,7 +2669,7 @@ Index: parrot-svn/languages/hq9plus/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = hq9plus
++HLLNAME          = hq9plus
  BUILD_DIR     = @build_dir@
 +BIN_DIR       = @bin_dir@
 +LIB_DIR       = @lib_dir@
@@ -2558,33 +2679,45 @@ Index: parrot-svn/languages/hq9plus/config/makefiles/root.in
  ## Setup some commands
  PERL          = @perl@
  RM_RF         = @rm_rf@
+-PARROT        = ../../parrot@exe@
 +CP            = @cp@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
-@@ -35,6 +44,8 @@ BUILTINS_PIR = \
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
++
+ 
+ ## places to look for things
+ PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
+@@ -35,8 +47,10 @@ BUILTINS_PIR = \
    src/builtins/nintynine_bottles_of_beer.pir \
    src/builtins/plus.pir \
  
 +DOCS = MAINTAINER README
 +
  # the default target
- hq9plus.pbc: $(PARROT) $(SOURCES)
+-hq9plus.pbc: $(PARROT) $(SOURCES)
++hq9plus.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o hq9plus.pbc hq9plus.pir
-@@ -53,7 +64,7 @@ src/gen_builtins.pir: $(BUILTINS_PIR)
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
+@@ -53,7 +67,7 @@ src/gen_builtins.pir: $(BUILTINS_PIR)
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=hq9plus
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -62,8 +73,12 @@ help:
+@@ -62,8 +76,12 @@ help:
  	@echo ""
  	@echo "  all:               hq9plus.pbc"
  	@echo "                     This is the default."
@@ -2597,33 +2730,33 @@ Index: parrot-svn/languages/hq9plus/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -78,6 +93,25 @@ help:
+@@ -78,6 +96,25 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@
++	./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  # this target has nothing to do
  testclean:
  
-@@ -96,4 +130,10 @@ clean:
+@@ -96,4 +133,10 @@ clean:
  realclean: clean
  	$(RM_RF) Makefile
  
@@ -2639,7 +2772,7 @@ Index: parrot-svn/languages/jako/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/jako/config/makefiles/root.in
 +++ parrot-svn/languages/jako/config/makefiles/root.in
-@@ -1,21 +1,32 @@
+@@ -1,21 +1,34 @@
  #
  # Makefile.in
  #
@@ -2647,7 +2780,7 @@ Index: parrot-svn/languages/jako/config/makefiles/root.in
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  #
  
-+TMPL          = jako
++HLLNAME       = jako
 +BUILD_DIR     = @build_dir@
 +LOAD_EXT      = @load_ext@
 +O             = @o@
@@ -2659,8 +2792,11 @@ Index: parrot-svn/languages/jako/config/makefiles/root.in
  PERL          = @perl@
  RM_F          = @rm_f@
  JAKOC         = $(PERL) -I lib jakoc
- INTERP        = ../../@test_prog@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
+-INTERP        = ../../@test_prog@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++INTERP        = $(SHRPENV) ../../@test_prog@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  BUILD_DIR     = @build_dir@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
@@ -2674,7 +2810,7 @@ Index: parrot-svn/languages/jako/config/makefiles/root.in
  
  # default target
  all: \
-@@ -41,16 +52,23 @@ help :
+@@ -41,16 +54,23 @@ help :
  	@echo ""
  	@echo "  all  :             Compile the example scripts"
  	@echo "                     This is the default."
@@ -2706,24 +2842,24 @@ Index: parrot-svn/languages/jako/config/makefiles/root.in
  
  
  # regenerate the Makefile
-@@ -109,7 +127,27 @@ test: all
+@@ -109,7 +129,27 @@ test: all
  	$(INTERP) examples/queens.pir
  	$(INTERP) examples/sub.pir
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo "2-1" | ./installable_$(TMPL)@exe@
++	echo "2-1" | ./installable_$(HLLNAME)@exe@
 +
 +install : installable
 +	$(CP) jako $(DESTDIR)$(BIN_DIR)/parrot-jako
 +	$(CP) jakoc $(DESTDIR)$(BIN_DIR)/parrot-jakoc
 +	$(CP) -R lib/Jako $(DESTDIR)$(PERLLIB_DIR)
-+	$(POD2MAN) docs/jako.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)/examples
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) *.jako $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) examples/*.jako $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)/examples
++	$(POD2MAN) docs/jako.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)/examples
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) *.jako $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) examples/*.jako $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)/examples
 +
 +installable : jako jakoc
 +
@@ -2740,7 +2876,7 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/json/config/makefiles/root.in
 +++ parrot-svn/languages/json/config/makefiles/root.in
-@@ -1,22 +1,31 @@
+@@ -1,25 +1,35 @@
 -## $Id: root.in 28940 2008-07-02 08:36:01Z bernhard $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -2748,7 +2884,7 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = json
++HLLNAME       = json
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -2762,18 +2898,23 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-+POD2MAN	      = pod2man
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -32,20 +41,16 @@ PMC_DIR       = src/pmc
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -32,22 +42,18 @@ PMC_DIR       = src/pmc
  
  all: json.pbc
  
@@ -2795,9 +2936,12 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
 -# PMC_SOURCES = $(PMC_DIR)/json.pmc
 -
  # the default target
- json.pbc: $(PARROT) $(SOURCES)
+-json.pbc: $(PARROT) $(SOURCES)
++json.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o json.pbc json.pir
-@@ -63,15 +68,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
+@@ -63,15 +69,9 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -2810,11 +2954,11 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=json
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -80,8 +79,12 @@ help:
+@@ -80,8 +80,12 @@ help:
  	@echo ""
  	@echo "  all:               json.pbc"
  	@echo "                     This is the default."
@@ -2827,33 +2971,33 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -96,6 +99,25 @@ help:
+@@ -96,6 +100,25 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@
++	./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  # this target has nothing to do
  testclean:
  
-@@ -103,18 +125,7 @@ CLEANUPS = \
+@@ -103,18 +126,7 @@ CLEANUPS = \
    json.pbc \
    src/gen_grammar.pir \
    src/gen_actions.pir \
@@ -2873,7 +3017,7 @@ Index: parrot-svn/languages/json/config/makefiles/root.in
  
  clean: testclean
  	$(RM_RF) $(CLEANUPS)
-@@ -123,3 +134,9 @@ realclean: clean
+@@ -123,3 +135,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -2887,23 +3031,28 @@ Index: parrot-svn/languages/lazy-k/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lazy-k/config/makefiles/root.in
 +++ parrot-svn/languages/lazy-k/config/makefiles/root.in
-@@ -1,47 +1,94 @@
+@@ -1,47 +1,98 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/lazy-k
-+TMPL          = lazy-k
++HLLNAME       = lazy-k
  
  # Setup of some commands
- PARROT        = @build_dir@/parrot@exe@
+-PARROT        = @build_dir@/parrot@exe@
  PERL          = @perl@
  RM_F          = @rm_f@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
++CP            = @cp@
++MKPATH        = @mkpath@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +POD2MAN	      = pod2man
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
  # set up location
  BUILD_DIR     = @build_dir@
@@ -2916,7 +3065,7 @@ Index: parrot-svn/languages/lazy-k/config/makefiles/root.in
 -all: build
 +all: lazy-k.pbc
 +
-+lazy-k.pbc : $(PARROT) $(SOURCES)
++lazy-k.pbc :  $(SOURCES)
 +	$(PARROT) $(PARROT_ARGS) -o lazy-k.pbc lazy-k.pir
  
  help :
@@ -2951,7 +3100,7 @@ Index: parrot-svn/languages/lazy-k/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=lazy-k
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
 -build:
 -
@@ -2961,29 +3110,29 @@ Index: parrot-svn/languages/lazy-k/config/makefiles/root.in
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	echo '1+2*3' |  ./installable_$(TMPL)@exe@ calc.lazy
++	echo '1+2*3' |  ./installable_$(HLLNAME)@exe@ calc.lazy
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  clean:
 +	$(RM_F) core \
 +    "*.pbc" \
 +    "*~" \
-+    "installable_$(TMPL)@exe@"
++    "installable_$(HLLNAME)@exe@"
  
  realclean: clean
  	$(RM_F) Makefile
@@ -2999,18 +3148,21 @@ Index: parrot-svn/languages/lisp/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lisp/config/makefiles/root.in
 +++ parrot-svn/languages/lisp/config/makefiles/root.in
-@@ -1,41 +1,93 @@
+@@ -1,41 +1,95 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
 -# Setup some commands
 -RM_F          = @rm_f@
+-PERL          = @perl@
+-PARROT        = ../../parrot@exe@
 +## arguments we want to run parrot with
 +PARROT_ARGS =
 +
 +## configuration settings
-+TMPL          = lisp
-+BUILD_DIR     = @build_dir@
++HLLNAME       = lisp
+ BUILD_DIR     = @build_dir@
+-RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +LOAD_EXT      = @load_ext@
 +O             = @o@
 +BIN_DIR       = @bin_dir@
@@ -3020,15 +3172,11 @@ Index: parrot-svn/languages/lisp/config/makefiles/root.in
 +
 +## Setup some commands
 +LN_S          = @lns@
- PERL          = @perl@
++PERL          = @perl@
 +RM_RF         = @rm_rf@
 +CP            = @cp@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
--BUILD_DIR     = @build_dir@
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
 +CAT           = $(PERL) -MExtUtils::Command -e cat
 +BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
 +RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -3036,14 +3184,18 @@ Index: parrot-svn/languages/lisp/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
- 
-+DOCS = CHANGES KNOWN_BUGS LICENSE MAINTAINER README
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +
++DOCS = CHANGES KNOWN_BUGS LICENSE MAINTAINER README
+ 
  all: build
  
 +# regenerate the Makefile
 +Makefile: config/makefiles/root.in
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
 +
 +test: build
 +	$(PERL) -Ilib -I../../lib t/harness
@@ -3087,30 +3239,30 @@ Index: parrot-svn/languages/lisp/config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=lisp
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@
++	./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
 -test: build
 -	$(PERL) -Ilib -I../../lib t/harness
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
  
 -build: lisp.pir
 -	$(PARROT) -o lisp.pbc lisp.pir
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
  
  clean: testclean
  	$(RM_F) core "*.pbc" "*~"
-@@ -45,3 +97,11 @@ testclean:
+@@ -45,3 +99,11 @@ testclean:
  
  realclean: clean
  	$(RM_F) Makefile
@@ -3126,7 +3278,7 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lolcode/config/makefiles/root.in
 +++ parrot-svn/languages/lolcode/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,25 +1,35 @@
 -## $Id: root.in 29523 2008-07-16 15:41:23Z tene $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -3134,7 +3286,7 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = lolcode
++HLLNAME       = lolcode
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -3148,14 +3300,23 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -33,14 +41,11 @@ PMC_DIR       = src/pmc
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -33,14 +43,11 @@ PMC_DIR       = src/pmc
  
  all: lolcode.pbc
  
@@ -3171,7 +3332,7 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  
  BUILTINS_PIR = \
    src/builtins/say.pir \
-@@ -48,9 +53,6 @@ BUILTINS_PIR = \
+@@ -48,14 +55,11 @@ BUILTINS_PIR = \
    src/builtins/math.pir \
    src/builtins/cmp.pir
  
@@ -3181,7 +3342,13 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  lolcode@exe@: lolcode.pbc
  	$(PBC_TO_EXE) lolcode.pbc
  
-@@ -70,12 +72,6 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ # the default target
+-lolcode.pbc: $(PARROT) $(SOURCES)
++lolcode.pbc:  $(SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) -o lolcode.pbc lolcode.pir
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
+@@ -70,12 +74,6 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -3194,7 +3361,7 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=lolcode
-@@ -87,8 +83,12 @@ help:
+@@ -87,8 +85,12 @@ help:
  	@echo ""
  	@echo "  all:               lolcode.pbc"
  	@echo "                     This is the default."
@@ -3207,28 +3374,28 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -103,6 +103,20 @@ help:
+@@ -103,6 +105,20 @@ help:
  test: all
  	$(PERL) t/harness
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ t/00-sanity.t
++	./installable_$(HLLNAME)@exe@ t/00-sanity.t
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  # this target has nothing to do
  testclean:
  
-@@ -112,18 +126,7 @@ CLEANUPS = \
+@@ -112,18 +128,7 @@ CLEANUPS = \
    lolcode.pbc \
    src/gen_grammar.pir \
    src/gen_actions.pir \
@@ -3248,7 +3415,7 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
  
  clean:
  	$(RM_RF) $(CLEANUPS)
-@@ -131,6 +134,10 @@ clean:
+@@ -131,6 +136,10 @@ clean:
  realclean: clean
  	$(RM_RF) Makefile
  
@@ -3288,22 +3455,28 @@ Index: parrot-svn/languages/c99/config/makefiles/cpp.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = cpp
++HLLNAME       = cpp
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
-@@ -13,7 +14,10 @@ LN_S          = @lns@
+@@ -13,10 +14,15 @@ LN_S          = @lns@
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../../../parrot@exe@
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe.exe
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -27,26 +31,28 @@ PCT           = $(BUILD_DIR)/runtime/par
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -27,26 +33,28 @@ PCT           = $(BUILD_DIR)/runtime/par
  
  PMC_DIR       = src/pmc
  
@@ -3327,7 +3500,8 @@ Index: parrot-svn/languages/c99/config/makefiles/cpp.in
 -# PMC_SOURCES = $(PMC_DIR)/c.pmc
 -
  # the default target
- cpp.pbc: $(PARROT) $(SOURCES)
+-cpp.pbc: $(PARROT) $(SOURCES)
++cpp.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o cpp.pbc cpp.pir
  
 +cpp@exe@ : cpp.pbc
@@ -3339,7 +3513,7 @@ Index: parrot-svn/languages/c99/config/makefiles/cpp.in
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -59,22 +65,18 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -59,22 +67,18 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -3365,7 +3539,7 @@ Index: parrot-svn/languages/c99/config/makefiles/cpp.in
  	@echo "                     This is the default."
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
-@@ -99,18 +101,7 @@ CLEANUPS = \
+@@ -99,18 +103,7 @@ CLEANUPS = \
    cpp.pbc \
    src/gen_grammar.pir \
    src/gen_actions.pir \
@@ -3385,7 +3559,7 @@ Index: parrot-svn/languages/c99/config/makefiles/cpp.in
  
  clean:
  	$(RM_RF) $(CLEANUPS)
-@@ -120,4 +111,8 @@ realclean: clean
+@@ -120,4 +113,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -3399,12 +3573,12 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/m4/config/makefiles/root.in
 +++ parrot-svn/languages/m4/config/makefiles/root.in
-@@ -1,27 +1,46 @@
+@@ -1,27 +1,48 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/m4
-+TMPL          = m4
++HLLNAME       = m4
  
  # Setup of some commands
 -PARROT        = ../../parrot@exe@
@@ -3419,12 +3593,14 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
 +LIB_DIR       = @lib_dir@
 +DOC_DIR       = @doc_dir@
 +MANDIR	      = @mandir@
-+PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
 -default: all
 -all: build 
@@ -3451,7 +3627,7 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  test-gnu-m4:       Run the test suite on the installed GNU m4."
-@@ -47,21 +66,38 @@ test: build
+@@ -47,21 +68,38 @@ test: build
  test-gnu-m4: build
  	PARROT_M4_TEST_PROG='m4' $(PERL) -Ilib -I../../lib t/harness
  
@@ -3463,29 +3639,29 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
 +
 +src/m4.pir: src/builtin.pir src/freeze.pir src/input.pir src/macro.pir src/output.pir
 +	$(TOUCH) $@
++
++# TODO: rename build_dir. basic run for missing libs
++test-installable : installable
++	./installable_$(HLLNAME)@exe@
  
 -src/m4.pir: src/builtin.pir src/freeze.pir src/input.pir src/macro.pir src/output.pir 
 -	$(TOUCH) $@ 
-+# TODO: rename build_dir. basic run for missing libs
-+test-installable : installable
-+	./installable_$(TMPL)@exe@
++install : installable
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) pod/running.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
 -html: 
 -	mkdir docs/html 
-+install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) pod/running.pod > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++m4@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+m4@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
-+
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
 +html:
 +	$(MKPATH) docs/html
@@ -3499,7 +3675,7 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
  clean:
  	$(RM_RF) \
  m4.pbc \
-@@ -78,3 +114,9 @@ realclean: clean
+@@ -78,3 +116,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -3513,17 +3689,15 @@ Index: parrot-svn/languages/ook/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/ook/config/makefiles/root.in
 +++ parrot-svn/languages/ook/config/makefiles/root.in
-@@ -1,11 +1,16 @@
+@@ -1,18 +1,31 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/ook
-+TMPL          = ook
++HLLNAME       = ook
  
  # Set up of commands
 -PARROT        = ../../parrot
-+PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  PERL          = @perl@
  RM_F          = @rm_f@
 +CP            = @cp@
@@ -3532,7 +3706,11 @@ Index: parrot-svn/languages/ook/config/makefiles/root.in
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
-@@ -13,6 +18,12 @@ RECONFIGURE   = $(PERL) @build_dir@/tool
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
  # Set up directories
  BUILD_DIR     = @build_dir@
@@ -3545,12 +3723,12 @@ Index: parrot-svn/languages/ook/config/makefiles/root.in
  
  default: all
  
-@@ -33,15 +44,34 @@ help :
+@@ -33,15 +46,34 @@ help :
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=ook
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  all: build
  
@@ -3574,16 +3752,16 @@ Index: parrot-svn/languages/ook/config/makefiles/root.in
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ hello.ook
++	./installable_$(HLLNAME)@exe@ hello.ook
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
  
  clean:
  	$(RM_F) core \
-@@ -52,3 +82,9 @@ clean:
+@@ -52,3 +84,9 @@ clean:
  
  realclean: clean
  	$(RM_F) Makefile
@@ -3597,14 +3775,29 @@ Index: parrot-svn/languages/parrot_compiler/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/parrot_compiler/config/makefiles/root.in
 +++ parrot-svn/languages/parrot_compiler/config/makefiles/root.in
-@@ -1,5 +1,5 @@
+@@ -1,16 +1,19 @@
  # Copyright (C) 2001-2005, The Perl Foundation.
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/parrot_compiler
  
-@@ -55,3 +55,8 @@ parrot_compiler.pbc : parrot_compiler.pi
+ # Set up commands
+ PERL          = @perl@
+ RM_F          = @rm_f@
+-PARROT        = ../../@test_prog@@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../@test_prog@@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ # Set up directories
+ BUILD_DIR     = @build_dir@
+@@ -55,3 +58,8 @@ parrot_compiler.pbc : parrot_compiler.pi
  parrot_compiler.pasm : parrot_compiler.pir
  	$(PARROT) -o parrot_compiler.pasm parrot_compiler.pir
  
@@ -3617,12 +3810,12 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/pheme/config/makefiles/root.in
 +++ parrot-svn/languages/pheme/config/makefiles/root.in
-@@ -1,12 +1,22 @@
+@@ -1,12 +1,20 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # configuration settings
-+TMPL          = pheme
++HLLNAME       = pheme
  BUILD_DIR     = @build_dir@
 +BIN_DIR       = @bin_dir@
 +LIB_DIR       = @lib_dir@
@@ -3632,18 +3825,22 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  # Setup some commands
  PERL          = @perl@
  RM_F          = @rm_f@
+-PARROT        = ../../parrot@exe@
 +CP            = @cp@
 +MKPATH        = @mkpath@
 +POD2MAN	      = pod2man
 +EXE           = @exe@
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
  TGE_DIR       = ../../compilers/tge
  PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
  PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
-@@ -15,8 +25,12 @@ RECONFIGURE   = $(PERL) $(BUILD_DIR)/too
+@@ -14,9 +22,17 @@ RECONFIGURE   = $(PERL) $(BUILD_DIR)/too
+ #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
 -# the default target
 -all: pheme.pbc
@@ -3656,7 +3853,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  
  lib/pheme_grammar_gen.pir: lib/pheme.g
  	$(PARROT) $(PERL6GRAMMAR) \
-@@ -28,6 +42,12 @@ lib/ASTGrammar.pir: lib/pge2past.tg
+@@ -28,6 +44,12 @@ lib/ASTGrammar.pir: lib/pge2past.tg
  pheme.pbc: pheme.pir lib/PhemeSymbols.pir lib/PhemeObjects.pir lib/ASTGrammar.pir lib/pheme_grammar_gen.pir
  	$(PARROT) -o pheme.pbc pheme.pir
  
@@ -3669,7 +3866,7 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=pheme
-@@ -39,6 +59,9 @@ help:
+@@ -39,6 +61,9 @@ help:
  	@echo ""
  	@echo "  all:               pheme.pbc"
  	@echo "                     This is the default."
@@ -3679,28 +3876,28 @@ Index: parrot-svn/languages/pheme/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -58,6 +81,20 @@ test: all
+@@ -58,6 +83,20 @@ test: all
  testclean:
  	$(RM_F) "t/*.out"
  
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ -e'say 1'
++	./installable_$(HLLNAME)@exe@ -e'say 1'
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) $(TMPL).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
  clean: testclean
  	$(RM_F) pheme.pbc
  	$(RM_F) lib/pheme_grammar_gen.pir
-@@ -68,3 +105,9 @@ realclean: clean
+@@ -68,3 +107,9 @@ realclean: clean
  	$(RM_F) Makefile
  
  distclean: realclean
@@ -3714,12 +3911,12 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/pipp/config/makefiles/root.in
 +++ parrot-svn/languages/pipp/config/makefiles/root.in
-@@ -1,25 +1,31 @@
+@@ -1,25 +1,33 @@
 -# $Id: root.in 30479 2008-08-23 14:21:49Z bernhard $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Set up extensions
-+TMPL          = pipp
++HLLNAME       = pipp
  LOAD_EXT      = @load_ext@
  O             = @o@
  EXE           = @exe@
@@ -3736,9 +3933,12 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
 +MANDIR	      = @mandir@
  
  # Set up commands
- PARROT        = $(BUILD_DIR)/parrot@exe@
-+PBC_MERGE     = $(BUILD_DIR)/pbc_merge$(EXE)
-+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
+-PARROT        = $(BUILD_DIR)/parrot@exe@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
++PBC_MERGE     = $(SHRPENV) $(BUILD_DIR)/pbc_merge$(EXE)
++PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe$(EXE)
  PERL          = @perl@
  RM_F          = @rm_f@
 -RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -3750,7 +3950,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
  
  PMCS = \
   php \
-@@ -102,8 +108,14 @@ PHP_EXT= \
+@@ -102,8 +110,14 @@ PHP_EXT= \
    src/common/php_gmp.pbc \
    src/common/php_pcre.pbc
  
@@ -3766,7 +3966,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -158,8 +170,6 @@ maintain-antlr3: src/antlr3/Pipp.g src/a
+@@ -158,8 +172,6 @@ maintain-antlr3: src/antlr3/Pipp.g src/a
  	java org.antlr.Tool src/antlr3/Pipp.g
  	java org.antlr.Tool -lib src/antlr3 src/antlr3/GenPastNqp.g
  
@@ -3775,7 +3975,7 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
  build-all:       build-pct build-phc build-antlr3
  
  build-common:    pmc src/common/pipplib.pbc pipp.pbc $(PHP_EXT)
-@@ -176,6 +186,9 @@ build-antlr3:    build-common
+@@ -176,6 +188,9 @@ build-antlr3:    build-common
  pipp$(EXE): build-common
  	$(PBC_TO_EXE) pipp.pbc
  
@@ -3785,25 +3985,32 @@ Index: parrot-svn/languages/pipp/config/makefiles/root.in
  src/common/pipplib.pbc: src/common/builtins.pir src/common/php_standard.pir $(PHP_SRC_STD_EXT) src/common/php_API.pir src/common/php_MACRO.pir
  	$(PARROT) -o src/common/pipplib.pbc src/common/builtins.pir
  
-@@ -211,6 +224,17 @@ $(PHP_GROUP): $(PARROT) $(PMC_SOURCES)
+@@ -205,12 +220,23 @@ pipp.pbc: \
+ 
+ pmc: $(PHP_GROUP)
+ 
+-$(PHP_GROUP): $(PARROT) $(PMC_SOURCES)
++$(PHP_GROUP):  $(PMC_SOURCES)
+ 	@cd $(PMCDIR) && $(PMCBUILD) generate $(PMCS)
+ 	@cd $(PMCDIR) && $(PMCBUILD) compile $(PMCS)
  	@cd $(PMCDIR) && $(PMCBUILD) linklibs $(PMCS)
  	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(PARROT_DYNEXT)" $(PMCS)
  
-+installable : installable_$(TMPL)@exe@ pmc
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@ pmc
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
 +	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
 +	$(CP) src/common/pipplib.pbc $(PHP_EXT) $(DESTDIR)$(LIB_DIR)/parrot/library
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
 +
  test:     all test-pct
  
  test-all: all test-php test-phc test-antlr3 test-pct test-pmc
-@@ -273,3 +297,9 @@ clean-test:
+@@ -273,3 +299,9 @@ clean-test:
  
  realclean: clean
  	$(RM_F) Makefile
@@ -3817,7 +4024,7 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/punie/config/makefiles/root.in
 +++ parrot-svn/languages/punie/config/makefiles/root.in
-@@ -1,15 +1,23 @@
+@@ -1,32 +1,46 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -3826,15 +4033,13 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
 -PERL     = @perl@
 -RM_F     = @rm_f@
 -PARROT   = ../../parrot@exe@
-+TMPL          = punie
++HLLNAME          = punie
 +LN_S          = @lns@
 +PERL          = @perl@
 +RM_F          = @rm_f@
 +CP            = @cp@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
-+PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  BUILD_DIR     = @build_dir@
 +BIN_DIR       = @bin_dir@
 +LIB_DIR       = @lib_dir@
@@ -3847,7 +4052,11 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -17,9 +25,13 @@ CP       = @cp@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
  PARROT_LIBRARY = ../../runtime/parrot/library
  PGE_LIBRARY   = ../../runtime/parrot/library/PGE
  
@@ -3861,7 +4070,15 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
  SOURCES = punie.pir \
    src/parser/grammar.pg \
    src/parser/actions.pm \
-@@ -36,8 +48,12 @@ help:
+   src/builtins/builtins.pir \
+ 
+ # the default target
+-punie.pbc: $(PARROT) $(NQP_DIR)/nqp.pbc $(PGE_LIBRARY)/Perl6Grammar.pir $(SOURCES)
++punie.pbc:  $(NQP_DIR)/nqp.pbc $(PGE_LIBRARY)/Perl6Grammar.pir $(SOURCES)
+ 	$(PARROT) $(PGE_LIBRARY)/Perl6Grammar.pir --output=src/gen_punie.pir src/parser/grammar.pg
+ 	$(PARROT) $(NQP_DIR)/nqp.pbc --target=pir --output=src/gen_punie-actions.pir src/parser/actions.pm
+ 	$(PARROT) -o punie.pbc punie.pir
+@@ -36,8 +50,12 @@ help:
  	@echo ""
  	@echo "Following targets are available for the user:"
  	@echo ""
@@ -3875,35 +4092,35 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -56,7 +72,26 @@ test: all
+@@ -56,7 +74,26 @@ test: all
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=punie
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ demo.p1
++	./installable_$(HLLNAME)@exe@ demo.p1
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) punie.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) punie.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
  
  testclean:
  	$(RM_F) "t/*.p1" "t/*.out" "t/*.pir"
-@@ -73,3 +108,9 @@ realclean: clean
+@@ -73,3 +110,9 @@ realclean: clean
  	$(RM_F) Makefile
  
  distclean: realclean
@@ -3917,7 +4134,7 @@ Index: parrot-svn/languages/pynie/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/pynie/config/makefiles/root.in
 +++ parrot-svn/languages/pynie/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,25 +1,35 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -3925,7 +4142,7 @@ Index: parrot-svn/languages/pynie/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = pynie
++HLLNAME          = pynie
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -3939,14 +4156,23 @@ Index: parrot-svn/languages/pynie/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -28,16 +36,18 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -28,19 +38,21 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
  NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
  PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
  
@@ -3967,8 +4193,12 @@ Index: parrot-svn/languages/pynie/config/makefiles/root.in
 +  src/builtins/oper.pir
  
  # the default target
- pynie.pbc: $(PARROT) $(PERL6GRAMMAR) $(NQP) $(PCT) $(SOURCES)
-@@ -56,8 +66,12 @@ help:
+-pynie.pbc: $(PARROT) $(PERL6GRAMMAR) $(NQP) $(PCT) $(SOURCES)
++pynie.pbc:  $(PERL6GRAMMAR) $(NQP) $(PCT) $(SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
+ 	    --output=src/gen_grammar.pir src/parser/Grammar.pg
+ 	$(PARROT) $(PARROT_ARGS) $(NQP) --target=pir \
+@@ -56,8 +68,12 @@ help:
  	@echo ""
  	@echo "Following targets are available for the user:"
  	@echo ""
@@ -3982,33 +4212,33 @@ Index: parrot-svn/languages/pynie/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -77,6 +91,25 @@ test: all
+@@ -77,6 +93,25 @@ test: all
  # this target has nothing to do
  testclean:
  
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ t/00-parrot/03-op-logic.t
++	./installable_$(HLLNAME)@exe@ t/00-parrot/03-op-logic.t
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) pynie.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) pynie.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+$(TMPL)@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++$(HLLNAME)@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 +
  CLEANUPS = \
    pynie.pbc \
    src/gen_grammar.pir \
-@@ -89,3 +122,9 @@ realclean: clean
+@@ -89,3 +124,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -4022,14 +4252,56 @@ Index: parrot-svn/languages/regex/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/regex/config/makefiles/root.in
 +++ parrot-svn/languages/regex/config/makefiles/root.in
-@@ -1,5 +1,5 @@
+@@ -1,26 +1,34 @@
  # Copyright (C) 2005-2008, The Perl Foundation.
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/regex
++HLLNAME       = regex
  
-@@ -80,3 +80,8 @@ realclean: clean
+ # Set up commands
+-PARROT        = ../../parrot@exe@
+ PERL          = @perl@
+ RM_F          = @rm_f@
+ YAPP          = yapp
+-PMC_DIR       = pmc
+ BUILD_DYNPMC  = $(PERL) @build_dir@/tools/build/dynpmc.pl
+-PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ # Set up directories
+-LOAD_EXT      = @load_ext@
+ BUILD_DIR     = @build_dir@
++PMC_DIR       = pmc
++PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
++BIN_DIR       = @bin_dir@
++LIB_DIR       = @lib_dir@
++DOC_DIR       = @doc_dir@
++MANDIR	      = @mandir@
+ 
+ # set up extensions
++LOAD_EXT      = @load_ext@
+ O             = @o@
+ 
+ PMCS = match matchrange
+@@ -39,7 +47,7 @@ lib/Regex/Grammar.pm : lib/Regex/Grammar
+ regex-compiler.pbc : regex-compiler.pir
+ 	$(PARROT) -o regex-compiler.pbc regex-compiler.pir
+ 
+-$(PMC_DIR)/match_group$(LOAD_EXT): $(PARROT) $(PMC_SOURCES)
++$(PMC_DIR)/match_group$(LOAD_EXT):  $(PMC_SOURCES)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
+ 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
+@@ -80,3 +88,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -4048,11 +4320,18 @@ Index: parrot-svn/languages/scheme/config/makefiles/root.in
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/scheme
-+TMPL          = scheme
++HLLNAME          = scheme
  
  # Set up commands
  PERL          = @perl@
-@@ -13,6 +14,10 @@ RECONFIGURE   = $(PERL) @build_dir@/tool
+@@ -10,9 +11,17 @@ RECONFIGURE   = $(PERL) @build_dir@/tool
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
  # Set up directories
  BUILD_DIR     = @build_dir@
@@ -4063,12 +4342,12 @@ Index: parrot-svn/languages/scheme/config/makefiles/root.in
  
  # The default target
  default: build
-@@ -34,12 +39,22 @@ help :
+@@ -34,12 +43,22 @@ help :
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=scheme
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # Compilation:
  build:
@@ -4081,13 +4360,13 @@ Index: parrot-svn/languages/scheme/config/makefiles/root.in
 +#	$(CP) lib/Scheme/*.pm $(DESTDIR)$(LIB_DIR)/Scheme
 +install : installable
 +	$(CP) schemec $(DESTDIR)$(BIN_DIR)/parrot-schemec
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  # cleaning up
  
  clean:
-@@ -60,3 +75,9 @@ over:
+@@ -60,3 +79,9 @@ over:
  # testing
  test:
  	cd .. && $(PERL) scheme/t/harness
@@ -4101,7 +4380,7 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/squaak/config/makefiles/root.in
 +++ parrot-svn/languages/squaak/config/makefiles/root.in
-@@ -1,19 +1,27 @@
+@@ -1,19 +1,25 @@
 -## $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
@@ -4109,7 +4388,7 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
  PARROT_ARGS =
  
  ## configuration settings
-+TMPL          = squaak
++HLLNAME          = squaak
  BUILD_DIR     = @build_dir@
  LOAD_EXT      = @load_ext@
  O             = @o@
@@ -4123,16 +4402,20 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -28,28 +36,36 @@ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Gram
+@@ -27,29 +33,41 @@ PGE_LIBRARY   = $(BUILD_DIR)/runtime/par
+ PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
  NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
  PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
  
 -PMC_DIR       = src/pmc
 +build: squaak.pbc
@@ -4165,16 +4448,17 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
 +  pod/tutorial_episode_9.pod
  
  # the default target
- squaak.pbc: $(PARROT) $(SOURCES)
+-squaak.pbc: $(PARROT) $(SOURCES)
++squaak.pbc:  $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o squaak.pbc squaak.pir
  
-+squaak@exe@: $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc
++squaak@exe@: $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc
 +
  src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
  	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
  	    --output=src/gen_grammar.pir \
-@@ -62,23 +78,37 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+@@ -62,23 +80,37 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -4185,24 +4469,24 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
 -	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@
++	./installable_$(HLLNAME)@exe@
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(TMPL)@exe@
-+	$(POD2MAN) squaak.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(TMPL).1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
++	$(POD2MAN) squaak.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
-+installable_$(TMPL)@exe@ : $(TMPL).pbc
-+	$(PBC_TO_EXE) $(TMPL).pbc --install
++installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
++	$(PBC_TO_EXE) $(HLLNAME).pbc --install
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
 -	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=squaak
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
  
  # This is a listing of all targets, that are meant to be called by users
  help:
@@ -4219,7 +4503,7 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -102,18 +132,7 @@ CLEANUPS = \
+@@ -102,18 +134,7 @@ CLEANUPS = \
    squaak.pbc \
    src/gen_grammar.pir \
    src/gen_actions.pir \
@@ -4239,7 +4523,7 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
  
  clean:
  	$(RM_RF) $(CLEANUPS)
-@@ -124,3 +143,8 @@ realclean: clean
+@@ -124,3 +145,8 @@ realclean: clean
  distclean: realclean
  
  
@@ -4252,7 +4536,7 @@ Index: parrot-svn/languages/unlambda/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/unlambda/config/makefiles/root.in
 +++ parrot-svn/languages/unlambda/config/makefiles/root.in
-@@ -1,14 +1,22 @@
+@@ -1,10 +1,17 @@
  # Copyright (C) 2008, The Perl Foundation.
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
@@ -4261,7 +4545,7 @@ Index: parrot-svn/languages/unlambda/config/makefiles/root.in
  
  # configuration settings
 -BUILD_DIR       = @build_dir@
-+TMPL	      = unlambda
++HLLNAME	      = unlambda
 +BUILD_DIR     = @build_dir@
 +LOAD_EXT      = @load_ext@
 +O             = @o@
@@ -4272,12 +4556,7 @@ Index: parrot-svn/languages/unlambda/config/makefiles/root.in
  
  # Set up commands
  PERL            = @perl@
- RM_F            = @rm_f@
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
- RECONFIGURE     = $(PERL) @build_dir@/tools/dev/reconfigure.pl
- #CONDITIONED_LINE(darwin):
- #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
-@@ -51,3 +59,9 @@ realclean: clean
+@@ -51,3 +58,9 @@ realclean: clean
  # testing
  test: build
  	$(PERL) t/harness
@@ -4291,15 +4570,24 @@ Index: parrot-svn/languages/urm/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/urm/config/makefiles/root.in
 +++ parrot-svn/languages/urm/config/makefiles/root.in
-@@ -1,4 +1,4 @@
+@@ -1,34 +1,45 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/urm
  
-@@ -12,23 +12,32 @@ RECONFIGURE   = $(PERL) @build_dir@/tool
+ # Setup of some commands
+ RM_F          = @rm_f@
+ PERL          = @perl@
+-PARROT        = ../../parrot@exe@
+ BUILD_DIR     = @build_dir@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
  
 -default: build
 +default: all
@@ -4337,7 +4625,7 @@ Index: parrot-svn/languages/urm/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=urm
-@@ -47,6 +56,14 @@ examples: build
+@@ -47,6 +58,14 @@ examples: build
  build: 
  	$(PERL) -c urmc
  
@@ -4352,7 +4640,7 @@ Index: parrot-svn/languages/urm/config/makefiles/root.in
  clean:
  	$(RM_F) \
  		core "*.pbc" "*~" "foo.p*" \
-@@ -60,4 +77,11 @@ clean:
+@@ -60,4 +79,11 @@ clean:
  
  realclean: clean
  	$(RM_F) Makefile
@@ -4375,16 +4663,36 @@ Index: parrot-svn/languages/PIR/config/makefiles/root.in
  
  ## arguments we want to run parrot with
  PARROT_ARGS =
-@@ -13,6 +13,8 @@ LN_S          = @lns@
+@@ -13,13 +13,18 @@ LN_S          = @lns@
  PERL          = @perl@
  RM_RF         = @rm_rf@
  CP            = @cp@
+-PARROT        = ../../parrot@exe@
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
- PARROT        = ../../parrot@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
-@@ -102,7 +104,7 @@ src/pasm/gen_pasm_instr.pbc: src/pasm/ge
+ RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+ #CONDITIONED_LINE(darwin):
+ #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+ #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -52,7 +57,7 @@ PASMGRAMMAR = src/pasm/gen_pasm.pbc \
+   src/pasm/gen_pasm_core.pbc
+ 
+ # the default target
+-pirc.pbc: $(PARROT) $(SOURCES) $(PASMGRAMMAR)
++pirc.pbc:  $(SOURCES) $(PASMGRAMMAR)
+ 	$(PARROT) $(PARROT_ARGS) -o pirc.pbc pirc.pir
+ 
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/pir.pg
+@@ -102,7 +107,7 @@ src/pasm/gen_pasm_instr.pbc: src/pasm/ge
  
  src/pasm/gen_pasm_args.pbc: src/pasm/gen_pasm_args.pir
  	$(PARROT) --output-pbc -o src/pasm/gen_pasm_args.pbc src/pasm/gen_pasm_args.pir
@@ -4393,7 +4701,7 @@ Index: parrot-svn/languages/PIR/config/makefiles/root.in
  src/pasm/gen_pasm_io.pbc: src/pasm/gen_pasm_io.pir
  	$(PARROT) --output-pbc -o src/pasm/gen_pasm_io.pbc src/pasm/gen_pasm_io.pir
  
-@@ -111,7 +113,7 @@ src/pasm/gen_pasm_pmc.pbc: src/pasm/gen_
+@@ -111,7 +116,7 @@ src/pasm/gen_pasm_pmc.pbc: src/pasm/gen_
  
  src/pasm/gen_pasm_core.pbc: src/pasm/gen_pasm_core.pir
  	$(PARROT) --output-pbc -o src/pasm/gen_pasm_core.pbc src/pasm/gen_pasm_core.pir
@@ -4402,7 +4710,7 @@ Index: parrot-svn/languages/PIR/config/makefiles/root.in
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=PIR
-@@ -177,3 +179,9 @@ realclean: clean
+@@ -177,3 +182,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -4416,16 +4724,21 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/WMLScript/config/makefiles/root.in
 +++ parrot-svn/languages/WMLScript/config/makefiles/root.in
-@@ -1,6 +1,7 @@
+@@ -1,9 +1,11 @@
  # Copyright (C) 2006-2007, The Perl Foundation.
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
-+TMPL    = WMLScript
++HLLNAME = WMLScript
  RM_F    = @rm_f@
  PERL    = @perl@
- PARROT  = ../../parrot@exe@
-@@ -12,7 +13,14 @@ PMCDIR   = pmc
+-PARROT  = ../../parrot@exe@
++CP      = @cp@
++MKPATH  = @mkpath@
+ 
+ PMCBUILD = $(PERL) @build_dir@/tools/build/dynpmc.pl
+ OPSBUILD = $(PERL) @build_dir@/tools/build/dynoplibs.pl
+@@ -12,7 +14,19 @@ PMCDIR   = pmc
  OPSDIR   = ops
  O        = @o@
  LOAD_EXT = @load_ext@
@@ -4435,12 +4748,30 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 +DOC_DIR       = @doc_dir@
 +MANDIR	      = @mandir@
  PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
-+PBC_TO_EXE    = ../../pbc_to_exe@exe@
++PARROT_LIBPATH = @build_dir@/runtime/parrot/library
++PARROT_RUNTIME = @build_dir@/runtime/parrot/library/WMLScript
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -49,6 +57,9 @@ GEN_PIR = \
+@@ -40,19 +54,23 @@ OPS_FILES = $(OPSDIR)/wmls.ops
+ OPSLIB    = wmls
+ 
+ PBCS = \
+- $(LIBPATH)/wmlslang.pbc \
+- $(LIBPATH)/wmlsfloat.pbc \
+- $(LIBPATH)/wmlsstring.pbc \
+- $(LIBPATH)/wmlsconsole.pbc
++ $(PARROT_RUNTIME)/wmlslang.pbc \
++ $(PARROT_RUNTIME)/wmlsfloat.pbc \
++ $(PARROT_RUNTIME)/wmlsstring.pbc \
++ $(PARROT_RUNTIME)/wmlsconsole.pbc
+ 
+ GEN_PIR = \
   src/opcode.pir \
   src/stdlibs.pir
  
@@ -4448,12 +4779,45 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 + MAINTAINER doc/running.pod doc/status.pod
 +
  all: \
++ Makefile \
   pmc/wmls_group$(LOAD_EXT) \
   ops/wmls_ops$(LOAD_EXT) \
-@@ -91,6 +102,44 @@ $(LIBPATH)/wmlsstring.pbc: $(LIBPATH)/wm
- $(LIBPATH)/wmlsconsole.pbc: $(LIBPATH)/wmlsconsole.pir
- 	$(PARROT) --output=$(LIBPATH)/wmlsconsole.pbc $(LIBPATH)/wmlsconsole.pir
+- src/WMLScript.pbc \
++ $(PARROT_LIBPATH)/WMLScript.pbc \
+  $(PBCS)
  
+ pmc/wmls_group$(LOAD_EXT) : $(PMC_FILES)
+@@ -67,9 +85,9 @@ ops/wmls_ops$(LOAD_EXT) : $(OPS_FILES)
+ 	@cd $(OPSDIR) && $(OPSBUILD) linklibs $(OPSLIB)
+ 	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(PARROT_DYNEXT)" $(OPSLIB)
+ 
+-src/WMLScript.pbc: src/WMLScript.pir \
++$(PARROT_LIBPATH)/WMLScript.pbc: src/WMLScript.pir \
+  src/script.pir src/wmlsstdlibs.pir $(GEN_PIR)
+-	$(PARROT) -o src/WMLScript.pbc src/WMLScript.pir
++	$(PARROT) -o $@ src/WMLScript.pir
+ 
+ src/opcode.pir: src/translation.rules build/translator.pl \
+  build/SRM/Stack.pm build/SRM/Register.pm
+@@ -79,17 +97,60 @@ src/opcode.pir: src/translation.rules bu
+ src/stdlibs.pir: src/wmlslibs.cfg build/stdlibs.pl
+ 	$(PERL) build/stdlibs.pl --output src/stdlibs.pir src/wmlslibs.cfg
+ 
+-$(LIBPATH)/wmlslang.pbc: $(LIBPATH)/wmlslang.pir
+-	$(PARROT) --output=$(LIBPATH)/wmlslang.pbc $(LIBPATH)/wmlslang.pir
++$(PARROT_RUNTIME)/wmlslang.pbc: $(LIBPATH)/wmlslang.pir
++	-$(MKPATH) $(PARROT_RUNTIME)
++	$(PARROT) --output=$@ $(LIBPATH)/wmlslang.pir
++
++$(PARROT_RUNTIME)/wmlsfloat.pbc: $(LIBPATH)/wmlsfloat.pir
++	$(PARROT) --output=$@ $(LIBPATH)/wmlsfloat.pir
++
++$(PARROT_RUNTIME)/wmlsstring.pbc: $(LIBPATH)/wmlsstring.pir
++	$(PARROT) --output=$@ $(LIBPATH)/wmlsstring.pir
++
++$(PARROT_RUNTIME)/wmlsconsole.pbc: $(LIBPATH)/wmlsconsole.pir
++	$(PARROT) --output=$@ $(LIBPATH)/wmlsconsole.pir
++
 +wmls2pir@exe@: wmls2pir.pbc
 +	$(PBC_TO_EXE) wmls2pir.pbc
 +
@@ -4466,18 +4830,20 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 +wmlsi@exe@: wmlsi.pbc
 +	$(PBC_TO_EXE) wmlsi.pbc
 +
-+installable_wmls2pir@exe@: wmls2pir.pbc
++installable_wmls2pir@exe@: $(RUNTIMES) wmls2pir.pbc
 +	$(PBC_TO_EXE) wmls2pir.pbc --install
 +
-+installable_wmls2pbc@exe@: wmls2pbc.pbc
++installable_wmls2pbc@exe@: $(RUNTIMES) wmls2pbc.pbc
 +	$(PBC_TO_EXE) wmls2pbc.pbc --install
 +
-+installable_wmlsd@exe@: wmlsd.pbc
++installable_wmlsd@exe@: $(RUNTIMES) wmlsd.pbc
 +	$(PBC_TO_EXE) wmlsd.pbc --install
 +
-+installable_wmlsi@exe@: wmlsi.pbc
++installable_wmlsi@exe@: $(RUNTIMES) wmlsi.pbc
 +	$(PBC_TO_EXE) wmlsi.pbc --install
-+
+ 
+-$(LIBPATH)/wmlsfloat.pbc: $(LIBPATH)/wmlsfloat.pir
+-	$(PARROT) --output=$(LIBPATH)/wmlsfloat.pbc $(LIBPATH)/wmlsfloat.pir
 +install : installable
 +	$(CP) installable_wmls2pir@exe@ $(DESTDIR)$(BIN_DIR)/parrot-wmls2pir@exe@
 +	$(CP) installable_wmls2pbc@exe@ $(DESTDIR)$(BIN_DIR)/parrot-wmls2pbc@exe@
@@ -4486,16 +4852,23 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 +	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
 +	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(OPSLIB)
 +	$(POD2MAN) pod/running.pod > $(DESTDIR)$(MANDIR)/man1/parrot-wmls.5
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+
-+installable: installable_wmls2pir@exe@ installable_wmls2pbc@exe@ \
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
+ 
+-$(LIBPATH)/wmlsstring.pbc: $(LIBPATH)/wmlsstring.pir
+-	$(PARROT) --output=$(LIBPATH)/wmlsstring.pbc $(LIBPATH)/wmlsstring.pir
++# regenerate the Makefile
++Makefile: config/makefiles/root.in
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
+ 
+-$(LIBPATH)/wmlsconsole.pbc: $(LIBPATH)/wmlsconsole.pir
+-	$(PARROT) --output=$(LIBPATH)/wmlsconsole.pbc $(LIBPATH)/wmlsconsole.pir
++installable: $(RUNTIMES) installable_wmls2pir@exe@ installable_wmls2pbc@exe@ \
 +             installable_wmlsd@exe@ installable_wmlsi@exe@
-+
+ 
  help:
  	@echo ""
- 	@echo "Following targets are available for the user:"
-@@ -146,3 +195,8 @@ realclean: clean
+@@ -146,3 +207,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -4508,23 +4881,29 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/Zcode/config/makefiles/root.in
 +++ parrot-svn/languages/Zcode/config/makefiles/root.in
-@@ -1,11 +1,14 @@
+@@ -1,14 +1,19 @@
 -# $Id: root.in 28657 2008-06-23 00:33:41Z coke $
 +# $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
  
  # Makefile for languages/Zcode
-+TMPL	      = Zcode
++HLLNAME	      = Zcode
  
  # Setup of some commands
+-PARROT     = ../../parrot@exe@
 +BUILD_DIR  = @build_dir@
- PARROT     = ../../parrot@exe@
  PERL       = @perl@
  RM_F       = @rm_f@
 +RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -27,9 +30,7 @@ help :
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
+ 
+ EXAMPLES = examples/small.z3 examples/hello.z3
+ 
+@@ -27,9 +32,7 @@ help :
  	@echo "                     Requires an Inform compiler!"
  	@echo ""
  	@echo "  clean:             clean up temporary files (none presently)"
@@ -4534,18 +4913,18 @@ Index: parrot-svn/languages/Zcode/config/makefiles/root.in
  	@echo "  maintclean:        clean up Z-code files"
  	@echo ""
  	@echo "  help:              print this help message"
-@@ -54,6 +55,10 @@ examples: $(EXAMPLES)
+@@ -54,6 +57,10 @@ examples: $(EXAMPLES)
  .inf.z3:
  	inform $< $@
  
 +# regenerate the Makefile
 +Makefile: config/makefiles/root.in
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
 +
  clean:
  	@echo "No temp files to clean"
  
-@@ -64,3 +69,9 @@ realclean: clean
+@@ -64,3 +71,9 @@ realclean: clean
  
  maintclean: realclean
  	$(RM_F) $(EXAMPLES) $(TEST_ZFILES)
@@ -4559,10 +4938,14 @@ Index: parrot-svn/languages/tcl/config/makefiles/examples.in
 ===================================================================
 --- parrot-svn.orig/languages/tcl/config/makefiles/examples.in
 +++ parrot-svn/languages/tcl/config/makefiles/examples.in
-@@ -1,16 +1,22 @@
- PARROT = ../../../parrot@exe@
+@@ -1,16 +1,25 @@
+-PARROT = ../../../parrot@exe@
 -PARROT_ARRGS = --gc-debug
-+PARROT_ARGS = --gc-debug
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) @build_dir@/parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) @build_dir@/pbc_to_exe@exe@
++PARROT_ARGS   = --gc-debug
  
  default:
  	@echo "to run <foo>.tcl, type 'make <foo>'"
@@ -4590,13 +4973,14 @@ Index: parrot-svn/languages/perl6/config/makefiles/utils.in
 ===================================================================
 --- parrot-svn.orig/languages/perl6/config/makefiles/utils.in
 +++ parrot-svn/languages/perl6/config/makefiles/utils.in
-@@ -1,18 +1,25 @@
+@@ -1,23 +1,33 @@
 -# $Id: utils.in 25400 2008-02-01 07:32:20Z chromatic $
 +# $Id: utils.in 30597 2008-08-27 18:31:51Z moritz $
  
  ## arguments we want to run parrot with
-+TMPL        = perl6doc
- PARROT_ARGS =
+-PARROT_ARGS =
++HLLNAME       = perl6doc
++PARROT_ARGS   =
  
  ## configuration settings
  BUILD_DIR     = @build_dir@
@@ -4615,9 +4999,27 @@ Index: parrot-svn/languages/perl6/config/makefiles/utils.in
 +MKPATH        = @mkpath@
 +POD2MAN       = pod2man
  MAKE          = @make_c@
- PARROT        = ../../../../parrot@exe@
+-PARROT        = ../../../../parrot@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
-@@ -63,6 +70,9 @@ help:
+ BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
+ RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) ../../parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ 
+ ## places to look for things
+ PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+@@ -39,7 +49,7 @@ PERL6DOC_SOURCES = \
+ perl6doc@exe@: perl6doc.pbc
+ 	$(PBC_TO_EXE) perl6doc.pbc
+ 
+-perl6doc.pbc: $(PARROT) $(PERL6DOC_SOURCES)
++perl6doc.pbc:  $(PERL6DOC_SOURCES)
+ 	$(PARROT) $(PARROT_ARGS) -o perl6doc.pbc perl6doc.pir
+ 
+ perl6doc/gen_grammar.pir: $(PERL6GRAMMAR) perl6doc/grammar.pg
+@@ -63,6 +73,9 @@ help:
  	@echo ""
  	@echo "  all:               perl6doc.pbc"
  	@echo "                     This is the default."
@@ -4627,7 +5029,7 @@ Index: parrot-svn/languages/perl6/config/makefiles/utils.in
  	@echo "Testing:"
  	@echo "  test:              Run the test suite."
  	@echo "  testclean:         Clean up test results."
-@@ -76,6 +86,20 @@ help:
+@@ -76,6 +89,20 @@ help:
  	@echo "  help:              Print this help message."
  	@echo ""
  
@@ -4635,20 +5037,20 @@ Index: parrot-svn/languages/perl6/config/makefiles/utils.in
 +	$(PBC_TO_EXE) perl6doc.pbc --install
 +
 +install : installable
-+	$(CP) installable_$(TMPL)@exe@ $(DESTDIR)$(BIN_DIR)/$(TMPL)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/$(HLLNAME)@exe@
 +
-+installable : installable_$(TMPL)@exe@
-+	$(CP) installable_$(TMPL)@exe@ $(BUILD_DIR)
++installable : installable_$(HLLNAME)@exe@
++	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
 +
 +# TODO: rename build_dir. basic run for missing libs
 +test-installable : installable
-+	./installable_$(TMPL)@exe@ -f 'test'
++	./installable_$(HLLNAME)@exe@ -f 'test'
 +
 +
  test: all
  	$(PERL) t/harness t/01-sanity
  
-@@ -97,3 +121,9 @@ realclean: clean
+@@ -97,3 +124,9 @@ realclean: clean
  	$(RM_RF) Makefile
  
  distclean: realclean
@@ -4678,23 +5080,25 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/tcl/config/makefiles/root.in
 +++ parrot-svn/languages/tcl/config/makefiles/root.in
-@@ -1,10 +1,13 @@
+@@ -1,31 +1,44 @@
 +# $Id: root.in 30601 2008-08-27 20:21:39Z moritz $
-+TMPL    = tcl
++HLLNAME    = tcl
  RM_F    = @rm_f@
  PERL    = @perl@
 -PARROT  = ../../parrot@exe@
 +POD2MAN = pod2man
  
  BUILD_DIR   = @build_dir@
-+PARROT      = $(BUILD_DIR)/parrot@exe@
-+PBC_TO_EXE  = $(BUILD_DIR)/pbc_to_exe@exe@
  RECONFIGURE = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe@exe@
  #CONDITIONED_LINE(darwin):
  #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
  #CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-@@ -12,20 +15,28 @@ PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe@
++#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
++#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
++PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe@exe@
+ 
  TCL_LIB   = library
  PMCBUILD  = $(PERL) @build_dir@/tools/build/dynpmc.pl
  OPSBUILD  = $(PERL) @build_dir@/tools/build/dynoplibs.pl
@@ -4724,16 +5128,17 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  TGE_DIR  = ../../compilers/tge
  PERL6GRAMMAR = ../../runtime/parrot/library/PGE/Perl6Grammar.pbc
-@@ -59,12 +70,14 @@ src/grammar/expr/pge2past.pir \
+@@ -59,12 +72,14 @@ src/grammar/expr/pge2past.pir \
  $(TCL_LIB)/parray.tcl \
  $(RUNTIME_PIR)
  
 -all: tcl.pbc
 +build: tcl.pbc
-+
-+all: tcl.pbc Makefile installable
  
- tcl.pbc: $(PARROT) pmcs ops runtime/tcllib.pbc src/tclsh.pir
+-tcl.pbc: $(PARROT) pmcs ops runtime/tcllib.pbc src/tclsh.pir
++all: tcl.pbc Makefile installable
++
++tcl.pbc:  pmcs ops runtime/tcllib.pbc src/tclsh.pir
  	$(PARROT) --output=tcl.pbc src/tclsh.pir
  
 -.SUFFIXES : .pir .pg .tg .tcl
@@ -4741,7 +5146,7 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  .tg.pir :
  	$(PARROT) $(TGE_DIR)/tgc.pir --output=$@ $<
-@@ -86,7 +99,7 @@ pmcs:
+@@ -86,7 +101,7 @@ pmcs:
  	@cd $(PMCDIR) && $(PMCBUILD) generate $(PMCS)
  	@cd $(PMCDIR) && $(PMCBUILD) compile $(PMCS)
  	@cd $(PMCDIR) && $(PMCBUILD) linklibs $(PMCS)
@@ -4750,7 +5155,7 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  # THIS WAS COPIED FROM THE ROOT MAKEFILE
  # Passing an empty argument in @ARGV to cc_flags.pl to indicate where extra -Is
-@@ -101,7 +114,7 @@ ops: src/binary$(O)
+@@ -101,12 +116,12 @@ ops: src/binary$(O)
  	@cd $(OPSDIR) && $(OPSBUILD) generate tcl
  	@cd $(OPSDIR) && $(OPSBUILD) compile  tcl
  	@cd $(OPSDIR) && $(OPSBUILD) linklibs tcl ../binary$(O)
@@ -4759,7 +5164,13 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  runtime/builtins.pir: $(DEPS) tools/gen_builtins.pl
  	$(PERL) tools/gen_builtins.pl > runtime/builtins.pir
-@@ -118,6 +131,25 @@ tclsh@exe@: tcl.pbc $(PBC_TO_EXE)
+ 
+-runtime/tcllib.pbc: $(PARROT) runtime/tcllib.pir runtime/builtins.pir $(CLASSES)
++runtime/tcllib.pbc:  runtime/tcllib.pir runtime/builtins.pir $(CLASSES)
+ 	$(PARROT) --output=runtime/tcllib.pbc runtime/tcllib.pir
+ 
+ # targets for building a standalone tclsh
+@@ -118,6 +133,25 @@ tclsh@exe@: tcl.pbc $(PBC_TO_EXE)
  $(PBC_TO_EXE):
  	$(MAKE) $(BUILD_DIR) ./pbc_to_exe@exe@
  
@@ -4779,13 +5190,13 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
 +	@cd $(PMCDIR) && $(PMCBUILD) copy "--destination=$(DESTDIR)$(LIB_DIR)/parrot/dynext" $(PMCS)
 +	$(COPY) runtime/tcllib.pbc $(DESTDIR)$(LIB_DIR)/parrot/library
 +	$(POD2MAN) README.pod > $(DESTDIR)$(MANDIR)/man1/parrot-tclsh.1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
-+	$(COPY) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
++	$(COPY) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
 +
  test: tcl.pbc
  	prove -r t
  
-@@ -311,7 +343,9 @@ src/grammar/expr/pge2past.pir \
+@@ -311,7 +345,9 @@ src/grammar/expr/pge2past.pir \
  "$(OPSDIR)/*.lib" \
  "$(OPSDIR)/*.pdb" \
  "$(TCL_LIB)/*.pir" \
@@ -4796,7 +5207,7 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  
  # that last line should be cleaned up for x-platform.
  
-@@ -327,3 +361,9 @@ distclean: realclean
+@@ -327,3 +363,9 @@ distclean: realclean
  Makefile: config/makefiles/root.in
  	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=tcl
  
@@ -5008,3 +5419,87 @@ Index: parrot-svn/languages/forth/forth.pir
  
      # initialize the rstack
      .local pmc stack
+Index: parrot-svn/languages/WMLScript/src/script.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/src/script.pir
++++ parrot-svn/languages/WMLScript/src/script.pir
+@@ -103,7 +103,7 @@
+ 
+   $P0 = get_hll_global '@stdlibs'
+   unless null $P0 goto L1
+-  load_bytecode 'languages/WMLScript/src/WMLScript.pbc'
++  load_bytecode 'WMLScript.pbc'
+ L1:
+ PIRCODE
+ 
+Index: parrot-svn/languages/WMLScript/src/wmlsstdlibs.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/src/wmlsstdlibs.pir
++++ parrot-svn/languages/WMLScript/src/wmlsstdlibs.pir
+@@ -28,10 +28,10 @@ See "WMLScript Standard Libraries Specif
+ 
+ .sub '__onload' :load :anon
+ #    print "__onload (wmlsstdlibs.pir)\n"
+-    load_bytecode 'languages/WMLScript/runtime/wmlslang.pbc'
+-    load_bytecode 'languages/WMLScript/runtime/wmlsfloat.pbc'
+-    load_bytecode 'languages/WMLScript/runtime/wmlsstring.pbc'
+-    load_bytecode 'languages/WMLScript/runtime/wmlsconsole.pbc'
++    load_bytecode 'WMLScript/wmlslang.pbc'
++    load_bytecode 'WMLScript/wmlsfloat.pbc'
++    load_bytecode 'WMLScript/wmlsstring.pbc'
++    load_bytecode 'WMLScript/wmlsconsole.pbc'
+ 
+     new $P0, 'Hash'
+     $P1 = getLang()
+Index: parrot-svn/languages/WMLScript/wmls2pbc.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/wmls2pbc.pir
++++ parrot-svn/languages/WMLScript/wmls2pbc.pir
+@@ -28,7 +28,7 @@ Francois Perrad.
+ 
+ .sub 'main' :main
+     .param pmc argv
+-    load_bytecode 'languages/WMLScript/src/WMLScript.pbc'
++    load_bytecode 'WMLScript.pbc'
+     .local int argc
+     .local string progname
+     .local string filename
+Index: parrot-svn/languages/WMLScript/wmls2pir.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/wmls2pir.pir
++++ parrot-svn/languages/WMLScript/wmls2pir.pir
+@@ -28,7 +28,7 @@ Francois Perrad.
+ 
+ .sub 'main' :main
+     .param pmc argv
+-    load_bytecode 'languages/WMLScript/src/WMLScript.pbc'
++    load_bytecode 'WMLScript.pbc'
+     .local int argc
+     .local string progname
+     .local string filename
+Index: parrot-svn/languages/WMLScript/wmlsd.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/wmlsd.pir
++++ parrot-svn/languages/WMLScript/wmlsd.pir
+@@ -28,7 +28,7 @@ Francois Perrad.
+ 
+ .sub 'main' :main
+     .param pmc argv
+-    load_bytecode 'languages/WMLScript/src/WMLScript.pbc'
++    load_bytecode 'WMLScript.pbc'
+     .local int argc
+     .local string progname
+     .local string filename
+Index: parrot-svn/languages/WMLScript/wmlsi.pir
+===================================================================
+--- parrot-svn.orig/languages/WMLScript/wmlsi.pir
++++ parrot-svn/languages/WMLScript/wmlsi.pir
+@@ -29,7 +29,7 @@ Francois Perrad.
+ 
+ .sub 'main' :main
+     .param pmc argv
+-    load_bytecode 'languages/WMLScript/src/WMLScript.pbc'
++    load_bytecode 'WMLScript.pbc'
+     .local int argc
+     .local string progname
+     .local string filename
