@@ -12,3 +12,4 @@ pdd30_install_pod.patch
 56996-fhs-runtime.patch
 58176-dotnet-exceptions.patch
 57548-CONDITIONED_LINE_enh.patch
+58590-dotnet-make.patch

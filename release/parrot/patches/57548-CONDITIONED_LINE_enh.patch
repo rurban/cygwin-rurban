@@ -184,7 +184,7 @@ Index: parrot-svn/config/gen/makefiles/json.in
 -#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
 -#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH=@build_dir@/blib/lib
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  TOOL_DIR = ../..
  PGE_DIR  = ../../compilers/pge
@@ -199,7 +199,7 @@ Index: parrot-svn/config/gen/makefiles/nqp.in
 -#CONDITIONED_LINE(cygchkdll): SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
 -#INVERSE_CONDITIONED_LINE(cygchkdll): SHRPENV  = env LD_RUN_PATH=@build_dir@/blib/lib
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  PARROT_LIBRARY = @build_dir@/runtime/parrot/library
  PGE_LIBRARY  = @build_dir@/runtime/parrot/library/PGE
@@ -240,7 +240,7 @@ Index: parrot-svn/config/gen/makefiles/pct.in
 -#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
 -#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH=@build_dir@/blib/lib
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  # Where to put things
  PARROT_LIBRARY    = ../../runtime/parrot/library
@@ -255,7 +255,7 @@ Index: parrot-svn/config/gen/makefiles/pge.in
 -#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
 -#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH=@build_dir@/blib/lib
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  # Where to put things
  PARROT_LIBRARY    = ../../runtime/parrot/library
@@ -274,7 +274,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  ###############################################################################
  #
@@ -632,7 +632,7 @@ Index: parrot-svn/config/gen/makefiles/tge.in
 -#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
 -#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH=@build_dir@/blib/lib
 +#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
++#ELSIF(!win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
  
  # Where to put things
  PARROT_LIBRARY    = ../../runtime/parrot/library
@@ -640,16 +640,7 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/APL/config/makefiles/root.in
 +++ parrot-svn/languages/APL/config/makefiles/root.in
-@@ -20,16 +20,16 @@ RM_F          = @rm_f@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -662,86 +653,30 @@ Index: parrot-svn/languages/APL/config/makefiles/root.in
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -55,7 +55,7 @@ PMC_SOURCES = $(PMC_DIR)/aplvector.pmc
- DOCS = MAINTAINER README STATUS
- 
- # the default target
--APL.pbc:  $(SOURCES) $(APL_GROUP)
-+APL.pbc: $(SOURCES) $(APL_GROUP)
- 	$(PARROT) $(PARROT_ARGS) -o APL.pbc APL.pir
- 
- $(HLLNAME)@exe@: $(HLLNAME).pbc
-@@ -74,7 +74,7 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
- src/gen_builtins.pir: tools/gen_operator_defs.pl
- 	$(PERL) tools/gen_operator_defs.pl >src/gen_builtins.pir
- 
--$(APL_GROUP):  $(PMC_SOURCES)
-+$(APL_GROUP): $(PMC_SOURCES)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
 Index: parrot-svn/languages/PIR/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/PIR/config/makefiles/root.in
 +++ parrot-svn/languages/PIR/config/makefiles/root.in
-@@ -15,16 +15,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -19,9 +19,9 @@ PARROT        = ../../parrot@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -57,7 +57,7 @@ PASMGRAMMAR = src/pasm/gen_pasm.pbc \
-   src/pasm/gen_pasm_core.pbc
- 
- # the default target
--pirc.pbc:  $(SOURCES) $(PASMGRAMMAR)
-+pirc.pbc: $(SOURCES) $(PASMGRAMMAR)
- 	$(PARROT) $(PARROT_ARGS) -o pirc.pbc pirc.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/pir.pg
 Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/WMLScript/config/makefiles/root.in
 +++ parrot-svn/languages/WMLScript/config/makefiles/root.in
-@@ -4,8 +4,6 @@
- HLLNAME = WMLScript
- RM_F    = @rm_f@
- PERL    = @perl@
--CP      = @cp@
--MKPATH  = @mkpath@
- 
- PMCBUILD = $(PERL) @build_dir@/tools/build/dynpmc.pl
- OPSBUILD = $(PERL) @build_dir@/tools/build/dynoplibs.pl
-@@ -20,16 +18,14 @@ LIB_DIR       = @lib_dir@
- DOC_DIR       = @doc_dir@
- MANDIR	      = @mandir@
+@@ -21,9 +21,9 @@ MANDIR	      = @mandir@
  PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
--PARROT_LIBPATH = @build_dir@/runtime/parrot/library
--PARROT_RUNTIME = @build_dir@/runtime/parrot/library/WMLScript
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
@@ -752,131 +687,17 @@ Index: parrot-svn/languages/WMLScript/config/makefiles/root.in
  
  SRM=Stack
  
-@@ -54,10 +50,10 @@ OPS_FILES = $(OPSDIR)/wmls.ops
- OPSLIB    = wmls
- 
- PBCS = \
-- $(PARROT_RUNTIME)/wmlslang.pbc \
-- $(PARROT_RUNTIME)/wmlsfloat.pbc \
-- $(PARROT_RUNTIME)/wmlsstring.pbc \
-- $(PARROT_RUNTIME)/wmlsconsole.pbc
-+ $(LIBPATH)/wmlslang.pbc \
-+ $(LIBPATH)/wmlsfloat.pbc \
-+ $(LIBPATH)/wmlsstring.pbc \
-+ $(LIBPATH)/wmlsconsole.pbc
- 
- GEN_PIR = \
-  src/opcode.pir \
-@@ -67,10 +63,9 @@ DOCS = \
-  MAINTAINER doc/running.pod doc/status.pod
- 
- all: \
-- Makefile \
-  pmc/wmls_group$(LOAD_EXT) \
-  ops/wmls_ops$(LOAD_EXT) \
-- $(PARROT_LIBPATH)/WMLScript.pbc \
-+ src/WMLScript.pbc \
-  $(PBCS)
- 
- pmc/wmls_group$(LOAD_EXT) : $(PMC_FILES)
-@@ -85,9 +80,9 @@ ops/wmls_ops$(LOAD_EXT) : $(OPS_FILES)
- 	@cd $(OPSDIR) && $(OPSBUILD) linklibs $(OPSLIB)
- 	@cd $(OPSDIR) && $(OPSBUILD) copy "--destination=$(PARROT_DYNEXT)" $(OPSLIB)
- 
--$(PARROT_LIBPATH)/WMLScript.pbc: src/WMLScript.pir \
-+src/WMLScript.pbc: src/WMLScript.pir \
-  src/script.pir src/wmlsstdlibs.pir $(GEN_PIR)
--	$(PARROT) -o $@ src/WMLScript.pir
-+	$(PARROT) -o src/WMLScript.pbc src/WMLScript.pir
- 
- src/opcode.pir: src/translation.rules build/translator.pl \
-  build/SRM/Stack.pm build/SRM/Register.pm
-@@ -97,18 +92,17 @@ src/opcode.pir: src/translation.rules bu
- src/stdlibs.pir: src/wmlslibs.cfg build/stdlibs.pl
- 	$(PERL) build/stdlibs.pl --output src/stdlibs.pir src/wmlslibs.cfg
- 
--$(PARROT_RUNTIME)/wmlslang.pbc: $(LIBPATH)/wmlslang.pir
--	-$(MKPATH) $(PARROT_RUNTIME)
--	$(PARROT) --output=$@ $(LIBPATH)/wmlslang.pir
-+$(LIBPATH)/wmlslang.pbc: $(LIBPATH)/wmlslang.pir
-+	$(PARROT) --output=$(LIBPATH)/wmlslang.pbc $(LIBPATH)/wmlslang.pir
- 
--$(PARROT_RUNTIME)/wmlsfloat.pbc: $(LIBPATH)/wmlsfloat.pir
--	$(PARROT) --output=$@ $(LIBPATH)/wmlsfloat.pir
-+$(LIBPATH)/wmlsfloat.pbc: $(LIBPATH)/wmlsfloat.pir
-+	$(PARROT) --output=$(LIBPATH)/wmlsfloat.pbc $(LIBPATH)/wmlsfloat.pir
- 
--$(PARROT_RUNTIME)/wmlsstring.pbc: $(LIBPATH)/wmlsstring.pir
--	$(PARROT) --output=$@ $(LIBPATH)/wmlsstring.pir
-+$(LIBPATH)/wmlsstring.pbc: $(LIBPATH)/wmlsstring.pir
-+	$(PARROT) --output=$(LIBPATH)/wmlsstring.pbc $(LIBPATH)/wmlsstring.pir
- 
--$(PARROT_RUNTIME)/wmlsconsole.pbc: $(LIBPATH)/wmlsconsole.pir
--	$(PARROT) --output=$@ $(LIBPATH)/wmlsconsole.pir
-+$(LIBPATH)/wmlsconsole.pbc: $(LIBPATH)/wmlsconsole.pir
-+	$(PARROT) --output=$(LIBPATH)/wmlsconsole.pbc $(LIBPATH)/wmlsconsole.pir
- 
- wmls2pir@exe@: wmls2pir.pbc
- 	$(PBC_TO_EXE) wmls2pir.pbc
-@@ -122,16 +116,16 @@ wmlsd@exe@: wmlsd.pbc
- wmlsi@exe@: wmlsi.pbc
- 	$(PBC_TO_EXE) wmlsi.pbc
- 
--installable_wmls2pir@exe@: $(RUNTIMES) wmls2pir.pbc
-+installable_wmls2pir@exe@: wmls2pir.pbc
- 	$(PBC_TO_EXE) wmls2pir.pbc --install
- 
--installable_wmls2pbc@exe@: $(RUNTIMES) wmls2pbc.pbc
-+installable_wmls2pbc@exe@: wmls2pbc.pbc
- 	$(PBC_TO_EXE) wmls2pbc.pbc --install
- 
--installable_wmlsd@exe@: $(RUNTIMES) wmlsd.pbc
-+installable_wmlsd@exe@: wmlsd.pbc
- 	$(PBC_TO_EXE) wmlsd.pbc --install
- 
--installable_wmlsi@exe@: $(RUNTIMES) wmlsi.pbc
-+installable_wmlsi@exe@: wmlsi.pbc
- 	$(PBC_TO_EXE) wmlsi.pbc --install
- 
- install : installable
-@@ -145,11 +139,7 @@ install : installable
- 	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
- 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
- 
--# regenerate the Makefile
--Makefile: config/makefiles/root.in
--	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
--
--installable: $(RUNTIMES) installable_wmls2pir@exe@ installable_wmls2pbc@exe@ \
-+installable: installable_wmls2pir@exe@ installable_wmls2pbc@exe@ \
-              installable_wmlsd@exe@ installable_wmlsi@exe@
- 
- help:
 Index: parrot-svn/languages/Zcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/Zcode/config/makefiles/root.in
 +++ parrot-svn/languages/Zcode/config/makefiles/root.in
-@@ -4,16 +4,17 @@
- HLLNAME	      = Zcode
- 
- # Setup of some commands
--BUILD_DIR  = @build_dir@
--PERL       = @perl@
--RM_F       = @rm_f@
--RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+@@ -9,9 +9,9 @@ PARROT     = ../../parrot@exe@
+ PERL       = @perl@
+ RM_F       = @rm_f@
+ RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+BUILD_DIR     = @build_dir@
-+PERL          = @perl@
-+RM_F          = @rm_f@
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -887,16 +708,7 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/abc/config/makefiles/root.in
 +++ parrot-svn/languages/abc/config/makefiles/root.in
-@@ -20,16 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -909,43 +721,28 @@ Index: parrot-svn/languages/abc/config/makefiles/root.in
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -51,7 +51,7 @@ BUILTINS_PIR = \
- DOCS = MAINTAINER README TODO
- 
- # the default target
--abc.pbc:  $(SOURCES)
-+abc.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o abc.pbc abc.pir
- 
- $(HLLNAME)@exe@: $(HLLNAME).pbc
 Index: parrot-svn/languages/befunge/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/befunge/config/makefiles/root.in
 +++ parrot-svn/languages/befunge/config/makefiles/root.in
-@@ -1,7 +1,7 @@
- # $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
+@@ -11,19 +11,21 @@ DOC_DIR       = @doc_dir@
+ MANDIR	      = @mandir@
  
- # Makefile for languages/befunge
--HLLNAME       = befunge
-+HLLNAME = befunge
- 
- ## configuration settings
- BUILD_DIR     = @build_dir@
-@@ -16,18 +16,18 @@ RM_F          = @rm_f@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN	      = pod2man
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ # Setup of some commands
+-PERL       = @perl@
+-RM_F       = @rm_f@
++PERL          = @perl@
++RM_F          = @rm_f@
++CP            = @cp@
++MKPATH        = @mkpath@
++POD2MAN	      = pod2man
+ PARROT        = ../../parrot
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+-POD2MAN	      = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -957,7 +754,7 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
  
  help :
  	@echo ""
-@@ -50,16 +50,13 @@ help :
+@@ -46,16 +48,13 @@ help :
  	@echo "  help:              Print this help message"
  
  
@@ -971,19 +768,19 @@ Index: parrot-svn/languages/befunge/config/makefiles/root.in
  
 -# regenerate the Makefile
 -Makefile: config/makefiles/root.in
--	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
-+$(HLLNAME)@exe@: $(HLLNAME).pbc
-+	$(PBC_TO_EXE) $(HLLNAME).pbc
+-	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
++$(TMPL)@exe@: $(TMPL).pbc
++	$(PBC_TO_EXE) $(TMPL).pbc
  
- installable_$(HLLNAME)@exe@: $(HLLNAME).pbc
- 	$(PBC_TO_EXE) $(HLLNAME).pbc --install
-@@ -80,6 +77,10 @@ install : installable
- 	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
- 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
+ installable_$(TMPL)@exe@: $(TMPL).pbc
+ 	$(PBC_TO_EXE) $(TMPL).pbc --install
+@@ -76,6 +75,10 @@ install : installable
+ 	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
+ 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(TMPL)
  
 +# regenerate the Makefile
 +Makefile: config/makefiles/root.in
-+	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(HLLNAME)
++	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=$(TMPL)
 +
  clean:
  	$(RM_F) core \
@@ -992,26 +789,13 @@ Index: parrot-svn/languages/bf/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/bf/config/makefiles/root.in
 +++ parrot-svn/languages/bf/config/makefiles/root.in
-@@ -1,5 +1,5 @@
- # $Id: root.in 30600 2008-08-27 19:51:44Z moritz $
--HLLNAME       = bf
-+HLLNAME = bf
- BIN_DIR       = @bin_dir@
- LIB_DIR       = @lib_dir@
- DOC_DIR       = @doc_dir@
-@@ -10,13 +10,13 @@ PERL          = @perl@
- CP            = @cp@
- MKPATH        = @mkpath@
+@@ -11,9 +11,9 @@ MKPATH        = @mkpath@
  POD2MAN       = pod2man
+ PARROT        = ../../parrot@exe@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1022,60 +806,24 @@ Index: parrot-svn/languages/c99/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/c99/config/makefiles/root.in
 +++ parrot-svn/languages/c99/config/makefiles/root.in
-@@ -20,17 +20,17 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- CAT           = $(PERL) -MExtUtils::Command -e cat
+@@ -26,9 +26,9 @@ CAT           = $(PERL) -MExtUtils::Comm
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
  POD2MAN       = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -55,7 +55,7 @@ BUILTINS_PIR = \
-   src/builtins/say.pir \
- 
- # the default target
--c99.pbc:  $(SOURCES)
-+c99.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o c99.pbc c99.pir
- 	cd src/cpp; $(MAKE)
- 
 Index: parrot-svn/languages/cardinal/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/cardinal/config/makefiles/root.in
 +++ parrot-svn/languages/cardinal/config/makefiles/root.in
-@@ -1,4 +1,4 @@
--## $Id: root.in 30649 2008-08-30 04:38:30Z tene $
-+## $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
- 
- ## arguments we want to run parrot with
- PARROT_ARGS =
-@@ -20,16 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -1088,87 +836,28 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -63,7 +63,7 @@ BUILTINS_PIR = \
- DOCS          = README
- 
- # the default target
--cardinal.pbc:  $(SOURCES)
-+cardinal.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o cardinal.pbc cardinal.pir
- 
- cardinal@exe@: cardinal.pbc
-@@ -118,12 +118,6 @@ help:
- test: all
- 	$(PERL) t/harness
- 
--arraytest: all
--	$(PERL) t/harness --tests-from-dir=array
--
--hashtest: all
--	$(PERL) t/harness --tests-from-dir=hash
--
- # this target has nothing to do
- testclean:
- 
 Index: parrot-svn/languages/chitchat/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/chitchat/config/makefiles/root.in
 +++ parrot-svn/languages/chitchat/config/makefiles/root.in
-@@ -4,7 +4,7 @@
- PARROT_ARGS =
- 
- ## configuration settings
--HLLNAME          = chitchat
-+HLLNAME       = chitchat
- BUILD_DIR     = @build_dir@
- LOAD_EXT      = @load_ext@
- O             = @o@
-@@ -20,16 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -51,7 +51,7 @@ BUILTINS_PIR = \
-   src/builtins/say.pir \
- 
- # the default target
--chitchat.pbc:  $(SOURCES)
-+chitchat.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o chitchat.pbc chitchat.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
 Index: parrot-svn/languages/cola/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/cola/config/makefiles/root.in
 +++ parrot-svn/languages/cola/config/makefiles/root.in
-@@ -16,17 +16,15 @@ MANDIR	      = @mandir@
- PERL          = @perl@
- RM_F          = @rm_f@
- CHMOD         = @chmod@
--CP            = @cp@
--MKPATH        = @mkpath@
- CC            = @cc@
- DEBUG         = @cc_debug@
- YACC          = @yacc@
+@@ -22,9 +22,9 @@ YACC          = @yacc@
  LEX           = @lex@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  POD2MAN	      = pod2man
@@ -1185,109 +874,47 @@ Index: parrot-svn/languages/eclectus/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/eclectus/config/makefiles/root.in
 +++ parrot-svn/languages/eclectus/config/makefiles/root.in
-@@ -4,7 +4,7 @@
- # Makefile for languages/eclectus
- 
- # configuration settings
--HLLNAME          = eclectus
-+HLLNAME       = eclectus
- BUILD_DIR     = @build_dir@
- LOAD_EXT      = @load_ext@
- O             = @o@
-@@ -14,6 +14,10 @@ DOC_DIR       = @doc_dir@
- MANDIR	      = @mandir@
- 
- # Set up commands
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- PERL          = @perl@
- RM_F          = @rm_f@
- RENAME        = @mv@
-@@ -22,13 +26,9 @@ MKPATH        = @mkpath@
+@@ -24,9 +24,9 @@ MKPATH        = @mkpath@
  POD2MAN       = pod2man
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  BUILD_DYNPMC  = $(PERL) @build_dir@/tools/build/dynpmc.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  # Set up directories
  PARROT_DYNEXT   = @build_dir@/runtime/parrot/dynext
-@@ -86,7 +86,7 @@ Makefile: config/makefiles/root.in
- # Compilation:
- build: $(ECLECTUS_GROUP) driver_nqp.pbc
- 
--$(ECLECTUS_GROUP):  $(PMC_SOURCES)
-+$(ECLECTUS_GROUP): $(PMC_SOURCES)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
 Index: parrot-svn/languages/ecmascript/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/ecmascript/config/makefiles/root.in
 +++ parrot-svn/languages/ecmascript/config/makefiles/root.in
-@@ -21,16 +21,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -26,9 +26,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -96,7 +96,7 @@ js@exe@: js.pbc
- 	$(PBC_TO_EXE) js.pbc
- 
- # the default target
--js.pbc:  $(SOURCES)
-+js.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o js.pbc js.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg 
 Index: parrot-svn/languages/forth/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/forth/config/makefiles/root.in
 +++ parrot-svn/languages/forth/config/makefiles/root.in
-@@ -6,15 +6,15 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
+@@ -8,9 +8,9 @@ PBC_MERGE     = ../../pbc_merge@exe@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  POD2MAN	      = pod2man
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- PBC_MERGE     = $(SHRPENV) ../../pbc_merge@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1298,186 +925,81 @@ Index: parrot-svn/languages/hq9plus/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/hq9plus/config/makefiles/root.in
 +++ parrot-svn/languages/hq9plus/config/makefiles/root.in
-@@ -4,7 +4,7 @@
- PARROT_ARGS =
- 
- ## configuration settings
--HLLNAME          = hq9plus
-+HLLNAME       = hq9plus
- BUILD_DIR     = @build_dir@
- BIN_DIR       = @bin_dir@
- LIB_DIR       = @lib_dir@
-@@ -17,16 +17,15 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
--CAT           = $(PERL) -MExtUtils::Command -e cat
--RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+@@ -21,9 +21,9 @@ PARROT        = ../../parrot@exe@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ CAT           = $(PERL) -MExtUtils::Command -e cat
+ RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
--
-+CAT           = $(PERL) -MExtUtils::Command -e cat
-+RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
-@@ -50,7 +49,7 @@ BUILTINS_PIR = \
- DOCS = MAINTAINER README
- 
- # the default target
--hq9plus.pbc:  $(SOURCES)
-+hq9plus.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o hq9plus.pbc hq9plus.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
 Index: parrot-svn/languages/jako/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/jako/config/makefiles/root.in
 +++ parrot-svn/languages/jako/config/makefiles/root.in
-@@ -15,12 +15,14 @@ MANDIR	      = @mandir@
- 
- PERL          = @perl@
- RM_F          = @rm_f@
-+CP            = @cp@
-+MKPATH        = @mkpath@
-+POD2MAN       = pod2man
- JAKOC         = $(PERL) -I lib jakoc
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- INTERP        = $(SHRPENV) ../../@test_prog@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
--BUILD_DIR     = @build_dir@
+@@ -20,9 +20,9 @@ INTERP        = ../../@test_prog@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ BUILD_DIR     = @build_dir@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
- #CONDITIONED_LINE(darwin):
- #CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+-#CONDITIONED_LINE(darwin):
+-#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
+-#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
++#IF(darwin):
++#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
++#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
+ 
+ DOCS = README MAINTAINER
+ 
 Index: parrot-svn/languages/json/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/json/config/makefiles/root.in
 +++ parrot-svn/languages/json/config/makefiles/root.in
-@@ -20,16 +20,17 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- CAT           = $(PERL) -MExtUtils::Command -e cat
+@@ -26,9 +26,9 @@ CAT           = $(PERL) -MExtUtils::Comm
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+ POD2MAN	      = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+POD2MAN	      = pod2man
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -53,7 +54,7 @@ BUILTINS_PIR = \
-   src/builtins/say.pir \
- 
- # the default target
--json.pbc:  $(SOURCES)
-+json.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o json.pbc json.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
 Index: parrot-svn/languages/lazy-k/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lazy-k/config/makefiles/root.in
 +++ parrot-svn/languages/lazy-k/config/makefiles/root.in
-@@ -8,15 +8,15 @@ PERL          = @perl@
- RM_F          = @rm_f@
- CP            = @cp@
- MKPATH        = @mkpath@
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
--POD2MAN	      = pod2man
+@@ -10,9 +10,9 @@ RM_F          = @rm_f@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ POD2MAN	      = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  # set up location
  BUILD_DIR     = @build_dir@
-@@ -27,8 +27,8 @@ MANDIR	      = @mandir@
- 
- all: lazy-k.pbc
- 
--lazy-k.pbc :  $(SOURCES)
--	$(PARROT) $(PARROT_ARGS) -o lazy-k.pbc lazy-k.pir
-+lazy-k.pbc : $(SOURCES)
-+	$(PARROT) $(PARROT_ARGS) -o lazy-k.pbc lazy.pir
- 
- help :
- 	@echo ""
-@@ -66,7 +66,7 @@ test-installable : installable
- 
- install : installable
- 	$(CP) installable_$(HLLNAME)@exe@ $(DESTDIR)$(BIN_DIR)/parrot-$(HLLNAME)@exe@
--	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
-+	$(POD2MAN) lazy.pir > $(DESTDIR)$(MANDIR)/man1/parrot-$(HLLNAME).1
- 	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
- 	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/$(HLLNAME)
- 
-@@ -75,7 +75,6 @@ $(HLLNAME)@exe@: $(HLLNAME).pbc
- 
- installable : installable_$(HLLNAME)@exe@
- 	$(CP) installable_$(HLLNAME)@exe@ $(BUILD_DIR)
--	cd $(PMC_DIR) && $(BUILD_DYNPMC) copy --destination=$(PARROT_DYNEXT) $(PMCS)
- 
- installable_$(HLLNAME)@exe@ : $(HLLNAME).pbc
- 	$(PBC_TO_EXE) $(HLLNAME).pbc --install
 Index: parrot-svn/languages/lisp/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lisp/config/makefiles/root.in
 +++ parrot-svn/languages/lisp/config/makefiles/root.in
-@@ -20,17 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- CAT           = $(PERL) -MExtUtils::Command -e cat
+@@ -26,9 +26,9 @@ CAT           = $(PERL) -MExtUtils::Comm
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
--POD2MAN	      = pod2man
+ POD2MAN	      = pod2man
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1488,67 +1010,30 @@ Index: parrot-svn/languages/lolcode/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lolcode/config/makefiles/root.in
 +++ parrot-svn/languages/lolcode/config/makefiles/root.in
-@@ -20,16 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -59,7 +59,7 @@ lolcode@exe@: lolcode.pbc
- 	$(PBC_TO_EXE) lolcode.pbc
- 
- # the default target
--lolcode.pbc:  $(SOURCES)
-+lolcode.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o lolcode.pbc lolcode.pir
- 
- src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
 Index: parrot-svn/languages/lua/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/lua/config/makefiles/root.in
 +++ parrot-svn/languages/lua/config/makefiles/root.in
-@@ -10,18 +10,21 @@ LOAD_EXT    = @load_ext@
- MAKE        = @make_c@
- RM_F        = @rm_f@
- PERL        = @perl@
-+CP          = @cp@
-+MKPATH      = @mkpath@
-+POD2MAN     = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT      = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE  = $(SHRPENV) ../../pbc_to_exe@exe@
-+PBC_MERGE   = $(SHRPENV) ../../pbc_merge@exe@
- PGE         = $(PARROT) ../../runtime/parrot/library/PGE/Perl6Grammar.pir
+@@ -17,9 +17,9 @@ PGE         = $(PARROT) ../../runtime/pa
  TGE         = $(PARROT) ../../compilers/tge/tgc.pir
  RECONFIGURE = $(PERL) @build_dir@/tools/dev/reconfigure.pl
- PMCBUILD    = $(PERL) @build_dir@/tools/build/dynpmc.pl
+ PMCBUILD = $(PERL) @build_dir@/tools/build/dynpmc.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT      = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE  = $(SHRPENV) ../../pbc_to_exe@exe@
--PBC_MERGE   = $(SHRPENV) ../../pbc_merge@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1559,21 +1044,13 @@ Index: parrot-svn/languages/m4/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/m4/config/makefiles/root.in
 +++ parrot-svn/languages/m4/config/makefiles/root.in
-@@ -15,14 +15,14 @@ BIN_DIR       = @bin_dir@
- LIB_DIR       = @lib_dir@
- DOC_DIR       = @doc_dir@
- MANDIR	      = @mandir@
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+@@ -18,9 +18,9 @@ MANDIR	      = @mandir@
+ PARROT        = ../../parrot@exe@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1584,21 +1061,13 @@ Index: parrot-svn/languages/ook/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/ook/config/makefiles/root.in
 +++ parrot-svn/languages/ook/config/makefiles/root.in
-@@ -9,14 +9,14 @@ RM_F          = @rm_f@
- CP            = @cp@
+@@ -12,9 +12,9 @@ CP            = @cp@
  MKPATH        = @mkpath@
  POD2MAN       = pod2man
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1609,21 +1078,13 @@ Index: parrot-svn/languages/parrot_compiler/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/parrot_compiler/config/makefiles/root.in
 +++ parrot-svn/languages/parrot_compiler/config/makefiles/root.in
-@@ -6,14 +6,14 @@
- # Set up commands
- PERL          = @perl@
+@@ -8,9 +8,9 @@ PERL          = @perl@
  RM_F          = @rm_f@
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ PARROT        = ../../@test_prog@@exe@
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../@test_prog@@exe@
- PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1634,73 +1095,30 @@ Index: parrot-svn/languages/perl6/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/perl6/config/makefiles/root.in
 +++ parrot-svn/languages/perl6/config/makefiles/root.in
-@@ -29,18 +29,17 @@ EXE           = @exe@
- MAKE          = @make_c@
- PERL          = @perl@
- RM_F          = @rm_f@
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- CAT           = $(PERL) -MExtUtils::Command -e cat
+@@ -35,9 +35,9 @@ CAT           = $(PERL) -MExtUtils::Comm
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  BUILD_DYNOPS  = $(PERL) $(BUILD_DIR)/tools/build/dynoplibs.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
--
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  DOCS = README MAINTAINER ROADMAP docs/compiler_overview.pod docs/glossary.pod docs/STATUS
  
  build: perl6.pbc Test.pir
-@@ -125,7 +124,7 @@ perl6$(EXE): perl6.pbc
- 	$(PBC_TO_EXE) perl6.pbc
- 
- # the default target
--perl6.pbc:  $(SOURCES)
-+perl6.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o perl6.pbc perl6.pir
- 
- installable_perl6$(EXE): perl6.pbc
-@@ -149,7 +148,7 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
- src/gen_builtins.pir: $(BUILTINS_PIR)
- 	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
- 
--$(PERL6_GROUP):  $(PMC_SOURCES)
-+$(PERL6_GROUP): $(PMC_SOURCES)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
 Index: parrot-svn/languages/pheme/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/pheme/config/makefiles/root.in
 +++ parrot-svn/languages/pheme/config/makefiles/root.in
-@@ -15,17 +15,17 @@ CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN	      = pod2man
- EXE           = @exe@
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- TGE_DIR       = ../../compilers/tge
+@@ -21,9 +21,9 @@ TGE_DIR       = ../../compilers/tge
  PGE_LIBRARY   = $(BUILD_DIR)/runtime/parrot/library/PGE
  PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1711,171 +1129,64 @@ Index: parrot-svn/languages/punie/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/punie/config/makefiles/root.in
 +++ parrot-svn/languages/punie/config/makefiles/root.in
-@@ -1,13 +1,17 @@
- # $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
- 
- # Setup some commands
--HLLNAME          = punie
-+HLLNAME       = punie
- LN_S          = @lns@
- PERL          = @perl@
- RM_F          = @rm_f@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- BUILD_DIR     = @build_dir@
- BIN_DIR       = @bin_dir@
- LIB_DIR       = @lib_dir@
-@@ -16,13 +20,9 @@ MANDIR	      = @mandir@
+@@ -18,9 +18,9 @@ MANDIR	      = @mandir@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
  PGE_DIR       = ../../compilers/pge
  NQP_DIR       = ../../compilers/nqp
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  PARROT_LIBRARY = ../../runtime/parrot/library
  PGE_LIBRARY   = ../../runtime/parrot/library/PGE
-@@ -40,7 +40,7 @@ SOURCES = punie.pir \
-   src/builtins/builtins.pir \
- 
- # the default target
--punie.pbc:  $(NQP_DIR)/nqp.pbc $(PGE_LIBRARY)/Perl6Grammar.pir $(SOURCES)
-+punie.pbc: $(NQP_DIR)/nqp.pbc $(PGE_LIBRARY)/Perl6Grammar.pir $(SOURCES)
- 	$(PARROT) $(PGE_LIBRARY)/Perl6Grammar.pir --output=src/gen_punie.pir src/parser/grammar.pg
- 	$(PARROT) $(NQP_DIR)/nqp.pbc --target=pir --output=src/gen_punie-actions.pir src/parser/actions.pm
- 	$(PARROT) -o punie.pbc punie.pir
 Index: parrot-svn/languages/pynie/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/pynie/config/makefiles/root.in
 +++ parrot-svn/languages/pynie/config/makefiles/root.in
-@@ -4,7 +4,7 @@
- PARROT_ARGS =
- 
- ## configuration settings
--HLLNAME          = pynie
-+HLLNAME       = pynie
- BUILD_DIR     = @build_dir@
- LOAD_EXT      = @load_ext@
- O             = @o@
-@@ -20,16 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -52,7 +52,7 @@ SOURCES = pynie.pir \
-   src/builtins/oper.pir
- 
- # the default target
--pynie.pbc:  $(PERL6GRAMMAR) $(NQP) $(PCT) $(SOURCES)
-+pynie.pbc: $(PERL6GRAMMAR) $(NQP) $(PCT) $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
- 	    --output=src/gen_grammar.pir src/parser/Grammar.pg
- 	$(PARROT) $(PARROT_ARGS) $(NQP) --target=pir \
 Index: parrot-svn/languages/regex/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/regex/config/makefiles/root.in
 +++ parrot-svn/languages/regex/config/makefiles/root.in
-@@ -2,26 +2,28 @@
- # $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
- 
- # Makefile for languages/regex
--HLLNAME       = regex
- 
- # Set up commands
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- PERL          = @perl@
- RM_F          = @rm_f@
- YAPP          = yapp
-+CP            = @cp@
-+MKPATH        = @mkpath@
-+POD2MAN       = pod2man
+@@ -12,9 +12,9 @@ PMC_DIR       = pmc
  BUILD_DYNPMC  = $(PERL) @build_dir@/tools/build/dynpmc.pl
-+PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
+ PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  # Set up directories
--BUILD_DIR     = @build_dir@
- PMC_DIR       = pmc
--PARROT_DYNEXT = @build_dir@/runtime/parrot/dynext
-+BUILD_DIR     = @build_dir@
- BIN_DIR       = @bin_dir@
- LIB_DIR       = @lib_dir@
- DOC_DIR       = @doc_dir@
-@@ -47,7 +49,7 @@ lib/Regex/Grammar.pm : lib/Regex/Grammar
- regex-compiler.pbc : regex-compiler.pir
- 	$(PARROT) -o regex-compiler.pbc regex-compiler.pir
- 
--$(PMC_DIR)/match_group$(LOAD_EXT):  $(PMC_SOURCES)
-+$(PMC_DIR)/match_group$(LOAD_EXT): $(PMC_SOURCES)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) generate $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) compile $(PMCS)
- 	cd $(PMC_DIR) && $(BUILD_DYNPMC) linklibs $(PMCS)
+ LOAD_EXT      = @load_ext@
 Index: parrot-svn/languages/scheme/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/scheme/config/makefiles/root.in
 +++ parrot-svn/languages/scheme/config/makefiles/root.in
-@@ -2,19 +2,15 @@
- # $Id: root.in 30597 2008-08-27 18:31:51Z moritz $
- 
- # Makefile for languages/scheme
--HLLNAME          = scheme
-+HLLNAME       = scheme
- 
- # Set up commands
+@@ -8,9 +8,9 @@ TMPL          = scheme
  PERL          = @perl@
  RM_F          = @rm_f@
  RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -1886,23 +1197,7 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/squaak/config/makefiles/root.in
 +++ parrot-svn/languages/squaak/config/makefiles/root.in
-@@ -4,7 +4,7 @@
- PARROT_ARGS =
- 
- ## configuration settings
--HLLNAME          = squaak
-+HLLNAME       = squaak
- BUILD_DIR     = @build_dir@
- LOAD_EXT      = @load_ext@
- O             = @o@
-@@ -20,12 +20,16 @@ RM_RF         = @rm_rf@
- CP            = @cp@
- MKPATH        = @mkpath@
- POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -25,9 +25,9 @@ PBC_TO_EXE    = ../../pbc_to_exe@exe@
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
@@ -1915,93 +1210,24 @@ Index: parrot-svn/languages/squaak/config/makefiles/root.in
  
  ## places to look for things
  PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
-@@ -33,10 +37,6 @@ PGE_LIBRARY   = $(BUILD_DIR)/runtime/par
- PERL6GRAMMAR  = $(PGE_LIBRARY)/Perl6Grammar.pbc
- NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
- PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) ../../parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
- 
- build: squaak.pbc
- 
-@@ -62,7 +62,7 @@ DOCS = MAINTAINER README \
-   pod/tutorial_episode_9.pod
- 
- # the default target
--squaak.pbc:  $(SOURCES)
-+squaak.pbc: $(SOURCES)
- 	$(PARROT) $(PARROT_ARGS) -o squaak.pbc squaak.pir
- 
- squaak@exe@: $(HLLNAME).pbc
 Index: parrot-svn/languages/tcl/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/tcl/config/makefiles/root.in
 +++ parrot-svn/languages/tcl/config/makefiles/root.in
-@@ -1,18 +1,20 @@
- # $Id: root.in 30601 2008-08-27 20:21:39Z moritz $
- HLLNAME    = tcl
--RM_F    = @rm_f@
--PERL    = @perl@
--POD2MAN = pod2man
-+RM_F       = @rm_f@
-+PERL       = @perl@
-+CP         = @cp@
-+MKPATH     = @mkpath@
-+POD2MAN    = pod2man
- 
- BUILD_DIR   = @build_dir@
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT      = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE  = $(SHRPENV) ../../pbc_to_exe@exe@
+@@ -8,9 +8,9 @@ BUILD_DIR   = @build_dir@
+ PARROT      = $(BUILD_DIR)/parrot@exe@
+ PBC_TO_EXE  = $(BUILD_DIR)/pbc_to_exe@exe@
  RECONFIGURE = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
--PARROT        = $(SHRPENV) $(BUILD_DIR)/parrot@exe@
--PBC_TO_EXE    = $(SHRPENV) $(BUILD_DIR)/pbc_to_exe@exe@
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
  
  TCL_LIB   = library
  PMCBUILD  = $(PERL) @build_dir@/tools/build/dynpmc.pl
-@@ -76,7 +78,7 @@ build: tcl.pbc
- 
- all: tcl.pbc Makefile installable
- 
--tcl.pbc:  pmcs ops runtime/tcllib.pbc src/tclsh.pir
-+tcl.pbc: pmcs ops runtime/tcllib.pbc src/tclsh.pir
- 	$(PARROT) --output=tcl.pbc src/tclsh.pir
- 
- .SUFFIXES : .exe .pbc .pir .pg .tg .tcl
-@@ -121,18 +123,15 @@ ops: src/binary$(O)
- runtime/builtins.pir: $(DEPS) tools/gen_builtins.pl
- 	$(PERL) tools/gen_builtins.pl > runtime/builtins.pir
- 
--runtime/tcllib.pbc:  runtime/tcllib.pir runtime/builtins.pir $(CLASSES)
--	$(PARROT) --output=runtime/tcllib.pbc runtime/tcllib.pir
-+runtime/tcllib.pbc: runtime/tcllib.pir runtime/builtins.pir $(CLASSES)
-+	$(PARROT) --output=$@ runtime/tcllib.pir
- 
- # targets for building a standalone tclsh
- # (We're not quite ready to make this a default target.)
--tclsh@exe@: tcl.pbc $(PBC_TO_EXE)
-+tclsh@exe@: tcl.pbc
- 	$(PBC_TO_EXE) tcl.pbc
- 	$(RENAME) tcl@exe@ tclsh@exe@
- 
--$(PBC_TO_EXE):
--	$(MAKE) $(BUILD_DIR) ./pbc_to_exe@exe@
--
- installable : installable_tclsh@exe@
- 
- installable_tclsh@exe@: tcl.pbc
-@@ -322,7 +321,7 @@ runtime/builtins.pir \
+@@ -320,7 +320,7 @@ runtime/builtins.pir \
  "$(PMCDIR)/*_group.h" \
  "$(PMCDIR)/*$(LOAD_EXT)" \
  "$(PMCDIR)/*.dump" \
@@ -2010,124 +1236,34 @@ Index: parrot-svn/languages/tcl/config/makefiles/root.in
  "$(PMCDIR)/*.c" \
  "$(PMCDIR)/*$(O)" \
  "$(PMCDIR)/*.exp" \
-@@ -363,7 +362,6 @@ distclean: realclean
- Makefile: config/makefiles/root.in
- 	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=tcl
- 
--
- #
- # Local variables:
- # mode: makefile
 Index: parrot-svn/languages/unlambda/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/unlambda/config/makefiles/root.in
 +++ parrot-svn/languages/unlambda/config/makefiles/root.in
-@@ -14,15 +14,26 @@ DOC_DIR       = @doc_dir@
- MANDIR	      = @mandir@
- 
- # Set up commands
--PERL            = @perl@
--RM_F            = @rm_f@
--RECONFIGURE     = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+@@ -18,9 +18,9 @@ PERL            = @perl@
+ RM_F            = @rm_f@
+ PBC_TO_EXE    = ../../pbc_to_exe@exe@
+ RECONFIGURE     = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-+PERL          = @perl@
-+RM_F          = @rm_f@
-+CP            = @cp@
-+MKPATH        = @mkpath@
-+POD2MAN       = pod2man
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
-+
-+DOCS = MAINTAINER README
  
  # The default target
--default: build
-+build : $(HLLNAME).pbc
-+
-+all : $(HLLNAME).pbc Makefile installable
- 
- help :
- 	@echo ""
-@@ -30,6 +41,8 @@ help :
- 	@echo ""
- 	@echo "  build:             does nothing."
- 	@echo "                     This is the default target."
-+	@echo "  install:           install the installable targets and docs."
-+	@echo ""
- 	@echo ""
- 	@echo "  test:              Run the test suite."
- 	@echo ""
-@@ -44,13 +57,35 @@ Makefile: config/makefiles/root.in
- 	cd $(BUILD_DIR) && $(RECONFIGURE) --step=gen::languages --languages=unlambda
- 
- # Compilation:
--build:
--	@echo "nothing to do"
-+build:  $(HLLNAME).pbc
-+
-+$(HLLNAME).pbc: unl.pir
-+	$(PARROT) $(PARROT_ARGS) -o $@ unl.pir
-+
-+installable : installable_unlambda@exe@
-+	$(CP) installable_unlambda@exe@ $(BUILD_DIR)
-+
-+installable_unlambda@exe@: $(HLLNAME).pbc
-+	$(PBC_TO_EXE) $(HLLNAME).pbc --install
-+
-+# TODO: test for installed libs, rename build_dir. basic run for missing libs
-+test-installable : installable
-+	./installable_$(HLLNAME)@exe@ examples/h.unl
-+
-+install : installable
-+	$(CP) installable_unlambda@exe@ $(DESTDIR)$(BIN_DIR)/parrot-unlambda@exe@
-+	$(POD2MAN) $(HLLNAME).pir > $(DESTDIR)$(MANDIR)/man1/parrot-unlambda.1
-+	$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/unlambda
-+	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/unlambda
- 
- # cleaning up
-+CLEANUPS = \
-+  unl.pbc \
-+  $(HLLNAME)@exe@ \
-+  installable_$(HLLNAME)@exe@ \
- 
- clean: 
--	@echo "nothing to do"
-+	$(RM_F) $(CLEANUPS)
- 
- realclean: clean
- 	$(RM_F) Makefile
+ default: build
 Index: parrot-svn/languages/urm/config/makefiles/root.in
 ===================================================================
 --- parrot-svn.orig/languages/urm/config/makefiles/root.in
 +++ parrot-svn/languages/urm/config/makefiles/root.in
-@@ -5,14 +5,19 @@
- # Setup of some commands
- RM_F          = @rm_f@
- PERL          = @perl@
-+CP            = @cp@
+@@ -8,9 +8,9 @@ PERL          = @perl@
+ PARROT        = ../../parrot@exe@
  BUILD_DIR     = @build_dir@
--RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
+ RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 -#CONDITIONED_LINE(darwin):
 -#CONDITIONED_LINE(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 -#CONDITIONED_LINE(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
--#CONDITIONED_LINE(cygchkdll):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
--#INVERSE_CONDITIONED_LINE(cygchkdll):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
-+BIN_DIR       = @bin_dir@
-+DOC_DIR       = @doc_dir@
-+MANDIR	      = @mandir@
-+#IF(cygwin):SHRPENV  = env PATH="@build_dir@/blib/lib:$(PATH)"
-+#ELSEIF(not win32):SHRPENV  = env LD_RUN_PATH="@build_dir@/blib/lib"
- PARROT        = $(SHRPENV) ../../parrot@exe@
-+PBC_TO_EXE    = $(SHRPENV) ../../pbc_to_exe@exe@
-+RECONFIGURE   = $(PERL) @build_dir@/tools/dev/reconfigure.pl
 +#IF(darwin):
 +#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
 +#IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
@@ -2153,7 +1289,7 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
  
  our %file_types_info = (
      makefile => {
-@@ -210,17 +211,62 @@ enabled, and C<conditioned_lines> to ena
+@@ -210,17 +211,63 @@ enabled, and C<conditioned_lines> to ena
  Its value will be detected automatically by target file name unless you set
  it to a special value C<none>.
  
@@ -2171,25 +1307,31 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +Lines beginning with C<#IF(expr):> are skipped if the expr
 +condition is false, otherwise the content after the C<:> is inserted.
 +Lines beginning with C<#UNLESS(expr):> are skipped if the expr condition
-+is true, otherwise the content after the C<:> is inserted.
-+Lines beginning with C<#ELSIF(expr):> or C<#ELSE:> are evaluated if the
-+former C<#IF(expr):> evaluated to false.
++is true.
++Lines beginning with C<#ELSIF(expr):> are evaluated if the former C<#IF(expr):>
++evaluated to false.
++Lines beginning with C<#ELSE:> are evaluated if the former C<#IF(expr):> or
++C<#ELSIF(expr):> evaluated to false.
++
++For legacy the old syntax #CONDITIONED_LINE(var): and
++#INVERSE_CONDITIONED_LINE(var): is also supported.
++For lispers the well-known reader-macro syntax #+(and key1 (not key2)):
++is also supported, #+ #- with and, or and not, or being the default
++for multiple keys without operator. But note the ending C<:>.
 +
 +A condition expr may be:
 +
 +  * a single key, which is true if a config key is true
 +    - not 0 and not undef and not an empty string,
-+  * or equal to the platform name, the osname - case-sensitive,
-+  * or a C<key==value> expression, which checks for the config key,
++  * or equal to the platform name, the perl5 osname - case-sensitive,
++  * or a key=value expression, which checks for the config key,
 +    Note that values may contain no spaces here. Quotes in values
 +    are not supported.
-+  * or a logical combination of C<|>, C<OR>, C<&>, C<AND>, C<!>, C<NOT>,
-+    The verbose ops AND, OR and NOT are case-insensitive.
-+    ! and NOT bind closer than &, AND and |, OR.
-+    The order of precedence for AND and OR is undefined.
++  * or a logical combination of C<|> (or), C<&> (and) and C<!> (not),
++    with the following order of precedence:  ! & |
  
 -  #CONDITIONED_LINE(win32): $(SRC_DIR)/atomic/gcc_x86$(O)
-+A key must only consist of the chars A-Z a-z 0-9 _ -, and is checked
++A key must only consist of word characters, and is checked
 +case-sensitively against the config key or the platform name.
 +
 +For instance:
@@ -2198,31 +1340,26 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
  
  will be processed if the platform is win32.
  
-+  #IF(cpuarch==i386): $(SRC_DIR)/atomic/gcc_x86$(O)
++  #IF(cpuarch=i386): $(SRC_DIR)/atomic/gcc_x86$(O)
 +
 +will be skipped if the value of the config key "cpuarch" is not "i386".
 +
-+  #IF(cpuarch==i386): $(SRC_DIR)/atomic/gcc_x86$(O)
-+  #ELSIF(cpuarch==sparcv9): $(SRC_DIR)/atomic/sparc_v9.s
++  #IF(cpuarch=i386): $(SRC_DIR)/atomic/gcc_x86$(O)
++  #ELSIF(cpuarch=sparcv9): $(SRC_DIR)/atomic/sparc_v9.s
 +  #ELSE:
 +
-+will use " $(SRC_DIR)/atomic/gcc_x86$(O)" on cpuarch "i386",
-+" $(SRC_DIR)/atomic/sparc_v9.s" on cpuarch "sparcv9"
++will use " $(SRC_DIR)/atomic/gcc_x86$(O)" on cpuarch=i386,
++" $(SRC_DIR)/atomic/sparc_v9.s" on cpuarch=sparcv9
 +and print an empty line otherwise.
 +
-+  #IF(win32 and glut and not cygwin):
++  #IF(win32 & glut & !cygwin):
 +
 +will be used on win32 and if glut is defined, but not on cygwin.
-+
-+B<Legacy Syntax:>
-+
-+The old syntax #CONDITIONED_LINE(var): and
-+#INVERSE_CONDITIONED_LINE(var): is still supported, but is deprecated.
 +
  =item comment_type
  
  This option takes has two possible values, C<#> or C</*>. If present and
-@@ -360,6 +406,7 @@ sub genfile {
+@@ -360,6 +407,7 @@ sub genfile {
      # this loop can not be implemented as a foreach loop as the body
      # is dependent on <IN> being evaluated lazily
  
@@ -2230,7 +1367,7 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
      while ( my $line = <$in> ) {
  
          # everything after the line starting with #perl is eval'ed
-@@ -379,13 +426,43 @@ sub genfile {
+@@ -379,13 +427,50 @@ sub genfile {
              last;
          }
          if ( $options{conditioned_lines} ) {
@@ -2266,7 +1403,14 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +                next if $former_truth;
 +                $line = $1;
 +            }
-+            # Legacy, DEPRECATED.
++            # lisp-style syntax
++            elsif (($op,$expr,$rest)=($line =~ m/^#([-+])\((.+)\):(.*)/s)) {
++                my $truth = cond_eval_lisp($conf, $expr);
++                next if ($op eq '-') and $truth;
++                next if ($op eq '+') and not $truth;
++                $line = $rest;
++            }
++            # legacy
 +            elsif (($expr,$rest)=($line =~ m/^#CONDITIONED_LINE\(([^)]+)\):(.*)/s)) {
 +                next unless cond_eval($conf, $expr);
 +                $line = $rest;
@@ -2281,15 +1425,14 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
              }
          }
  
-@@ -484,6 +561,112 @@ sub genfile {
+@@ -484,6 +569,137 @@ sub genfile {
      move_if_diff( "$target.tmp", $target, $options{ignore_pattern} );
  }
  
 +# Return the next subexpression from the expression in $_[0]
 +# and remove it from the input expression.
-+# Allowed chars: A-Z a-z 0-9 _ -, so let's take [-\w].
-+# E.g. "(not win32 and has_glut)"
-+#        => not win32 => has_glut
++# E.g. "and (not win32) has_glut" - lisp-style
++#        => and => (not win32) => has_glut
 +#      "(!win32&has_glut)|cygwin"   - perl-style
 +#        !win32&has_glut => !win32 => &has_glut => |cygwin
 +sub next_expr {
@@ -2303,7 +1446,7 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +    }
 +    else {
 +        $s =~ s/^\s+//;                 # left-trim to make it more robust
-+        if ($s =~ m/^([-\w=]+)\s*(.*)?/o) { # shortest match to next non-word char
++        if ($s =~ m/^([\w=]+)\s*(.*)?/o) { # shortest match to next non-word char
 +            # start with word expr
 +            $_[0] = $2 ? $2 : "";       # modify the 2nd arg expr in the caller
 +            print "#** nextexpr \"$s\" => (\"$1\",\"$_[0]\")\n" if $DEBUG;
@@ -2320,13 +1463,13 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +}
 +
 +# Checks the logical truth of the hash value: exists and not empty.
-+# Also check the platform name, the 'osname' key, if the hash key does not exist.
-+# Also check for key==value, like #IF(ld==gcc)
++# Also check the platform name if the hash key does not exist.
++# Also check for key=value, like #+(ld=gcc)
 +sub cond_eval_single {
 +    my $conf = $_[0];
 +    my $key  = $_[1];
 +    return unless defined $key;
-+    if ($key =~ /^([-\w]+)==(.+)$/) {
++    if ($key =~ /^(\w+)=(.+)$/) {
 +        return ($2 eq $conf->data->get($1));
 +    }
 +    else {
@@ -2337,12 +1480,11 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +}
 +
 +# Recursively evaluate boolean expressions with multiple keys and | & ! ops.
-+# Order of precedence: Just "!" and "NOT" binds tighter than AND and OR.
-+# There's no precedence for AND and OR defined, just left to right.
++# Order of precedence: ! & | (NOT, AND, OR)
 +sub cond_eval {
 +    my $conf = $_[0];
 +    my $expr = $_[1];
-+    my @count = split /[\s!&|\(]+/, $expr; # optimizable with tr
++    my @count = split /[\s!&|]+/, $expr;
 +    if (@count > 1) { # multiple keys: recurse into
 +        my $truth = 0;
 +        if (substr($expr,0,1) eq '!') { # NOT is the only op which may start an expr
@@ -2353,16 +1495,17 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +            my $key = next_expr($expr);
 +            my $op  = '';
 +            while ($key) {
-+                if (($key eq '!') or (uc($key) eq 'NOT')) {
-+                    # bind next key immediately
-+                    $op = '!';
-+                    $key = next_expr($expr);
-+                }
-+                else { # OR shortcut if already $truth
-+                    last if $truth and ($op eq '|' or uc($op) eq 'OR');
-+                }
-+                $truth = cond_eval($conf, $key);
 +                print "#* op=\"$op\" key=\"$key\"" if $DEBUG;
++                if ($key eq '!' or uc($key) eq 'NOT') {
++                    $key = next_expr($expr);
++                    print "\n#* op=\"!\" key=\"$key\"" if $DEBUG;
++                    $truth = !cond_eval($conf, $key);
++                }
++                else {
++                    # log OR shortcut if already $truth
++                    last if $truth and ($op eq '|' or uc($op) eq 'OR');
++                    $truth = cond_eval($conf, $key);
++                }
 +                print " => ",$truth?'true':'false'," rest=\"$expr\"\n" if $DEBUG;
 +                if ($op eq '!'  or uc($op) eq 'NOT') {
 +                    $truth = $truth ? 0 : 1;
@@ -2375,14 +1518,11 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +                if ($op) {
 +                    $key = next_expr($expr);
 +                }
-+                elsif ($prevexpr) {
-+                    die "Makefile conditional syntax error: missing op in \"$_[1]\" at \"$prevexpr\".\n";
++                elsif($prevexpr) {
++                    die "Makefile syntax error: missing op in \"$_[1]\" at \"$prevexpr\".\n";
 +                }
 +                else {
 +                    last; # end of expr, nothing left
-+                }
-+                if ($prevexpr eq $expr) {
-+                    die "Makefile conditional parser error in \"$_[1]\" at \"$prevexpr\".\n";
 +                }
 +            }
 +        }
@@ -2391,25 +1531,46 @@ Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
 +    cond_eval_single($conf, $expr);
 +}
 +
++# Recursively evaluate boolean AND, OR and NOT lisp expressions for multiple keys.
++sub cond_eval_lisp {
++    my $conf = $_[0];
++    my $expr = $_[1];
++    my $key = $expr;
++    my @count = split /\s+/, $expr;
++    if (@count > 1) { # multiple keys: recurse into
++        my $truth;
++        my $op = next_expr($expr);
++        if ($op =~ /^(or|and|not)$/i) {
++            $op  = lc($op);
++            $key = next_expr($expr);
++        }
++        else {
++            $key = $op;
++            $op  = 'or';
++        }
++        while ($key) {
++            last if $truth and ($op eq 'or'); # logical shortcut on OR and already $truth
++            $truth = cond_eval_lisp($conf, $key);
++            if    ($op eq 'not') { $truth = $truth ? 0 : 1; }
++            elsif ($op eq 'and') { last unless $truth; } # skip on early fail
++            $key = next_expr($expr);
++        }
++        return $truth;
++    }
++    cond_eval_single($conf, $key);
++}
++
  sub append_configure_log {
      my $conf = shift;
      my $target = shift;
-@@ -511,6 +694,6 @@ sub append_configure_log {
- # Local Variables:
- #   mode: cperl
- #   cperl-indent-level: 4
--#   fill-column: 100
-+#   fill-column: 80
- # End:
- # vim: expandtab shiftwidth=4:
 Index: parrot-svn/t/steps/gen_makefiles-01.t
 ===================================================================
 --- parrot-svn.orig/t/steps/gen_makefiles-01.t
 +++ parrot-svn/t/steps/gen_makefiles-01.t
-@@ -1,13 +1,78 @@
+@@ -1,13 +1,91 @@
  #! perl
  # Copyright (C) 2007, The Perl Foundation.
--# $Id: gen_makefiles-01.t 30640 2008-08-29 23:09:28Z jkeenan $
+-# $Id: gen_makefiles-01.t 29867 2008-07-30 03:29:47Z jkeenan $
 +# $Id: gen_makefiles-01.t 30597 2008-08-27 18:31:51Z moritz $
  # gen_makefiles-01.t
  
@@ -2417,68 +1578,81 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
  use warnings;
 -use Test::More tests =>  7;
 +my @cond_tests;
-+my @conf_args = ( true => 1, false => 0, value => 'xx' );
++my @conf_args = ( dummy1 => 1, dummy2 => 0, dummy3 => 'xx' );
 +BEGIN {
 +    @cond_tests =
 +      (
 +       # perl-syntax       true or false
-+       ["IF(true)", 		1],
-+       ["IF(false)", 		0],
-+       ["IF(true | false)",	1],
-+       ["IF(true & false)",     0],
-+       ["IF(true or false)",    1],
-+       ["IF(true and false)",   0],
-+       ["UNLESS(true)",	        0],
-+       ["UNLESS(false)",	1],
-+       ["UNLESS(true|false)",   0],
-+       ["UNLESS(true&false)",   1],
-+       ["IF(!false)", 		1],
-+       ["IF(true)", 		1],
-+       ["ELSIF(value)", 	0],
++       ["IF(dummy1)", 		1],
++       ["IF(dummy2)", 		0],
++       ["IF(dummy1 | dummy2)",	1],
++       ["IF(dummy1 & dummy2)",  0],
++       ["IF(dummy1 or dummy2)", 1],
++       ["IF(dummy1 and dummy2)",0],
++       ["UNLESS(dummy1)",	0],
++       ["UNLESS(dummy2)",	1],
++       ["UNLESS(dummy1|dummy2)",0],
++       ["UNLESS(dummy1&dummy2)",1],
++       ["IF(!dummy2)", 		1],
++       ["IF(dummy1)", 		1],
++       ["ELSIF(dummy3)", 	0],
 +       ["ELSE", 	        0],
-+       ["IF(false)", 		0],
-+       ["ELSIF(value)", 	1],
++       ["IF(dummy2)", 		0],
++       ["ELSIF(dummy3)", 	1],
 +       ["ELSE", 	        0],
-+       ["IF(false)", 		0],
-+       ["ELSIF(false)", 	0],
++       ["IF(dummy2)", 		0],
++       ["ELSIF(dummy2)", 	0],
 +       ["ELSE", 	        1],
 +       # Strangle the parser a bit
-+       ["IF(true and (!false and value))",  1],
-+       ["IF(true and (!false) and value)",  1],
-+       ["IF(true and !false and value)",    1, 'no parens'],
-+       ["IF(true and not false and value)", 1, 'no parens'],
-+       ["IF(true&!false&value)",            1],
-+       ["IF(false or (!false and value))",  1, 'TODO parser problem'],
-+       ["UNLESS(!(true&!false&value))",     1, 'no ws, but nested parens'],
-+       ["IF(true&(!false&false))",          0, 'TODO parser problem'],
-+       ["IF(true&(!false&value))",          1],
-+       ["IF(not true and value)",           0, 'TODO parser problem'],
-+       ["IF(not false and value)",          1],
-+       ["IF((not false) and value)",        1],
-+       ["IF(not (false and value))",        1],
-+       ["IF(not (false or value))",         0],
-+       ["IF(true and not false)",           1],
-+       # platform
-+       ["IF(someplatform)",		    1],
-+       ["IF(not someplatform)",		    0],
-+       ["UNLESS(someplatform)",		    0],
-+       ["UNLESS(not someplatform)",	    1],
-+       # key==value
-+       ["IF(value==xx)",                    1],
-+       ["IF(value==xxy)",                   0],
-+       ["UNLESS(value==xx)",                0],
-+       ["UNLESS(value==xxy)",               1],
-+       ["IF(true & (value==xx & (!false)))",1],
-+       # These are invalid. It will check for ("value" or "==" or "xx")
-+       ["IF(value == xx)",                  0], # invalid, no warning
-+       ["IF(value = xx)",                   0], # also invalid, no warning
-+       ["IF(value=xx)",                     0], # also invalid, no warning
++       ["IF(dummy1 and (!dummy2 and dummy3))",  1],
++       ["IF(dummy1 and (!dummy2) and dummy3)",  1],
++       ["IF(dummy1 and !dummy2 and dummy3)",    1],
++       ["IF(dummy1&!dummy2&dummy3)",            1],
++       #["IF(dummy2 or (!dummy2 and dummy3))",   1], # TODO
++       ["UNLESS(!(dummy1&!dummy2&dummy3))",     1],
++       ["IF(dummy1&(!dummy2&dummy3))",          1],
++       ["IF(dummy1 & (dummy3=xx & (!dummy2)))", 1],
++       ["IF(someplatform)",		1],
++       ["IF(not someplatform)",		0],
++       ["UNLESS(someplatform)",		0],
++       ["UNLESS(not someplatform)",	1],
++       # This is invalid. It will check for ("dummy3" or "=" or "xx")
++       ["IF(dummy3 = xx)", 0],
 +
-+       # Legacy syntax                 true or false
-+       ["CONDITIONED_LINE(true)", 	    1],
-+       ["INVERSE_CONDITIONED_LINE(true)",   0],
-+       ["CONDITIONED_LINE(false)", 	    0],
-+       ["INVERSE_CONDITIONED_LINE(false)",  1],
++       # lisp-syntax       true or false
++       ["-(lisp-syntax)",       1],
++       ["+(dummy1)", 		1],
++       ["+(dummy2)", 		0],
++       ["+(dummy1 dummy2)",	1],
++       ["+(and dummy1 dummy2)", 0],
++       ["-(dummy1)",		0],
++       ["-(dummy2)",		1],
++       ["-(dummy1 dummy2)",	0],
++       ["-(and dummy1 dummy2)",	1],
++       ["+(dummy3=xx)",		1],
++       ["+(dummy3=xxy)",	0],
++       ["-(dummy3=xx)",		0],
++       ["-(dummy3=xxy)",	1],
++       ["+(dummy1=1)",		1],
++       ["+(dummy2=0)",		1],
++       ["+(someplatform)",	1],
++       ["+(not someplatform)",	0],
++       ["-(someplatform)",	0],
++       ["-(not someplatform)",	1],
++       ["+(or dummy1 dummy2)",	1],
++       ["-(or dummy1 dummy2)",	0],
++       ["+(or dummy1 (not dummy2))",	1],
++       ["+(and dummy1 (not dummy2))",	1],
++       ["+(and (not dummy2) dummy1)",	1],
++       # Try to break it with whitespace
++       ["+( or dummy1(not dummy2))",	1],
++       ["+(or dummy1(not dummy2))",	1],
++
++       # old-syntax                    true or false
++       ["CONDITIONED_LINE(dummy1)", 	    1],
++       ["INVERSE_CONDITIONED_LINE(dummy1)", 0],
++       ["CONDITIONED_LINE(dummy2)", 	    0],
++       ["INVERSE_CONDITIONED_LINE(dummy2)", 1],
 +      );
 +}
 +use Test::More tests => (7 + scalar(@cond_tests));
@@ -2488,16 +1662,7 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
  use_ok('config::gen::makefiles');
  use Parrot::Configure;
  use Parrot::Configure::Options qw( process_options );
-@@ -18,7 +83,7 @@ use Parrot::Configure::Test qw(
- 
- ########## regular ##########
- 
--my ($args, $step_list_ref) = process_options(
-+my $args = process_options(
-     {
-         argv => [ ],
-         mode => q{configure},
-@@ -38,6 +103,52 @@ foreach my $k ( keys %makefiles ) {
+@@ -38,6 +116,46 @@ foreach my $k ( keys %makefiles ) {
  is($missing_SOURCE, 0, "No Makefile source file missing");
  ok(-f $step->{CFLAGS_source}, "CFLAGS source file located");
  
@@ -2538,23 +1703,17 @@ Index: parrot-svn/t/steps/gen_makefiles-01.t
 +$i = undef;
 +for my $c (@cond_tests) {
 +    my $result = result($c);
-+    if ($c->[2] and $c->[2] =~ /^TODO(.*)$/) {
-+        local $TODO = $1;
-+        ok(($c->[1] ? $f =~ /^$result$/m : $f !~ /^$result$/m), "$result");
-+    }
-+    else {
-+        ok(($c->[1] ? $f =~ /^$result$/m : $f !~ /^$result$/m), "$result".($c->[2]?" $c->[2]":''));
-+    }
++    ok(($c->[1] ? $f =~ /^$result$/m : $f !~ /^$result$/m), "$result");
 +}
 +
  pass("Completed all tests in $0");
  
  ################### DOCUMENTATION ###################
-@@ -60,6 +171,8 @@ The tests in this file test gen::makefil
+@@ -60,6 +178,8 @@ The tests in this file test gen::makefil
  
  James E Keenan
  
-+Reini Urban (@cond_tests)
++Reini Urban (#+, #-)
 +
  =head1 SEE ALSO
  
