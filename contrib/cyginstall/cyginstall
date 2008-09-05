@@ -475,26 +475,27 @@ sub TIEHASH {
     my $obj   = {};
     my @rest  = ();
     $obj->{name} = shift;
-    my $last = '';
+    my ($lastgroup, $lastkey) = ('','');
     my $blob = shift;
     $blob =~ s/^@ \S+\n//;
     $blob =~ s/\n$//;
+    my $prefix = '';
     foreach (split /\n/, $blob) {
 	my ($name, $value) = m/^(.+?):\s+"?(.+?)"?$/;
 	if (!$name) {
 	    if (/^\[(prev|test)\]$/) {
-		$last = $1;
+		$lastgroup = $1;
+		$prefix = '';
 	    }
-	    elsif ($last eq 'ldesc') {
+	    elsif ($lastkey eq 'ldesc') {
 		$obj->{'ldesc'} .= ($value ? "\n$value" : "\n$_");
 	    }
 	    next;
 	}
 	if ($name =~ /ldesc|sdesc|category|requires|version|install|source/) {
-	    my $prefix = '';
 	    my $ver = Cygwin::Install::version($value) if $name eq 'version';
-	    if ($last eq 'prev' or $last eq 'test') {
-		$prefix = $last."-";
+	    if ($lastgroup eq 'prev' or $lastgroup eq 'test') {
+		$prefix = $lastgroup."-";
 		$name = $prefix . $name;
 	    }
 	    if ($name =~ /install|source/) {
@@ -507,13 +508,13 @@ sub TIEHASH {
 	    elsif ($name eq 'prev-version') { $obj->{'prev-ver'} = $ver; }
 	    elsif ($name eq 'test-version') { $obj->{'test-ver'} = $ver; }
 
-	} elsif ($last eq 'ldesc') {
+	} elsif ($lastkey eq 'ldesc') {
 	    $obj->{'ldesc'} .= "\n$value";
 	    $name = 'ldesc';
 	} else {
 	    carp("unknown setup field: $name: $value");
 	}
-	$last = $name;
+	$lastkey = $name;
 	#for ('','prev','test')
     }
     $obj->{'name_ver'} = $obj->{name} . ($obj->{version} ? "-".$obj->{version} : "");
@@ -666,7 +667,9 @@ sub TIEHASH {
     my $db = { -path => [] };
     #my @rest  = ();
     # here we merge the packages of all setup.ini's
-    # according to two rules: favor setup.ini timestamp or favor higher version numbers
+    # TODO merge rules:
+    #   two rules: 1) favor setup.ini timestamp or (default)
+    #              2) favor higher version numbers (--merge-version)
     foreach my $ini (@$local) {
 	my $n = $ini->FIRSTKEY;
 	my $path = $ini->path;
@@ -938,7 +941,7 @@ sub require_setupdb {
     unless (%setupdb) {
 	my $ini = new Cygwin::Install::SetupIni($opt{setup});
 	my (@local, @remote);
-	unless ( $ini->path and -e $ini->path) {
+	unless ( $ini->path and -e $ini->path ) {
 	    # check local or remote options:
 	    # cwd = /usr/src/down/ftp%3a%2f%2fsunsite.dk%2fprojects%2fcygwinports
 	    my $local = $ini->from_current_path;
