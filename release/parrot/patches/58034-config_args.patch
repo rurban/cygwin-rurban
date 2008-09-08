@@ -26,7 +26,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # Override at least PREFIX with the install location if you're going
  # to be using this outside of your build area.
-@@ -1002,6 +1003,20 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
+@@ -1006,6 +1007,20 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
      lib/Parrot/OpsFile.pm lib/Parrot/Op.pm $(OPS_DIR)/ops.num $(OPS_DIR)/ops.skip
  	$(PERL) $(BUILD_TOOLS_DIR)/ops2pm.pl $(OPS_FILES)
  
@@ -47,7 +47,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  ###############################################################################
  #
  # Examples (Assembly):
-@@ -1778,7 +1793,7 @@ svnclobber : .svn
+@@ -1782,7 +1797,7 @@ svnclobber : .svn
  	$(PERL) tools/dev/svnclobber.pl
  
  reconfig : clean
@@ -60,7 +60,7 @@ Index: parrot-svn/Configure.pl
 ===================================================================
 --- parrot-svn.orig/Configure.pl
 +++ parrot-svn/Configure.pl
-@@ -63,6 +63,8 @@ $conf->add_steps( get_steps_list() );
+@@ -65,6 +65,8 @@ $conf->add_steps( @{ $steps_list_ref } )
  
  # from Parrot::Configure::Data
  $conf->options->set( %{$args} );
