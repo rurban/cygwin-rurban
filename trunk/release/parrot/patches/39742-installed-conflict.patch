@@ -599,7 +599,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(SRC_DIR)/parrot_config$(O) : $(SRC_DIR)/parrot_config.c
  
-@@ -1019,10 +1021,10 @@ hello: test_prep examples/pasm/hello$(EX
+@@ -1023,10 +1025,10 @@ hello: test_prep examples/pasm/hello$(EX
  	$(CUR_DIR)/examples/pasm/hello$(EXE) "from your friendly makefile"
  
  examples/pasm/hello.pbc: examples/pasm/hello.pasm
