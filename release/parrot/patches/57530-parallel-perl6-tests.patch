@@ -1,0 +1,67 @@
+make spectest_regression
+jobs:3 + 2 physical cores + Test::Harness-3.13
+Files=159, Tests=4859, 78 wallclock secs ( 0.72 usr  0.25 sys + 143.56 cusr  8.31 csys = 152.84 CPU)
+Result: PASS
+
+without patch or with patch + Test::Harness-3.12
+Files=159, Tests=4859, 137 wallclock secs ( 0.12 usr  0.12 sys + 130.19 cusr  7.13 csys = 137.57 CPU)
+Result: PASS
+
+
+Index: lib/Parrot/Test/Harness.pm
+===================================================================
+--- lib/Parrot/Test/Harness.pm.orig
++++ lib/Parrot/Test/Harness.pm
+@@ -166,12 +166,13 @@ sub import {
+     exit unless my @files = get_files(%options);
+ 
+     if (eval { require TAP::Harness; 1 }) {
+-        my %opts =
++        my %harness_options =
+               $options{exec}     ? ( exec => $options{exec} )
+             : $options{compiler} ? ( exec => [ '../../parrot', './' . $options{compiler} ] )
+             :                      ();
+-        $opts{verbosity} = $options{verbosity} ? $options{verbosity} : 0;
+-        TAP::Harness->new( \%opts )->runtests( @files );
++        $harness_options{verbosity} = $options{verbosity} ? $options{verbosity} : 0;
++        $harness_options{jobs} = $ENV{TEST_JOBS} || $options{jobs} || 1;
++        TAP::Harness->new( \%harness_options )->runtests( @files );
+ 
+         return;
+     }
+Index: languages/perl6/t/harness
+===================================================================
+--- languages/perl6/t/harness.orig
++++ languages/perl6/t/harness
+@@ -24,6 +24,9 @@ GetOptions(
+         'tests-from-file=s' => \my $list_file,
+         'fudge'             => \my $do_fudge,
+         'verbosity=i'       => \$harness_args{verbosity},
++        # A sensible default is num_cores + 1.
++        # Many people have two cores these days.
++        'jobs:3'            => \$harness_args{jobs},
+     );
+ 
+ 
+Index: languages/perl6/config/makefiles/root.in
+===================================================================
+--- languages/perl6/config/makefiles/root.in.orig
++++ languages/perl6/config/makefiles/root.in
+@@ -196,7 +196,7 @@ testtest: all test
+ 
+ # NOTE: eventually, we should remove --keep-exit-code and --fudge
+ #       as the goal is that all tests must pass without fudge
+-HARNESS_WITH_FUDGE = $(PERL) t/harness --fudge --keep-exit-code
++HARNESS_WITH_FUDGE = $(PERL) t/harness --fudge --keep-exit-code --jobs
+ 
+ spectest: all t/spec
+ 	-cd t/spec && svn up
+@@ -224,7 +224,7 @@ sometests: all
+ 
+ # Run a single test
+ t/*.t t/*/*.t t/*/*/*.t: all
+-	@$(HARNESS_WITH_FUDGE) $@
++	@$(HARNESS_WITH_FUDGE) --jobs=1 $@
+ 
+ t/localtest.data:
+ 	$(PERL) -MExtUtils::Command -e test_f $@
