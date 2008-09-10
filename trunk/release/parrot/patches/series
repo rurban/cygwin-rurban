@@ -5,6 +5,7 @@
 56544-install_files.patch
 57006-opengl-cyg.patch -p0
 58034-config_args.patch
+57530-parallel-perl6-tests.patch -p0
 56554-make-install-lang.patch
 56998-cygdll_versioning.patch -p0
 51944-README_cygwin.patch -p0
