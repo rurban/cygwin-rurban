@@ -1,0 +1,17 @@
+# source_charset should match your windows locale and is only 
+# used on non-Unicode docs - before Word 97.
+
+#charset_path=/usr/share/catdoc
+#map_path=/usr/share/catdoc
+
+# override source charset with -s
+source_charset=cp1252
+
+# on cygwin the output locale detection always returns US-ASCII so turn it off
+use_locale=no
+# override target charset with -d
+target_charset=8859-1
+unknown_char='?'
+
+#format=ascii
+#format=tex

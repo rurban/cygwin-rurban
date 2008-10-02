@@ -18,10 +18,10 @@ Build requirements: (versions given or later)
   automake
 
 Canonical homepage:
-  http://www.45.free.net/~vitus/software/catdoc/
+  http://ftp.wagner.pp.ru/~vitus/software/catdoc/
 
 Canonical download:
-  http://ftp.45.free.net/pub/catdoc/${PN}-${PV}.tar.gz
+  http://ftp.wagner.pp.ru/pub/catdoc/catdoc-0.94.2.tar.gz
 
 -------------------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ source directory
 
 Files included in this package:
 
+  /etc/catdocrc
   /usr/bin/catdoc.exe
   /usr/bin/catppt.exe
   /usr/bin/wordview
@@ -115,9 +116,17 @@ Files included in this package:
 
 Port Notes:
 
------ version 0.94.2-2 ----- 
+----- version 0.94.2-3 ----- 
+* Added --with-input=cp1252 --with-output=8859-1 
+  Was cp1251 to koi8-r as default.
+* Added /etc/catdocrc and postinstall, preremove scripts.
+  Thanks to Bernt Røskar Brenna
+* Added missing lndirs
+* Changed HOMEPAGE and SRC_URI to new site
+
+----- version 0.94.2-2 -----
 - Workaround wrong aclocal version. Removed the wrong autom4te-2.13 suggestion.
-  Thanks to Chuck Wilson. This really should be fixed in cgyport.
+  Thanks to Chuck Wilson. This really should be fixed in cygport.
 - Fixed grammar in some docs.
 
 ----- version 0.94.2-1 ----- 
