@@ -533,7 +533,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  ###############################################################################
  #
-@@ -533,10 +535,10 @@ MAKE = @make_c@
+@@ -532,10 +534,10 @@ MAKE = @make_c@
  # here, though. Ignored on Mac OS X, at least.
  
  .pir.pbc :
@@ -546,7 +546,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  
  ###############################################################################
-@@ -767,12 +769,12 @@ flags_dummy :
+@@ -766,12 +768,12 @@ flags_dummy :
  	@$(PERL) tools/dev/cc_flags.pl $(CUR_DIR)/CFLAGS echo $(CC) $(CFLAGS) -I$(@D) @cc_o_out@ xx$(O) -c xx.c
  
  runtime/parrot/include/parrotlib.pbc: runtime/parrot/library/parrotlib.pir $(PARROT)
@@ -562,7 +562,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) CFLAGS \
      lib/Parrot/OpLib/core.pm $(SRC_DIR)/parrot_config$(O) \
-@@ -787,12 +789,12 @@ pbc_to_exe.pir : $(PARROT) tools/dev/pbc
+@@ -786,12 +788,12 @@ pbc_to_exe.pir : $(PARROT) tools/dev/pbc
      > pbc_to_exe.pir
  
  $(PBC_TO_EXE) : pbc_to_exe.pir $(PARROT)
@@ -579,7 +579,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # HLL Executable targets
  #CONDITIONED_LINE(win32):perl6 : $(PERL6)
-@@ -815,8 +817,8 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
+@@ -814,8 +816,8 @@ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(
      lib/Parrot/OpLib/core.pm $(SRC_DIR)/install_config$(O) \
      $(PARROT)
  	$(LINK) @ld_out@$@ \
@@ -590,7 +590,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  #CONDITIONED_LINE(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
  
  $(INC_DIR)/parrot.h : $(INC_DIR)/pbcversion.h $(INC_DIR)/vtable.h
-@@ -842,7 +844,7 @@ $(SRC_DIR)/null_config.c : myconfig $(BU
+@@ -841,7 +843,7 @@ $(SRC_DIR)/null_config.c : myconfig $(BU
  
  install_config.fpmc : myconfig config_lib.pasm $(PARROT)
  	@echo "Invoking Parrot to generate install_config.fpmc"
@@ -599,7 +599,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  $(SRC_DIR)/parrot_config$(O) : $(SRC_DIR)/parrot_config.c
  
-@@ -1019,10 +1021,10 @@ hello: test_prep examples/pasm/hello$(EX
+@@ -1014,10 +1016,10 @@ hello: test_prep examples/pasm/hello$(EX
  	$(CUR_DIR)/examples/pasm/hello$(EXE) "from your friendly makefile"
  
  examples/pasm/hello.pbc: examples/pasm/hello.pasm
