@@ -92,12 +92,20 @@ Files included in the clamav package:
   /usr/bin/freshclam.exe
   /usr/bin/sigtool.exe
   /usr/sbin/clamd.exe
+  /usr/share/clamav/daily.cvd
+  /usr/share/clamav/main.cvd
   /usr/share/doc/clamav-<VER>/AUTHORS
   /usr/share/doc/clamav-<VER>/BUGS
   /usr/share/doc/clamav-<VER>/ChangeLog
   /usr/share/doc/clamav-<VER>/COPYING
   /usr/share/doc/clamav-<VER>/FAQ
-  /usr/share/doc/clamav-<VER>/INSTALL
+  /usr/share/doc/clamav-<VER>/INSTALL  
+  /usr/lib/libclamunrar.a
+  /usr/lib/libclamunrar.dll.a
+  /usr/lib/libclamunrar.la
+  /usr/lib/libclamunrar_iface.a
+  /usr/lib/libclamunrar_iface.dll.a
+  /usr/lib/libclamunrar_iface.la
   /usr/share/doc/clamav-<VER>/NEWS
   /usr/share/doc/clamav-<VER>/README
   /usr/share/doc/clamav-<VER>/clamav-mirror-howto.pdf
@@ -109,17 +117,22 @@ Files included in the clamav package:
   /usr/share/man/man1/clamconf.1.gz
   /usr/share/man/man1/clamdscan.1.gz
   /usr/share/man/man1/clamscan.1.gz
-  /usr/share/man/man1/freshclam.1.gz  
+  /usr/share/man/man1/freshclam.1.gz  /usr/lib/libclamunrar.a
+  /usr/lib/libclamunrar.dll.a
+  /usr/lib/libclamunrar.la
+  /usr/lib/libclamunrar_iface.a
+  /usr/lib/libclamunrar_iface.dll.a
+  /usr/lib/libclamunrar_iface.la
   /usr/share/man/man1/sigtool.1.gz
   /usr/share/man/man5/clamd.conf.5.gz
   /usr/share/man/man5/freshclam.conf.5.gz
   /usr/share/man/man8/clamd.8.gz
 
-Files included in the libclamav4 package:  
+Files included in the libclamav5 package:
 
-  /usr/bin/cygclamav-4.dll
-  /usr/bin/cygclamunrar-4.dll
-  /usr/bin/cygclamunrar_iface-4.dll
+  /usr/bin/cygclamav-5.dll
+  /usr/bin/cygclamunrar-5.dll
+  /usr/bin/cygclamunrar_iface-5.dll
 
 Files included in the libclamav-devel package:
 
@@ -136,22 +149,13 @@ Files included in the libclamav-devel package:
   /usr/lib/libclamunrar_iface.la
   /usr/lib/pkgconfig/libclamav.pc
 
-Files included in the clamav-db package:
-
-  /usr/share/clamav/daily.cvd
-  /usr/share/clamav/main.cvd
-
 -------------------------------------------------------------------------------
 
 Port Notes:
 
------ version 0.93.3-1 -----
-added DIFF_EXCLUDES="test/Makefile"
------ version 0.93.1-1 -----
-none
------ version 0.93.1rc1-1 ----- TEST
-new package clamav-db
-added positive-tests.zip to src package
+----- version 0.94-1 -----
+libclamav5
+added --disable-gethostbyname_r
 ----- version 0.93-1 -----
 libclamav4
 ----- version 0.92.1-1 -----
