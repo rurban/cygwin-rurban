@@ -1332,8 +1332,8 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  CAT           = $(PERL) -MExtUtils::Command -e cat
  BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
  RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-@@ -38,8 +48,7 @@ SOURCES = cardinal.pir \
-   src/parser/quote_expression.pir \
+@@ -37,8 +47,7 @@ CARDINAL_GROUP = $(PMC_DIR)/cardinal_gro
+ SOURCES = cardinal.pir \
    src/gen_grammar.pir \
    src/gen_actions.pir \
 -  src/gen_builtins.pir \
@@ -1342,20 +1342,20 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  
  BUILTINS_PIR = \
    src/builtins/guts.pir \
-@@ -54,15 +63,20 @@ BUILTINS_PIR = \
+@@ -50,14 +59,21 @@ BUILTINS_PIR = \
+   src/classes/Integer.pir \
+   src/classes/Array.pir \
    src/classes/Hash.pir \
-   src/classes/Bool.pir \
-   src/builtins/globals.pir \
--  src/builtins/eval.pir \
++  src/builtins/globals.pir \
 +  src/builtins/eval.pir
  
 -# PMCS = cardinal
 -# PMC_SOURCES = $(PMC_DIR)/cardinal.pmc
-+DOCS          = README
++DOCS = README
  
  # the default target
 -cardinal.pbc: $(PARROT) $(SOURCES)
-+cardinal.pbc:  $(SOURCES)
++cardinal.pbc: $(SOURCES)
  	$(PARROT) $(PARROT_ARGS) -o cardinal.pbc cardinal.pir
  
 +cardinal@exe@: cardinal.pbc
@@ -1364,10 +1364,10 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
 +installable_cardinal@exe@: cardinal.pbc
 +	$(PBC_TO_EXE) cardinal.pbc --install
 +
- test.pir: $(PARROT) test.rb cardinal.pbc
- 	$(PARROT) $(PARROT_ARGS) cardinal.pbc --target=pir --output=test.pir test.rb
- 
-@@ -78,15 +92,12 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
+ src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
+ 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \
+ 	    --output=src/gen_grammar.pir \
+@@ -70,15 +86,12 @@ src/gen_actions.pir: $(NQP) $(PCT) src/p
  src/gen_builtins.pir: $(BUILTINS_PIR)
  	$(CAT) $(BUILTINS_PIR) >src/gen_builtins.pir
  
@@ -1387,7 +1387,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  
  # This is a listing of all targets, that are meant to be called by users
  help:
-@@ -95,8 +106,12 @@ help:
+@@ -87,8 +100,12 @@ help:
  	@echo ""
  	@echo "  all:               cardinal.pbc"
  	@echo "                     This is the default."
@@ -1400,7 +1400,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -120,8 +135,20 @@ hashtest: all
+@@ -106,8 +123,20 @@ test: all
  # this target has nothing to do
  testclean:
  
@@ -1421,7 +1421,7 @@ Index: parrot-svn/languages/cardinal/config/makefiles/root.in
    src/gen_grammar.pir \
    src/gen_actions.pir \
    src/gen_builtins.pir \
-@@ -145,4 +172,8 @@ realclean: clean
+@@ -131,4 +160,8 @@ realclean: clean
  
  distclean: realclean
  
@@ -1590,7 +1590,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  all: \
   $(PMCDIR)/lua_group$(LOAD_EXT) \
   $(LIB_PBCS) \
-@@ -119,6 +129,16 @@ all: \
+@@ -118,6 +128,16 @@ all: \
   $(GEN_PBC) \
   src/yapp/Lua/parser.pm
  
@@ -1607,7 +1607,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  
  src/lua51_testlex_gen.pir: src/lua51_testlex.pg
  	$(PGE) --output=src/lua51_testlex_gen.pir src/lua51_testlex.pg
-@@ -136,11 +156,17 @@ src/POSTGrammar_gen.pir: src/POSTGrammar
+@@ -135,11 +155,17 @@ src/POSTGrammar_gen.pir: src/POSTGrammar
  	$(TGE) --output=src/POSTGrammar_gen.pir src/POSTGrammar.tg
  
  lua.pbc: lua.pir src/lua51.pir src/grammar51.pir src/lua51_gen.pir src/PASTGrammar_gen.pir src/POSTGrammar_gen.pir $(LIB_SRCS)
@@ -1626,7 +1626,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  $(LIBPATH)/lualibs.pbc: $(LIB_PBCS)
  	$(PBC_MERGE) -o $(LIBPATH)/lualibs.pbc $(LIB_PBCS)
  
-@@ -249,7 +275,7 @@ src/yapp/Lua/parser.pm: src/yapp/Lua/lua
+@@ -245,7 +271,7 @@ src/yapp/Lua/parser.pm: src/yapp/Lua/lua
  
  # regenerate the Makefile
  Makefile: config/makefiles/root.in
@@ -1635,7 +1635,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  
  help:
  	@echo ""
-@@ -257,8 +283,12 @@ help:
+@@ -253,8 +279,12 @@ help:
  	@echo ""
  	@echo "  all:"
  	@echo "                     This is the default."
@@ -1648,7 +1648,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  	@echo "  testclean:         Clean up test results."
  	@echo ""
  	@echo "Cleaning:"
-@@ -273,7 +303,6 @@ help:
+@@ -269,7 +299,6 @@ help:
  test: all
  	cd .. && $(PERL) t/harness --languages=lua
  
@@ -1656,7 +1656,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  TEST_CLEANERS = \
   "t/pmc/*.pir" \
   "t/*.pir" \
-@@ -287,6 +316,7 @@ testclean:
+@@ -283,6 +312,7 @@ testclean:
  
  BUILD_CLEANERS = \
   lua@exe@ \
@@ -1664,7 +1664,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
   lua$(O) \
   lua.c \
   "*.pbc" \
-@@ -297,7 +327,8 @@ BUILD_CLEANERS = \
+@@ -293,7 +323,8 @@ BUILD_CLEANERS = \
   "$(PMCDIR)/*_group.h" \
   "$(PMCDIR)/*$(LOAD_EXT)" \
   "$(PMCDIR)/*$(O)" \
@@ -1674,7 +1674,7 @@ Index: parrot-svn/languages/lua/config/makefiles/root.in
  
  clean:
  	$(RM_F) $(BUILD_CLEANERS) $(TEST_CLEANERS)
-@@ -306,3 +337,9 @@ realclean: clean
+@@ -302,3 +333,9 @@ realclean: clean
  	$(RM_F) Makefile
  
  distclean: realclean
