@@ -1074,7 +1074,7 @@ sub main {
 	    }
         }
         elsif ( $opt{query} ) {
-            query( $name, $path );
+            query( $name, $pkg, $path );
         }
     }
     untie %db;
@@ -1088,7 +1088,7 @@ sub main {
 unless ( $ENV{'REQUEST_METHOD'} or $0 !~ /cyginstall/ ) {
     GetOptions(
         \%opt,     'install|i', 'erase|e', 'upgrade|U',
-        'query|q', 'verify|v',  'version', 'test',      'list',
+        'query|q', 'verify|v',  'version', 'test',      'list|l',
         'setup=s', 'local!',    'check!',  'yes|y',     'force',
         'nosrc!',  'nodeps',    'help|?',  'verbose',   'quiet',
 	'oldpackage',
