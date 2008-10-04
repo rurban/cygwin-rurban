@@ -1,0 +1,290 @@
+--- origsrc/clamav-0.94/configure.in	2008-09-01 20:41:06.000000000 +0200
++++ src/clamav-0.94/configure.in	2008-10-02 21:48:20.625000000 +0200
+@@ -386,6 +386,26 @@
+ AM_CONDITIONAL(ENABLE_COVERAGE, test "x$enable_coverage" = "xyes")
+ AM_CONDITIONAL(ENABLE_UT_INSTALL, test "x$enable_ut_install" = "xyes")
+ 
++dnl Check for broken cygwin-1.5.19 without d_ino or INTERIX (code by David Rothenberger <daveroth*acm.org>)
++AC_MSG_CHECKING([whether struct dirent contains d_ino])
++AC_RUN_IFELSE(
++	[AC_LANG_SOURCE([[
++#include <sys/types.h>
++#include <dirent.h>
++int main(void){struct dirent d;exit(sizeof(d.d_ino)>=0);}
++	]])],
++	[AC_MSG_RESULT(yes)],
++	[
++		AC_MSG_RESULT(no)
++		AC_DEFINE(DIRENT_MISSING_D_INO, 1,
++			[Define if your struct dirent doesn't contain d_ino])
++	],
++	[
++		AC_MSG_WARN([cross compiling: assuming DIRENT_MISSING_D_INO])
++		AC_DEFINE(DIRENT_MISSING_D_INO)
++	]
++)
++
+ have_pthreads=no
+ AC_CHECK_HEADER([pthread.h],[have_pthreads=yes],)
+ 
+@@ -757,6 +777,23 @@
+        fi
+     fi
+     ;;
++cygwixxxn*)
++    FRESHCLAM_LIBS="$FRESHCLAM_LIBS -lresolv"
++    if test "$test_clamav" = "yes"; then
++	if test ! -r /etc/passwd; then
++	   test_clamav="no"
++	fi
++    fi
++    if test "$have_pthreads" = "yes"; then
++	#CLAMD_LIBS="$CLAMD_LIBS -lresolv"
++	THREAD_LIBS="-lpthread"
++	TH_SAFE="-thread-safe"
++	AC_DEFINE([CL_THREAD_SAFE],1,[thread safe])
++	AC_DEFINE([_REENTRANT],1,[thread safe])
++    fi
++    AC_DEFINE(BUILD_CLAMD, 1, "build clamd")
++    use_gethostbyname_r="no"
++    ;;
+ solaris*)
+     FRESHCLAM_LIBS="$FRESHCLAM_LIBS -lresolv"
+     if test "$have_pthreads" = "yes"; then
+@@ -1023,7 +1060,7 @@
+   fi
+ fi
+ 
+-AM_CONDITIONAL([BUILD_CLAMD],[test "$have_pthreads" = "yes"])
++AM_CONDITIONAL([BUILD_CLAMD],[test "$have_pthreads" = "yes" -o "$target_os" = "cygwin"])
+ AM_CONDITIONAL([HAVE_MILTER],[test "$have_milter" = "yes"])
+ AM_CONDITIONAL([ENABLE_UNRAR],[test "$want_unrar" = "yes"])
+ 
+--- origsrc/clamav-0.94/contrib/init/Cygwin/clamd	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.94/contrib/init/Cygwin/clamd	2008-10-02 21:48:20.625000000 +0200
+@@ -0,0 +1,152 @@
++#! /bin/bash
++#
++# crond   Start/Stop the clam antivirus daemon. 0.8x series
++# v1.0 2004-10-18 Reini Urban rurban@x-ray.at
++#
++# chkconfig: 2345 90 60
++# description: clamd is a standard UNIX program that scans for Viruses.
++# processname: clamd
++# config: /etc/clamd.conf
++# pidfile: /var/run/clamd.pid
++
++PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PREFIX=/usr
++CONFIG=/etc/clamd.conf
++PIDFILE=/var/run/clamd.pid
++LOGFILE=/var/log/clamd.log
++SOCKET=/var/run/clamd.sock
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++prog="clamd"
++progdir="/usr/sbin"
++DAEMON="$progdir/$prog.exe"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++start() {
++        echo -n $"Starting $prog: "
++	# check if cygrunsrv process
++        cygrunsrv --start $prog
++        RETVAL=$?
++        echo
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $prog: "
++	cygrunsrv --stop $prog
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE $SOCKET && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q $prog
++        # connect(): No such file or directory
++	/usr/bin/clamdscan /usr/sbin/clamd.exe
++	#status clamd
++}
++
++restart() {
++        echo -n $"Restarting $prog: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++installcron() {
++    ( crontab -l | grep freshclam >/dev/null 2>&1 ) || ( \
++	echo "add something like this to your cronjob:"
++	echo
++	echo "*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1"
++	echo "#*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1" >> /var/cron/tabs/$USER
++	kill -s HUP `cat /var/run/cron.pid`
++	crontab -e )
++}
++install() {
++        freshclam
++        echo -n $"Installing $prog daemon: "
++	# some safety measures
++	touch $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	chmod g+w $LOGFILE $PIDFILE
++	rm -f $SOCKET
++	#it was compiled with uid=18
++	cygrunsrv --install $prog --path $DAEMON -e CYGWIN="$CYGWIN" --disp "CYGWIN `$DAEMON --version`"
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove $prog
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++case "$1" in
++  start)
++        start
++        ;;
++  stop)
++        stop
++        ;;
++  restart)
++        restart
++        ;;
++  reload)
++        reload
++        ;;
++  install)
++        install
++        ;;
++  installcron)
++        installcron
++        ;;
++  uninstall)
++        uninstall
++        ;;
++  status)
++        rhstatus
++        ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|install|uninstall|installcron|restart|condrestart}"
++        exit 1
++esac
++
++exit $?
+--- origsrc/clamav-0.94/sigtool/sigtool.c	2008-09-01 19:19:42.000000000 +0200
++++ src/clamav-0.94/sigtool/sigtool.c	2008-10-02 21:48:20.625000000 +0200
+@@ -975,7 +975,7 @@
+     }
+ 
+     while((dent = readdir(dd))) {
+-#ifndef C_INTERIX
++#ifndef DIRENT_MISSING_D_INO
+ 	if(dent->d_ino)
+ #endif
+ 	{
+@@ -1540,7 +1540,7 @@
+     }
+ 
+     while((dent = readdir(dd))) {
+-#ifndef C_INTERIX
++#ifndef DIRENT_MISSING_D_INO
+ 	if(dent->d_ino)
+ #endif
+ 	{
+--- origsrc/clamav-0.94/sigtool/vba.c	2008-09-01 19:19:42.000000000 +0200
++++ src/clamav-0.94/sigtool/vba.c	2008-10-02 21:48:20.625000000 +0200
+@@ -970,7 +970,10 @@
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino)
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fname = (char *) cli_calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));
+@@ -1129,7 +1132,10 @@
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino) 
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fullname = calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));
+--- origsrc/clamav-0.94/test/negative.expected	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.94/test/negative.expected	2008-10-02 21:48:20.625000000 +0200
+@@ -0,0 +1,6 @@
++clam-error.rar: RAR module failure
++clam.cab: ClamAV-Test-File FOUND
++clam.exe: ClamAV-Test-File FOUND
++clam.exe.bz2: ClamAV-Test-File FOUND
++clam.rar: ClamAV-Test-File FOUND
++clam.zip: ClamAV-Test-File FOUND
+--- origsrc/clamav-0.94/test/positive.expected	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.94/test/positive.expected	2008-10-02 21:48:20.656250000 +0200
+@@ -0,0 +1,7 @@
++test: ClamAV-Test-Signature FOUND
++test-failure.rar: RAR module failure
++test-zip-noext: ClamAV-Test-Signature FOUND
++test.bz2: ClamAV-Test-Signature FOUND
++test.msc: ClamAV-Test-Signature FOUND
++test.rar: ClamAV-Test-Signature FOUND
++test.zip: ClamAV-Test-Signature FOUND
+--- origsrc/clamav-0.94/test/positive.result	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.94/test/positive.result	2008-10-02 21:48:20.656250000 +0200
+@@ -0,0 +1 @@
++test: ClamAV-Test-Signature FOUND
+--- origsrc/clamav-0.94/test/test	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.94/test/test	2008-10-02 21:48:20.656250000 +0200
+@@ -0,0 +1 @@
++$CEliacmaTrESTuScikgsn$FREE-TEST-SIGNATURE$EEEEE$
