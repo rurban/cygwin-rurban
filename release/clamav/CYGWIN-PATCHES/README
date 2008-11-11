@@ -35,7 +35,7 @@ Runtime requirements: (versions given or later)
   
 Build requirements: (versions given or later)
   cygwin-1.5.x
-  autoconf2.5-2.61
+  autoconf2.5-2.63
   cygport-0.90 	(for the latest autoconf2.5)
   libbz2-devel
   libgmp-devel
@@ -128,8 +128,13 @@ Files included in the clamav package:
   /usr/share/man/man5/freshclam.conf.5.gz
   /usr/share/man/man8/clamd.8.gz
 
-Files included in the libclamav5 package:
-
+Files included in the libclamav5 package:  
+  /usr/lib/libclamunrar.a
+  /usr/lib/libclamunrar.dll.a
+  /usr/lib/libclamunrar.la
+  /usr/lib/libclamunrar_iface.a
+  /usr/lib/libclamunrar_iface.dll.a
+  /usr/lib/libclamunrar_iface.la
   /usr/bin/cygclamav-5.dll
   /usr/bin/cygclamunrar-5.dll
   /usr/bin/cygclamunrar_iface-5.dll
@@ -153,8 +158,12 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.94.1-1 -----
+removed wrong /usr/lib/libbz2.la reference in devel
 ----- version 0.94-1 -----
 libclamav5
+clamav apparently dropped special cygwin support, at least the cygwin
+configure. in logic: renabled.
 added --disable-gethostbyname_r
 ----- version 0.93-1 -----
 libclamav4
