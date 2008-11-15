@@ -82,6 +82,9 @@ Files included in mathomatic:
 
 Port Notes:
 
+----- version mathomatic-14.2.2-1 -----
+remove makefile.cygwin
+docdir /usr/share/doc/mathomatic
 ----- version mathomatic-14.1.4-1 -----
 rebased Makefile patches
 ----- version mathomatic-14.0.7-1 -----

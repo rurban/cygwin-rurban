@@ -1,0 +1,278 @@
+--- origsrc/mathomatic-14.2.2/list.c	2008-09-30 14:06:00.000000000 +0200
++++ src/mathomatic-14.2.2/list.c	2008-11-06 09:20:10.312500000 +0100
+@@ -139,7 +139,7 @@
+ 		len += fprintf(gfp, ";");
+ 	}
+ 	if (high_prec || export_flag) {
+-#if	CYGWIN
++#if	WIN32
+ 		fprintf(gfp, "\r\n");	/* might be redirecting to a Microsoft text file */
+ #else
+ 		fprintf(gfp, "\n");
+--- origsrc/mathomatic-14.2.2/main.c	2008-10-29 00:04:19.000000000 +0100
++++ src/mathomatic-14.2.2/main.c	2008-11-06 09:20:10.328125000 +0100
+@@ -290,7 +290,7 @@
+ 		snprintf(rc_file, sizeof(rc_file), "%s/%s", cp, ".mathomaticrc");
+ 		fp = fopen(rc_file, "r");
+ 	}
+-#if	CYGWIN
++#if	WIN32
+ 	if (fp == NULL) {
+ 		snprintf(rc_file, sizeof(rc_file), "%s/%s", dir_path, "mathomatic.rc");
+ 		fp = fopen(rc_file, "r");
+--- origsrc/mathomatic-14.2.2/makefile	2008-10-22 22:45:52.000000000 +0200
++++ src/mathomatic-14.2.2/makefile	2008-11-06 09:52:50.265625000 +0100
+@@ -3,21 +3,30 @@
+ 
+ VERSION		= `cat VERSION`
+ CFLAGS		+= -O2 -Wuninitialized -Wunused -Wshadow -Wformat -Wparentheses # gcc specific flags
+-CFLAGS		+= -DUNIX -DVERSION=\"$(VERSION)\" # C compiler flags
++CFLAGS		+= -DUNIX -DVERSION=\"$(VERSION)\" # general cc flags
+ LIBS		+= -lm # libraries to link
++ifdef CYGWIN
++CFLAGS		+= -DCYGWIN
++LDFLAGS		+= -Wl,-enable-auto-import
++endif
++ifdef WINDIR
++EXE             = .exe
++endif
+ 
+ # "make READLINE=1" to include readline support:
+ CFLAGS		+= $(READLINE:1=-DREADLINE)
+ LIBS		+= $(READLINE:1=-lreadline -lncurses)
+ 
+ # Install directories:
++DESTDIR		=
+ prefix		?= /usr/local
+ bindir		?= $(prefix)/bin
+ mandir		?= $(prefix)/share/man
+ docdir		?= $(prefix)/share/doc
+ 
+ MANHTML		= doc/mathomatic.1.html doc/matho-primes.1.html doc/matho-pascal.1.html doc/matho-sumsq.1.html
+-AOUT		= mathomatic
++AOUT		= mathomatic$(EXE)
++BINS		= $(AOUT) mathomatic_secure$(EXE)
+ M4SCRIPT	= $(bindir)/math
+ 
+ OBJECTS		= main.o globals.o am.o solve.o help.o parse.o cmds.o simplify.o \
+@@ -27,7 +36,7 @@
+ MAN1		= mathomatic.1
+ DOCS		= VERSION AUTHORS COPYING README.txt changes.txt
+ 
+-all: $(AOUT) $(MANHTML) # make these by default
++all: $(BINS) $(MANHTML) # make these by default
+ 	@echo Make completed.
+ 
+ doc: $(MANHTML)
+@@ -46,7 +55,13 @@
+ $(OBJECTS): includes.h am.h externs.h complex.h proto.h VERSION
+ 
+ $(AOUT): $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(AOUT)
++	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
++
++mathomatic_secure$(EXE): $(OBJECTS)
++	make -f makefile.lib clean
++	$(CC) -c -DSECURE -DTIMEOUT_SECONDS=3600 $(CFLAGS) *.c
++	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
++	make -f makefile.lib clean
+ 
+ # Here we convert the man pages to HTML docs:
+ doc/mathomatic.1.html: mathomatic.1
+@@ -76,31 +91,52 @@
+ 	@echo Type \"math\" to run m4 Mathomatic.
+ 
+ install:
+-	install -d $(bindir)
+-	install -d $(mandir)/man1
+-	install -d $(docdir)/mathomatic
+-	install -d $(docdir)/mathomatic/html
+-	install -d $(docdir)/mathomatic/m4
+-	install -d $(docdir)/mathomatic/tests
+-	install -d $(docdir)/mathomatic/factorial
+-	install -d $(prefix)/share/applications
+-	install -d $(prefix)/share/pixmaps
+-	install -m 0755 $(AOUT) $(bindir)
+-	install -m 0644 $(MAN1) $(mandir)/man1
+-	install -m 0644 $(DOCS) $(docdir)/mathomatic
+-	install -m 0644 doc/* $(docdir)/mathomatic/html
+-	install -m 0644 m4/* $(docdir)/mathomatic/m4
+-	install -m 0644 tests/* $(docdir)/mathomatic/tests
+-	install -m 0644 factorial/* $(docdir)/mathomatic/factorial
+-	install -m 0644 icons/mathomatic.desktop $(prefix)/share/applications
+-	install -m 0644 icons/mathomatic.png $(prefix)/share/pixmaps
++	install -d $(DESTDIR)$(bindir)
++	install -d $(DESTDIR)/etc/defaults/etc/skel
++ifdef CYGWIN
++	install -d $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/html
++	install -d $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/m4
++	install -d $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/tests
++	install -d $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/factorial
++else
++	install -d $(DESTDIR)$(docdir)/mathomatic/html
++	install -d $(DESTDIR)$(docdir)/mathomatic/m4
++	install -d $(DESTDIR)$(docdir)/mathomatic/tests
++	install -d $(DESTDIR)$(docdir)/mathomatic/factorial
++endif
++	install -d $(DESTDIR)$(mandir)/man1
++	install -d $(DESTDIR)$(prefix)/share/applications
++	install -d $(DESTDIR)$(prefix)/share/pixmaps
++	install -m 0755 $(BINS) $(DESTDIR)$(bindir)
++	install -m 0644 mathomatic.rc $(DESTDIR)/etc/defaults/etc/skel/.mathomaticrc
++	install -m 0644 $(MAN1) $(DESTDIR)$(mandir)/man1
++ifdef CYGWIN
++	install -m 0644 $(DOCS) $(DESTDIR)$(docdir)/mathomatic-$(VERSION)
++	install -m 0644 doc/* $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/html
++	install -m 0644 m4/* $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/m4
++	install -m 0644 tests/* $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/tests
++	install -m 0644 factorial/* $(DESTDIR)$(docdir)/mathomatic-$(VERSION)/factorial
++else
++	install -m 0644 $(DOCS) $(DESTDIR)$(docdir)/mathomatic
++	install -m 0644 doc/*   $(DESTDIR)$(docdir)/mathomatic/html
++	install -m 0644 m4/*    $(DESTDIR)$(docdir)/mathomatic/m4
++	install -m 0644 tests/* $(DESTDIR)$(docdir)/mathomatic/tests
++	install -m 0644 factorial/* $(DESTDIR)$(docdir)/mathomatic/factorial
++endif
++	install -m 0644 icons/mathomatic.desktop $(DESTDIR)$(prefix)/share/applications
++	install -m 0644 icons/mathomatic.png $(DESTDIR)$(prefix)/share/pixmaps
++	install -m 0644 icons/mathomatic.ico $(DESTDIR)$(prefix)/share/pixmaps
+ 	@echo Install completed.
+ 	@echo Documentation is installed in $(docdir)/mathomatic/html
+ 
+ uninstall:
+ 	rm -f $(bindir)/$(AOUT) $(M4SCRIPT)
+ 	cd $(mandir)/man1 && rm -f $(MAN1)
++ifdef CYGWIN
++	rm -rf $(docdir)/mathomatic-$(VERSION)
++else
+ 	rm -rf $(docdir)/mathomatic
++endif
+ 	rm -f $(prefix)/share/applications/mathomatic.desktop
+ 	rm -f $(prefix)/share/pixmaps/mathomatic.png
+ 	@echo Uninstall completed.
+--- origsrc/mathomatic-14.2.2/makefile.cygwin	2008-07-08 15:46:23.000000000 +0200
++++ src/mathomatic-14.2.2/makefile.cygwin	1970-01-01 01:00:00.000000000 +0100
+@@ -1,32 +0,0 @@
+-# Makefile for compiling and testing Mathomatic with Cygwin for MS-Windows.
+-
+-VERSION		= `cat VERSION`
+-CFLAGS		= -O2 -DCYGWIN -DVERSION=\"$(VERSION)\"
+-LDFLAGS		= -s
+-LIBS		= -lm
+-
+-CFLAGS		+= -DREADLINE
+-LIBS		+= -lreadline -lcurses
+-
+-AOUT		= mathomatic.exe
+-OBJECTS		= main.o globals.o am.o solve.o help.o parse.o cmds.o simplify.o factor.o super.o \
+-		  unfactor.o poly.o diff.o integrate.o complex.o complex_lib.o list.o gcd.o factor_int.o
+-
+-all: $(AOUT)
+-	@echo Make completed.
+-
+-check test:
+-	cd tests && time ../$(AOUT) -t all 0<&- >test.out && fc all.out test.out
+-	@echo All tests passed.
+-
+-baseline:
+-	cd tests && ../$(AOUT) -t all 0<&- >all.out
+-
+-$(OBJECTS): includes.h am.h externs.h complex.h proto.h VERSION
+-
+-$(AOUT): $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(AOUT)
+-
+-clean:
+-	rm -f *.o
+-	rm -f lib/*.o
+--- origsrc/mathomatic-14.2.2/makefile.lib	2008-08-09 02:55:59.000000000 +0200
++++ src/mathomatic-14.2.2/makefile.lib	2008-11-06 09:48:44.625000000 +0100
+@@ -2,12 +2,20 @@
+ # Be sure to "make clean" between using different makefiles.
+ 
+ VERSION		= `cat VERSION`
+-CFLAGS		+= -O2 -DLIBRARY -DUNIX -DVERSION=\"$(VERSION)\" # C compiler flags
++CFLAGS		+= -DLIBRARY -DUNIX -DVERSION=\"$(VERSION)\" # general cc flags
+ LIBS		+= -lm # libraries to link
++ifdef CYGWIN
++CFLAGS		+= -DCYGWIN
++LDFLAGS		+= -Wl,-enable-auto-import
++endif
++ifdef WINDIR
++EXE             = .exe
++endif
+ 
++DESTDIR		=
+ prefix		?= /usr/local
+ 
+-AOUT		= mathomatic # The name of the library test executable file to create.
++AOUT		= libmathomatic$(EXE) # The name of the library test executable file to create.
+ LIB		= libmathomatic.a # The name of the symbolic math library file to create.
+ HEADERS		= lib/mathomatic.h
+ 
+@@ -28,8 +36,10 @@
+ 	$(CC) $(LDFLAGS) lib/test.o $(LIB) $(LIBS) -o $(AOUT)
+ 
+ install:
+-	install -m 0644 $(LIB) $(prefix)/lib
+-	install -m 0644 $(HEADERS) $(prefix)/include
++	install -d $(DESTDIR)$(prefix)/lib
++	install -d $(DESTDIR)$(prefix)/include
++	install -m 0644 $(LIB) $(DESTDIR)$(prefix)/lib/
++	install -m 0644 lib/mathomatic.h $(DESTDIR)$(prefix)/include/
+ 
+ clean:
+ 	rm -f *.o
+--- origsrc/mathomatic-14.2.2/primes/makefile	2008-09-21 00:56:08.000000000 +0200
++++ src/mathomatic-14.2.2/primes/makefile	2008-11-06 09:26:13.343750000 +0100
+@@ -1,20 +1,23 @@
+-# Makefile for compiling and installing the Mathomatic Prime Number Tools under Linux and Unix.
++# Makefile for compiling and installing the Mathomatic Prime Number Tools under Linux/Unix/cygwin/mingw.
+ # gcc is the C compiler used.
+ 
+-CFLAGS		+= -O2 -Wall -std=gnu99
+-LDFLAGS		+= -lm
++CFLAGS		+= -O2 -Wall -std=gnu99 -DUNIX -DVERSION=\"$(VERSION)\"
++LDFLAGS		+= -lm -Wl,-enable-auto-import
++ifdef WINDIR
++EXE             = .exe
++endif
+ 
+ prefix		?= /usr/local
+ bindir		?= $(prefix)/bin
+ mandir		?= $(prefix)/share/man
+ 
+-TARGETS		= matho-primes matho-pascal matho-sumsq # the executables
++TARGETS		= matho-primes$(EXE) matho-pascal$(EXE) matho-sumsq$(EXE) # the executables
+ MAN1		= matho-primes.1 matho-pascal.1 matho-sumsq.1 # the man pages
+ 
+ all: $(TARGETS)
+ 	@echo Make completed.
+ 
+-matho-sumsq: matho-sumsq.o lsqrt.o
++matho-sumsq$(EXE): matho-sumsq.o lsqrt.o
+ 
+ check test:
+ 	time ./matho-primes 10000000000000 10000000300000 twin >test.out && diff -u twins.out test.out
+@@ -27,10 +30,10 @@
+ 	@echo Test passed.
+ 
+ install:
+-	install -d $(bindir)
+-	install -d $(mandir)/man1
+-	install -m 0755 $(TARGETS) $(bindir)
+-	install -m 0644 $(MAN1) $(mandir)/man1
++	install -d $(DESTDIR)$(bindir)
++	install -d $(DESTDIR)$(mandir)/man1
++	install -m 0755 $(TARGETS) $(DESTDIR)$(bindir)
++	install -m 0644 $(MAN1) $(DESTDIR)$(mandir)/man1
+ 	@echo Install completed.
+ 
+ uninstall:
+@@ -41,3 +44,6 @@
+ 	rm -f *.o
+ 	rm -f $(TARGETS)
+ 	rm -f test.out
++
++%.exe: %.c
++	$(CC) $(CFLAGS) $(LDFLAGS) -o $*.exe $<
