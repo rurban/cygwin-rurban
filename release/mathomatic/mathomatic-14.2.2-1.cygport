@@ -1,0 +1,29 @@
+DESCRIPTION="console-mode Computer Algebra System"
+HOMEPAGE="http://www.mathomatic.org/"
+SRC_URI="http://www.panix.com/~gesslein/${PN}-${PV}.tar.bz2"
+#CVS_URI="..."
+
+# LDFLAGS="${LDFLAGS} -Wl,--enable-auto-image-base"
+CFLAGS="${CFLAGS} -O2 -pipe"
+MAKEOPTS="-j1"
+MAKELIB="make -j1 -f makefile.lib"
+DOCS="changes.txt tasks.txt README.txt"
+HTMLDOCS="doc/*.html doc/*.png doc/*.ico"
+
+src_compile() {
+  lndirs
+  cd ${B}
+  cygmake clean
+  $MAKELIB
+  $MAKELIB clean
+  cygmake
+  # no long double support yet. just in mingw
+  # make -C primes
+}
+
+src_install() {
+  cd ${B}
+  cygmake install DESTDIR=${D} prefix=/usr
+  $MAKELIB install DESTDIR=${D} prefix=/usr
+  # make install -C primes DESTDIR=${D} prefix=/usr
+}
