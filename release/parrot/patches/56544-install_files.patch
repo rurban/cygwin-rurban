@@ -9,9 +9,18 @@
 
 Index: parrot-svn/tools/dev/install_files.pl
 ===================================================================
---- parrot-svn.orig/tools/dev/install_files.pl
-+++ parrot-svn/tools/dev/install_files.pl
-@@ -126,7 +126,7 @@ my %options = (
+--- parrot-svn.orig/tools/dev/install_files.pl	2008-12-09 00:09:47.096625000 +0000
++++ parrot-svn/tools/dev/install_files.pl	2008-12-27 14:05:24.318500000 +0000
+@@ -1,7 +1,7 @@
+ #! perl
+ ################################################################################
+ # Copyright (C) 2001-2008, The Perl Foundation.
+-# $Id: install_files.pl 33663 2008-12-08 17:35:29Z infinoid $
++# $Id: /mirror/trunk/tools/dev/install_files.pl 33694 2008-12-08T17:35:29.360148Z infinoid  $
+ ################################################################################
+ 
+ =head1 TITLE
+@@ -126,7 +126,7 @@
      bindir      => '/usr/bin',
      libdir      => '/usr/lib',
      includedir  => '/usr/include',
@@ -20,7 +29,7 @@ Index: parrot-svn/tools/dev/install_files.pl
      'dry-run'   => 0,
  );
  
-@@ -189,6 +189,7 @@ while (<>) {
+@@ -189,6 +189,7 @@
      }
      elsif ( $meta{include} ) {
          $dest =~ s/^include//;
@@ -28,7 +37,7 @@ Index: parrot-svn/tools/dev/install_files.pl
          $dest = File::Spec->catdir( $options{includedir}, $dest );
      }
      elsif ( $meta{doc} ) {
-@@ -197,12 +198,14 @@ while (<>) {
+@@ -197,16 +198,19 @@
      elsif ( $meta{pkgconfig} ) {
  
          # For the time being this is hardcoded as being installed under libdir
@@ -38,13 +47,22 @@ Index: parrot-svn/tools/dev/install_files.pl
          # --pkgconfigdir option.
          $dest = File::Spec->catdir( $options{libdir}, 'pkgconfig', $dest );
      }
+-    elsif ( /\[library]/ ) {
+-        $dest =~ s/^runtime/$options{libdir}/;
+-    }
      else {
+-        $dest = File::Spec->catdir( $options{prefix}, $dest );
 +        $dest =~ s|^src/|lib/parrot/src/|;
 +        next if $dest =~ /^compilers|config|language|tools/;
-         $dest =~ s/^runtime/lib/ if /\[library]/;
-         $dest = File::Spec->catdir( $options{prefix}, $dest );
++        if (/^runtime/) {
++            $dest =~ s/^runtime/$options{libdir}/;
++        } else {
++            $dest = File::Spec->catdir( $options{prefix}, $dest );
++        }
      }
-@@ -243,6 +246,7 @@ foreach ( @files, @installable_exe ) {
+ 
+     $dest = File::Spec->catdir( $options{buildprefix}, $dest )
+@@ -245,6 +249,7 @@
      }
      else {
          next unless -e $src;

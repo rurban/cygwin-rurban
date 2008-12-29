@@ -16,8 +16,8 @@ config_args should be stored in config_lib.pasm as in perl5 also.
 
 Index: parrot-svn/config/gen/makefiles/root.in
 ===================================================================
---- parrot-svn.orig/config/gen/makefiles/root.in
-+++ parrot-svn/config/gen/makefiles/root.in
+--- parrot-svn.orig/config/gen/makefiles/root.in	2008-12-27 00:09:59.486065000 +0000
++++ parrot-svn/config/gen/makefiles/root.in	2008-12-27 14:32:58.756000000 +0000
 @@ -19,6 +19,7 @@
  DEVEL           = @DEVEL@
  VERSION         = @VERSION@$(DEVEL)
@@ -26,11 +26,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  
  # Override at least PREFIX with the install location if you're going
  # to be using this outside of your build area.
-<<<<<<< .mine
-@@ -997,6 +998,20 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
-=======
-@@ -1002,6 +1003,20 @@ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/
->>>>>>> .r48
+@@ -993,6 +994,20 @@
      lib/Parrot/OpsFile.pm lib/Parrot/Op.pm $(OPS_DIR)/ops.num $(OPS_DIR)/ops.skip
  	$(PERL) $(BUILD_TOOLS_DIR)/ops2pm.pl $(OPS_FILES)
  
@@ -51,11 +47,7 @@ Index: parrot-svn/config/gen/makefiles/root.in
  ###############################################################################
  #
  # Examples (Assembly):
-<<<<<<< .mine
-@@ -1772,7 +1787,7 @@ svnclobber : .svn
-=======
-@@ -1778,7 +1793,7 @@ svnclobber : .svn
->>>>>>> .r48
+@@ -1768,7 +1783,7 @@
  	$(PERL) tools/dev/svnclobber.pl
  
  reconfig : clean
@@ -66,9 +58,9 @@ Index: parrot-svn/config/gen/makefiles/root.in
  	$(PERL) tools/dev/manicheck.pl
 Index: parrot-svn/Configure.pl
 ===================================================================
---- parrot-svn.orig/Configure.pl
-+++ parrot-svn/Configure.pl
-@@ -63,6 +63,8 @@ $conf->add_steps( get_steps_list() );
+--- parrot-svn.orig/Configure.pl	2008-12-20 00:09:52.162916100 +0000
++++ parrot-svn/Configure.pl	2008-12-27 14:32:58.802875000 +0000
+@@ -63,6 +63,8 @@
  
  # from Parrot::Configure::Data
  $conf->options->set( %{$args} );

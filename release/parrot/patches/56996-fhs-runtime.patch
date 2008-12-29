@@ -9,21 +9,26 @@ Not enough tuits yet to fix and debug it.
 
 Index: parrot-svn/runtime/parrot/library/config.pir
 ===================================================================
---- parrot-svn.orig/runtime/parrot/library/config.pir
-+++ parrot-svn/runtime/parrot/library/config.pir
-@@ -48,12 +48,27 @@ undefined values) is undefined, and may 
+--- parrot-svn.orig/runtime/parrot/library/config.pir	2008-12-28 00:09:07.132000000 +0000
++++ parrot-svn/runtime/parrot/library/config.pir	2008-12-28 11:59:46.162250000 +0000
+@@ -1,4 +1,4 @@
+-# $Id: config.pir 30849 2008-09-07 06:00:33Z cotto $
++# $Id: /mirror/trunk/runtime/parrot/library/config.pir 30880 2008-09-07T06:00:33.553228Z cotto  $
+ 
+ =head1 TITLE
+ 
+@@ -48,12 +48,26 @@
  .sub _config
      .local pmc CONF
      .local string conf_file
 +
-+    # We should check if a linked frozen hash already exists
-+    # and return that instead. See RT #57418
-+    find_global $P0, "config", "_config"
++    $P0 = find_global '', '_config'
 +    unless $P0 goto runtime
 +    $P0 = _config()
 +    .return( $P0 )
 +
 +runtime:
++    # conf_file = Parrot_locate_runtime_file_str(interp, "config.fpmc", 2)
      conf_file = interpinfo .INTERPINFO_RUNTIME_PREFIX
 -    conf_file .= "/runtime/parrot/include/config.fpmc"
 +    conf_file .= "/lib/parrot/include/config.fpmc"
@@ -42,9 +47,9 @@ Index: parrot-svn/runtime/parrot/library/config.pir
      printerr "': "
 Index: parrot-svn/runtime/parrot/library/parrotlib.pir
 ===================================================================
---- parrot-svn.orig/runtime/parrot/library/parrotlib.pir
-+++ parrot-svn/runtime/parrot/library/parrotlib.pir
-@@ -24,14 +24,13 @@ parrotlib's interface functions.
+--- parrot-svn.orig/runtime/parrot/library/parrotlib.pir	2008-12-28 00:09:07.134000000 +0000
++++ parrot-svn/runtime/parrot/library/parrotlib.pir	2008-12-28 00:11:03.068500000 +0000
+@@ -24,14 +24,13 @@
      .local pmc includes
      .local string root
  
@@ -60,7 +65,7 @@ Index: parrot-svn/runtime/parrot/library/parrotlib.pir
      root = "runtime/parrot"
  OKAY:
  
-@@ -138,13 +137,22 @@ Returns the location of a dynamic extens
+@@ -138,13 +137,22 @@
      stat $I0, name, 0
      if $I0 goto END
  
@@ -86,9 +91,9 @@ Index: parrot-svn/runtime/parrot/library/parrotlib.pir
      if $I0 goto END
 Index: parrot-svn/src/library.c
 ===================================================================
---- parrot-svn.orig/src/library.c
-+++ parrot-svn/src/library.c
-@@ -121,64 +121,111 @@ if will be called as a function with thi
+--- parrot-svn.orig/src/library.c	2008-12-28 00:09:07.231000000 +0000
++++ parrot-svn/src/library.c	2008-12-28 00:11:03.068500000 +0000
+@@ -121,64 +121,111 @@
  Platform code may add, delete, or replace search path entries as needed. See
  also F<include/parrot/library.h> for C<enum_lib_paths>.
  
@@ -220,53 +225,25 @@ Index: parrot-svn/src/library.c
  
      /* shared exts */
      paths = pmc_new(interp, enum_class_ResizableStringArray);
-@@ -202,7 +249,16 @@ parrot_init_library_paths(PARROT_INTERP)
- 
- =item C<static PMC* get_search_paths>
- 
--RT#48260: Not yet documented!!!
-+Return lib_paths as array of StringArrays with library searchpaths and shared
-+extension used for loading various files at runtime.
-+The structure looks like this:
-+
-+  lib_paths = [
-+    [ "runtime/parrot/include", ... ],   # paths for .include 'file'
-+    [ "runtime/parrot/library", ... ],   # paths for load_bytecode
-+    [ "runtime/parrot/dynext", ... ],    # paths for loadlib
-+    [ ".so", ... ]                       # list of shared extensions
-+  ]
- 
- =cut
- 
-@@ -573,7 +629,9 @@ Parrot_locate_runtime_file_str(PARROT_IN
- 
- =item C<char* Parrot_locate_runtime_file>
- 
--RT#48260: Not yet documented!!!
-+Determines whether a file name given by a fixed-8 or utf8 C<STRING> is an
-+absolute file name. Returns C<1> if the filename is absolute, returns C<0>
-+otherwise.
- 
- =cut
- 
 Index: parrot-svn/config/gen/config_pm/config_lib.in
 ===================================================================
---- parrot-svn.orig/config/gen/config_pm/config_lib.in
-+++ parrot-svn/config/gen/config_pm/config_lib.in
+--- parrot-svn.orig/config/gen/config_pm/config_lib.in	2008-12-28 00:09:07.131000000 +0000
++++ parrot-svn/config/gen/config_pm/config_lib.in	2008-12-28 00:11:03.068500000 +0000
 @@ -1,3 +1,4 @@
 +
  .pcc_sub main:
          get_params "(0)", P5
  	set I10, P5     # argv
-@@ -12,6 +13,7 @@ no_arg:
+@@ -12,10 +13,17 @@
  
  	<<PCONFIG>>
  
+-	if I11, is_install
 +	set P0["installed"], I11
- 	if I11, is_install
++	ge I11, 1, is_install
  	set S1, "<<PWD>>"
  	set P0["prefix"], S1
-@@ -19,3 +21,9 @@ is_install:
+ is_install:
  	freeze S0, P0
  	print S0
  	end
