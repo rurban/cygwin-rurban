@@ -1,0 +1,449 @@
+Index: MANIFEST
+===================================================================
+--- MANIFEST	(revision 34502)
++++ MANIFEST	(working copy)
+@@ -3716,8 +3716,12 @@
+ t/tools/ops2pm/samples/core_ops.orig                        []
+ t/tools/ops2pm/samples/ops_num.orig                         []
+ t/tools/ops2pm/samples/pic_ops.orig                         []
++t/tools/parrot_config.t                                     []
+ t/tools/parrot_debugger.t                                   []
++t/tools/pbc_disassemble.t                                   []
++t/tools/pbc_info.t                                          []
+ t/tools/pbc_merge.t                                         []
++t/tools/pdump.t                                             []
+ t/tools/pmc2c.t                                             []
+ t/tools/pmc2cutils/00-qualify.t                             []
+ t/tools/pmc2cutils/01-pmc2cutils.t                          []
+Index: t/tools/parrot_debugger.t
+===================================================================
+--- t/tools/parrot_debugger.t	(revision 34476)
++++ t/tools/parrot_debugger.t	(working copy)
+@@ -22,7 +22,7 @@
+ =head1 REQUIREMENTS
+ 
+ This test script requires you to build parrot_debugger, by typing
+-"make parrot_debugger" (using a suitable make tool for your platform).
++"make parrot_utils" (using a suitable make tool for your platform).
+ If this requirement has not been met, all tests will be skipped.
+ 
+ =cut
+@@ -32,7 +32,7 @@
+ use lib qw(lib);
+ 
+ use Test::More;
+-use IO::File;
++use IO::File ();
+ use Parrot::Config;
+ use File::Spec;
+ 
+@@ -42,7 +42,7 @@
+     $path_to_pdb = File::Spec->catfile( ".", "parrot_debugger" );
+     my $exefile = $path_to_pdb . $PConfig{exe};
+     unless ( -f $exefile ) {
+-        plan skip_all => "parrot_debugger hasn't been built";
++        plan skip_all => "parrot_debugger hasn't been built. Run make parrot_utils";
+         exit(0);
+     }
+ }
+@@ -101,6 +101,7 @@
+     my $output = join( '', <$f> );
+ 
+     local $Test::Builder::Level = $Test::Builder::Level + 1;
++    unlink ($codefn, $stdinfn, $stdoutfn);
+     like( $output, $check, $diag );
+ }
+ 
+Index: t/tools/pbc_disassemble.t
+===================================================================
+--- t/tools/pbc_disassemble.t	(revision 0)
++++ t/tools/pbc_disassemble.t	(revision 0)
+@@ -0,0 +1,120 @@
++#! perl
++# Copyright (C) 2007-2008, The Perl Foundation.
++# $Id: pbc_disassemble.t 34223 2008-12-22 03:24:34Z petdance $
++
++=head1 NAME
++
++t/tools/pbc_disassemble.t - test the Parrot Debugger
++
++=head1 SYNOPSIS
++
++    % prove t/tools/pbc_disassemble.t
++
++=head1 DESCRIPTION
++
++Tests the C<pbc_disassemble> tool by providing it with a number of source
++files, and running through it with various commands.
++
++We never actually check the I<full> output of pbc_disassemble.  We simply check
++several smaller components to avoid a test file that is far too unwieldy.
++
++
++=head1 REQUIREMENTS
++
++This test script requires you to build pbc_disassemble, by typing
++"make parrot_utils" (using a suitable make tool for your platform).
++If this requirement has not been met, all tests will be skipped.
++
++=cut
++
++use strict;
++use warnings;
++use lib qw(lib);
++
++use Test::More;
++use IO::File ();
++use Parrot::Config;
++use File::Spec;
++
++my $path;
++my $parrot = File::Spec->catfile( ".", $PConfig{test_prog} );
++
++BEGIN {
++    $path = File::Spec->catfile( ".", "pbc_disassemble" );
++    my $exefile = $path . $PConfig{exe};
++    unless ( -f $exefile ) {
++        plan skip_all => "pbc_disassemble hasn't been built. Run make parrot_utils";
++        exit(0);
++    }
++    plan tests => 2;
++}
++
++output_like( <<PIR, "pir", [ qr/set_n_nc/, qr/print_n/], 'pbc_disassemble');
++.sub main :main
++    \$N3 = 3.14159
++    print \$N3
++    print "\\n"
++.end
++PIR
++
++=head1 HELPER SUBROUTINES
++
++=head2 output_like
++
++    output_like(<<PASM, "pasm", "some output", "running $file");
++
++Takes 3-4 arguments: a file to run,
++the filename-extension of the file (probably "pir" or "pasm"),
++an arrayref or single regex string to match within pbc_disassemble's output,
++and the optional test diagnostic.
++
++=cut
++
++my $testno = 0;
++
++sub output_like {
++    my ( $file, $ext, $check, $diag ) = @_;
++    $testno++;
++    my $codefn   = "$0.$testno.$ext";
++    my $pbcfn    = "$0.$testno.pbc";
++    my $stdoutfn = "$0.$testno.stdout";
++    my $f        = IO::File->new(">$codefn");
++    $f->print($file);
++    $f->close();
++    system("$parrot -o $pbcfn $codefn 2>&1");
++    system("$path $pbcfn >$stdoutfn 2>&1");
++    $f = IO::File->new($stdoutfn);
++
++    my $output = join( '', <$f> );
++
++    local $Test::Builder::Level = $Test::Builder::Level + 1;
++    unlink ($codefn, $pbcfn, $stdoutfn);
++    if (ref $check eq 'ARRAY') {
++	for my $chk (@$check) {
++	    like( $output, $chk, $diag );
++	    $testno++;
++	}
++    } else {
++	like( $output, $check, $diag );
++    }
++}
++
++=head1 TODO
++
++=over 4
++
++=item
++
++Flesh it out.  This is a bare bones proof of concept.
++Add tests for all of the commands.
++
++=back
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+
+Property changes on: t/tools/pbc_disassemble.t
+___________________________________________________________________
+Added: svn:executable
+   + *
+
+Index: t/tools/pbc_info.t
+===================================================================
+--- t/tools/pbc_info.t	(revision 0)
++++ t/tools/pbc_info.t	(revision 0)
+@@ -0,0 +1,120 @@
++#! perl
++# Copyright (C) 2007-2008, The Perl Foundation.
++# $Id: pbc_info.t 34223 2008-12-22 03:24:34Z petdance $
++
++=head1 NAME
++
++t/tools/pbc_info.t - test the Parrot Dumper
++
++=head1 SYNOPSIS
++
++    % prove t/tools/pbc_info.t
++
++=head1 DESCRIPTION
++
++Tests the C<pbc_info> tool by providing it with a number of source
++files, and running through it with various commands.
++
++We never actually check the I<full> output of pbc_info.  We simply check
++several smaller components to avoid a test file that is far too unwieldy.
++
++
++=head1 REQUIREMENTS
++
++This test script requires you to build pbc_info, by typing
++"make parrot_utils" (using a suitable make tool for your platform).
++If this requirement has not been met, all tests will be skipped.
++
++=cut
++
++use strict;
++use warnings;
++use lib qw(lib);
++
++use Test::More;
++use IO::File ();
++use Parrot::Config;
++use File::Spec;
++
++my $path;
++my $parrot = File::Spec->catfile( ".", $PConfig{test_prog} );
++
++BEGIN {
++    $path = File::Spec->catfile( ".", "pbc_info" );
++    my $exefile = $path . $PConfig{exe};
++    unless ( -f $exefile ) {
++        plan skip_all => "pbc_info hasn't been built. Run make parrot_utils";
++        exit(0);
++    }
++    plan tests => 4;
++}
++
++output_like( <<PIR, "pir", [qr/FIXUP_t/, qr/PIC_idx/, qr/CONSTANT_t/, qr/BYTECODE_t/], 'pbc_info');
++.sub main :main
++    \$N3 = 3.14159
++    print \$N3
++    print "\\n"
++.end
++PIR
++
++=head1 HELPER SUBROUTINES
++
++=head2 output_like
++
++    output_like(<<PASM, "pasm", "some output", "running $file");
++
++Takes 3-4 arguments: a file to run,
++the filename-extension of the file (probably "pir" or "pasm"),
++an arrayref or single regex string to match within pbc_info's output,
++and the optional test diagnostic.
++
++=cut
++
++my $testno = 0;
++
++sub output_like {
++    my ( $file, $ext, $check, $diag ) = @_;
++    $testno++;
++    my $codefn   = "$0.$testno.$ext";
++    my $pbcfn    = "$0.$testno.pbc";
++    my $stdoutfn = "$0.$testno.stdout";
++    my $f        = IO::File->new(">$codefn");
++    $f->print($file);
++    $f->close();
++    system("$parrot -o $pbcfn $codefn 2>&1");
++    system("$path $pbcfn >$stdoutfn 2>&1");
++    $f = IO::File->new($stdoutfn);
++
++    my $output = join( '', <$f> );
++
++    local $Test::Builder::Level = $Test::Builder::Level + 1;
++    unlink ($codefn, $pbcfn, $stdoutfn);
++    if (ref $check eq 'ARRAY') {
++	for my $chk (@$check) {
++	    like( $output, $chk, $diag );
++	    $testno++;
++	}
++    } else {
++	like( $output, $check, $diag );
++    }
++}
++
++=head1 TODO
++
++=over 4
++
++=item
++
++Flesh it out.  This is a bare bones proof of concept.
++Add tests for all of the commands.
++
++=back
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+
+Property changes on: t/tools/pbc_info.t
+___________________________________________________________________
+Added: svn:executable
+   + *
+
+Index: t/tools/pdump.t
+===================================================================
+--- t/tools/pdump.t	(revision 0)
++++ t/tools/pdump.t	(revision 0)
+@@ -0,0 +1,120 @@
++#! perl
++# Copyright (C) 2007-2008, The Perl Foundation.
++# $Id: pdump.t 34223 2008-12-22 03:24:34Z petdance $
++
++=head1 NAME
++
++t/tools/pdump.t - test the Parrot Dumper
++
++=head1 SYNOPSIS
++
++    % prove t/tools/pdump.t
++
++=head1 DESCRIPTION
++
++Tests the C<pdump> tool by providing it with a number of source
++files, and running through it with various commands.
++
++We never actually check the I<full> output of pdump.  We simply check
++several smaller components to avoid a test file that is far too unwieldy.
++
++
++=head1 REQUIREMENTS
++
++This test script requires you to build pdump, by typing
++"make parrot_utils" (using a suitable make tool for your platform).
++If this requirement has not been met, all tests will be skipped.
++
++=cut
++
++use strict;
++use warnings;
++use lib qw(lib);
++
++use Test::More;
++use IO::File ();
++use Parrot::Config;
++use File::Spec;
++
++my $path;
++my $parrot = File::Spec->catfile( ".", $PConfig{test_prog} );
++
++BEGIN {
++    $path = File::Spec->catfile( ".", "pdump" );
++    my $exefile = $path . $PConfig{exe};
++    unless ( -f $exefile ) {
++        plan skip_all => "pdump hasn't been built. Run make parrot_utils";
++        exit(0);
++    }
++    plan tests => 2;
++}
++
++output_like( <<PIR, "pir", [qr/'PFC_STRING'/, qr/PFC_PMC/], '');
++.sub main :main
++    \$N3 = 3.14159
++    print \$N3
++    print "\\n"
++.end
++PIR
++
++=head1 HELPER SUBROUTINES
++
++=head2 output_like
++
++    output_like(<<PASM, "pasm", "some output", "running $file");
++
++Takes 3-4 arguments: a file to run,
++the filename-extension of the file (probably "pir" or "pasm"),
++an arrayref or single regex string to match within pdump's output,
++and the optional test diagnostic.
++
++=cut
++
++my $testno = 0;
++
++sub output_like {
++    my ( $file, $ext, $check, $diag ) = @_;
++    $testno++;
++    my $codefn   = "$0.$testno.$ext";
++    my $pbcfn    = "$0.$testno.pbc";
++    my $stdoutfn = "$0.$testno.stdout";
++    my $f        = IO::File->new(">$codefn");
++    $f->print($file);
++    $f->close();
++    system("$parrot -o $pbcfn $codefn 2>&1");
++    system("$path $pbcfn >$stdoutfn 2>&1");
++    $f = IO::File->new($stdoutfn);
++
++    my $output = join( '', <$f> );
++
++    local $Test::Builder::Level = $Test::Builder::Level + 1;
++    unlink ($codefn, $pbcfn, $stdoutfn);
++    if (ref $check eq 'ARRAY') {
++	for my $chk (@$check) {
++	    like( $output, $chk, $diag );
++	    $testno++;
++	}
++    } else {
++	like( $output, $check, $diag );
++    }
++}
++
++=head1 TODO
++
++=over 4
++
++=item
++
++Flesh it out.  This is a bare bones proof of concept.
++Add tests for all of the commands.
++
++=back
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+
+Property changes on: t/tools/pdump.t
+___________________________________________________________________
+Added: svn:executable
+   + *
+

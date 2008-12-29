@@ -1,7 +1,7 @@
 Index: README_cygwin.pod
 ===================================================================
---- README_cygwin.pod	(revision 29630)
-+++ README_cygwin.pod	(working copy)
+--- README_cygwin.pod.orig	2008-12-27 15:37:28.912250000 +0000
++++ README_cygwin.pod	2008-12-27 15:55:40.365375000 +0000
 @@ -6,37 +6,98 @@
  
  =head1 SYNOPSIS
@@ -10,7 +10,7 @@ Index: README_cygwin.pod
 -different names of dynamic loading of some dll's.
 +Parrot builds out of the box under Cygwin after 
 +C<export PATH=`pwd`/blib/lib:$PATH>
- 
++
 +There are official cygwin parrot packages available via
 +L<http://cygwin.com/setup.exe>.
 +
@@ -19,7 +19,7 @@ Index: README_cygwin.pod
 +Some tweaks are needed for different names for the ffi to some dll's.
 +See L</loadlib DLL versioning>
 +
-+
+ 
  =head1 Packages
  
 -You'll need the following Cygwin packages to build Parrot.
@@ -28,19 +28,15 @@ Index: README_cygwin.pod
  
 -=over 4
 +Runtime requirements:
- 
--=item gcc
++
 +  libreadline6 ncurses libintl8 libgmp3 libgdbm4
- 
--=item make
++
 +Optional requirements:
- 
--=item perl
++
 +  libicu38 libpq5 openssl
- 
--=item subversion
++
 +  for opengl: w32api opengl or libglut3 xorg-x11-base xorg-x11-bin-dlls
- 
++
 +Build requirements:
 +
 +  gcc make perl parrot readline libncurses-devel libgmp-devel
@@ -56,29 +52,33 @@ Index: README_cygwin.pod
 +
 +  L<Test::TAP::HTMLMatrix> if you want to run the language smoke tests
 +  with C<make languages-smoke>.
-+
+ 
+-=item gcc
 +  L<Test::Base> for some APL language tests.
-+
+ 
+-=item make
 +  perl L<Moose> for smartlink
-+
+ 
+-=item perl
 +  perl L<Test::Perl::Critic> and L<Perl::Critic>
-+
+ 
+-=item subversion
 +=over 4
 +
 +=item Cygwin subversion and perl
-+
+ 
  If you use SVN to get a copy of Parrot, you should use the Cygwin SVN
  and not the TortoiseSVN client to avoid build errors.  Similarly you will
  need Cygwin Perl rather than ActiveState or Strawberry Perl.
  
 -=item ICU
-+=item icu
- 
+-
 -This is no official Cygwin package yet.  However, icu4c-3_8 builds out of the
 -box on Cygwin.
 -
 -  http://download.icu-project.org/files/icu4c/3.8/icu4c-3_8-src.tgz
--
++=item icu
+ 
  Note that ICU is now optional, you can build Parrot without it,
  by not installing it or asking Parrot to ignore it (C<--without-icu>).
  
@@ -120,7 +120,7 @@ Index: README_cygwin.pod
  =item Makefile tuning
  
 -rename libparrot.dll to cygparrot.dll, create an interim libparrot.dll.a
-+Rename libparrot.dll to cygparrot0_6_x.dll and create an interim
++Rename libparrot.dll to cygparrot0_8_2.dll and create an interim
 +libparrot.dll.a
  
 -fix the blib/lib PATH issue
@@ -137,7 +137,7 @@ Index: README_cygwin.pod
 -Thanks to the L<Windows DLL Hell / http://> and the impossibility of file
 -hardlinks, windows dll names are versioned, so the loadlib function or the
 -various pir's needs more logic.
-+Thanks to the L<Windows DLL Hell / http://?> and the impossibility of
++Thanks to the L<Windows DLL Hell> and the impossibility of
 +file hardlinks, windows dll names are versioned, so the loadlib
 +function or the various pir's needs more logic.
  
@@ -150,6 +150,15 @@ Index: README_cygwin.pod
 +when exceptions work again.
  
  =item Features
+ 
+@@ -79,7 +144,7 @@
+ 
+ =over
+ 
+-=item Reini Urban E<lt>rurban@cpan.orgE<gt>
++=item Reini Urban E<lt>rurban@x-ray.atE<gt>
+ 
+ =back
  
 @@ -89,6 +154,6 @@
  

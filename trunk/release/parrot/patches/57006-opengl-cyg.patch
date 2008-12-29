@@ -10,9 +10,9 @@ linking:
 
 Index: config/auto/opengl.pm
 ===================================================================
---- config/auto/opengl.pm.orig
-+++ config/auto/opengl.pm
-@@ -114,14 +114,16 @@ F<GLUT for Win32> (L<http://www.xmission
+--- config/auto/opengl.pm.orig	2008-09-17 23:09:03.343750000 +0000
++++ config/auto/opengl.pm	2008-12-27 14:32:49.756000000 +0000
+@@ -114,14 +114,16 @@
  
  The Cygwin/w32api for native opengl support
  
@@ -32,7 +32,7 @@ Index: config/auto/opengl.pm
  
  =cut
  
-@@ -168,24 +170,20 @@ sub runstep {
+@@ -168,24 +170,20 @@
      my $osname = $conf->data->get_p5('OSNAME');
  
      # Prefer Cygwin/w32api over Cygwin/X, but use X when DISPLAY is set
@@ -66,9 +66,9 @@ Index: config/auto/opengl.pm
      # Fink/macports locations.
 Index: lib/Parrot/Configure/Step/Methods.pm
 ===================================================================
---- lib/Parrot/Configure/Step/Methods.pm.orig
-+++ lib/Parrot/Configure/Step/Methods.pm
-@@ -119,6 +119,7 @@ sub _handle_darwin_for_macports {
+--- lib/Parrot/Configure/Step/Methods.pm.orig	2008-09-17 23:09:03.683750000 +0000
++++ lib/Parrot/Configure/Step/Methods.pm	2008-12-27 14:32:49.787250000 +0000
+@@ -119,6 +119,7 @@
          cc              => $cc,
          win32_gcc       => '-lalpha32 -lalpha32 -lopenalpha32',
          win32_nongcc    => 'alpha.lib',
@@ -76,7 +76,7 @@ Index: lib/Parrot/Configure/Step/Methods.pm
          darwin          => 'alphadarwin.lib',
          default         => '-lalpha',
      } );
-@@ -138,6 +139,8 @@ combinations.  We currently support sett
+@@ -138,6 +139,8 @@
  
  =item * MSWin32 with any C-compiler other than F<gcc>.
  
@@ -85,7 +85,7 @@ Index: lib/Parrot/Configure/Step/Methods.pm
  =item * Darwin.
  
  =back
-@@ -173,7 +176,7 @@ supersede the value in C<default>.
+@@ -173,7 +176,7 @@
  
  =item * C<win32_gcc>
  
@@ -94,7 +94,7 @@ Index: lib/Parrot/Configure/Step/Methods.pm
  Single whitespace-delimited string.
  
  =item * C<win32_nongcc>
-@@ -181,6 +184,12 @@ Single whitespace-delimited string.
+@@ -181,6 +184,12 @@
  Libraries to be added where OS is mswin32 and C-compiler is not F<gcc>.
  Single whitespace-delimited string.
  
@@ -107,7 +107,7 @@ Index: lib/Parrot/Configure/Step/Methods.pm
  =item * C<darwin>
  
  Libraries to be added where OS is Darwin.  Do not supply a value if the value
-@@ -197,7 +206,8 @@ sub _add_to_libs {
+@@ -197,7 +206,8 @@
      my $args = shift;
      croak "_add_to_libs() takes hashref: $!" unless ref($args) eq 'HASH';
      my $platform =
@@ -119,9 +119,9 @@ Index: lib/Parrot/Configure/Step/Methods.pm
          :  $args->{osname} =~ /mswin32/i    ? 'win32_nongcc'
 Index: config/gen/opengl.pm
 ===================================================================
---- config/gen/opengl.pm.orig
-+++ config/gen/opengl.pm
-@@ -447,6 +447,9 @@ sub runstep {
+--- config/gen/opengl.pm.orig	2008-11-18 00:09:33.811625000 +0000
++++ config/gen/opengl.pm	2008-12-27 14:32:49.834125000 +0000
+@@ -448,6 +448,9 @@
  #         "$ENV{HOME}/src/osx-insane/usr/X11R6 1/include/GL/*.h",
      );
  

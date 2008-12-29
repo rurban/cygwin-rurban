@@ -1,0 +1,195 @@
+https://trac.parrot.org/parrot/ticket/94
+
+make install-docs needs pod2man.
+Analog to perldoc we check for the path and the version of pod2man
+
+Index: parrot-svn/config/auto/pod2man.pm
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parrot-svn/config/auto/pod2man.pm	2008-12-27 15:34:50.224750000 +0000
+@@ -0,0 +1,77 @@
++# Copyright (C) 2008, The Perl Foundation.
++# $Id: pod2man.pm 30367 2008-08-20 02:21:59Z rurban $
++
++=head1 NAME
++
++config/auto/pod2man - Check whether pod2man works
++
++=head1 DESCRIPTION
++
++Determines whether F<pod2man> exists on the system and where.
++
++More specifically, we look for the F<pod2man> associated with the
++instance of F<perl> with which F<Configure.pl> was invoked.
++
++=cut
++
++package auto::pod2man;
++
++use strict;
++use warnings;
++
++use base qw(Parrot::Configure::Step);
++use Parrot::Configure::Utils ':auto';
++
++
++sub _init {
++    my $self = shift;
++    my %data;
++    $data{description} = q{Is pod2man installed};
++    $data{result}      = q{};
++    return \%data;
++}
++
++sub runstep {
++    my ( $self, $conf ) = @_;
++
++    my $cmd = $conf->data->get_p5('scriptdirexp') . q{/pod2man};
++    my $content = capture_output("$cmd docs/parrot.pod") || undef;
++
++    return 1 unless defined( $self->_initial_content_check($conf, $content) );
++    $conf->data->set(
++        has_pod2man => 1,
++        pod2man => $cmd
++    );
++    return 1;
++}
++
++sub _initial_content_check {
++    my $self = shift;
++    my ($conf, $content) = @_;
++    if (! defined $content) {
++        $conf->data->set(
++            has_pod2man => 0,
++        );
++        $self->set_result('no');
++        return;
++    }
++    else {
++        $self->set_result('yes');
++        return 1;
++    }
++}
++
++sub _handle_no_pod2man {
++    my $self = shift;
++    $self->set_result('failed');
++    return 0;
++}
++
++1;
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+Index: parrot-svn/lib/Parrot/Configure/Step/List.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Configure/Step/List.pm	2008-12-25 19:48:19.647125000 +0000
++++ parrot-svn/lib/Parrot/Configure/Step/List.pm	2008-12-27 13:19:33.396625000 +0000
+@@ -60,6 +60,7 @@
+     auto::gettext
+     auto::snprintf
+     auto::perldoc
++    auto::pod2man
+     auto::ctags
+     auto::revision
+     auto::icu
+Index: parrot-svn/t/steps/auto_pod2man-01.t
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parrot-svn/t/steps/auto_pod2man-01.t	2008-12-27 15:39:46.787250000 +0000
+@@ -0,0 +1,91 @@
++#! perl
++# Copyright (C) 2007, The Perl Foundation.
++# $Id: auto_pod2man-01.t 30640 2008-08-29 23:09:28Z jkeenan $
++# auto_pod2man-01.t
++
++use strict;
++use warnings;
++use Test::More tests => 7;
++use Carp;
++use lib qw( lib t/configure/testlib );
++use_ok('config::init::defaults');
++use_ok('config::auto::pod2man');
++use Parrot::BuildUtil;
++use Parrot::Configure;
++use Parrot::Configure::Options qw( process_options );
++use Parrot::Configure::Test qw(
++    test_step_thru_runstep
++    rerun_defaults_for_testing
++    test_step_constructor_and_description
++);
++use IO::CaptureOutput qw| capture |;
++
++########## regular ##########
++
++my ($args, $step_list_ref) = process_options( {
++    argv            => [],
++    mode            => q{configure},
++} );
++
++my $conf = Parrot::Configure->new();
++
++test_step_thru_runstep($conf, q{init::defaults}, $args);
++
++my $pkg = q{auto::pod2man};
++
++$conf->add_steps($pkg);
++
++my $serialized = $conf->pcfreeze();
++
++$conf->options->set(%{$args});
++my $step = test_step_constructor_and_description($conf);
++ok($step->runstep($conf), "runstep() completed successfully");
++ok(defined($step->result), "Result was defined");
++my $has = $conf->data->get('has_pod2man');
++ok( ( ($has == 1) or ($has == 0) ),
++    "Got an acceptable value for 'has_pod2man'");
++
++$conf->replenish($serialized);
++
++########## _initial_content_check() ##########
++
++my $content = undef;
++my $rv = $step->_initial_content_check($conf, $content);
++ok(! defined $rv, "Got expected return value when content was undefined");
++is($step->result(),
++    q{no}, "Got expected result when content was undefined");
++
++pass("Completed all tests in $0");
++
++################### DOCUMENTATION ###################
++
++=head1 NAME
++
++auto_pod2man-01.t - test auto::pod2man
++
++=head1 SYNOPSIS
++
++    % prove t/steps/auto_pod2man-01.t
++
++=head1 DESCRIPTION
++
++The files in this directory test functionality used by F<Configure.pl>.
++
++The tests in this file test auto::pod2man.
++
++=head1 AUTHOR
++
++Reini Urban
++
++=head1 SEE ALSO
++
++config::auto::pod2man, F<Configure.pl>.
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
