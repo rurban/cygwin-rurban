@@ -1,0 +1,170 @@
+--- origsrc/xapian-omega-1.0.9/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/xapian-omega-1.0.9/CYGWIN-PATCHES/README	2008-12-13 13:14:23.390625000 +0100
+@@ -0,0 +1,158 @@
++xapian-omega
++-------------------------------
++xapian is a fulltext indexer and search library. 
++The Omega package contains the indexers and the 
++Web Interface via CGI.
++
++Runtime requirements: (versions given or later)
++  cygwin-1.5.x
++  libxapian15
++  unzip
++  antiword
++  catdoc
++  pdftotext  (optional)
++  pod2text   (optional)
++  unrtf      (optional)
++
++Build requirements: (versions given or later)
++  libxapian-devel
++  cygwin-1.5.x
++  zlib-1.2.x
++  gcc-core
++  gcc-g++
++  libtool
++  binutils
++  make
++  bash
++  fileutils
++  sed
++  xapian
++
++Canonical homepage:
++  http://www.xapian.org/
++
++Canonical download:
++  http://www.xapian.org/download.php
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++
++  cd /usr/src
++  tar xfvj xapian-omega-<VER>-src.tar.bz2
++  cygport ./xapian-omega-<VER>-<CYGREL>.cygport almostall
++
++This will create:
++  /usr/src/xapian-omega-<VER>-<CYGREL>.tar.bz2
++  /usr/src/xapian-omega-<VER>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport xapian-omega-<VER>-<CYGREL>.cygport prep' to get 
++a patched source directory 
++
++-------------------------------------------------------------------------------
++
++Files included in the xapian-omega package:
++
++  /etc/omega.conf
++  /usr/bin/dbi2omega
++  /usr/bin/htdig2omega
++  /usr/bin/mbox2omega
++  /usr/bin/omindex.exe
++  /usr/bin/scriptindex.exe
++  /usr/lib/omega/bin/omega.exe
++  /usr/share/doc/Cygwin/xapian-omega-1.0.9.README
++  /usr/share/doc/xapian-omega-1.0.9/AUTHORS
++  /usr/share/doc/xapian-omega-1.0.9/COPYING
++  /usr/share/doc/xapian-omega-1.0.9/ChangeLog
++  /usr/share/doc/xapian-omega-1.0.9/INSTALL
++  /usr/share/doc/xapian-omega-1.0.9/NEWS
++  /usr/share/doc/xapian-omega-1.0.9/README
++  /usr/share/doc/xapian-omega-1.0.9/TODO
++  /usr/share/doc/xapian-omega-1.0.9/cgiparams.txt
++  /usr/share/doc/xapian-omega-1.0.9/omegascript.txt
++  /usr/share/doc/xapian-omega-1.0.9/overview.txt
++  /usr/share/doc/xapian-omega-1.0.9/quickstart.txt
++  /usr/share/doc/xapian-omega-1.0.9/scriptindex.txt
++  /usr/share/doc/xapian-omega-1.0.9/termprefixes.txt
++  /usr/share/man/man1/omindex.1.gz
++  /usr/share/man/man1/scriptindex.1.gz
++  /usr/share/omega/htdig2omega.script
++  /usr/share/omega/mbox2omega.script
++  /usr/share/omega/images/next.png
++  /usr/share/omega/images/nextoff.png
++  /usr/share/omega/images/page-1.png
++  /usr/share/omega/images/page-10.png
++  /usr/share/omega/images/page-10s.png
++  /usr/share/omega/images/page-11.png
++  /usr/share/omega/images/page-11s.png
++  /usr/share/omega/images/page-1s.png
++  /usr/share/omega/images/page-2.png
++  /usr/share/omega/images/page-2s.png
++  /usr/share/omega/images/page-3.png
++  /usr/share/omega/images/page-3s.png
++  /usr/share/omega/images/page-4.png
++  /usr/share/omega/images/page-4s.png
++  /usr/share/omega/images/page-5.png
++  /usr/share/omega/images/page-5s.png
++  /usr/share/omega/images/page-6.png
++  /usr/share/omega/images/page-6s.png
++  /usr/share/omega/images/page-7.png
++  /usr/share/omega/images/page-7s.png
++  /usr/share/omega/images/page-8.png
++  /usr/share/omega/images/page-8s.png
++  /usr/share/omega/images/page-9.png
++  /usr/share/omega/images/page-9s.png
++  /usr/share/omega/images/previous.png
++  /usr/share/omega/images/prevoff.png
++  /usr/share/omega/images/score-0.png
++  /usr/share/omega/images/score-1.png
++  /usr/share/omega/images/score-10.png
++  /usr/share/omega/images/score-2.png
++  /usr/share/omega/images/score-3.png
++  /usr/share/omega/images/score-4.png
++  /usr/share/omega/images/score-5.png
++  /usr/share/omega/images/score-6.png
++  /usr/share/omega/images/score-7.png
++  /usr/share/omega/images/score-8.png
++  /usr/share/omega/images/score-9.png
++  /var/lib/omega/templates/godmode
++  /var/lib/omega/templates/inc/anyalldropbox
++  /var/lib/omega/templates/inc/anyallradio
++  /var/lib/omega/templates/inc/toptermsjs
++  /var/lib/omega/templates/opensearch
++  /var/lib/omega/templates/query
++  /var/lib/omega/templates/topterms
++  /var/lib/omega/templates/xml
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version 1.0.7-1 -----
++none
++----- version 1.0.5-1 -----
++none
++----- version 1.0.2-1 -----
++none
++----- version 1.0.1-2 -----
++install templates and images
++/usr/lib/xapian-omega/bin/omega.exe => /usr/lib/omega/bin/omega.exe
++----- version 1.0.1-1 -----
++require libxapian15
++----- version 1.0.1-1 -----
++require libxapian15
++----- version 1.0.0-1 -----
++require libxapian14
++----- version 0.9.9-1 -----
++require libxapian13
++----- version 0.9.8-1 -----
++no changes
++----- version 0.9.7-1 -----
++no changes
++----- version 0.9.6-1 ----- 
++Initial release
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- origsrc/xapian-omega-1.0.9/CYGWIN-PATCHES/xapian-omega.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/xapian-omega-1.0.9/CYGWIN-PATCHES/xapian-omega.hint	2008-12-13 13:14:23.437500000 +0100
+@@ -0,0 +1,6 @@
++sdesc: "Xapian Indexer and Web Interface (CGI)"
++ldesc: "Two index building utilities (omindex and scriptindex)
++and a CGI search application (omega).  These use the Xapian search library to
++provide a search over a collection of documents."
++category: Web
++requires: xapian libxapian15 unzip antiword catdoc

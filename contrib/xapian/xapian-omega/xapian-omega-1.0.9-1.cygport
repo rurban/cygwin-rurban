@@ -1,0 +1,36 @@
+# inherit mono eutils autotools java-pkg
+
+DESCRIPTION="Xapian Indexer and Web Interface (CGI)"
+HOMEPAGE="http://www.xapian.org/"
+SRC_URI="http://www.oligarchy.co.uk/xapian/${PV}/xapian-omega-${PV}.tar.gz"
+#SRC_DIR="omega-${PV}"
+# CYGCONF_ARGS="--docdatadir=/usr/share/doc/${P}"
+
+LICENSE="GPL-2"
+PKG_HINTS="${PN}"
+
+src_compile() {
+  cd ${B}
+  cygconf
+  cygmake
+}
+
+src_install() {
+  cd ${B}
+  cyginstall
+
+  dodir /var/lib/omega/data /var/log/omega /var/lib/omega/cdb
+
+  cd ${D}
+  dodir /usr/share/doc/${P}
+  # mv usr/share/doc/omega/* usr/share/doc/${P}
+  # rmdir usr/share/doc/omega
+  # dodoc doc/*.txt
+  insinto /var/lib/omega/templates
+  doins ${S}/templates/godmode ${S}/templates/opensearch ${S}/templates/query ${S}/templates/topterms ${S}/templates/xml 
+  insinto /var/lib/omega/templates/inc
+  doins ${S}/templates/inc/*
+  insinto /var/www/icons/omega
+  doins ${S}/images/*
+}
+
