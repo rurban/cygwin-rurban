@@ -1,4 +1,4 @@
-postgresql-8.3.x
+postgresql-8.2.x
 ------------------------------------------
 PostgreSQL is an advanced Object-Relational database management system
 (DBMS) that supports almost all SQL constructs (including transactions,
@@ -8,7 +8,7 @@ Admin binaries are now in /usr/sbin/
 Contrib binaries in /usr/lib/postgreql/bin
 cygrunsrv is not required anymore, pg_ctl has now the service functions 
 included. 
-cygserver must run as service. The environment CYGWIN must contain "server".
+cygserver must run as service, CYGWIN must contain server.
 Build via cygport.
 
 Runtime requirements:
@@ -16,15 +16,15 @@ Runtime requirements:
   cygwin-1.5.18-1	or newer
   libiconv2-1.9.2-2	or newer
   libintl3-0.14.5-1	or newer
-  libreadline8
+  libreadline6-5.0-4	or newer
   openssl-0.9.8a-1	or newer
   zlib-1.2.3-1		or newer
-  perl-5.8.8  	        (optional, for plperl. only this version!)
+  perl-5.10.x	  	(optional, for plperl. every 5.10.x version)
   python-2.5.x    	(optional, for plpython. every 2.5 version will work)
 
 Build requirements: (additionally)
   cygport
-  gcc-core 3.3.x        or newer (libtool-devel-1.5.10 not required)
+  gcc-core 3.3.x    or newer (libtool-devel-1.5.10 not required)
   binutils-20040725-2   or newer
   make-3.80-1           or newer
   fileutils-4.1         or newer
@@ -65,19 +65,15 @@ Package layout see postgresql-<VER>-<REL>.cygport
 
 Port Notes:
 
-----------  postgresql-8.3.3-1 ------------ 
-no changes
-----------  postgresql-8.3.0-1 (not uploaded) ------- 
-failed attempt to fix backend/libpq/auth.c: ENABLE_GSSAPI
-added --with-ldap --with-libxml --with-libxslt
-not yet ok: --with-gssapi --with-krb5 --with-tcl --with-java  --with-ossp-uuid
+----------  postgresql-8.2.11-1 ------------ 
+update to perl-5.10.0-5
 ----------  postgresql-8.2.9-1 ------------ 
-update to perl-5.10.0-4 
-----------  postgresql-8.2.6-1 (not uploaded) ------- 
-removed dll versioning: cygpq.dll
+update to perl-5.10.0-4
+----------  postgresql-8.2.6-1 (not uploaded) ------------ 
+removed dll versioning again: ffi problems
 ----------  postgresql-8.2.5-1 ------------ 
 perl-5.8.8 and python-2.5
-----------  postgresql-8.2.4-1 ------------ 
+----------  postgresql-8.2.4-1 (not uploaded) ------------ 
 no changes
 ----------  postgresql-8.2.0-1 (not uploaded) ------------ 
 libpq5: started dll versioning, cyg$(NAME)$(SO_MAJOR_VERSION).dll
