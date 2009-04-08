@@ -3,7 +3,8 @@ mathomatic
 Algebraic console.
 
 Runtime requirements:
-  cygwin-1.5.x              or newer
+  cygwin-1.7.x
+  libgcc1
   libreadline6
   libncurses8
   
@@ -82,6 +83,8 @@ Files included in mathomatic:
 
 Port Notes:
 
+----- version mathomatic-14.3.6-1 -----
+cygwin-1.7, gcc-4
 ----- version mathomatic-14.2.3-1 -----
 fixed postinstall script
 ----- version mathomatic-14.2.2-1 -----

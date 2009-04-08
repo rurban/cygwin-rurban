@@ -148,6 +148,8 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.95-1 -----
+cygwin-1.7, gcc-4
 ----- version 0.94.2-1 -----
 none
 ----- version 0.94.1-1 -----

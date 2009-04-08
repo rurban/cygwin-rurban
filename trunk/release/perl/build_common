@@ -1,3 +1,4 @@
+#!/bin/bash
 # -*- shell-script -*-
 # /usr/src/perl/build_common contains common bash functions 
 # for the cygwin perl build scripts. By rurban@cpan.org
@@ -15,9 +16,9 @@ if [ -z "$major" ];      then major=5; fi
 if [ -z "$minor" ];      then minor="`echo ${shortver:2:5}|sed 's/\..*//'`"; fi
 if [ -z "$subversion" ]; then subversion=0; fi
 if [ -z "$usethreads" ]; then usethreads=yes; fi
-if [ -z "$rebasebase" ]; then rebasebase=0x52000000; fi
+if [ -z "$rebasebase" ]; then rebasebase=0x54000000; fi
 if [ -z "$srcdir" ];     then srcdir=${dir}/${pkg_ver}; fi
-CONF_ARGS="-de"
+CONF_ARGS=${CONF_ARGS:-de}
 
 ## functions
 rebase_all() {
@@ -173,8 +174,8 @@ stage_prep_unpack() {
     test -e ${srcdir} && echo "difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch"
     test -e ${srcdir} && difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch
     if [ "$pkg_ver" = "perl-current" ]; then
-	echo "rsync -acvz --force --delete rsync://public.activestate.com/perl-current/ ${pkg_ver}"
-	rsync -acvz --force --delete rsync://public.activestate.com/perl-current/ ${pkg_ver} \
+	echo "rsync -acvz --force --delete rsync://perl5.git.perl.org/perl-current/ ${pkg_ver}"
+	rsync -acvz --force --delete rsync://perl5.git.perl.org/perl-current/ ${pkg_ver} \
 	    | tee -a ${log}
     else
 	echo "rm -rf ${srcdir}/*"
@@ -193,7 +194,7 @@ stage_prep_unpack() {
 }
 
 __stage_empty() {
-  echo -n ""
+  __substage "stage skipped"
 }
 
 stage_prep_patch() {
@@ -253,10 +254,13 @@ stage_configure() {
     echo "cd ${builddir}; rm config.sh config.h Policy.sh *.o *.exe *.dll *.a" |\
 	tee ${log}
     rm config.sh config.h Policy.sh *.o *.exe *.dll *.a 2>/dev/null
-    echo "find ext -name Makefile -delete" | tee -a ${log}
-    find ext -name Makefile -delete
-    make -C ext/Time/HiRes clean || rm ext/Time/HiRes/xdefine ext/Time/HiRes/pm_to_blib 
-
+    if [ -d ext ]; then
+        echo "find ext -name Makefile -delete" | tee -a ${log}
+        find ext -name Makefile -delete
+        if [ -d ext/Time/HiRes ]; then 
+            make -C ext/Time/HiRes clean || rm ext/Time/HiRes/xdefine ext/Time/HiRes/pm_to_blib
+        fi
+    fi
     echo "cat \> Policy.sh" | tee -a ${log}
     cat > ${builddir}/Policy.sh <<EOF
 #!/bin/sh
@@ -323,12 +327,12 @@ EOF
         fi
     fi
     if [ -n "$make_debug" ]; then
-	CONF_ARGS="$CONF_ARGS -DDEBUGGING -Doptimize=-O0"
+	CONF_ARGS="$CONF_ARGS -DDEBUGGING -Doptimize=-g3"
     fi
     echo "sh ${srcdir}/Configure $CONF_ARGS" |\
 	tee ${log}
     sh ${srcdir}/Configure $CONF_ARGS 2>&1 |\
-	tee ${log}
+	tee -a ${log}
 
     # cygwin facl still wrong, which will cause some write tests to fail.
     faclfixdir "${builddir}"
@@ -458,7 +462,8 @@ stage_installvendor() {
     # CPAN, libXML and more
     for i in $exts
     do rm -rf ${i};
-	(tar xzf ${i}.tar.gz 2>&1 || exit) | tee -a $logmake
+        test -e ${i}.tar.gz || exit
+	( tar xzf ${i}.tar.gz 2>&1 | tee -a $logmake ) || exit
 	cd ${dir}/${i}
 	if test -f ${dir}/$i.patch; then
 	    __substage "${i}: patch -b -f -p1 ../$i.patch"
@@ -470,12 +475,12 @@ stage_installvendor() {
 #           cd ${dir}; mv -fb $i.patch $i.patch~; difforig $i > $i.patch; cd ${dir}/${i}
 #       fi
 	__substage "${i}: $PERL Makefile.PL"
-        #PERL="$PERL_I" 
+        #PERL="$PERL_I"
 	PATH="${instdir}${prefix}/bin:$PATH" $PERL_I Makefile.PL 2>&1 | tee -a $logmake
 	__substage "${i}: make"
-	make -j1 2>&1 | tee -a $logmake
+	( make -j1 2>&1 | tee -a $logmake ) || exit
 	__substage "${i}: make install_vendor DESTDIR=${instdir}"
-	make -j1 install_vendor DESTDIR=${instdir} 2>&1 | tee -a $loginstall
+	( make -j1 install_vendor DESTDIR=${instdir} 2>&1 | tee -a $loginstall ) || exit
 	cd ${dir}
 	rm -rf ${dir}/${i}
     done
@@ -582,8 +587,14 @@ enable_stage() {
 
 help() {
     echo "$0 [OPTIONS] [stages...]"
-    echo "OPTIONS: --help|--version|--nothreads|--debug"
-    echo    "STAGES: all almostall"
+    echo "OPTIONS: --help --version"
+    echo "         --nopatch|-np"
+    echo "         --nothreads|--no-threads|-nt"
+    echo "         -D*|-U*|-A*   passed to Configure" 
+    echo "         --debug|--debugging|-d"
+    echo "         --no-mksymlinks|--no-s|-ns"
+    echo "         "
+    echo    "STAGES: all almostall patch undopatch"
     echo -n "       "
     for stage in $stages; do echo -n " ${stage}"; done
     echo ""
@@ -613,7 +624,7 @@ while test -n "$1" ; do
 	;;
     --nopatch|-np)
 	# no platform patches, plain smoking
-	__substage "prep_patch skipped"
+	__substage "skip prep_patch"
 	stage_prep_patch=__stage_empty
 	;;
     --nothreads|--no-threads|-nt)
@@ -654,7 +665,7 @@ while test -n "$1" ; do
 	stage_installvendor=1
 	stage_pkg=
         ;;
-    undopatch)  
+    undopatch)
 	enable_stage 1
 	find ${srcdir} -type f -name '*.orig' -print | /usr/bin/sort | while read FILE
 	do
@@ -676,7 +687,7 @@ while test -n "$1" ; do
 	enable_stage cpan 
 	;;
     vprep|vendorprep) 
-	enable_stage vendorprep 
+	enable_stage vendorprep
 	;;
     prep)
 	enable_stage prep 
@@ -693,7 +704,7 @@ while test -n "$1" ; do
     install|inst|i) 
 	enable_stage install 
 	;;
-    installvendor|instvend|iv) 
+    installvendor|install_vendor|instvend|iv) 
 	enable_stage installvendor 
 	;;
     package|pkg)
@@ -731,7 +742,7 @@ if [ -z "$instdir" ];    then
 	fi
     fi
 fi
-archname="i686-cygwin"
+archname=${archname:-i686-cygwin}
 if [ "$usethreads" = "no" ]; then
 	if [ -n "$make_debug" ]; then archname="i686-nothreads-debug-cygwin"
 	else archname="i686-nothreads-cygwin"
