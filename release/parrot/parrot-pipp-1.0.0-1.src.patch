@@ -1,0 +1,165 @@
+--- origsrc/pipp/Configure.pl	2009-04-03 16:24:46.000000000 +0000
++++ src/pipp/Configure.pl	2009-04-03 16:39:53.234375000 +0000
+@@ -49,7 +49,7 @@ if ($options{'help'}) {
+ if ($options{'gen-parrot'}) {
+     system("$^X build/gen_parrot.pl");
+ }
+-    
++
+ 
+ #  Get a list of parrot-configs to invoke.
+ my @parrot_config_exe = (
+@@ -143,6 +143,9 @@ sub create_files {
+         }
+ 
+         $config->{'win32_libparrot_copy'} = $^O eq 'MSWin32' ? 'copy $(BUILD_DIR)\libparrot.dll .' : '';
++        unless (-d $config->{build_dir}) {
++            $config->{build_dir} = $config->{libdir} . $config->{versiondir};
++        }
+         $content =~ s/@(\w+)@/$config->{$1}/g;
+         if ($^O eq 'MSWin32') {
+             $content =~ s{/}{\\}g;
+--- origsrc/pipp/build/templates/Makefile.in	2009-04-03 16:24:46.000000000 +0000
++++ src/pipp/build/templates/Makefile.in	2009-04-05 16:43:50.625000000 +0000
+@@ -5,7 +5,7 @@ VERSION_DIR   := @versiondir@
+ BIN_DIR       := @bin_dir@
+ LIB_DIR       := @lib_dir@$(VERSION_DIR)
+ DOC_DIR       := @doc_dir@$(VERSION_DIR)
+-MANDIR        := @mandir@$(VERSION_DIR)
++MANDIR        := @mandir@
+ 
+ # Set up extensions
+ LOAD_EXT      := @load_ext@
+@@ -13,22 +13,22 @@ O             := @o@
+ EXE           := @exe@
+ 
+ # Set up directories
+-BUILD_DIR     := @build_dir@
+-LIBRARY_DIR   := $(BUILD_DIR)/runtime/parrot/library
++#BUILD_DIR    := @build_dir@
++LIBRARY_DIR   := $(LIB_DIR)/library
+ PMC_DIR       := src/pmc
+ DYNEXT_DIR    := dynext
+ 
+ # Set up commands
+ MAKE          := @make_c@
+-PARROT        := $(BUILD_DIR)/parrot$(EXE)
++PARROT        := $(BIN_DIR)/parrot$(EXE)
+ PERL          := @perl@
+ CHMOD         := @chmod@
+ CP            := @cp@
+ MKPATH        := @mkpath@
+ RM_F          := @rm_f@
+-NQP           := $(BUILD_DIR)/compilers/nqp/nqp.pbc
+-PCT           := $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
+-PBC_TO_EXE    := $(BUILD_DIR)/pbc_to_exe$(EXE)
++POD2MAN       := @pod2man@
++NQP           := $(LIB_DIR)/languages/nqp/nqp.pbc
++PBC_TO_EXE    := $(BIN_DIR)/pbc_to_exe$(EXE)
+ 
+ PMC_GROUP     := $(DYNEXT_DIR)/pipp_group$(LOAD_EXT)
+ 
+@@ -169,11 +169,11 @@ pipp_library/php_gmp.pbc: src/common/php
+ pipp_library/php_pcre.pbc: src/common/php_pcre.pir src/common/php_MACRO.pir
+ 	$(PARROT) -o pipp_library/php_pcre.pbc src/common/php_pcre.pir
+ 
+-src/pct/gen_grammar.pir: $(LIBRARY_DIR)/PGE/Perl6Grammar.pir src/pct/grammar.pg
++src/pct/gen_grammar.pir: src/pct/grammar.pg
+ 	$(PARROT) $(LIBRARY_DIR)/PGE/Perl6Grammar.pir \
+             --output=src/pct/gen_grammar.pir src/pct/grammar.pg
+ 
+-src/pct/gen_actions.pir: $(NQP) $(PCT) src/pct/actions.pm
++src/pct/gen_actions.pir: $(NQP) src/pct/actions.pm
+ 	$(PARROT) $(NQP) --output=src/pct/gen_actions.pir --target=pir src/pct/actions.pm
+ 
+ pipp.pbc: \
+@@ -193,18 +193,20 @@ installable_pipp$(EXE): pipp.pbc
+ 
+ install: installable
+ 	$(MAKE) $(PMC_DIR) install
+-	$(CP) installable_pipp$(EXE) $(BIN_DIR)/parrot-pipp$(EXE)
+-	$(CHMOD) 0755 $(BIN_DIR)/parrot-pipp$(EXE)
+-	-$(MKPATH) $(LIB_DIR)/languages/pipp
+-	$(CP) pipp.pbc $(LIB_DIR)/languages/pipp/pipp.pbc
+-	-$(MKPATH) $(LIB_DIR)/library/pipp_library
+-	$(CP) $(PIPP_LIBS) $(LIB_DIR)/library/pipp_library
+-	$(CP) $(PIPP_GROUP) $(LIB_DIR)/dynext
+-
+-#	-$(MKPATH) $(MANDIR)/man1
+-#	$(POD2MAN) doc/running.pod > $(MANDIR)/man1/parrot-pipp.1
+-#	-$(MKPATH) $(DOC_DIR)/languages/pipp
+-#	$(CP) $(DOCS) $(DOC_DIR)/languages/pipp
++	-$(MKPATH) $(DESTDIR)$(BIN_DIR)
++	$(CP) installable_pipp$(EXE) $(DESTDIR)$(BIN_DIR)/parrot-pipp$(EXE)
++	$(CHMOD) 0755 $(DESTDIR)$(BIN_DIR)/parrot-pipp$(EXE)
++	cd $(DESTDIR)$(BIN_DIR); ln parrot-pipp$(EXE) pipp$(EXE); cd -
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/languages/pipp
++	$(CP) pipp.pbc $(DESTDIR)$(LIB_DIR)/languages/pipp/pipp.pbc
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/library/pipp_library
++	$(CP) $(PIPP_LIBS) $(DESTDIR)$(LIB_DIR)/library/pipp_library
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/dynext
++	$(CP) $(PIPP_GROUP) $(DESTDIR)$(LIB_DIR)/dynext
++	-$(MKPATH) $(DESTDIR)$(MANDIR)/man1
++	$(POD2MAN) docs/pipp.pod > $(DESTDIR)$(MANDIR)/man1/pipp.1
++	-$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/pipp
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/pipp
+ 
+ win32-inno-installer: installable
+ #	-$(MKPATH) man/man1
+--- origsrc/pipp/build/templates/src/pmc/Makefile.in	2009-04-03 16:24:46.000000000 +0000
++++ src/pipp/build/templates/src/pmc/Makefile.in	2009-04-05 16:38:59.093750000 +0000
+@@ -1,21 +1,20 @@
+ # Build the PMCs for Pipp.
+ 
++# Set up directories
++BUILD_DIR     := @build_dir@
++DYNEXT_DIR    := ../../dynext
++LIB_DIR       := @libdir@@versiondir@
++INSTALL_DIR   := $(LIB_DIR)/dynext
++
+ # Set up commands
+ PERL          := @perl@
+ CP            := @cp@
++MKPATH        := @mkpath@
+ RM_F          := @rm_f@
+-PMCBUILD      := $(PERL) @build_dir@/tools/build/dynpmc.pl
++PMCBUILD      := $(PERL) $(LIB_DIR)/tools/build/dynpmc.pl
+ CC            := @cc@
+ CFLAGS        := @ccflags@ @cc_shared@ @cc_debug@ @ccwarn@ @cc_hasjit@ @cg_flag@ @gc_flag@
+ 
+-# Set up directories
+-BUILD_DIR     := @build_dir@
+-INCLUDE_DIR   := $(BUILD_DIR)/include
+-DYNEXT_DIR    := ../../dynext
+-VERSION_DIR   := @versiondir@
+-LIB_DIR       := @libdir@$(VERSION_DIR)
+-INSTALL_DIR   := $(LIB_DIR)/dynext
+-
+ # Set up extensions
+ LOAD_EXT      := @load_ext@
+ O             := @o@
+@@ -68,8 +67,9 @@ $(PMC_GROUP): $(PMC_SOURCES)
+ 	$(PMCBUILD) copy "--destination=$(DYNEXT_DIR)" $(PMCS)
+ 
+ install:
+-#IF(cygwin or hpux):	CHMOD 0775 "*$(LOAD_EXT)"
+-	$(CP) "*$(LOAD_EXT)" $(INSTALL_DIR)
++	chmod 0775 *$(LOAD_EXT)
++	-$(MKPATH) $(DESTDIR)$(INSTALL_DIR)
++	$(CP) *$(LOAD_EXT) $(DESTDIR)$(INSTALL_DIR)
+ 
+ # cleaning up
+ clean:
+--- origsrc/pipp/t/harness	2009-04-03 16:24:46.000000000 +0000
++++ src/pipp/t/harness	2009-04-05 16:00:03.031250000 +0000
+@@ -75,7 +75,9 @@ $verbosity ||= 0;
+         if ( $current_dir eq $hll ) {
+             @files = glob( File::Spec->catfile( 't', '*/*.t' ) );
+         }
+-        else {
++        elsif (-d 't') {
++            @files = glob( File::Spec->catfile( 't', '*/*.t' ) );
++        } else {
+             die "Where am I?";
+         }
+     }

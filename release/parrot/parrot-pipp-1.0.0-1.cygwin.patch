@@ -1,0 +1,86 @@
+--- origsrc/pipp/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/pipp/CYGWIN-PATCHES/README	2009-04-05 16:45:58.265625000 +0000
+@@ -0,0 +1,77 @@
++parrot-pipp
++----------------------------------
++
++Runtime requirements:
++  parrot libreadline6 libncurses8 libintl8 libicu38
++
++Optional requirements:
++  w32api opengl pcre
++
++Build requirements:
++  parrot-devel readline libncurses-devel libicu-devel libgmp-devel libgdbm-devel perl 
++  make gcc
++
++Optional build requirements:
++  pcre-devel openssl-devel
++  for Cygwin/X opengl: freeglut libglut-devel xorg-x11-devel 
++
++Optional test packages:
++  perl L<Test::TAP::Archive>
++  perl L<Test::Perl::Critic>
++
++Canonical homepage:
++  http://pipp.org/
++
++Canonical download:
++  git clone --no-checkout --quiet git://github.com/bschmalhofer/pipp.git pipp
++  git checkout 7b0c4c129fb07b2d80e3916c2f07771d0bc8cf0a
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++
++  cd /usr/src
++  cygport parrot-pipp-<VER>-<REL>.cygport all
++
++This will create:
++  /usr/src/parrot-pipp-<VER>-<REL>-src.tar.bz2
++  /usr/src/parrot-pipp-<VER>-<REL>.tar.bz2
++
++Or use 'cygport parrot-pipp-<VER>-<REL>.cygport prep' to get a patched 
++source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in the =parrot-pipp= package:
++
++  /usr/bin/pipp.exe
++  /usr/bin/parrot-pipp.exe
++  /usr/lib/parrot/1.0.0/dynext/pipp_group.dll
++  /usr/lib/parrot/1.0.0/languages/pipp/pipp.pbc
++  /usr/lib/parrot/1.0.0/library/pipp_library/php_ctype.pbc
++  /usr/lib/parrot/1.0.0/library/pipp_library/php_gmp.pbc
++  /usr/lib/parrot/1.0.0/library/pipp_library/php_pcre.pbc
++  /usr/lib/parrot/1.0.0/library/pipp_library/pipplib.pbc
++  /usr/share/doc/Cygwin/parrot-pipp.README
++  /usr/share/doc/parrot-pipp/CREDITS
++  /usr/share/doc/parrot-pipp/LICENSE
++  /usr/share/doc/parrot-pipp/MAINTAINER
++  /usr/share/doc/parrot-pipp/README
++  /usr/share/doc/parrot-pipp/ROADMAP
++  /usr/share/doc/parrot-pipp/extensions.pod
++  /usr/share/doc/parrot-pipp/internals.pod
++  /usr/share/doc/parrot-pipp/pipp.pod
++  /usr/share/doc/parrot-pipp/testing.pod
++  /usr/share/man/man1/pipp.1.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version parrot-pipp-1.0.0-1 -----
++* first standalone pipp package, before in parrot-languages
++* cygwin-1.7, gcc-4
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list 
++at <cygwin@cygwin.com>
+--- origsrc/pipp/CYGWIN-PATCHES/parrot-pipp.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/pipp/CYGWIN-PATCHES/parrot-pipp.hint	2009-04-05 16:33:45.671875000 +0000
+@@ -0,0 +1,3 @@
++sdesc: "PHP via Parrot"
++category: Libs
++requires: parrot
