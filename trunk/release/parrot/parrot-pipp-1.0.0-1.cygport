@@ -1,0 +1,31 @@
+# -*- sh -*-
+DESCRIPTION="Pipp is Parrot's PHP"
+HOMEPAGE="http://pipp.org/"
+GIT_URI="git://github.com/bschmalhofer/pipp.git"
+GIT_MODULE="pipp"
+GIT_REV="7b0c4c129fb07b2d80e3916c2f07771d0bc8cf0a"
+LICENSE="Artistic2"
+#DIFF_EXCLUDES="parrot.pc myconfig config_lib.pasm Makefile TAGS"
+#cygwin2=
+#DOCDIR="/usr/share/doc"
+#PKG_NAMES="${PN}"
+#PKG_HINTS="${PKG_NAMES}"
+
+inherit git
+
+src_compile() {
+  cd ${B}
+  test -e Configure.pl || lndirs
+  # require File::Which
+  perl -MFile::Which -e0 2>/dev/null || \
+    (echo "fetching File::Which via cpan"; cpan File::Which)
+  perl Configure.pl --parrot-config=/usr/bin/parrot_config
+  cygmake
+}
+
+src_install () {
+  cd ${B}
+  cygmake install DESTDIR=${D}
+  dodoc docs/* CREDITS LICENSE MAINTAINER README ROADMAP
+}
+

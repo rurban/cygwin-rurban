@@ -1,0 +1,4 @@
+sdesc: "Parrot HTML Documentation"
+category: Doc
+requires: parrot
+external-source: parrot

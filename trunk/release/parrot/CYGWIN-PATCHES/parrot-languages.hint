@@ -1,5 +1,0 @@
-sdesc: "Various language implementions on Parrot"
-ldesc: "APL abc befunge bf c99 cardinal chitchat forth json lolcode markdown ook 
-pheme pipp punie pynie squaak"
-category: Interpreters
-requires: parrot
