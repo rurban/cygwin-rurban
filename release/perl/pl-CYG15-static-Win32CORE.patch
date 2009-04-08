@@ -1,8 +1,8 @@
 difforig perl-current/ext/Win32CORE/Makefile.PL
 
 diff -u perl-current/ext/Win32CORE/Makefile.PL.orig perl-current/ext/Win32CORE/Makefile.PL
---- perl-current/ext/Win32CORE/Makefile.PL.orig	2008-05-30 23:14:07.000000000 +0000
-+++ perl-current/ext/Win32CORE/Makefile.PL	2008-06-30 15:24:09.625000000 +0000
+--- perl-current/ext/Win32CORE/Makefile.PL.orig	2008-12-19 09:13:57.000000000 +0000
++++ perl-current/ext/Win32CORE/Makefile.PL	2009-03-24 16:46:59.207875000 +0000
 @@ -12,7 +12,22 @@
    return '' unless $self->needs_linking();
    my $base = $self->SUPER::cflags($libperl);

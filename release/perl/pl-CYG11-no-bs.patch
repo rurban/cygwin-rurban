@@ -1,30 +1,22 @@
-difforig perl-current/lib/ExtUtils
+difforig perl-current/lib/ExtUtils/Command.pm perl-current/lib/ExtUtils/MM_Any.pm perl-current/lib/ExtUtils/MM_Unix.pm perl-current/lib/ExtUtils/MM_VMS.pm perl-current/lib/ExtUtils/MM_Win32.pm
 
-diff -u  perl-current/lib/ExtUtils/Command.pm.orig
---- perl-current/lib/ExtUtils/Command.pm.orig	2008-05-23 12:24:08.000000000 +0000
-+++ perl-current/lib/ExtUtils/Command.pm	2008-06-30 15:38:36.734375000 +0000
+diff -u perl-current/lib/ExtUtils/Command.pm.orig perl-current/lib/ExtUtils/Command.pm
+--- perl-current/lib/ExtUtils/Command.pm.orig	2009-03-24 16:46:58.270375000 +0000
++++ perl-current/lib/ExtUtils/Command.pm	2009-03-24 16:50:22.364125000 +0000
 @@ -10,9 +10,9 @@
  require Exporter;
  use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
  @ISA       = qw(Exporter);
 -@EXPORT    = qw(cp rm_f rm_rf mv cat eqtime mkpath touch test_f test_d chmod
-+@EXPORT    = qw(cp rm_f rm_rf mv cat eqtime mkpath touch test_f test_s test_d chmod
++@EXPORT    = qw(cp rm_f rm_rf mv cat eqtime mkpath touch test_f test_d test_s chmod
                  dos2unix);
--$VERSION = '1.14';
-+$VERSION = '1.14_01';
+-$VERSION = '1.15';
++$VERSION = '1.15_01';
  
- my $Is_VMS = $^O eq 'VMS';
- 
-@@ -31,6 +31,7 @@
-   perl -MExtUtils::Command -e mkpath directories...
-   perl -MExtUtils::Command -e eqtime source destination
-   perl -MExtUtils::Command -e test_f file
-+  perl -MExtUtils::Command -e test_s file
-   perl -MExtUtils::Command -e test_d directory
-   perl -MExtUtils::Command -e chmod mode files...
-   ...
-@@ -273,6 +274,19 @@
-  exit(-f $ARGV[0] ? 0 : 1);
+ my $Is_VMS   = $^O eq 'VMS';
+ my $Is_Win32 = $^O eq 'MSWin32';
+@@ -345,6 +345,19 @@
+  exit(-s $ARGV[0] ? 0 : 1);
  }
  
 +=item test_s
@@ -43,18 +35,23 @@ diff -u  perl-current/lib/ExtUtils/Command.pm.orig
  =item test_d
  
      test_d directory
-diff -u  perl-current/lib/ExtUtils/MM_Any.pm.orig
---- perl-current/lib/ExtUtils/MM_Any.pm.orig	2008-03-26 16:42:09.000000000 +0000
-+++ perl-current/lib/ExtUtils/MM_Any.pm	2008-06-30 15:37:39.750000000 +0000
-@@ -458,7 +458,7 @@
+diff -u perl-current/lib/ExtUtils/MM_Any.pm.orig perl-current/lib/ExtUtils/MM_Any.pm
+--- perl-current/lib/ExtUtils/MM_Any.pm.orig	2009-01-26 20:22:08.000000000 +0000
++++ perl-current/lib/ExtUtils/MM_Any.pm	2009-03-24 16:51:37.926625000 +0000
+@@ -457,10 +457,10 @@
+ #     push @dirs, qw($(INST_ARCHLIB) $(INST_LIB)
  #                    $(INST_BIN) $(INST_SCRIPT)
  #                    $(INST_MAN1DIR) $(INST_MAN3DIR)
- #                    $(INST_LIBDIR) $(INST_ARCHLIBDIR) $(INST_AUTODIR) 
+-#                    $(INST_LIBDIR) $(INST_ARCHLIBDIR) $(INST_AUTODIR) 
 -#                    $(INST_STATIC) $(INST_DYNAMIC) $(INST_BOOT)
++#                    $(INST_LIBDIR) $(INST_ARCHLIBDIR) $(INST_AUTODIR)
 +#                    $(INST_STATIC) $(INST_DYNAMIC)
  #                 );
-                   
+-                  
++
  
+     if( $attribs{FILES} ) {
+         # Use @dirs because we don't know what's in here.
 @@ -643,10 +643,11 @@
  
  sub dynamic {
@@ -68,9 +65,9 @@ diff -u  perl-current/lib/ExtUtils/MM_Any.pm.orig
  	$(NOECHO) $(NOOP)
  ';
  }
-diff -u  perl-current/lib/ExtUtils/MM_Unix.pm.orig
---- perl-current/lib/ExtUtils/MM_Unix.pm.orig	2008-03-26 16:42:09.000000000 +0000
-+++ perl-current/lib/ExtUtils/MM_Unix.pm	2008-06-30 15:37:39.750000000 +0000
+diff -u perl-current/lib/ExtUtils/MM_Unix.pm.orig perl-current/lib/ExtUtils/MM_Unix.pm
+--- perl-current/lib/ExtUtils/MM_Unix.pm.orig	2008-12-19 09:13:57.000000000 +0000
++++ perl-current/lib/ExtUtils/MM_Unix.pm	2009-03-24 16:46:57.864125000 +0000
 @@ -864,7 +864,7 @@
  
  # As Mkbootstrap might not write a file (if none is required)
@@ -131,7 +128,7 @@ diff -u  perl-current/lib/ExtUtils/MM_Unix.pm.orig
      $self->{CP}         ||= "cp";
      $self->{MV}         ||= "mv";
      $self->{CHMOD}      ||= "chmod";
-@@ -3519,7 +3519,7 @@
+@@ -3538,7 +3538,7 @@
  
      # We set PM_FILTER as late as possible so it can see all the earlier
      # on macro-order sensitive makes such as nmake.
@@ -140,9 +137,9 @@ diff -u  perl-current/lib/ExtUtils/MM_Unix.pm.orig
                        UMASK_NULL DEV_NULL MKPATH EQUALIZE_TIMESTAMP 
                        ECHO ECHO_N
                        UNINST VERBINST
-diff -u  perl-current/lib/ExtUtils/MM_VMS.pm.orig
---- perl-current/lib/ExtUtils/MM_VMS.pm.orig	2008-03-26 16:42:09.000000000 +0000
-+++ perl-current/lib/ExtUtils/MM_VMS.pm	2008-06-30 15:37:39.765625000 +0000
+diff -u perl-current/lib/ExtUtils/MM_VMS.pm.orig perl-current/lib/ExtUtils/MM_VMS.pm
+--- perl-current/lib/ExtUtils/MM_VMS.pm.orig	2008-12-19 09:13:57.000000000 +0000
++++ perl-current/lib/ExtUtils/MM_VMS.pm	2009-03-24 16:46:57.864125000 +0000
 @@ -476,6 +476,7 @@
      $self->{RM_F}     ||= '$(ABSPERLRUN) "-MExtUtils::Command" -e rm_f';
      $self->{RM_RF}    ||= '$(ABSPERLRUN) "-MExtUtils::Command" -e rm_rf';
@@ -151,10 +148,10 @@ diff -u  perl-current/lib/ExtUtils/MM_VMS.pm.orig
      $self->{EQUALIZE_TIMESTAMP} ||= '$(ABSPERLRUN) -we "open F,qq{>>$ARGV[1]};close F;utime(0,(stat($ARGV[0]))[9]+1,$ARGV[1])"';
  
      $self->{MOD_INSTALL} ||= 
-diff -u  perl-current/lib/ExtUtils/MM_Win32.pm.orig
---- perl-current/lib/ExtUtils/MM_Win32.pm.orig	2008-03-26 16:42:09.000000000 +0000
-+++ perl-current/lib/ExtUtils/MM_Win32.pm	2008-06-30 15:37:39.765625000 +0000
-@@ -163,6 +163,7 @@
+diff -u perl-current/lib/ExtUtils/MM_Win32.pm.orig perl-current/lib/ExtUtils/MM_Win32.pm
+--- perl-current/lib/ExtUtils/MM_Win32.pm.orig	2008-12-19 09:13:57.000000000 +0000
++++ perl-current/lib/ExtUtils/MM_Win32.pm	2009-03-24 16:46:57.879750000 +0000
+@@ -161,6 +161,7 @@
      $self->{MV}       ||= '$(ABSPERLRUN) -MExtUtils::Command -e mv';
      $self->{NOOP}     ||= 'rem';
      $self->{TEST_F}   ||= '$(ABSPERLRUN) -MExtUtils::Command -e test_f';

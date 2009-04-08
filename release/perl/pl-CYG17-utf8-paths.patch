@@ -1,8 +1,8 @@
-difforig perl-5.10.x/cygwin/cygwin.c
+difforig perl-5.10.0/cygwin/cygwin.c
 
-diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
---- perl-5.10.x/cygwin/cygwin.c.orig	2008-01-30 11:05:42.000000000 +0000
-+++ perl-5.10.x/cygwin/cygwin.c	2008-06-27 09:01:40.250000000 +0000
+diff -u perl-5.10.0/cygwin/cygwin.c.orig perl-5.10.0/cygwin/cygwin.c
+--- perl-5.10.0/cygwin/cygwin.c.orig	2009-01-02 16:14:05.000000000 +0000
++++ perl-5.10.0/cygwin/cygwin.c	2009-03-24 17:31:34.926625000 +0000
 @@ -10,9 +10,13 @@
  #include <unistd.h>
  #include <process.h>
@@ -17,7 +17,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
  
  /*
   * pp_system() implemented via spawn()
-@@ -140,6 +144,46 @@
+@@ -139,6 +143,44 @@
      return do_spawnvp(PL_Argv[0],(const char * const *)PL_Argv);
  }
  
@@ -44,7 +44,6 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
 +utf8_to_wide(const char *buf) 
 +{
 +    wchar_t *wbuf;
-+    int wlen = 0;
 +    mbstate_t mbs;
 +    char *oldlocale = setlocale(LC_CTYPE, NULL);
 +    int wlen = sizeof(wchar_t)*strlen(buf);
@@ -58,13 +57,12 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
 +    else setlocale(LC_CTYPE, "C");
 +    return wbuf;
 +}
-+
 +#endif /* cygwin 1.7 */
 +
  /* see also Cwd.pm */
  XS(Cygwin_cwd)
  {
-@@ -191,7 +235,12 @@
+@@ -190,7 +232,12 @@
  
      pid = (pid_t)SvIV(ST(0));
  
@@ -78,7 +76,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
          XSprePUSH; PUSHi((IV)RETVAL);
          XSRETURN(1);
      }
-@@ -199,34 +248,91 @@
+@@ -198,34 +245,91 @@
  }
  
  XS(XS_Cygwin_win_to_posix_path)
@@ -179,7 +177,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
  	XSRETURN_UNDEF;
      }
  }
-@@ -237,29 +343,80 @@
+@@ -236,29 +340,80 @@
      int absolute_flag = 0;
      STRLEN len;
      int err;
@@ -270,7 +268,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
  	XSRETURN_UNDEF;
      }
  }
-@@ -290,24 +447,22 @@
+@@ -289,24 +444,22 @@
  {
      dXSARGS;
      char *pathname;
@@ -304,7 +302,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
  
          if (strlen(user) > 0) {
              sprintf(flags, "%s,cygdrive,%s", user_flags, user);
-@@ -320,6 +475,7 @@
+@@ -319,6 +472,7 @@
  
      } else {
  	struct mntent *mnt;
@@ -312,7 +310,7 @@ diff -u perl-5.10.x/cygwin/cygwin.c.orig perl-5.10.x/cygwin/cygwin.c
  	setmntent (0, 0);
  	while ((mnt = getmntent (0))) {
  	    if (!strcmp(pathname, mnt->mnt_dir)) {
-@@ -328,12 +484,42 @@
+@@ -327,12 +481,42 @@
  		    strcat(flags, ",");
  		    strcat(flags, mnt->mnt_opts);
  		}

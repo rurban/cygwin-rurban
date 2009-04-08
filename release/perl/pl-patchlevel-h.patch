@@ -1,18 +1,18 @@
 difforig perl-current/patchlevel.h
 
 diff -u perl-current/patchlevel.h.orig perl-current/patchlevel.h
---- perl-current/patchlevel.h.orig	2008-03-21 19:45:27.000000000 +0000
-+++ perl-current/patchlevel.h	2008-06-30 15:56:02.109375000 +0000
-@@ -118,7 +118,12 @@
- #if !defined(PERL_PATCHLEVEL_H_IMPLICIT) && !defined(LOCAL_PATCH_COUNT)
+--- perl-current/patchlevel.h.orig	2008-12-21 12:43:04.000000000 +0000
++++ perl-current/patchlevel.h	2009-03-24 16:48:52.473500000 +0000
+@@ -119,6 +119,13 @@
  static const char * const local_patches[] = {
  	NULL
--	,"MAINT33535"
-+	,"MAINT34065"
+ 	,"MAINT35117"
 +  	,"CYG11 no-bs"
 +  	,"CYG12 no archlib in otherlibdirs"
 + 	,"CYG14 Dynaloader"
 + 	,"CYG15 static-Win32CORE"
++        ,"CYG17 utf8-paths"
++	,"CYG21 LibList-Kid.patch"
 + 	,"Bug#55162 File::Spec::case_tolerant performance"
  	,NULL
  };
