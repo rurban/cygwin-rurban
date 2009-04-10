@@ -1,0 +1,3 @@
+sdesc: "Perl 6 compiler for Parrot, called Rakudo Perl 6"
+category: Interpreters
+requires: libgcc1 parrot
