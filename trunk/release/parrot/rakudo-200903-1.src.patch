@@ -27,7 +27,7 @@
      if ($^O eq 'MSWin32') {
          $maketext =~ s{/}{\\}g;
 --- origsrc/rakudo-2009-03/build/Makefile.in	2009-03-20 14:21:53.000000000 +0100
-+++ src/rakudo-2009-03/build/Makefile.in	2009-04-10 10:10:25.156250000 +0200
++++ src/rakudo-2009-03/build/Makefile.in	2009-04-11 10:54:15.062500000 +0200
 @@ -5,19 +5,27 @@
  PARROT_ARGS =
  
@@ -107,7 +107,7 @@
  
  coretest: perl6$(EXE)
  #	prove t/pmc
-@@ -286,6 +297,28 @@ sometests: all
+@@ -286,6 +297,30 @@ sometests: all
  t/*.t t/*/*.t t/*/*/*.t: all Test.pir
  	@$(HARNESS_WITH_FUDGE) --verbosity=1 $@
  
@@ -130,9 +130,11 @@
 +	$(MKPATH) $(DESTDIR)$(LIB_DIR)/dynext
 +	@cd $(PMC_DIR) && $(BUILD_DYNPMC) copy "--destination=$(DESTDIR)$(LIB_DIR)/dynext" $(PMCS)
 +	@cd $(OPSDIR)  && $(BUILD_DYNOPS) copy "--destination=$(DESTDIR)$(LIB_DIR)/dynext" $(OPSLIB)
++	$(MKPATH) $(DESTDIR)$(DOC_DIR)/rakudo
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/rakudo
 +	$(MKPATH) $(DESTDIR)$(MANDIR)/man1
 +	$(POD2MAN) docs/running.pod > $(DESTDIR)$(MANDIR)/man1/perl6.1
-+
++	$(POD2MAN) docs/running.pod > $(DESTDIR)$(MANDIR)/man1/rakudo.1
  
  ##  cleaning
  clean:
