@@ -1,0 +1,112 @@
+# -*- sh -*-
+DESCRIPTION="Clam AntiVirus - GPL anti-virus toolkit"
+HOMEPAGE="http://clamav.net/"
+SRC_URI="http://puzzle.dl.sourceforge.net/sourceforge/clamav/${PN}-${PV}.tar.gz positive-tests.zip"
+
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+CYGCONF_ARGS="--disable-pthreads --disable-dependency-tracking \
+	      --disable-gethostbyname_r \
+	      --with-user=SYSTEM --with-group=SYSTEM --with-dbdir=/usr/share/clamav"
+DOCS="docs/*.pdf"
+HTMLDOCS="docs/html/*"
+DIFF_EXCLUDES="clamav-config.h.in~ test/Makefile"
+
+PKG_NAMES="clamav lib${PN}6 lib${PN}-devel ${PN}-db"
+
+src_compile() {
+  cd ${B}
+  # 0.90 is not yet --build ready
+  #ln -sf ${S}/shared
+  if [ ! -d test ]; then 
+    mkdir test shared
+    lndirs ${S}/test ${B}/test
+    lndirs ${S}/shared ${B}/shared
+  fi
+
+  cd ${S}
+  cygautoreconf
+  cd ${B}
+  cygconf
+  cd ${S}/libclamav
+  for h in *.h; do
+    ln -sf ${S}/libclamav/${h} ${B}/libclamav/${h} 
+  done
+  cd ${B}
+  cygmake
+}
+
+src_install() {
+  cd ${B}
+  cyginstall
+
+  #against:
+  # Preparing executables for UAC:
+  # Fixing libtool modules:
+  # *** ERROR: cygclamunrar_iface-6.dll was not installed
+  # *** ERROR: Libtool module postinstall failed
+  mv ${D}/usr/lib/cygclamunrar_iface-*.dll ${D}/usr/bin
+
+  cd ${S}
+  insinto /etc/defaults/etc
+  doins ${S}/etc/clamd.conf ${S}/etc/freshclam.conf
+  rm ${D}/etc/clamd.conf ${D}/etc/freshclam.conf
+  rm ${D}/usr/share/man/man8/clamav-milter.8
+  exeinto /etc/rc.d/init.d
+  doexe ${S}/contrib/init/Cygwin/clamd
+}
+
+src_test() {
+  cd ${B}
+  ln -sf ${S}/test test
+  run="${B}/clamscan/clamscan --no-summary"
+  if [ -e ${top}/positive-tests.zip ]; then
+    cd test
+    unzip -uo ${top}/positive-tests.zip
+    result=${B}/test/positive.result
+    echo -n "" > $result
+    for t in test*; do
+      $run $t >> $result
+    done
+    diff -bc ${B}/test/positive.expected $result
+  fi
+  result=${B}/test/negative.result
+  echo -n "" > $result
+  for t in clam*; do
+    $run $t >> $result
+  done
+  diff -bc ${B}/test/negative.expected $result
+
+  # make test
+  # freshclam.conf already patched by prep
+  cd ${B}
+  ${B}/freshclam/freshclam --config-file=${S}/etc/freshclam.conf
+}
+
+# not yet hooked into cygport
+post_pkg_srcpkg() {
+  cd ${top}
+  tar xjf ${top}/${PF}-src.tar.bz2 -C ${spkgdir}/
+  cd ${spkgdir}
+  cp ${top}/positive-tests.zip .
+  tar cvjf ${top}/${PF}-src.tar.bz2 *
+  #tar Avjf ${PF}-src.tar.bz2 positive-tests.zip
+}
+
+# clamav
+PKG_CONTENTS[0]=" \
+--exclude=usr/share/clamav
+etc \
+usr/bin/*.exe \
+usr/sbin \
+usr/share"
+# libclamav*
+PKG_CONTENTS[1]=" \
+usr/bin/*.dll"
+# libclamav-devel
+PKG_CONTENTS[2]=" \
+usr/bin/clamav-config \
+usr/lib \
+usr/include"
+# clamav-db
+PKG_CONTENTS[3]="
+usr/share/clamav"

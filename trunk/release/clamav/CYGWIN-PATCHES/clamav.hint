@@ -6,4 +6,4 @@ detection of over 20000 viruses, worms and trojans, built-in support
 for RAR (2.0), Zip, Gzip, Bzip2, built-in support for Mbox, Maildir
 and raw mail files"
 category: Utils
-requires: libclamav5 zlib minires bash libcurl3
+requires: libclamav6 zlib bash
