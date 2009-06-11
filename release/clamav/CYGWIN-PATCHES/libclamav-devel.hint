@@ -1,4 +1,4 @@
 sdesc: "The clamav includes and libraries"
 category: Utils
-requires: clamav autoconf2.5 minires-devel libbz2-devel
+requires: clamav autoconf2.5 libbz2-devel
 external-source: clamav

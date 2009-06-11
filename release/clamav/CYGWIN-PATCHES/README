@@ -26,24 +26,21 @@ Problems:
 
 Runtime requirements: (versions given or later)
 
-  cygwin-1.5.21-2
-  gmp-4.1.4-2
-  libbz2_1-1.0.3-1
-  libcurl3
-  minires-1.00-1
-  zlib-1.2.3-1
+  cygwin-1.7.0-49
+  libbz2_1-1.0.5-10
+  libgcc1-4.3.2-2
+  libiconv2-1.13-10
+  libltdl7-2.2.7a-12
+  libncurses9-5.7-14
+  zlib0-1.2.3-10
   
 Build requirements: (versions given or later)
-  cygwin-1.5.x
   autoconf2.5-2.63
   cygport-0.90 	(for the latest autoconf2.5)
   libbz2-devel
-  libgmp-devel
   zlib-1.2.x
-  minires
-  minires-devel
   libtool-devel-1.9 (if GCC >= 3.3.3)
-  gcc-3.3.x
+  gcc-4
   binutils
   make
   bash
@@ -88,12 +85,11 @@ Files included in the clamav package:
   /etc/preremove/clamav.sh
   /usr/bin/clamconf.exe
   /usr/bin/clamdscan.exe
+  /usr/bin/clamdtop.exe
   /usr/bin/clamscan.exe
   /usr/bin/freshclam.exe
   /usr/bin/sigtool.exe
   /usr/sbin/clamd.exe
-  /usr/share/clamav/daily.cvd
-  /usr/share/clamav/main.cvd
   /usr/share/doc/clamav-<VER>/AUTHORS
   /usr/share/doc/clamav-<VER>/BUGS
   /usr/share/doc/clamav-<VER>/ChangeLog
@@ -116,6 +112,7 @@ Files included in the clamav package:
   /usr/share/doc/Cygwin/clamav-<VER>-<CYGREL>.README
   /usr/share/man/man1/clamconf.1.gz
   /usr/share/man/man1/clamdscan.1.gz
+  /usr/share/man/man1/clamdtop.1.gz
   /usr/share/man/man1/clamscan.1.gz
   /usr/share/man/man1/freshclam.1.gz
   /usr/share/man/man1/sigtool.1.gz
@@ -123,11 +120,16 @@ Files included in the clamav package:
   /usr/share/man/man5/freshclam.conf.5.gz
   /usr/share/man/man8/clamd.8.gz
 
-Files included in the libclamav5 package:
+Files included in the libclamav6 package:
 
-  /usr/bin/cygclamav-5.dll
-  /usr/bin/cygclamunrar-5.dll
-  /usr/bin/cygclamunrar_iface-5.dll
+  /usr/bin/cygclamav-6.dll
+  /usr/bin/cygclamunrar-6.dll
+  /usr/bin/cygclamunrar_iface-6.dll
+
+Files included in the clamav-db package:
+
+  /usr/share/clamav/daily.cld
+  /usr/share/clamav/main.cld
 
 Files included in the libclamav-devel package:
 
@@ -148,6 +150,18 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.95.2-1 -----
+* fixed libcurl4 dependency
+* added -Ilibclamav to clamdtop
+* exchanged main.clv with updated main.cld 
+* exchanged daily.clv with updated daily.cld 
+----- version 0.95.1-2 -----
+libclamav6
+* added -shared-libgcc
+* renamed DATADIR to CLAMAV_DATADIR because of clash with objidl.h
+* adapted libclamav6.hint dependencies
+* fixed dlopen "libclamunrar_iface"
+* exchanged main.clv with updated main.cld 
 ----- version 0.95-1 -----
 cygwin-1.7, gcc-4
 ----- version 0.94.2-1 -----
