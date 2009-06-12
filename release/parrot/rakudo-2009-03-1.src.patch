@@ -1,0 +1,105 @@
+--- origsrc/rakudo-2009-03/Configure.pl	2009-03-20 13:21:53.000000000 +0000
++++ src/rakudo-2009-03/Configure.pl	2009-04-09 19:12:36.234375000 +0000
+@@ -98,6 +98,16 @@ sub read_parrot_config {
+             last if %config;
+         }
+     }
++    # installed logic:
++    my $installed = $config{build_dir} ne $config{prefix};
++    $config{parrotlib_dir} = $installed ? $config{lib_dir}.$config{versiondir}
++                                        : $config{build_dir}.'/runtime/parrot';
++    $config{parrotbin_dir} = $installed ? $config{bin_dir}
++                                        : $config{build_dir};
++    $config{compilers_dir} = $installed ? $config{parrotlib_dir}.'/languages'
++                                        : $config{parrotlib_dir}.'/compilers';
++    $config{perl5lib_dir}  = $installed ? $config{parrotlib_dir}.'/tools'
++                                        : $config{parrotlib_dir};
+     return %config;
+ }
+ 
+--- origsrc/rakudo-2009-03/build/Makefile.in	2009-03-20 13:21:53.000000000 +0000
++++ src/rakudo-2009-03/build/Makefile.in	2009-04-09 19:13:19.968750000 +0000
+@@ -5,7 +5,6 @@
+ PARROT_ARGS =
+ 
+ # values from parrot_config
+-BUILD_DIR     = @build_dir@
+ LOAD_EXT      = @load_ext@
+ O             = @o@
+ EXE           = @exe@
+@@ -14,10 +13,15 @@ PERL          = @perl@
+ RM_F          = @rm_f@
+ 
+ # Various paths
+-PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
+-PERL6GRAMMAR  = $(BUILD_DIR)/runtime/parrot/library/PGE/Perl6Grammar.pbc
+-NQP           = $(BUILD_DIR)/compilers/nqp/nqp.pbc
+-PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
++COMPILERS_DIR = @compilers_dir@
++LIB_DIR       = @parrotlib_dir@
++BIN_DIR       = @parrotbin_dir@
++PERL5LIB_DIR  = @perl5lib_dir@
++
++PARROT_DYNEXT = $(LIB_DIR)/dynext
++PERL6GRAMMAR  = $(LIB_DIR)/library/PGE/Perl6Grammar.pbc
++NQP           = $(COMPILERS_DIR)/nqp/nqp.pbc
++PCT           = $(LIB_DIR)/library/PCT.pbc
+ PMC_DIR       = src/pmc
+ OPSDIR        = src/ops
+ OPSLIB        = perl6
+@@ -26,12 +30,12 @@ OPS_FILE      = src/ops/perl6.ops
+ # Set up extensions
+ 
+ # Setup some commands
+-PARROT        = $(BUILD_DIR)/parrot$(EXE)
++PARROT        = $(BIN_DIR)/parrot$(EXE)
+ CAT           = $(PERL) -MExtUtils::Command -e cat
+-BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
+-BUILD_DYNOPS  = $(PERL) $(BUILD_DIR)/tools/build/dynoplibs.pl
+-RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
+-PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
++BUILD_DYNPMC  = $(PERL) $(LIB_DIR)/tools/build/dynpmc.pl
++BUILD_DYNOPS  = $(PERL) $(LIB_DIR)/tools/build/dynoplibs.pl
++RECONFIGURE   = $(PERL) $(LIB_DIR)/tools/dev/reconfigure.pl
++PBC_TO_EXE    = $(BIN_DIR)/pbc_to_exe$(EXE)
+ 
+ SOURCES = perl6.pir \
+   src/gen_grammar.pir \
+@@ -164,11 +168,17 @@ HARNESS_WITH_FUDGE_JOBS = $(HARNESS_WITH
+ # the default target
+ all: perl6$(EXE)
+ 
++installable: installable_perl6$(EXE)
++
+ ##  targets for building a standalone perl6.
+ perl6$(EXE): perl6.pbc
+ 	$(PBC_TO_EXE) perl6.pbc
+ 	@win32_libparrot_copy@
+ 
++installable_perl6$(EXE): perl6.pbc
++	$(PBC_TO_EXE) perl6.pbc --install
++	@win32_libparrot_copy@
++
+ spectest_checkout : t/spec
+ 
+ t/spec :
+@@ -201,7 +211,7 @@ Test.pir: Test.pm perl6.pbc
+ 	$(PARROT) $(PARROT_ARGS) perl6.pbc --target=pir --output=Test.pir Test.pm
+ 
+ $(PMC_DIR)/objectref.pmc : $(PMC_DIR)/objectref_pmc.template build/gen_objectref_pmc.pl
+-	$(PERL) -I$(BUILD_DIR)/lib build/gen_objectref_pmc.pl $(PMC_DIR)/objectref_pmc.template \
++	$(PERL) -I$(PERL5LIB_DIR)/lib build/gen_objectref_pmc.pl $(PMC_DIR)/objectref_pmc.template \
+ 		$(PMC_DIR)/objectref.pmc
+ 
+ src/gen_grammar.pir: $(PARROT) $(PERL6GRAMMAR) src/parser/grammar.pg src/parser/grammar-oper.pg
+--- origsrc/rakudo-2009-03/build/gen_objectref_pmc.pl	2009-03-20 13:21:53.000000000 +0000
++++ src/rakudo-2009-03/build/gen_objectref_pmc.pl	2009-04-09 18:50:24.062500000 +0000
+@@ -38,6 +38,8 @@ unless (-e $template) {
+ my $template_contents = slurp($template);
+ 
+ # Read v-tables list and get list of functions from it.
++$PConfig{build_dir} = $PConfig{lib_dir}.$PConfig{versiondir}
++  if $PConfig{build_dir} ne $PConfig{prefix};
+ my $vtable_list = slurp($PConfig{build_dir}.'/src/vtable.tbl');
+ my @all_vtables = extract_matches($vtable_list, '(\w+)\\(');
+ 

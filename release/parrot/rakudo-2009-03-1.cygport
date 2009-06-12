@@ -1,0 +1,36 @@
+# -*- sh -*-
+DESCRIPTION="Perl6 on Parrot"
+HOMEPAGE="http://www.rakudo.org/"
+SRC_URI="http://www.pmichaud.com/perl6/rakudo-2009-03.tar.gz"
+LICENSE="Artistic2"
+#DIFF_EXCLUDES="parrot.pc myconfig config_lib.pasm Makefile TAGS"
+#DLLVER=$(echo $PV|sed -e's,\.,_,g')
+#PKG_NAMES="${PN}"
+
+src_compile() {
+  cd ${B}
+  test -e Configure.pl || lndirs
+  perl Configure.pl
+  cygmake all
+  cygmake installable
+}
+
+src_check () {
+  cd ${B}
+  cygmake test
+  cygmake spectest_checkout spectest_update
+  cygmake spectest
+}
+
+src_install () {
+  cd ${B}
+  cygmake install DESTDIR=${D}
+
+  #pod2html DEPRECATED.pod > DEPRECATED.html
+  #dodoc ABI_CHANGES ChangeLog CREDITS README_cygwin.pod DONORS.pod TODO DEPRECATED.pod
+
+  # man(1) for the main binaries
+  man1=${D}/usr/share/man/man1
+  mkdir -p $man1
+  #pod2man docs/running.pod > $man1/perl6.1
+}
