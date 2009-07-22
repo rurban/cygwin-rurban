@@ -83,8 +83,10 @@ Files included in mathomatic:
 
 Port Notes:
 
------ version mathomatic-14.3.6-1 -----
+----- version mathomatic-14.4.5-1 -----
 cygwin-1.7, gcc-4
+----- version mathomatic-14.3.6-1 -----
+?
 ----- version mathomatic-14.2.3-1 -----
 fixed postinstall script
 ----- version mathomatic-14.2.2-1 -----
