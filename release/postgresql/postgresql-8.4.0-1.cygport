@@ -1,0 +1,233 @@
+# -*- sh -*-
+DESCRIPTION="object-relational SQL database management system"
+HOMEPAGE="http://www.postgresql.org/"
+SRC_URI="ftp://ftp.de.postgresql.org/mirror/postgresql/source/v${PV}/${PN}-${PV}.tar.bz2"
+#CVS_URI="..."
+#RELEASE_NOTES="http://www.postgresql.org/docs/8.4/static/release-8-4.html"
+
+MAKEOPTS="${MAKEOPTS} -j1"
+PACKAGE_BUGREPORT="cygwin@cygwin.com"
+LDFLAGS="${LDFLAGS} -Wl,--enable-auto-image-base"
+#CYGCONF_ARGS="--enable-nls --with-CXX --with-openssl --with-perl --with-python"
+CYGCONF_ARGS="--enable-nls --with-CXX --with-openssl --with-perl --with-python --with-ldap --with-libxml --with-libxslt --with-gssapi"
+# not good:
+#   --with-gssapi --with-krb5 --with-tcl --with-java  --with-ossp-uuid
+#   --enable-multibyte --disable-thread-safety --disable-integer-datetimes 
+DIFF_EXCLUDES="TAGS Makefile.shlib libpq.rc"
+
+PKG_NAMES="${PN} ${PN}-devel ${PN}-client ${PN}-contrib ${PN}-doc \
+  ${PN}-plperl ${PN}-plpython \
+  libpq5 libpq-devel libpgtypes2 libecpg5 libecpg-compat2 libecpg-devel"
+# ${PN}-pltcl
+PKG_HINTS="${PKG_NAMES}"
+
+# postgresql
+PKG_CONTENTS[0]=" \
+--exclude=usr/share/postgresql/contrib \
+--exclude=usr/share/postgresql/psqlrc.sample \
+etc \
+usr/sbin/initdb.exe \
+usr/sbin/ipcclean \
+usr/sbin/pg_controldata.exe \
+usr/sbin/pg_ctl.exe \
+usr/sbin/pg_resetxlog.exe \
+usr/sbin/postgres.exe \
+usr/sbin/postmaster.exe \
+usr/lib/postgresql/*_and_*.dll \
+usr/lib/postgresql/plpgsql.dll \
+usr/share/locale/*/LC_MESSAGES/initdb.mo \
+usr/share/locale/*/LC_MESSAGES/pg_controldata.mo \
+usr/share/locale/*/LC_MESSAGES/pg_ctl.mo \
+usr/share/locale/*/LC_MESSAGES/pg_resetxlog.mo \
+usr/share/locale/*/LC_MESSAGES/postgres.mo \
+usr/share/man/man1/ipcclean.1.gz \
+usr/share/man/man1/initdb.1.gz \
+usr/share/man/man1/pg_controldata.1.gz \
+usr/share/man/man1/pg_ctl.1.gz \
+usr/share/man/man1/pg_resetxlog.1.gz \
+usr/share/man/man1/postgres.1.gz \
+usr/share/man/man1/postmaster.1.gz \
+usr/share/doc/Cygwin/${P}.README \
+usr/share/postgresql"
+
+# postgresql-devel
+PKG_CONTENTS[1]=" \
+--exclude=usr/include/ecpg*.h \
+--exclude=usr/include/postgresql/informix \
+--exclude=usr/include/pgtypes_*.h \
+--exclude=usr/include/sql3types.h \
+--exclude=usr/include/sqlca.h \
+--exclude=usr/include/libpq-fe.h \
+--exclude=usr/include/libpq/libpq-fs.h \
+--exclude=usr/include/pg_config*.h \
+--exclude=usr/include/postgres_ext.h \
+--exclude=usr/include/postgresql/server/catalog/pg_type.h \
+--exclude=usr/include/postgresql/server/nodes/nodes.h \
+--exclude=usr/include/postgresql/server/utils/elog.h \
+--exclude=usr/include/postgresql/server/utils/errcodes.h \
+--exclude=usr/include/postgresql/server/utils/palloc.h \
+--exclude=usr/include/postgresql/server/c.h \
+--exclude=usr/include/postgresql/server/pg_config.h \
+--exclude=usr/include/postgresql/server/pg_config_manual.h \
+--exclude=usr/include/postgresql/server/pg_config_os.h \
+--exclude=usr/include/postgresql/server/port.h \
+--exclude=usr/include/postgresql/server/postgres.h \
+--exclude=usr/include/postgresql/server/postgres_fe.h \
+--exclude=usr/include/postgresql/server/postgres_ext.h \
+usr/include \
+usr/lib/postgresql/pgxs \
+usr/lib/libpostgres.a"
+
+# TODO: usr/lib/pkgconfig/
+
+# postgresql-client
+PKG_CONTENTS[2]=" \
+--exclude=usr/share/locale/*/LC_MESSAGES/initdb.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_controldata.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_ctl.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_resetxlog.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/postgres.mo \
+--exclude=usr/share/locale/*/LC_MESSAGES/pg_config.mo \
+usr/bin/clusterdb.exe \
+usr/bin/createdb.exe \
+usr/bin/dropdb.exe \
+usr/bin/pg_dump.exe \
+usr/bin/pg_dumpall.exe \
+usr/bin/psql.exe \
+usr/bin/reindexdb.exe \
+usr/sbin/createlang.exe \
+usr/sbin/createuser.exe \
+usr/sbin/droplang.exe \
+usr/sbin/dropuser.exe \
+usr/sbin/pg_restore.exe \
+usr/sbin/vacuumdb.exe \
+usr/share/man/man1/clusterdb.1.gz \
+usr/share/man/man1/createdb.1.gz \
+usr/share/man/man1/createlang.1.gz \
+usr/share/man/man1/createuser.1.gz \
+usr/share/man/man1/dropdb.1.gz \
+usr/share/man/man1/droplang.1.gz \
+usr/share/man/man1/dropuser.1.gz \
+usr/share/man/man1/pg_dump.1.gz \
+usr/share/man/man1/pg_dumpall.1.gz \
+usr/share/man/man1/pg_restore.1.gz \
+usr/share/man/man1/psql.1.gz \
+usr/share/man/man1/reindexdb.1.gz \
+usr/share/man/man1/vacuumdb.1.gz \
+usr/share/man/man7 \
+usr/share/postgresql/psqlrc.sample \
+usr/share/locale/*/LC_MESSAGES/"
+
+# postgresql-contrib
+PKG_CONTENTS[3]=" \
+--exclude=usr/lib/postgresql/*_and_*.dll \
+--exclude=usr/lib/postgresql/pgxs \
+--exclude=usr/lib/postgresql/pl*.dll \
+usr/lib/postgresql \
+usr/share/postgresql/contrib \
+usr/share/doc/${P}/contrib"
+
+# ${PN}-doc 
+PKG_CONTENTS[4]=" \
+--exclude=usr/share/doc/${P}/contrib \
+usr/share/doc/${P}"
+
+# ${PN}-plperl 
+PKG_CONTENTS[5]="usr/lib/postgresql/plperl.dll"
+
+# ${PN}-plpython 
+PKG_CONTENTS[6]="usr/lib/postgresql/plpython.dll"
+
+# libpq5
+PKG_CONTENTS[7]="usr/bin/cygpq.dll"
+
+# libpq-devel  
+PKG_CONTENTS[8]=" \
+usr/bin/pg_config.exe \
+usr/include/libpq-fe.h \
+usr/include/libpq/libpq-fs.h \
+usr/include/pg_config*.h \
+usr/include/postgres_ext.h \
+usr/include/postgresql/server/catalog/pg_type.h \
+usr/include/postgresql/server/nodes/nodes.h \
+usr/include/postgresql/server/utils/elog.h \
+usr/include/postgresql/server/utils/errcodes.h \
+usr/include/postgresql/server/utils/palloc.h \
+usr/include/postgresql/server/c.h \
+usr/include/postgresql/server/pg_config.h \
+usr/include/postgresql/server/pg_config_manual.h \
+usr/include/postgresql/server/pg_config_os.h \
+usr/include/postgresql/server/port.h \
+usr/include/postgresql/server/postgres.h \
+usr/include/postgresql/server/postgres_fe.h \
+usr/include/postgresql/server/postgres_ext.h \
+usr/lib/libpgport.a \
+usr/lib/libpq.a \
+usr/share/man/man1/pg_config.1.gz \
+usr/share/locale/*/LC_MESSAGES/pg_config.mo"
+
+# libpgtypes2  
+PKG_CONTENTS[9]="usr/bin/cygpgtypes.dll"
+
+# libecpg5  
+PKG_CONTENTS[10]=" \
+usr/bin/ecpg.exe \
+usr/bin/cygecpg.dll \
+usr/share/man/man1/ecpg.1.gz"
+
+# libecpg-compat2  
+PKG_CONTENTS[11]="usr/bin/cygecpg_compat.dll"
+
+# libecpg-devel
+PKG_CONTENTS[12]=" \
+usr/include/ecpg*.h \
+usr/include/postgresql/informix \
+usr/include/pgtypes_*.h \
+usr/include/sql3types.h \
+usr/include/sqlca.h \
+usr/lib/libecpg.a \
+usr/lib/libecpg_compat.a \
+usr/lib/libpgtypes.a"
+
+# ${PN}-pltcl  
+#PKG_CONTENTS[13]="usr/lib/postgresql/pltcl.dll"
+
+src_compile() {
+  #cd ${S}
+  #autoconf-2.61
+  cd ${B}
+  cygconf
+  cygmake
+  cygmake contrib
+}
+
+src_test() {
+  cd ${B}
+  make -j1 check
+}
+
+# TODO: setup .sample files:
+#  set sspi in pg_hba.conf by the postinstaller
+#  cp psqlrc.sample /etc/defaults/etc/psqlrc
+src_install() {
+  cd ${B}
+  cyginstall docdir=/usr/share/doc/${P}/
+  # I prefer to have that in postgresql-devel already
+  dolib ${B}/src/backend/libpostgres.a
+
+  mv ${D}/usr/lib/*.dll ${D}/usr/bin/
+  dodir /usr/sbin
+  for admin in createlang createuser droplang dropuser initdb \
+               pg_ctl pg_controldata pg_resetxlog pg_restore postgres \
+               postmaster vacuumdb; do
+    mv ${D}/usr/bin/$admin.exe ${D}/usr/sbin/;
+  done
+  mv ${D}/usr/bin/ipcclean ${D}/usr/sbin/
+
+  dodir /etc/rc.d/init.d
+  cp ${C}/postgresql.initd ${D}/etc/rc.d/init.d/postgresql
+
+  cp -r ${S}/doc/src/FAQ ${D}/usr/share/doc/${P}/
+
+  make -j1 -C contrib install DESTDIR=${D} bindir=/usr/lib/postgresql/bin/ docdir=/usr/share/doc/${P}/
+}
