@@ -34,9 +34,12 @@ to get a patched source directory
 
 -------------------------------------------
 
-Files included in the binary distribution:
+Files included in the =libsigsegv0= package:
 
   /usr/bin/cygsigsegv-0.dll
+
+Files included in the =libsigsegv= package:
+
   /usr/include/sigsegv.h
   /usr/lib/libsigsegv.a
   /usr/lib/libsigsegv.dll.a
@@ -56,6 +59,7 @@ Port Notes:
 ----------  libsigsegv-2.6-1 -----------
 * add shared lib, due to SEH corruption.
   See http://cygwin.com/ml/cygwin/2009-07/msg00639.html
+* added libsigsegv0 package
 
 ----------  libsigsegv-2.4-1 -----------
 * Initial cygwin release for clisp-2.39-1
