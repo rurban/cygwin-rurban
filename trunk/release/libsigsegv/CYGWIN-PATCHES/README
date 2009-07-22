@@ -1,28 +1,20 @@
 libsigsegv
 ------------------------------------------
-Handling page faults in user mode.
-Mainly required to build clisp from source.
-
-This library builds as a static library by default. This seems useful
-because of the small size of the library (4 KB). Of course, you can
-build it as a shared library by specifying the configure option
-'--enable-shared'
+Handling page faults in user mode
 
 Runtime requirements:
-  cygwin-1.5.20-1 or newer
+  cygwin-1.7 or newer
 
 Build requirements:
-  cygwin
-  gcc-core
-  automake
-  autoconf
-  binutils
+  cygwin-1.5.20-1 or newer
+  gcc-3.3.3-1 or newer
+  binutils-20040725-2 or newer
 
 Canonical homepage:
   http://libsigsegv.sourceforge.net/
 
 Canonical download:
-  ftp://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.4.tar.gz
+  ftp://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.6.tar.gz
 
 ------------------------------------
 
@@ -44,23 +36,29 @@ to get a patched source directory
 
 Files included in the binary distribution:
 
+  /usr/bin/cygsigsegv-0.dll
   /usr/include/sigsegv.h
   /usr/lib/libsigsegv.a
+  /usr/lib/libsigsegv.dll.a
   /usr/lib/libsigsegv.la
-  /usr/share/doc/Cygwin/libsigsegv-2.4.README
-  /usr/share/doc/libsigsegv-2.4/AUTHORS
-  /usr/share/doc/libsigsegv-2.4/COPYING
-  /usr/share/doc/libsigsegv-2.4/ChangeLog
-  /usr/share/doc/libsigsegv-2.4/INSTALL
-  /usr/share/doc/libsigsegv-2.4/NEWS
-  /usr/share/doc/libsigsegv-2.4/README
+  /usr/share/doc/Cygwin/libsigsegv-2.6.README
+  /usr/share/doc/libsigsegv-2.6/AUTHORS
+  /usr/share/doc/libsigsegv-2.6/ChangeLog
+  /usr/share/doc/libsigsegv-2.6/COPYING
+  /usr/share/doc/libsigsegv-2.6/INSTALL
+  /usr/share/doc/libsigsegv-2.6/NEWS
+  /usr/share/doc/libsigsegv-2.6/README
 
 ------------------
 
 Port Notes:
 
+----------  libsigsegv-2.6-1 -----------
+* add shared lib, due to SEH corruption.
+  See http://cygwin.com/ml/cygwin/2009-07/msg00639.html
+
 ----------  libsigsegv-2.4-1 -----------
-Initial cygwin release for clisp-2.39-1
+* Initial cygwin release for clisp-2.39-1
 
 Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
 Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>

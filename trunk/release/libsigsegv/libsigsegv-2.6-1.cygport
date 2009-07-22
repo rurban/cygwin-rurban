@@ -1,0 +1,19 @@
+DESCRIPTION="Handling page faults in user mode"
+HOMEPAGE="http://libsigsegv.sourceforge.net/"
+# SRC_URI="ftp://www.gnu.ftp.uni-erlangen.de/pub/gnu/${PN}/${PN}-${PV}.tar.gz"
+# SRC_URI="http://puzzle.dl.sourceforge.net/sourceforge/${PN}/${PN}-${PV}.tar.bz2"
+SRC_URI="ftp://ftp.gnu.org/pub/gnu/${PN}/${PN}-${PV}.tar.gz"
+
+MAKEOPTS="-j1"
+CYGCONF_ARGS="--enable-shared" 
+
+#src_compile() {
+#   lndirs
+#   cd ${B}
+#   cygmake
+#}
+
+#src_install() {
+#   cd ${B}
+#   cyginstall
+#}
