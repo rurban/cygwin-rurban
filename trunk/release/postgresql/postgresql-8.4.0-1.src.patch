@@ -1,0 +1,398 @@
+--- origsrc/postgresql-8.4.0/configure.in	2009-06-27 02:14:47.000000000 +0200
++++ src/postgresql-8.4.0/configure.in	2009-07-02 09:02:25.921875000 +0200
+@@ -907,7 +907,11 @@ if test "$with_gssapi" = yes ; then
+     AC_SEARCH_LIBS(gss_init_sec_context, [gssapi_krb5 gss 'gssapi -lkrb5 -lcrypto'], [],
+ 		 		  [AC_MSG_ERROR([could not find function 'gss_init_sec_context' required for GSSAPI])])
+   else
+-    LIBS="$LIBS -lgssapi32"
++    if test "$PORTNAME" = "cygwin"; then
++      LIBS="$LIBS -lsecur32"
++    else
++      LIBS="$LIBS -lgssapi32"
++    fi
+   fi
+ fi
+ 
+--- origsrc/postgresql-8.4.0/src/Makefile.global.in	2009-06-23 05:46:00.000000000 +0200
++++ src/postgresql-8.4.0/src/Makefile.global.in	2009-07-20 13:54:26.390625000 +0200
+@@ -374,7 +374,7 @@ endif
+ # This macro is for use by libraries linking to libpq.  (Because libpgport
+ # isn't created with the same link flags as libpq, it can't be used.)
+ libpq = -L$(libpq_builddir) -lpq
+-  
++
+ # If doing static linking, shared library dependency info isn't available,
+ # so add in the libraries that libpq depends on.
+ ifeq ($(enable_shared), no)
+--- origsrc/postgresql-8.4.0/src/backend/libpq/auth.c	2009-06-25 13:30:08.000000000 +0200
++++ src/postgresql-8.4.0/src/backend/libpq/auth.c	2009-07-02 09:07:55.937500000 +0200
+@@ -159,6 +159,9 @@ static krb5_principal pg_krb5_server;
+  *----------------------------------------------------------------
+  */
+ #ifdef ENABLE_GSS
++#ifdef __CYGWIN__
++#define WIN32
++#endif
+ #if defined(HAVE_GSSAPI_H)
+ #include <gssapi.h>
+ #else
+--- origsrc/postgresql-8.4.0/src/backend/libpq/be-secure.c	2009-06-11 16:48:58.000000000 +0200
++++ src/postgresql-8.4.0/src/backend/libpq/be-secure.c	2009-07-02 09:02:26.187500000 +0200
+@@ -256,9 +256,26 @@ rloop:
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-									FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				/* be nicer on cygwin also */
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto rloop;
+ 			case SSL_ERROR_SYSCALL:
+@@ -350,9 +367,25 @@ wloop:
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-									FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto wloop;
+ 			case SSL_ERROR_SYSCALL:
+@@ -562,8 +595,8 @@ load_dh_buffer(const char *buffer, size_
+ 	dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+ 	if (dh == NULL)
+ 		ereport(DEBUG2,
+-				(errmsg_internal("DH load buffer: %s",
+-								 SSLerrmessage())));
++			(errmsg_internal("DH load buffer: %s",
++					 SSLerrmessage())));
+ 	BIO_free(bio);
+ 
+ 	return dh;
+@@ -832,9 +865,9 @@ initialize_SSL(void)
+ 						  X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL);
+ #else
+ 				ereport(LOG,
+-				(errmsg("SSL certificate revocation list file \"%s\" ignored",
+-						ROOT_CRL_FILE),
+-				 errdetail("SSL library does not support certificate revocation lists.")));
++						(errmsg("SSL certificate revocation list file \"%s\" ignored",
++								ROOT_CRL_FILE),
++						 errdetail("SSL library does not support certificate revocation lists.")));
+ #endif
+ 			else
+ 			{
+@@ -902,9 +935,25 @@ aloop:
+ 			case SSL_ERROR_WANT_WRITE:
+ #ifdef WIN32
+ 				pgwin32_waitforsinglesocket(SSL_get_fd(port->ssl),
+-											(err == SSL_ERROR_WANT_READ) ?
+-						FD_READ | FD_CLOSE | FD_ACCEPT : FD_WRITE | FD_CLOSE,
+-											INFINITE);
++							    (err == SSL_ERROR_WANT_READ) ?
++							    FD_READ | FD_CLOSE | FD_ACCEPT : FD_WRITE | FD_CLOSE,
++							    INFINITE);
++#elif defined(__CYGWIN__)
++				{
++				    fd_set	rset;
++				    int		sel_res;
++				    struct timeval tv;
++				    FD_ZERO(&rset);
++				    FD_SET(SSL_get_fd(port->ssl), &rset);
++				    tv.tv_sec = 0;
++				    tv.tv_usec = 500000;
++				    sel_res = select(FD_SETSIZE, 
++						     (err == SSL_ERROR_WANT_READ) ? &rset : NULL, 
++						     (err == SSL_ERROR_WANT_READ) ? NULL : &rset,
++						     NULL, &tv);
++				    if (sel_res >= 0 || errno != EINTR)
++					break;
++				}
+ #endif
+ 				goto aloop;
+ 			case SSL_ERROR_SYSCALL:
+--- origsrc/postgresql-8.4.0/src/backend/postmaster/pgstat.c	2009-06-11 16:49:01.000000000 +0200
++++ src/postgresql-8.4.0/src/backend/postmaster/pgstat.c	2009-07-02 09:02:26.312500000 +0200
+@@ -2591,7 +2591,7 @@ PgstatCollectorMain(int argc, char *argv
+ 	int			len;
+ 	PgStat_Msg	msg;
+ 
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ #ifdef HAVE_POLL
+ 	struct pollfd input_fd;
+ #else
+@@ -2658,7 +2658,7 @@ PgstatCollectorMain(int argc, char *argv
+ 	 * Setup the descriptor set for select(2).	Since only one bit in the set
+ 	 * ever changes, we need not repeat FD_ZERO each time.
+ 	 */
+-#if !defined(HAVE_POLL) && !defined(WIN32)
++#if !defined(HAVE_POLL) && (!defined(WIN32) || defined(__CYGWIN__))
+ 	FD_ZERO(&rfds);
+ #endif
+ 
+@@ -2708,7 +2708,7 @@ PgstatCollectorMain(int argc, char *argv
+ 		 * We use poll(2) if available, otherwise select(2). Win32 has its own
+ 		 * implementation.
+ 		 */
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ #ifdef HAVE_POLL
+ 		input_fd.fd = pgStatSock;
+ 		input_fd.events = POLLIN | POLLERR;
+@@ -2748,7 +2748,7 @@ PgstatCollectorMain(int argc, char *argv
+ #endif   /* HAVE_POLL */
+ #else							/* WIN32 */
+ 		got_data = pgwin32_waitforsinglesocket(pgStatSock, FD_READ,
+-											   PGSTAT_SELECT_TIMEOUT * 1000);
++						       PGSTAT_SELECT_TIMEOUT * 1000);
+ #endif
+ 
+ 		/*
+--- origsrc/postgresql-8.4.0/src/backend/postmaster/postmaster.c	2009-06-26 22:29:04.000000000 +0200
++++ src/postgresql-8.4.0/src/backend/postmaster/postmaster.c	2009-07-02 09:02:26.421875000 +0200
+@@ -371,6 +371,9 @@ typedef struct
+ HANDLE		PostmasterHandle;
+ #endif
+ 
++#endif
++#ifdef EXEC_BACKEND
++
+ static pid_t backend_forkexec(Port *port);
+ static pid_t internal_forkexec(int argc, char *argv[], Port *port);
+ 
+@@ -442,6 +445,7 @@ static void ShmemBackendArrayAdd(Backend
+ static void ShmemBackendArrayRemove(Backend *bn);
+ #endif   /* EXEC_BACKEND */
+ 
++
+ #define StartupDataBase()		StartChildProcess(StartupProcess)
+ #define StartBackgroundWriter() StartChildProcess(BgWriterProcess)
+ #define StartWalWriter()		StartChildProcess(WalWriterProcess)
+@@ -1142,7 +1146,7 @@ checkDataDir(void)
+ 	 *
+ 	 * XXX can we safely enable this check on Windows?
+ 	 */
+-#if !defined(WIN32) && !defined(__CYGWIN__)
++#ifndef WIN32
+ 	if (stat_buf.st_uid != geteuid())
+ 		ereport(FATAL,
+ 				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+@@ -1164,7 +1168,7 @@ checkDataDir(void)
+ 	 * be proper support for Unix-y file permissions.  Need to think of a
+ 	 * reasonable check to apply on Windows.
+ 	 */
+-#if !defined(WIN32) && !defined(__CYGWIN__)
++#ifndef WIN32
+ 	if (stat_buf.st_mode & (S_IRWXG | S_IRWXO))
+ 		ereport(FATAL,
+ 				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+--- origsrc/postgresql-8.4.0/src/include/getopt_long.h	2009-04-05 06:19:59.000000000 +0200
++++ src/postgresql-8.4.0/src/include/getopt_long.h	2009-07-20 13:25:42.750000000 +0200
+@@ -14,11 +14,13 @@
+ #endif
+ 
+ /* These are picked up from the system's getopt() facility. */
++#ifndef __CYGWIN__
+ extern int	opterr;
+ extern int	optind;
+ extern int	optopt;
+-extern char *optarg;
++extern char	*optarg;
+ extern int	optreset;
++#endif
+ 
+ #ifndef HAVE_STRUCT_OPTION
+ 
+--- origsrc/postgresql-8.4.0/src/include/libpq/libpq-be.h	2009-06-11 16:49:11.000000000 +0200
++++ src/postgresql-8.4.0/src/include/libpq/libpq-be.h	2009-07-02 09:12:54.203125000 +0200
+@@ -47,6 +47,9 @@
+ 
+ #ifdef ENABLE_SSPI
+ #define SECURITY_WIN32
++#ifdef __CYGWIN__
++#include <windows.h>
++#endif
+ #if defined(WIN32) && !defined(WIN32_ONLY_COMPILER)
+ #include <ntsecapi.h>
+ #endif
+--- origsrc/postgresql-8.4.0/src/include/libpq/libpq.h	2009-01-01 18:23:59.000000000 +0100
++++ src/postgresql-8.4.0/src/include/libpq/libpq.h	2009-07-02 09:02:26.703125000 +0200
+@@ -20,6 +20,10 @@
+ #include "lib/stringinfo.h"
+ #include "libpq/libpq-be.h"
+ 
++#ifdef __CYGWIN__
++#undef WIN32
++#endif
++
+ /* ----------------
+  * PQArgBlock
+  *		Information (pointer to array of this structure) required
+--- origsrc/postgresql-8.4.0/src/include/miscadmin.h	2009-06-11 16:49:08.000000000 +0200
++++ src/postgresql-8.4.0/src/include/miscadmin.h	2009-07-02 09:02:26.765625000 +0200
+@@ -78,7 +78,7 @@ extern PGDLLIMPORT volatile uint32 CritS
+ /* in tcop/postgres.c */
+ extern void ProcessInterrupts(void);
+ 
+-#ifndef WIN32
++#if !defined(WIN32) || defined(__CYGWIN__)
+ 
+ #define CHECK_FOR_INTERRUPTS() \
+ do { \
+--- origsrc/postgresql-8.4.0/src/include/port/cygwin.h	2007-07-25 14:22:53.000000000 +0200
++++ src/postgresql-8.4.0/src/include/port/cygwin.h	2009-07-02 09:02:26.843750000 +0200
+@@ -19,3 +19,10 @@
+ #define PGDLLIMPORT __declspec (dllimport)
+ 
+ #endif
++
++/*
++ * Always build with SSPI support. Keep it as a #define in case
++ * we want a switch to disable it sometime in the future.
++ */
++#define ENABLE_SSPI 1
++
+--- origsrc/postgresql-8.4.0/src/interfaces/libpq/Makefile	2009-01-05 10:27:19.000000000 +0100
++++ src/postgresql-8.4.0/src/interfaces/libpq/Makefile	2009-07-20 13:18:59.296875000 +0200
+@@ -63,6 +63,9 @@ endif
+ ifeq ($(PORTNAME), win32)
+ SHLIB_LINK += -lshfolder -lwsock32 -lws2_32 -lsecur32 $(filter -leay32 -lssleay32 -lcomerr32 -lkrb5_32, $(LIBS))
+ endif
++ifeq ($(PORTNAME), cygwin)
++SHLIB_LINK += -lsecur32
++endif
+ 
+ SHLIB_EXPORTS = exports.txt
+ 
+--- origsrc/postgresql-8.4.0/src/interfaces/libpq/fe-connect.c	2009-06-11 16:49:13.000000000 +0200
++++ src/postgresql-8.4.0/src/interfaces/libpq/fe-connect.c	2009-07-20 13:14:11.218750000 +0200
+@@ -22,12 +22,16 @@
+ #include <time.h>
+ #include <unistd.h>
+ 
++#ifdef __CYGWIN__
++#undef WIN32
++#endif
++
+ #include "libpq-fe.h"
+ #include "libpq-int.h"
+ #include "fe-auth.h"
+ #include "pg_config_paths.h"
+ 
+-#ifdef WIN32
++#if defined(WIN32) && !defined(__CYGWIN__)
+ #include "win32.h"
+ #ifdef _WIN32_IE
+ #undef _WIN32_IE
+--- origsrc/postgresql-8.4.0/src/interfaces/libpq/libpq-int.h	2009-06-23 20:13:23.000000000 +0200
++++ src/postgresql-8.4.0/src/interfaces/libpq/libpq-int.h	2009-07-20 13:17:36.984375000 +0200
+@@ -54,6 +54,22 @@
+ #endif
+ 
+ #ifdef ENABLE_SSPI
++#ifdef __CYGWIN__
++#include <windows.h>
++#undef WIN32
++int PASCAL WSAGetLastError(void);
++#define WSADESCRIPTION_LEN	256
++#define WSASYS_STATUS_LEN	128
++typedef struct WSAData {
++	WORD	wVersion;
++	WORD	wHighVersion;
++	char	szDescription[WSADESCRIPTION_LEN+1];
++	char	szSystemStatus[WSASYS_STATUS_LEN+1];
++	unsigned short	iMaxSockets;
++	unsigned short	iMaxUdpDg;
++	char * 	lpVendorInfo;
++} WSADATA;
++#endif
+ #define SECURITY_WIN32
+ #if defined(WIN32) && !defined(WIN32_ONLY_COMPILER)
+ #include <ntsecapi.h>
+@@ -586,7 +602,7 @@ __attribute__((format_arg(1)));
+  * These macros are needed to let error-handling code be portable between
+  * Unix and Windows.  (ugh)
+  */
+-#ifdef WIN32
++#if defined(WIN32) && !defined(__CYGWIN__)
+ #define SOCK_ERRNO (WSAGetLastError())
+ #define SOCK_STRERROR winsock_strerror
+ #define SOCK_ERRNO_SET(e) WSASetLastError(e)
+--- origsrc/postgresql-8.4.0/src/interfaces/libpq/libpq.rc.in	2009-01-01 18:59:40.000000000 +0100
++++ src/postgresql-8.4.0/src/interfaces/libpq/libpq.rc.in	2009-07-02 09:02:27.078125000 +0200
+@@ -19,7 +19,7 @@ BEGIN
+             VALUE "InternalName", "libpq\0"
+             VALUE "LegalCopyright", "Copyright (C) 2009\0"
+             VALUE "LegalTrademarks", "\0"
+-            VALUE "OriginalFilename", "libpq.dll\0"
++            VALUE "OriginalFilename", "cygpq.dll\0"
+             VALUE "ProductName", "PostgreSQL\0"
+             VALUE "ProductVersion", "8.4.0\0"
+         END
+--- origsrc/postgresql-8.4.0/src/makefiles/Makefile.cygwin	2008-11-14 11:22:47.000000000 +0100
++++ src/postgresql-8.4.0/src/makefiles/Makefile.cygwin	2009-07-20 13:56:23.093750000 +0200
+@@ -1,6 +1,7 @@
+ # $PostgreSQL: pgsql/src/makefiles/Makefile.cygwin,v 1.11 2008/11/14 10:22:47 petere Exp $
+-DLLTOOL= dlltool
+-DLLWRAP= dllwrap
++
++# DLLTOOL= dlltool
++# DLLWRAP= dllwrap
+ ifdef PGXS
+ BE_DLLLIBS= -L$(libdir) -lpostgres
+ else
+@@ -16,9 +17,11 @@ DLSUFFIX = .dll
+ CFLAGS_SL =
+ 
+ %.dll: %.o
+-	$(DLLTOOL) --export-all --output-def $*.def $<
+-	$(DLLWRAP) -o $@ --def $*.def $< $(SHLIB_LINK)
+-	rm -f $*.def
++	$(CC) -c -shared $(CFLAGS) -o $@ $<  $(SHLIB_LINK)
++
++# $(DLLTOOL) --export-all --output-def $*.def $<
++# $(CC) -c -shared $(CFLAGS) -o $@ $<  $(SHLIB_LINK)
++# rm -f $*.def
+ 
+ ifneq (,$(findstring backend,$(subdir)))
+ ifeq (,$(findstring conversion_procs,$(subdir)))

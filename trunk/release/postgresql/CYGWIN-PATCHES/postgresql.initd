@@ -93,7 +93,7 @@ restart() {
 
 initdb() {
 	/usr/sbin/initdb -U SYSTEM ${INITDB_ARGS} && echo "done."
-	#mkdir ${SOCKETDIR}
+	mkdir ${SOCKETDIR}
 	chmod -R g+rw $PGDATA
 	chgrp -R 18 $PGDATA
 }
