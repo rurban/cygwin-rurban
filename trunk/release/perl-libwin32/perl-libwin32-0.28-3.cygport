@@ -1,0 +1,12 @@
+# Bundle::libwin32 contains also: Win32-TieRegistry-0.25.zip Win32API-Registry-0.28.tar.gz 
+CPAN_AUTHOR=JDB
+ORIG_PN=libwin32
+CYGPORT_USE_UNSTABLE_API=1
+SRC_URI="http://search.cpan.org/CPAN/authors/id/J/JD/JDB/libwin32-${PV}.tar.gz"
+
+inherit perl
+
+src_unpack_hook() {
+	tar xfz ../../../Win32API-Registry-0.28.tar.gz
+	unzip -a ../../../Win32-TieRegistry-0.25.zip
+}
