@@ -1,4 +1,4 @@
 sdesc: "Handling page faults in user mode - Library"
 ldesc: "Library for handling page faults in user mode. A page fault occurs when a program tries to access to a region of memory that is currently not available. Mainly required to build clisp from source."
 category: Library
-requires: libsigsegv0
+requires: libsigsegv2
