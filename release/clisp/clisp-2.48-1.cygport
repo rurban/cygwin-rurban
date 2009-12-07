@@ -1,0 +1,145 @@
+# -*- sh -*-
+DESCRIPTION="ANSI Common Lisp implementation"
+HOMEPAGE="http://clisp.cons.org/"
+# SRC_URI="ftp://ftp.gnu.org/pub/gnu/${PN}/release/${PV}/${PN}-${PV}.tar.gz"
+# SRC_URI="ftp://sunsite.unc.edu/pub/Linux/devel/lang/lisp/${PN}-${PV}.tar.bz2"
+# SRC_URI="http://puzzle.dl.sourceforge.net/sourceforge/${PN}/${PN}-${PV}.tar.bz2"
+SRC_URI="http://prdownloads.sourceforge.net/${PN}/${PN}-${PV}.tar.bz2?download"
+# diff -burN origsrc/clisp-2.48/modules/gdi src/clisp-2.48/modules/gdi > clisp-gdi.src.patch
+PATCH_URI="${PN}-gdi.src.patch"
+
+MAKEOPTS="-j1"
+# --with-libsigsegv-prefix not needed, is now required by cygwin setup.exe
+# --with-libpari-prefix=/usr/local --with-module=pari fails at freeall() and init_opts
+# --without-unicode see sf.net bugs
+# --with-module=matlab requires the redistributable matlab dll's in your path. 
+#   maybe this requires an extra clisp-matlab package. Fixed by --with-dynamic-modules
+#   but --with-dynamic-modules is too big and only suitable for on-demand clisp-xxx packages
+# --with-module=fastcgi is linked statically, so (FASTCGI:ACCEPT) works in 
+#   clisp -K full without installed fcgi. Note: Tests with lighttpd dumped core.
+# --with-module=gdi is Dan Stangers experimental gdi interface (native windows gui)
+# --with-dynamic-modules fixed, but not enabled. Too big.
+# --with-jitc=lightning in work. Too slow yet and still in its infancy.
+# --with-threads works, but too slow
+# --with-wildcard added with 2.48-1 
+# Now separate clisp-* packages:
+#   clx/new-clx gtk2+dbus gdi
+# gtk2 removed with 2.46-1. re-added with 2.48-1
+# --with-dbus ok since 2.48-1, included with gtk2
+MODULES="rawsock wildcard dirkey bindings/win32 berkeley-db pcre postgresql fastcgi zlib libsvm gdbm"
+EXTRA_MODULES="clx/new-clx gtk2 gdi"
+ALLMODULES="$MODULES $EXTRA_MODULES dbus"
+WITHMODS="--with-modules=$(echo $ALLMODULES|sed -e's, , --with-modules=,g')"
+CYGCONF_ARGS="--fsstnd=redhat --with-ffcall --with-readline --with-gettext \
+        $WITHMODS \
+	--config build --docdir=/usr/share/doc/${PN}"
+# enable -g for disassemble
+CFLAGS="$CFLAGS -g"
+export CFLAGS
+LDFLAGS="-Wl,--stack,8388608 -Wl,--enable-auto-import"
+export LDFLAGS
+#export CXXFLAGS=${CXXFLAGS:-"-pipe"};
+DIFF_EXCLUDES=" -x build -x modules/gdi"
+
+PKG_NAMES="${PN} ${PN}-clx ${PN}-gtk2 ${PN}-gdi"
+PKG_HINTS="${PN}.hint ${PN}-clx.hint ${PN}-gtk2.hint ${PN}-gdi.hint"
+
+# clisp
+PKG_CONTENTS[0]=" \
+--exclude=usr/lib/${PN}-${PV}/full+*
+--exclude=usr/share/doc/${PN}/new-clx
+--exclude=usr/share/doc/${PN}/gtk2
+--exclude=usr/share/doc/${PN}/dbus
+--exclude=usr/share/doc/${PN}/gdi
+usr
+"
+# clisp-clx
+PKG_CONTENTS[1]=" \
+usr/lib/${PN}-${PV}/full+new-clx
+usr/share/doc/${PN}/new-clx
+"
+# clisp-gtk2
+PKG_CONTENTS[2]=" \
+usr/lib/${PN}-${PV}/full+gtk2
+usr/share/doc/${PN}/gtk2
+usr/share/doc/${PN}/dbus
+"
+# clisp-gdi
+PKG_CONTENTS[3]=" \
+usr/lib/${PN}-${PV}/full+gdi
+usr/share/doc/${PN}/gdi
+"
+
+src_compile() {
+   cd ${B}
+   cd ..
+   # clisp has its own build subdir under src, link ours to it
+   if [ -d build -a ! -L build ]; then
+	rmdir build
+	mkdir ${S}/build
+	ln -s src/${PN}-${PV}/build
+   fi
+   
+   cd ${S}
+   rm -rf autom4te.cache build/config.cache
+   #./configure --srcdir=`pwd` --config build --with-ffcall --with-readline --with-gettext --with-module=rawsock --with-module=dirkey --with-module=wildcard --with-module=bindings/win32 --with-module=berkeley-db --with-module=pcre --with-module=postgresql --with-module=fastcgi --with-module=zlib --with-module=libsvm --with-module=gdbm --with-module=clx/new-clx --with-module=gtk2 --with-module=dbus --with-module=gdi | tee ../../log/clisp-2.48-1-compile.log
+   verbose ./configure --srcdir=${S} --prefix=/usr ${CYGCONF_ARGS} || error "configure failed"
+
+   # first produce full with the modules without the three seperate EXTRA_MODULES 
+   cd ${S}/build
+   test -l gllib/libgnu.a || ln -sf gllib/.libs/libgnu.a gllib/libgnu.a
+
+   cygmake "MODULES=${ALLMODULES}"
+   rm -rf full
+   cygmake full "MODULES=${MODULES}"
+   # now use the linkkit for the three separate modules
+   for m in ${EXTRA_MODULES}; do
+      fixed_m=`echo $m | sed s,clx/,,`
+      if [ "$m" = "gtk2" ]; then m="gtk2 dbus"; fi
+      CLISP_LINKKIT=. ./clisp-link add full "full+${fixed_m}" $m || error "full+${fixed_m} failed"
+   done
+}
+
+src_test() {
+  cd ${B}
+  cygmake check
+  cygmake mod-check "MODULES=${MODULES}"
+  for m in ${EXTRA_MODULES}; do
+    fixed_m=`echo $m | sed s,clx/,,`
+    ./clisp -K full+${fixed_m} -E UTF-8 -Epathname 1:1 -Emisc 1:1 -norc -C -i tests/tests -x "(ext:exit (plusp (or (run-some-tests :dirlist '($m)) 0)))"
+  done
+}
+
+
+src_install() {
+   # do not strip for (disassemble)
+   _CYGPORT_RESTRICT_strip_=1
+   cd ${B}
+   cyginstall
+
+   # check if svm.dll is not copied. FIXME: The FFI loads it from the .lisp path! 
+   #insinto /usr/lib/${PN}-${PV}/full
+   #doins libsvm/svm.dll
+   #chmod 0755 ${D}/usr/lib/${PN}-${PV}/full/svm.dll
+
+   for m in $EXTRA_MODULES; do
+       fixed_m=`echo $m | sed s,clx/,,`
+       docinto ${fixed_m}
+       dodoc $m/README $m/ChangeLog $m/TODO $m/COPYRIGHT $m/*.lisp $m/*.tst
+       insinto /usr/lib/${PN}-${PV}/full+${fixed_m}
+       # resolve .o as links
+       doins full+${fixed_m}/*
+       doins libsvm/svm.dll
+       # force relative links
+       cd ${D}${_insinto_dir}
+       for o in *.o *.a *.dvi; do
+           if [ -e "../full/$o" ]; then
+               ln -fs ../full/$o $o
+           fi
+       done
+       cd ${B}
+       chmod 0755 ${D}${_insinto_dir}/lisp.exe
+   done
+   docinto dbus
+   dodoc dbus/*.lisp dbus/*.tst
+}
