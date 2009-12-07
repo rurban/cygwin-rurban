@@ -1,0 +1,58 @@
+--- origsrc/libwin32-0.28/APINet/Net.xs	2009-11-29 23:28:57.296875000 +0000
++++ src/libwin32-0.28/APINet/Net.xs	2009-11-29 23:17:58.609375000 +0000
+@@ -532,9 +532,9 @@ MBTWC(char* name)
+ 	    croak("Value in logonHours should be an array reference,");	\
+ 	while (i < n) {							\
+ 	    if ((svTmp = av_fetch((AV*)svPtrIndirect, i, 0)) != NULL)	\
+-		(BYTE)(((CAST)uiX)->field)[i] = (BYTE)SvIV(*svTmp);	\
++		(((CAST)uiX)->field)[i] = SvIV(*svTmp);	\
+ 	    else							\
+-		(BYTE)(((CAST)uiX)->field)[i] = 0;			\
++		(((CAST)uiX)->field)[i] = 0;			\
+ 	    i++;							\
+ 	}								\
+     } STMT_END
+--- origsrc/libwin32-0.28/ODBC/Makefile.PL	2009-11-29 23:29:04.937500000 +0000
++++ src/libwin32-0.28/ODBC/Makefile.PL	2009-11-29 23:22:00.218750000 +0000
+@@ -32,7 +32,6 @@ sub const_loadlibs {
+     my ($self) = @_;
+     if ($^O eq "MSWin32" && $Config{cc} =~ /^gcc/i) {
+ 	$self->{LDLOADLIBS} .= " -lodbccp32";
+-
+     }
+     return $self->SUPER::const_loadlibs;
+ }
+--- origsrc/libwin32-0.28/ODBC/ODBC.xs	2009-11-29 23:29:05.421875000 +0000
++++ src/libwin32-0.28/ODBC/ODBC.xs	2009-11-29 23:21:53.093750000 +0000
+@@ -29,7 +29,7 @@
+ #include <windows.h>
+ #include <stdio.h>
+     
+-    //  ODBC Stuff
++//  ODBC Stuff
+ #include <sql.h>
+ #include <sqlext.h>
+ #include <odbcinst.h>
+@@ -366,7 +366,7 @@ void _NT_ODBC_Error(ODBC_TYPE * h, char 
+     }
+     strcpy((char *)h->Error->szSqlState, "");
+     strcpy(h->Error->szError, "");
+-    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (UCHAR *)h->Error->szSqlState, (long *)&(h->Error->ErrNum), (unsigned char *)h->Error->szError, ODBC_BUFF_SIZE, (short *)&cbErrorMsg);
++    SQLError(h->henv, h->hdbc->hdbc, h->hstmt, (SQLCHAR *)h->Error->szSqlState, (SQLINTEGER *)&(h->Error->ErrNum), (SQLCHAR *)h->Error->szError, ODBC_BUFF_SIZE, (SQLSMALLINT *)&cbErrorMsg);
+ 
+         //  Next couple of lines should be NOT needed. If there is no error, then
+         //  we should not have come here in the first place. If, however, there
+--- origsrc/libwin32-0.28/Win32API-Registry-0.28/Makefile.PL	2009-11-29 23:29:14.250000000 +0000
++++ src/libwin32-0.28/Win32API-Registry-0.28/Makefile.PL	2009-11-29 23:24:38.968750000 +0000
+@@ -134,9 +134,9 @@ ${_final}_to_blib: $final
+ 
+     push @m, "
+ clean ::
+-    $self->{RM_F} @clean\n"   if  @clean;
++	$self->{RM_F} @clean\n"   if  @clean;
+     push @m, "
+ realclean ::
+-    $self->{RM_F} @realclean\n"   if  @realclean;
++	$self->{RM_F} @realclean\n"   if  @realclean;
+     return join('',@m);
+ }
