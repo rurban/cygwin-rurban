@@ -1,0 +1,91 @@
+--- origsrc/Win32-GUI-1.06/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/Win32-GUI-1.06/CYGWIN-PATCHES/README	2009-11-29 23:38:27.437500000 +0000
+@@ -0,0 +1,78 @@
++perl-Win32-GUI
++------------------------------------------
++Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
++basically, it's an XS implementation of most of the functions found in 
++user32.dll and gdi32.dll, with an object oriented perl interface and an 
++event-based dialog model that mimic the functionality of visual basic. 
++
++Runtime requirements:
++  cygwin-1.7
++  perl-5.10.x
++  w32api
++
++Build requirements:
++  cygwin
++  cygutils
++  perl
++  gcc
++  make
++  w32api
++  gzip
++
++Project Homepages:
++  http://search.cpan.org/search?query=Win32::GUI
++
++------------------------------------
++
++Build instructions:
++  cpan Win32-GUI (it builds out of the box into sitedir)
++
++  If you use setup to install this src package, it will be
++  unpacked under /usr/src automatically.
++  cd /usr/src
++  cygport perl-Win32-GUI-1.06-3 all
++
++This will create:
++  /usr/src/perl-Win32-GUI-1.06-3.tar.bz2
++  /usr/src/perl-Win32-GUI-1.06-3-src.tar.bz2
++
++------------------
++
++Port Notes:
++
++The dll's must probably be rebased. If a remap error occurs, 
++run rebaseall from the rebase package. 
++The packaged version is already rebased to my personal settings.
++
++----- version 1.06-3 -----
++* for perl-5.10.1-1 and cygwin-1.7
++----- version 1.06-2 -----
++* for perl-5.10.0-3
++----- version 1.06-1 -----
++* switch from gbs to cygport
++* for perl-5.8.8
++----- version 1.05-2 -----
++* for perl-5.10
++* fixed carp importing issues
++* added chmod +w GUI.rc samples/*
++* added chmod +x SciLexer.dll
++----- version 1.05-1 -----
++* none. last version for perl-5.8
++----- version 1.04-1 -----
++* added the ComboBox::SetEditSel patch from Uwe Kind
++----- version 1.03-1 -----
++* none
++----- version 1.02-1 -----
++* all cygwin patches accepted upstream
++
++----- version 1.0-2 -----
++* INSTALLDIRS=vendor
++
++----- version 1.0-1 ----- (NOT RELEASED)
++
++Initial Cygwin package, seperated from perl-libwin32-0.191.
++* Several new cygwin patches. Added missing itoa definition. 
++* Renamed ToolTip.xs to Tooltip.xs
++
++Cygwin port maintained by: Reini Urban  (rurban@x-ray.at)
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- origsrc/Win32-GUI-1.06/CYGWIN-PATCHES/setup.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/Win32-GUI-1.06/CYGWIN-PATCHES/setup.hint	2009-11-29 23:40:37.781250000 +0000
+@@ -0,0 +1,7 @@
++sdesc: "Perl Win32-GUI module"
++ldesc: "Win32::GUI is a Win32-platform native graphical user interface toolkit for perl. 
++Basically, it's an XS implementation of most of the functions found in 
++user32.dll and gdi32.dll, with an object oriented perl interface and an 
++event-based dialog model that mimic the functionality of visual basic."
++category: Perl
++requires: perl

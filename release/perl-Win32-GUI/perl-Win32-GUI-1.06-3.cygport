@@ -1,0 +1,4 @@
+CPAN_AUTHOR=ROBERTMAY
+ORIG_PN=Win32-GUI
+
+inherit perl
