@@ -1,0 +1,96 @@
+--- origsrc/ericb/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/ericb/CYGWIN-PATCHES/README	2009-07-24 21:55:00.156250000 +0200
+@@ -0,0 +1,74 @@
++libsigsegv
++------------------------------------------
++Handling page faults in user mode.
++This is for a short time a non-official test version.
++
++Runtime requirements:
++  cygwin-1.7 or newer
++
++Build requirements:
++  cygwin-1.5.20-1 or newer
++  gcc-3.3.3-1 or newer
++  binutils-20040725-2 or newer
++
++Canonical homepage:
++  http://libsigsegv.sourceforge.net/
++
++Canonical download:
++  git clone git://repo.or.cz/libsigsegv/ericb.git
++
++------------------------------------
++
++Build instructions:
++  tar xfj libsigsegv-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++	 unpacked under /usr/src automatically
++  cd /usr/src
++  cygport libsigsegv-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/libsigsegv-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/libsigsegv-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport libsigsegv-<VERSION>-<CYGREL>.cygport prep' 
++to get a patched source directory 
++
++-------------------------------------------
++
++Files included in the =libsigsegv1= package:
++
++  /usr/bin/cygsigsegv-1.dll
++
++Files included in the =libsigsegv= package:
++
++  /usr/include/sigsegv.h
++  /usr/lib/libsigsegv.a
++  /usr/lib/libsigsegv.dll.a
++  /usr/lib/libsigsegv.la
++  /usr/share/doc/Cygwin/libsigsegv-2.6+.README
++  /usr/share/doc/libsigsegv-2.6+/AUTHORS
++  /usr/share/doc/libsigsegv-2.6+/ChangeLog
++  /usr/share/doc/libsigsegv-2.6+/COPYING
++  /usr/share/doc/libsigsegv-2.6+/INSTALL
++  /usr/share/doc/libsigsegv-2.6+/NEWS
++  /usr/share/doc/libsigsegv-2.6+/README
++
++------------------
++
++Port Notes:
++
++----------  libsigsegv-2.6+-1 -----------
++* test-only: intermediate cygwin fixes by Eric Blake.
++  See http://cygwin.com/ml/cygwin/2009-07/msg00881.html
++* libsigsegv1
++
++----------  libsigsegv-2.6-1 -----------
++* add shared lib, due to SEH corruption.
++  See http://cygwin.com/ml/cygwin/2009-07/msg00639.html
++* added libsigsegv0 package
++
++----------  libsigsegv-2.4-1 -----------
++* Initial cygwin release for clisp-2.39-1
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list at <cygwin@cygwin.com>
+--- origsrc/ericb/CYGWIN-PATCHES/libsigsegv.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/ericb/CYGWIN-PATCHES/libsigsegv.hint	2009-07-24 21:53:29.265625000 +0200
+@@ -0,0 +1,7 @@
++sdesc: "Handling page faults in user mode - Library"
++ldesc: "Library for handling page faults in user mode. A page fault occurs when a program tries to access to a region of memory that is currently not available. Mainly required to build clisp from source."
++category: Libs
++requires: libsigsegv1
++prev: 2.4-1
++curr: 2.6-1
++test: 2.6+-1
+--- origsrc/ericb/CYGWIN-PATCHES/libsigsegv1.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/ericb/CYGWIN-PATCHES/libsigsegv1.hint	2009-07-24 21:53:29.296875000 +0200
+@@ -0,0 +1,6 @@
++sdesc: "Handling page faults in user mode - runtime"
++category: Libs
++external-source: libsigsegv
++prev: 2.4-1
++curr: 2.6-1
++test: 2.6+-1

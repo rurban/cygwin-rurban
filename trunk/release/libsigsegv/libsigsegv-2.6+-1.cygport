@@ -1,0 +1,23 @@
+# -*- sh -*-
+DESCRIPTION="Handling page faults in user mode"
+HOMEPAGE="http://libsigsegv.sourceforge.net/"
+# SRC_URI="ftp://ftp.gnu.org/pub/gnu/${PN}/${PN}-${PV}.tar.gz"
+
+# Eric Blake's mirror of git://git.sv.gnu.org/libsigsegv.git
+GIT_URI="git://repo.or.cz/libsigsegv/ericb.git"
+# GIT_REV="ffa5e049d53cfb325dadc44d49f2990a16b6234f"
+inherit git
+
+DLLREV=1
+MAKEOPTS="-j1"
+CYGCONF_ARGS="--enable-shared" 
+
+PKG_NAMES="${PN} ${PN}${DLLREV}"
+PKG_CONTENTS[0]="--exclude=usr/bin/cygsigsegv-*.dll usr"
+PKG_CONTENTS[1]="usr/bin/cygsigsegv-*.dll"
+
+src_compile() {
+   cd ${B}
+   cygconf
+   cygmake
+}

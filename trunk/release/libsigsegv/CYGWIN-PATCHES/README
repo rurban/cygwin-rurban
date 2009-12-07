@@ -14,7 +14,7 @@ Canonical homepage:
   http://libsigsegv.sourceforge.net/
 
 Canonical download:
-  ftp://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.6.tar.gz
+  ftp://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.7.tar.gz
 
 ------------------------------------
 
@@ -34,9 +34,9 @@ to get a patched source directory
 
 -------------------------------------------
 
-Files included in the =libsigsegv0= package:
+Files included in the =libsigsegv2= package:
 
-  /usr/bin/cygsigsegv-0.dll
+  /usr/bin/cygsigsegv-2.dll
 
 Files included in the =libsigsegv= package:
 
@@ -44,23 +44,28 @@ Files included in the =libsigsegv= package:
   /usr/lib/libsigsegv.a
   /usr/lib/libsigsegv.dll.a
   /usr/lib/libsigsegv.la
-  /usr/share/doc/Cygwin/libsigsegv-2.6.README
-  /usr/share/doc/libsigsegv-2.6/AUTHORS
-  /usr/share/doc/libsigsegv-2.6/ChangeLog
-  /usr/share/doc/libsigsegv-2.6/COPYING
-  /usr/share/doc/libsigsegv-2.6/INSTALL
-  /usr/share/doc/libsigsegv-2.6/NEWS
-  /usr/share/doc/libsigsegv-2.6/README
+  /usr/share/doc/Cygwin/libsigsegv-2.7.README
+  /usr/share/doc/libsigsegv-2.7/AUTHORS
+  /usr/share/doc/libsigsegv-2.7/ChangeLog
+  /usr/share/doc/libsigsegv-2.7/COPYING
+  /usr/share/doc/libsigsegv-2.7/INSTALL
+  /usr/share/doc/libsigsegv-2.7/NEWS
+  /usr/share/doc/libsigsegv-2.7/README
 
 ------------------
 
 Port Notes:
 
+----------  libsigsegv-2.7-1 -----------
+* libsigsegv2
 ----------  libsigsegv-2.6-1 -----------
+* test-only: intermediate cygwin fixes by Eric Blake.
+  See http://cygwin.com/ml/cygwin/2009-07/msg00881.html
+* libsigsegv1
+----------  libsigsegv-2.6+-1 -----------
 * add shared lib, due to SEH corruption.
   See http://cygwin.com/ml/cygwin/2009-07/msg00639.html
 * added libsigsegv0 package
-
 ----------  libsigsegv-2.4-1 -----------
 * Initial cygwin release for clisp-2.39-1
 
