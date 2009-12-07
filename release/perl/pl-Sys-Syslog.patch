@@ -1,0 +1,14 @@
+diffbk perl-current/ext/Sys-Syslog/Makefile.PL
+
+diff -u perl-current/ext/Sys-Syslog/Makefile.PL~ perl-current/ext/Sys-Syslog/Makefile.PL
+--- perl-current/ext/Sys-Syslog/Makefile.PL~	2009-04-14 19:45:05.000000000 +0200
++++ perl-current/ext/Sys-Syslog/Makefile.PL	2009-08-04 14:20:02.468750000 +0200
+@@ -1,7 +1,7 @@
+ use strict;
+ use Config;
+ use ExtUtils::MakeMaker;
+-eval 'use ExtUtils::MakeMaker::Coverage';
++#eval 'use ExtUtils::MakeMaker::Coverage';
+ use File::Copy;
+ use File::Path;
+ use File::Spec;

@@ -1,9 +1,9 @@
-difforig perl-current/perl.c
+difforig perl-5.10.1/perl.c
 
-diff -u perl-current/perl.c.orig perl-current/perl.c
---- perl-current/perl.c.orig	2009-03-19 20:23:07.000000000 +0000
-+++ perl-current/perl.c	2009-03-24 16:46:58.832875000 +0000
-@@ -4921,11 +4921,6 @@
+diff -u perl-5.10.1/perl.c.orig perl-5.10.1/perl.c
+--- perl-5.10.1/perl.c.orig	2009-04-22 20:07:41.000000000 +0200
++++ perl-5.10.1/perl.c	2009-08-27 09:04:23.046875000 +0200
+@@ -4929,11 +4929,6 @@
  #  endif
  #endif
  
@@ -15,17 +15,16 @@ diff -u perl-current/perl.c.orig perl-current/perl.c
  #ifdef PERL_VENDORARCH_EXP
      /* vendorarch is always relative to vendorlib on Windows for
       * DLL-based path intuition to work correctly */
-@@ -4942,12 +4937,18 @@
+@@ -4950,12 +4945,18 @@
  #  endif
  #endif
  
--#ifdef PERL_VENDORLIB_STEM /* Search for version-specific dirs below here */
 +#if defined(SITELIB_STEM) && defined(PERL_INC_VERSION_LIST)
 +    /* Search for version-specific dirs below here */
 +    incpush(SITELIB_STEM, FALSE, TRUE, TRUE, TRUE);
 +#endif
 +
-+#ifdef PERL_VENDORLIB_STEM  && defined(PERL_INC_VERSION_LIST) 
+ #ifdef PERL_VENDORLIB_STEM /* Search for version-specific dirs below here */
 +    /* Search for version-specific dirs below here */
      incpush(PERL_VENDORLIB_STEM, FALSE, TRUE, TRUE, TRUE);
  #endif
