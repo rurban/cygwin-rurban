@@ -1,0 +1,22 @@
+difforig perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm
+
+diff -u perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm.orig perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm
+--- perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm.orig	2009-08-05 20:43:01.000000000 +0000
++++ perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm	2009-08-30 08:43:58.671875000 +0000
+@@ -116,6 +116,16 @@
+     return $self->SUPER::maybe_command($file);
+ }
+ 
++=item all_target
++
++Build man pages, too
++
++=cut
++
++sub all_target {
++    ExtUtils::MM_Unix::all_target(shift);
++}
++
+ =back
+ 
+ =cut

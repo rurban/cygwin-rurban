@@ -1,19 +1,24 @@
-difforig perl-current/patchlevel.h
+difforig perl-5.10.1/patchlevel.h
 
-diff -u perl-current/patchlevel.h.orig perl-current/patchlevel.h
---- perl-current/patchlevel.h.orig	2008-12-21 12:43:04.000000000 +0000
-+++ perl-current/patchlevel.h	2009-03-24 16:48:52.473500000 +0000
-@@ -119,6 +119,13 @@
- static const char * const local_patches[] = {
+diff -u perl-5.10.1/patchlevel.h.orig perl-5.10.1/patchlevel.h
+--- perl-5.10.1/patchlevel.h.orig	2009-08-18 23:48:11.000000000 +0000
++++ perl-5.10.1/patchlevel.h	2009-08-30 09:02:30.031250000 +0000
+@@ -131,6 +131,18 @@
  	NULL
- 	,"MAINT35117"
-+  	,"CYG11 no-bs"
+ 	PERL_GIT_UNPUSHED_COMMITS    	/* do not remove this line */
+         PERL_GIT_UNCOMMITTED_CHANGES	/* do not remove this line */
++ 	,"CYG11 no-bs"
 +  	,"CYG12 no archlib in otherlibdirs"
-+ 	,"CYG14 Dynaloader"
-+ 	,"CYG15 static-Win32CORE"
-+        ,"CYG17 utf8-paths"
-+	,"CYG21 LibList-Kid.patch"
-+ 	,"Bug#55162 File::Spec::case_tolerant performance"
++  	,"CYG14 Dynaloader"
++  	,"CYG15 static-Win32CORE"
++  	,"CYG17 utf8-paths"
++  	,"CYG21 LibList-Kid.patch"
++  	,"CYG22 cygwin-1.7 hints"
++  	,"CYG23 544-stat"
++  	,"CYG24 build man pages"
++  	,"CYG25 use same image-base when exchanging privlib dlls"
++  	,"Bug#55162 File::Spec::case_tolerant performance"
++  	,"disable ExtUtils::MakeMaker::Coverage in Sys-Syslog"
  	,NULL
  };
  

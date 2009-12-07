@@ -1,81 +1,44 @@
 #!/bin/sh
-# 5.10.0-6 i686-cygwin-1.7
+# 5.10.1-1 i686-cygwin
 
 ## stages: 
 make_debug=
-# cpan check all newer modules, needs manual update of the version list then
+# cpan checks externally all newer modules, needs manual update of the version list then
+stage_cpan=
+# check if all required modules exist
 stage_vendorprep=
 # delete buildperl, unpack src and apply patches
-stage_prep=1
+stage_prep=
 stage_configure=1
 stage_make=1
 stage_check=1
 stage_install=1
-stage_installvendor=1
-stage_pkg=1
+stage_installvendor=
+stage_pkg=
 
 prefix=/usr
 pkg=perl
-ver=5.10.0
-pkg_ver=perl-5.10.0
+
+ver=5.10.1
+release=-1
+pkg_ver=perl-5.10.1
 shortver=5.10
-release=-6
+subversion=1
 major=5
 minor=10
-# shortver=`echo ${ver}${release} | sed 's/-.*//'`
 longver=${ver}
 usethreads=yes
-archname="i686-cygwin-1.7"
-CONF_ARGS="-de -Dcc=gcc-4 -Dlibperl=cygperl5_10.dll"
+#archname="i686-cygwin"
+download_url="http://search.cpan.org/CPAN/authors/id/D/DA/DAPM/perl-5.10.1.tar.gz"
+rsync_url="rsync://ftp.linux.activestate.com/perl-5.10.x/"
 
 dir=`pwd`
 srcdir=${dir}/${pkg_ver}
-#archname="cygwin-thread-multi-64int"
-builddir=${dir}/buildperl
-instdir=${dir}/inst
-if [ -n "$make_debug" ]; then
-    ver=5.10.0d
-    archname="i686-debug-cygwin-1.7"
-    builddir=${dir}/builddebug
-    instdir=${dir}/instdebug; 
-fi
 
 source build_common
 source modules
 
-stage_prep_unpack() {
-  if [ -n "$stage_prep" ]; then
-    __substage "prep_unpack"
-    cd ${dir}
-    rm ${dir}/log.prep 2>/dev/null
-    ## unpack or rsync
-    if [ "$pkg_ver" = "perl-current" ]; then
-	test -e ${pkg_ver} && echo "difforig ${pkg_ver} > difforig-`date +%Y-%m-%d-%H%M`.patch"
-	test -e ${pkg_ver} && difforig ${pkg_ver} > difforig-`date +%Y-%m-%d-%H%M`.patch
-	echo "rsync -acvz --force --delete rsync://ftp.linux.activestate.com/perl-5.10.x/ ${pkg_ver}"
-	rsync -acvz --force --delete rsync://ftp.linux.activestate.com/perl-5.10.x/ ${pkg_ver} \
-	    | tee -a ${dir}/log.prep
-        tar cfz ${pkg}-${ver}.tar.gz ${pkg_ver}
-    else
-	test -e ${srcdir} && echo "difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch"
-	test -e ${srcdir} && difforig ${srcdir} > difforig-`date +%Y-%m-%d-%H%M`.patch
-	echo "rm -rf ${srcdir}/*"
-	rm -rf ${srcdir}/* 2>/dev/null | tee -a ${dir}/log.prep
-        faclfixdir ${srcdir}
-	sleep 2
-	if [ -e ${pkg_ver}.tar.bz2 ]; then
-	    echo "tar xfj ${pkg_ver}.tar.bz2"
-	    tar xfj ${pkg_ver}.tar.bz2 | tee -a ${dir}/log.prep
-	else    
-	    echo "tar xfz ${pkg_ver}.tar.gz"
-	    tar xfz ${pkg_ver}.tar.gz | tee -a ${dir}/log.prep
-        fi
-    fi
-    test -f ${srcdir}/.patch && cp ${srcdir}/.patch ${pkg_ver}/.patch
-  fi
-}
-
-#stage_cpan
+stage_cpan
 stage_vendorprep
 stage_prep
 stage_configure_policy() {
@@ -84,32 +47,6 @@ stage_configure_policy() {
 stage_configure
 stage_make
 stage_check
-
-stage_post_install_fixups() {
-    __substage "post_install_fixups"
-    find ${instdir} -name .packlist -exec sed -i -e"s,${instdir},," \{\} \;
-    chmod -R g-w ${instdir}${prefix}/bin ${instdir}${prefix}/lib/perl5
-    if [ -n "$exesuffix" ]; then
-	mv ${instdir}${prefix}/bin/perl${longver}.exe ${instdir}${prefix}/bin/perl${longver}${exesuffix}.exe
-	if [ -n "$patch" ]; then
-	    pushd ${instdir}${prefix}/bin
-	    cp perl${longver}${exesuffix}.exe perl${longver}${exesuffix}@${patch}.exe
-	    popd
-        fi
-    fi
-    pushd ${instdir}${prefix}/bin
-    if [ -e scandeps.pl ]; then mv scandeps.pl scandeps; fi
-    if [ -e "a2p${longver}.exe" -a ! -e "a2p.exe" ]; then # installperl -v (usedevel)
-	for f in $(ls | grep -v "${shortver}"); do
-	    /usr/bin/mv $f $f${longver}
-	done
-	for x in $(ls *5.10.0); do r=$(basename $x 5.10.0); ln -s $x $r; done
-	for x in $(ls *5.10.0.exe); do r=$(basename $x 5.10.0); cp $x $r; done
-    fi
-    chmod +x *
-    popd
-}
-
 stage_install
 stage_installvendor
 stage_pkg
