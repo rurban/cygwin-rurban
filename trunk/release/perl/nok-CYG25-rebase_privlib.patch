@@ -1,0 +1,35 @@
+difforig perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm
+
+diff -u MM_Cygwin.pm.orig MM_Cygwin.pm
+--- perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm.orig	2009-08-30 09:23:34.343750000 +0000
++++ perl-5.10.1/lib/ExtUtils/MM_Cygwin.pm	2009-10-04 12:14:00.203125000 +0000
+@@ -126,6 +126,29 @@
+     ExtUtils::MM_Unix::all_target(shift);
+ }
+ 
++=item dynamic_lib
++
++Use the default to produce the *.dll's.
++But for new archdir dll's use the same rebase address if the old exists.
++
++=cut
++
++sub dynamic_lib {
++    my($self, %attribs) = @_;
++    my $s = ExtUtils::MM_Unix::dynamic_lib($self, %attribs);
++    my $ori = "$self->{INSTALLARCHLIB}/auto/$self->{FULLEXT}/$self->{BASEEXT}.$self->{DLEXT}";
++    if (-e $ori) {
++        my $imagebase = `/bin/objdump -p $ori | /bin/grep ImageBase | /bin/cut -c12-`;
++        chomp $imagebase;
++        if ("$imagebase" > "40000000") {
++            my $LDDLFLAGS = $self->{LDDLFLAGS};
++            $LDDLFLAGS =~ s/-Wl,--enable-auto-image-base/-Wl,--image-base=$imagebase/;
++            $s =~ s/ \$\(LDDLFLAGS\) / $LDDLFLAGS /m;
++        }
++    }
++    $s;
++}
++
+ =back
+ 
+ =cut
