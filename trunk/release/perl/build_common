@@ -10,7 +10,7 @@ export CYGWIN=server
 ## cfg
 if [ -z "$prefix" ];     then prefix=/usr; fi
 if [ -z "$shortver" ];   then shortver=$(echo "${ver}${release}" | sed 's/-.*//'); fi
-if [ -z "$longver" ];    then longver="${shortver}"; fi
+if [ -z "$longver" ];    then longver="${ver}"; fi
 if [ -z "$major" ];      then major=5; fi
 if [ -z "$minor" ];      then minor="`echo ${shortver:2:5}|sed 's/\..*//'`"; fi
 if [ -z "$subversion" ]; then subversion="`echo ${ver:2:8}|sed 's/^.*\.//'`"; fi
@@ -23,6 +23,10 @@ if [ -z "$rsync_url" ];  then rsync_url="rsync://public.activestate.com/perl-cur
 if [ -z "$docdir" ]; then
   #docdir="${prefix}/share/doc/${pkg}-${ver}"
   docdir="${prefix}/share/doc/${pkg}"
+fi
+archver="${shortver}"
+if [ "$pkg_ver" = "perl-git" ]; then
+    archver="${ver}"
 fi
 
 debugpath="${prefix}/lib/debug"
@@ -230,7 +234,7 @@ stage_prep_unpack() {
       if [ "$pkg_ver" = "perl-git" ]; then
 	test -e ${pkg_ver} && echo "difforig ${pkg_ver} > difforig-`date +%Y-%m-%d-%H%M`.patch"
 	test -e ${pkg_ver} && difforig ${pkg_ver} > difforig-`date +%Y-%m-%d-%H%M`.patch
-	echo "cd ${pkg_ver}; git reset --hard; git pull origin"
+	echo "cd ${pkg_ver}; git reset --hard; git pull -s ours origin HEAD"
 	cd ${pkg_ver}
         git reset --hard  | tee -a ${dir}/log.prep; 
         git pull origin   | tee -a ${dir}/log.prep
@@ -302,10 +306,18 @@ stage_configure_policy() {
 	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
     fi
     if [ "$shortver" = "5.11" ]; then
-	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	if [ "$archver" = "$ver" ]; then
+	    echo "otherlibdirs='/usr/lib/perl5/site_perl/5.11:/usr/lib/perl5/vendor_perl/5.11:/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	else
+	    echo "otherlibdirs='/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	fi
     fi
     if [ "$shortver" = "5.12" ]; then
-	echo "otherlibdirs='/usr/lib/perl5/site_perl/5.11:/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	if [ $archver = $ver ]; then
+	    echo "otherlibdirs='/usr/lib/perl5/site_perl/5.11:/usr/lib/perl5/vendor_perl/5.11:/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	else
+	    echo "otherlibdirs='/usr/lib/perl5/site_perl/5.11:/usr/lib/perl5/vendor_perl/5.11:/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+	fi
     fi
 }
 stage_post_configure_hook() {
@@ -335,6 +347,11 @@ stage_configure() {
         make -C ext/Time/HiRes clean || rm ext/Time/HiRes/xdefine ext/Time/HiRes/pm_to_blib
     fi
     echo 'cat > Policy.sh' | tee -a ${log}
+
+    archver="${shortver}"
+    if [ "$pkg_ver" = "perl-git" ]; then
+	archver="${ver}"
+    fi
     cat > ${builddir}/Policy.sh <<EOF
 #!/bin/sh
 # Auto-generated cygwin Policy file for ${pkg}-${ver}${release}
@@ -353,12 +370,12 @@ sitehtml3dir='${docdir}/html/html3'
 vendorhtml1dir='${docdir}/html/html1'
 vendorhtml3dir='${docdir}/html/html3'
 
-privlib='${prefix}/lib/perl5/${shortver}'
-sitelib='${prefix}/lib/perl5/site_perl/${shortver}'
-vendorlib='${prefix}/lib/perl5/vendor_perl/${shortver}'
-archlib='${prefix}/lib/perl5/${shortver}/${archname}'
-sitearch='${prefix}/lib/perl5/site_perl/${shortver}/${archname}'
-vendorarch='${prefix}/lib/perl5/vendor_perl/${shortver}/${archname}'
+privlib='${prefix}/lib/perl5/${archver}'
+sitelib='${prefix}/lib/perl5/site_perl/${archver}'
+vendorlib='${prefix}/lib/perl5/vendor_perl/${archver}'
+archlib='${prefix}/lib/perl5/${archver}/${archname}'
+sitearch='${prefix}/lib/perl5/site_perl/${archver}/${archname}'
+vendorarch='${prefix}/lib/perl5/vendor_perl/${archver}/${archname}'
 
 sitebin='/usr/local/bin'
 sitescript='/usr/local/bin'
@@ -387,7 +404,8 @@ EOF
 	CONF_ARGS="$CONF_ARGS -Dusethreads"
     fi
     if [ $minor -gt 9 ] ; then
-	CONF_ARGS="$CONF_ARGS -Dmad=y"
+	# CONF_ARGS="$CONF_ARGS -Dmad=y"
+	false
     fi
     if [ -z "$make_all" -a -n "$make_debug" ]; then
 	CONF_ARGS="$CONF_ARGS -Dusedevel"
@@ -401,11 +419,11 @@ EOF
         fi
     fi
     if [ -n "$make_debug" ]; then
-	CONF_ARGS="$CONF_ARGS -DDEBUGGING=-g3 -Doptimize=-O0"
+	CONF_ARGS="$CONF_ARGS -DDEBUGGING -Doptimize=-g3"
     else
         # tricky: only -DEBUGGING=-g lets us generate debuginfo without -DDEBUGGING
         # fedora fell into that trap
-        CONF_ARGS="$CONF_ARGS"
+        CONF_ARGS="$CONF_ARGS -Doptimize=-O3"
     fi
     echo "sh ${srcdir}/Configure $CONF_ARGS" |\
 	tee -a ${log}
@@ -471,14 +489,14 @@ stage_post_install_fixups() {
     #echo compress manpages
     #find ${instdir}${prefix}/share/man ! -name \*.gz -exec gzip \{\} \;
     echo symlink bin/cygperl dll to CORE/
-    pushd ${instdir}${prefix}/lib/perl5/${shortver}/${archname}/CORE
+    pushd ${instdir}${prefix}/lib/perl5/${archver}/${archname}/CORE
     ln -sf ../../../../../bin/${libperl}
     popd
     pushd ${instdir}${prefix}/bin
     chmod +x *
     if [ -e scandeps.pl ]; then mv scandeps.pl scandeps; fi
     if [ -e "a2p${longver}.exe" -a ! -e "a2p.exe" ]; then # installperl -v (usedevel)
-	for f in $(ls | grep -v "${shortver}"); do
+	for f in $(ls | grep -v "${archver}"); do
 	    /usr/bin/mv $f $f${longver}
 	done
 	for x in *$ver; do r=$(basename $x $ver); ln -s $x $r; done
@@ -548,11 +566,11 @@ stage_installvendor() {
 
     # BIG TODO: Config.pm must be absolute here. And we need the currently rebases files, not the old ones.
     # So we overwrite the previous archlib installation without backup
-    mkdir -p ${prefix}/lib/perl5/${shortver}/${archname}
-    echo "cp -rpf ${instdir}${prefix}/lib/perl5/${shortver}/${archname}/* ${prefix}/lib/perl5/${shortver}/${archname}/" | tee -a $logmake
-    cp -rpf ${instdir}${prefix}/lib/perl5/${shortver}/${archname}/* ${prefix}/lib/perl5/${shortver}/${archname}/
+    mkdir -p ${prefix}/lib/perl5/${archver}/${archname}
+    echo "cp -rpf ${instdir}${prefix}/lib/perl5/${archver}/${archname}/* ${prefix}/lib/perl5/${archver}/${archname}/" | tee -a $logmake
+    cp -rpf ${instdir}${prefix}/lib/perl5/${archver}/${archname}/* ${prefix}/lib/perl5/${archver}/${archname}/
 
-    PERL_I="$PERL -I${prefix}/lib/perl5/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/${shortver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${shortver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${shortver}"
+    PERL_I="$PERL -I${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}"
     # CPAN, libXML and more
     for i in $exts
     do 

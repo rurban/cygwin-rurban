@@ -6,7 +6,7 @@ Runtime requirements: (versions given or later)
   libgdbm4 
   libdb4.5
   crypt
-  expat 
+  libexpat1
   libbz2_1-1.0.3-1
   zlib-1.2.x
   
@@ -18,7 +18,7 @@ Non-base build requirements: (versions given or later)
   make
   libgdbm-devel
   libdb4.5-devel
-  expat
+  libexpat-devel
 
 Build instructions:
   tar xfvj perl-5.10.1-1-src.tar.bz2
@@ -30,7 +30,6 @@ Build instructions:
   This will create:
     perl-5.10.1-1-src.tar.bz2
     perl-5.10.1-1.tar.bz2
-    perl_debuginfo-5.10.1-1.tar.bz2
     perl_manpages-5.10.1-1.tar.bz2
 
 Canonical homepages:
@@ -43,6 +42,10 @@ Canonical download:
 --------------------
 
 NEWS:
+
+5.10.1-2
+  - fixed setup.hint requires libexpat1, and the docs in README to libexpat-devel.
+  - re-added XML::Parser missed from 5.10.1-1 because of that failure.
 
 5.10.1-1
   - first cygwin-1.7 release, with gcc-4. Binary incompatible to any 

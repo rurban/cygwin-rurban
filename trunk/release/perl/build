@@ -1,5 +1,5 @@
 #!/bin/sh
-# 5.10.1-1 i686-cygwin
+# 5.10.1-2 i686-cygwin
 
 ## stages: 
 make_debug=
@@ -20,7 +20,7 @@ prefix=/usr
 pkg=perl
 
 ver=5.10.1
-release=-1
+release=-2
 pkg_ver=perl-5.10.1
 shortver=5.10
 subversion=1

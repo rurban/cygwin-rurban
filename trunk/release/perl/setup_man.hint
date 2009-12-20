@@ -1,4 +1,5 @@
 sdesc: "Perl manpages"
-ldesc: "Perl manpages at /usr/share/man/man{1,3}"
+ldesc: "Perl manpages. 3pm module manpages with :: require man-1.6f or later"
 category: Doc Perl
-test: 5.10.0-1
+requires: man
+external-source: perl
