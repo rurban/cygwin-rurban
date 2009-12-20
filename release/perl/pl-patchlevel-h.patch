@@ -2,7 +2,7 @@ difforig perl-5.10.1/patchlevel.h
 
 diff -u perl-5.10.1/patchlevel.h.orig perl-5.10.1/patchlevel.h
 --- perl-5.10.1/patchlevel.h.orig	2009-08-18 23:48:11.000000000 +0000
-+++ perl-5.10.1/patchlevel.h	2009-08-30 09:02:30.031250000 +0000
++++ perl-5.10.1/patchlevel.h	2009-12-13 20:45:37.131191700 +0000
 @@ -131,6 +131,18 @@
  	NULL
  	PERL_GIT_UNPUSHED_COMMITS    	/* do not remove this line */
@@ -16,7 +16,7 @@ diff -u perl-5.10.1/patchlevel.h.orig perl-5.10.1/patchlevel.h
 +  	,"CYG22 cygwin-1.7 hints"
 +  	,"CYG23 544-stat"
 +  	,"CYG24 build man pages"
-+  	,"CYG25 use same image-base when exchanging privlib dlls"
++  	,"CYG26 Cwd for svk"
 +  	,"Bug#55162 File::Spec::case_tolerant performance"
 +  	,"disable ExtUtils::MakeMaker::Coverage in Sys-Syslog"
  	,NULL

@@ -1,4 +1,4 @@
-sdesc: "Perl plus vendor libs"
+sdesc: "Larry Wall's Practical Extracting and Report Language"
 ldesc: "Perl is a high-level programming language with roots in C,
 sed, awk and shell scripting.  Perl is good at handling processes
 and files, and is especially good at handling text.  Perl's
@@ -9,4 +9,4 @@ proportion of the CGI scripts on the web are written in Perl.
 You need the perl package installed on your system so that your
 system can handle Perl scripts."
 category: Interpreters Perl
-requires: libgdbm4 libdb4.5 crypt expat libbz2_1 libxml2 gnupg
+requires: cygwin libgcc1 libgdbm4 libdb4.5 crypt libexpat1 libbz2_1
