@@ -1,0 +1,229 @@
+--- origsrc/mathomatic-15.0.2/CYGWIN-PATCHES/README	1970-01-01 00:00:00.000000000 +0000
++++ src/mathomatic-15.0.2/CYGWIN-PATCHES/README	2009-12-27 09:49:37.328125000 +0000
+@@ -0,0 +1,198 @@
++mathomatic
++-------------------------------------------------------------------------------
++Algebraic console.
++
++Runtime requirements:
++  cygwin-1.7.x
++  libgcc1
++  libreadline6
++  libncurses8
++  
++Build requirements:
++  cygwin
++  gcc
++  binutils
++  make
++  bash
++  fileutils
++  sed
++  libncurses
++  libreadline
++
++Canonical homepage:
++  http://www.mathomatic.org
++
++Canonical download:
++  http://mathomatic.orgserve.de/am.tar.bz2 or 
++  http://www.panix.com/~gesslein/mathomatic-<VERSION>.tar.bz2
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++  tar xfj mathomatic-<VERSION>-<CYGREL>-src.tar.bz2
++    if you use setup to install this src package, it will be
++    unpacked under /usr/src automatically
++  cd /usr/src
++  cygport mathomatic-<VERSION>-<CYGREL>.cygport all
++
++This will create:
++  /usr/src/mathomatic-<VERSION>-<CYGREL>.tar.bz2
++  /usr/src/mathomatic-<VERSION>-<CYGREL>-src.tar.bz2
++
++Or use 'cygport mathomatic-<VERSION>-<CYGREL>.cygport prep' to 
++get a patched source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in mathomatic:
++
++  /usr/bin/mathomatic.exe
++  /usr/bin/mathomatic_secure.exe
++  /etc/defaults/etc/skel/.mathomaticrc
++  /usr/include/mathomatic.h
++  /usr/lib/libmathomatic.a
++  /usr/share/applications/mathomatic.desktop
++  /usr/share/doc/Cygwin/mathomatic-<VERSION>.README (this file)
++  /usr/share/doc/mathomatic-<VERSION>/AUTHORS
++  /usr/share/doc/mathomatic-<VERSION>/COPYING
++  /usr/share/doc/mathomatic-<VERSION>/INSTALL.txt
++  /usr/share/doc/mathomatic-<VERSION>/README.txt
++  /usr/share/doc/mathomatic-<VERSION>/changes.txt
++  /usr/share/doc/mathomatic-<VERSION>/factorial/*
++  /usr/share/doc/mathomatic-<VERSION>/mathomatic.ico (desktop icon)
++  /usr/share/doc/mathomatic-<VERSION>/m4/README.txt
++  /usr/share/doc/mathomatic-<VERSION>/m4/functions.m4
++  /usr/share/doc/mathomatic-<VERSION>/m4/math
++  /usr/share/doc/mathomatic-<VERSION>/html/am.html
++  /usr/share/doc/mathomatic-<VERSION>/html/doc.css
++  /usr/share/doc/mathomatic-<VERSION>/html/favicon.ico
++  /usr/share/doc/mathomatic-<VERSION>/html/greenfade.png
++  /usr/share/doc/mathomatic-<VERSION>/html/index.html
++  /usr/share/doc/mathomatic-<VERSION>/html/led_circle_green.png
++  /usr/share/doc/mathomatic-<VERSION>/html/manual.html
++  /usr/share/doc/mathomatic-<VERSION>/html/matho-pascal.1.html
++  /usr/share/doc/mathomatic-<VERSION>/html/matho-primes.1.html
++  /usr/share/doc/mathomatic-<VERSION>/html/matho-sumsq.1.html
++  /usr/share/doc/mathomatic-<VERSION>/html/mathomatic.1.html
++  /usr/share/doc/mathomatic-<VERSION>/html/open_book_nae_02.png
++  /usr/share/doc/mathomatic-<VERSION>/tests/*
++  /usr/share/man/man1/mathomatic.1.gz
++  /usr/share/pixmaps/mathomatic.png
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version mathomatic-15.0.2-1 -----
++cygwin-1.7, gcc-4
++----- version mathomatic-14.3.6-1 -----
++?
++----- version mathomatic-14.2.3-1 -----
++fixed postinstall script
++----- version mathomatic-14.2.2-1 -----
++remove makefile.cygwin
++docdir /usr/share/doc/mathomatic
++----- version mathomatic-14.1.4-1 -----
++rebased Makefile patches
++----- version mathomatic-14.0.7-1 -----
++none
++----- version mathomatic-14.0.4-2 -----
++fixed man file, was /usr/share/man/man1.1.gz in 14.0.4-1
++----- version mathomatic-14.0.4-1 -----
++none
++----- version mathomatic-14.0.2-1 -----
++minor cygwin fixes
++----- version mathomatic-12.9.2-2 -----
++added some missing files: lib, header, docs, ...
++fixed makefiles not to clean the lib
++----- version mathomatic-12.9.2-1 -----
++added .mathomaticrc and postinstall, preremove scripts
++----- version mathomatic-12.8.5-1 -----
++added library
++----- version mathomatic-12.8.0-1 -----
++none
++----- version mathomatic-12.7.3-1 -----
++none
++----- version mathomatic-12.7.0-1 -----
++none
++----- version mathomatic-12.6.10-1 -----
++none
++----- version mathomatic-12.6.7-1 -----
++none
++----- version mathomatic-12.6.6-1 -----
++none
++----- version mathomatic-12.6.4-1 -----
++none
++----- version mathomatic-12.6.3-1 -----
++none
++----- version mathomatic-12.6.1-1 -----
++moved html_docs into html
++
++----- version mathomatic-12.6.0-1 -----
++none
++
++----- version mathomatic-12.5.22-1 -----
++none
++
++----- version mathomatic-12.5.21-1 (never uploaded) -----
++none
++
++----- version mathomatic-12.5.20-1 -----
++
++added *.ico to /usr/share/doc/mathomatic-<VERSION>/
++
++----- version mathomatic-12.5.17-1 -----
++
++none
++
++----- version mathomatic-12.5.16-1 ----- (not released)
++
++changed from gbs to cygport
++added /usr/bin/mathomatic_secure.exe 
++
++----- version mathomatic-12.5.14-1 -----
++
++none
++
++----- version mathomatic-12.5.12-1 -----
++
++none
++
++----- version mathomatic-12.5.11-1 -----
++
++improved makefile.cygwin
++
++----- version mathomatic-12.5.10-1 -----
++
++changed am.tgz to am.tar.bz2, opt_decomp=j
++
++----- version mathomatic-12.5.2-1 -----
++
++updated Makefile.cygwin and README
++
++----- version mathomatic-12.1e-1 -----
++
++none
++
++----- version mathomatic-12.1-1 -----
++
++none
++
++----- version mathomatic-11.5-1 -----
++
++patched \r\n => \n, added -DUNIX for termios handlers, added -O2
++
++----- version mathomatic-11.3f-2 -----
++ 
++Maintainer fixed his basedir. readline and curses added.
++
++----- version mathomatic-11.3d-1 -----
++
++Initial release (not packaged)
++
++This is just the mathomatic client from the mathomatic package. 
++Not the samples for prime number generation: twin, sumsq, primes and around. 
++If you want these also, get the src packages and compile them by yourself.
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Cygwin port questions to the mailinglist <cygwin@cygwin.com>
+--- origsrc/mathomatic-15.0.2/CYGWIN-PATCHES/postinstall.sh	1970-01-01 00:00:00.000000000 +0000
++++ src/mathomatic-15.0.2/CYGWIN-PATCHES/postinstall.sh	2009-12-27 09:49:37.328125000 +0000
+@@ -0,0 +1,5 @@
++#!/bin/sh
++f=.mathomaticrc
++if [ ! -e /etc/$f ]; then
++    cp /etc/defaults/etc/skel/$f /etc/$f
++fi
+--- origsrc/mathomatic-15.0.2/CYGWIN-PATCHES/preremove.sh	1970-01-01 00:00:00.000000000 +0000
++++ src/mathomatic-15.0.2/CYGWIN-PATCHES/preremove.sh	2009-12-27 09:49:37.328125000 +0000
+@@ -0,0 +1,5 @@
++#!/bin/sh
++f=.mathomaticrc
++if [ ! -e /etc/skel/$f ]; then
++    cmp -s /etc/skel/$f /etc/defaults/etc/skel/$f && rm /etc/skel/$f
++fi
+--- origsrc/mathomatic-15.0.2/CYGWIN-PATCHES/setup.hint	1970-01-01 00:00:00.000000000 +0000
++++ src/mathomatic-15.0.2/CYGWIN-PATCHES/setup.hint	2009-12-27 09:49:37.343750000 +0000
+@@ -0,0 +1,9 @@
++sdesc: "Computer Algebra System"
++ldesc: "Mathomatic is a highly portable,general purpose symbolic math program
++that can solve, simplify, combine, differentiate, integrate, and
++compare algebraic equations. It can do standard, complex number, and
++polynomial arithmetic. It is designed to be as general as possible,
++with few options. It is a console mode application that compiles and
++installs easily. License: LPGL 2.1"
++category: Math
++requires: libgcc1 libreadline6 libncurses8
