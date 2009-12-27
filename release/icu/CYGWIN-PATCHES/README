@@ -3,17 +3,19 @@ icu
 IBM Internationalization Components for Unicode
 
 Runtime requirements:
-  cygwin-1.5.25-7
+  cygwin-1.7
+  libgcc1-4.3.4
+  libstdc++6-4.3.4
 
 Build requirements:
-  cygwin-1.5.25-7
-  autoconf2.5-2.61-1
-  binutils-20060817-1
-  cygport-0.3.7-1
-  gawk-3.1.5-4
-  gcc-core-3.4.4-3
-  make-3.81-1
-  sed-4.1.5-2
+  cygwin-1.7
+  autoconf2.5-2.61
+  binutils
+  cygport
+  gawk
+  gcc-4.3.4
+  make
+  sed
 
 Canonical homepage:
   http://ibm.com/software/globalization/icu/
@@ -28,7 +30,7 @@ Build instructions:
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./icu-3.8-X.cygport all
+  cygport ./icu-3.8-X all
 
 This will create:
   /usr/src/icu-3.8-X-src.tar.bz2
@@ -41,11 +43,11 @@ This will create:
 
 Files included in the binary packages:
 
-Files included in the =icu= package:
+=icu= package:
 
   usr/share/doc/Cygwin/icu-3.8.README
 
-Files included in the =libicu38= package:
+=libicu38= package:
 
   usr/bin/cygicudt38.dll	The huge DATA library
   usr/bin/cygicuin38.dll	i18n Library
@@ -54,7 +56,7 @@ Files included in the =libicu38= package:
   usr/bin/cygiculx38.dll 	Optional Font Layout Extensions Engine
   usr/bin/cygicuuc38.dll	Base library required by all other ICU libraries
 
-Files included in the =libicu-devel= package:
+=libicu-devel= package:
 
   usr/bin/cygicuut38.dll	Internal Tool Utility Library
   usr/bin/derb.exe
@@ -106,14 +108,30 @@ Files included in the =libicu-devel= package:
   usr/share/icu/3.8/config/mh-cygwin
   usr/share/icu/3.8/mkinstalldirs
 
-Files included in the =icu-doc= package:
+=icu-doc= package:
 
-  usr/share/doc/icu/*.html
+  usr/share/doc/icu/license.html
+  usr/share/doc/icu/PACKAGES 
+  usr/share/doc/icu/readme.html 
+  usr/share/doc/icu/unicode-license.txt   
   usr/share/doc/icu/html/*.html
 
 ------------------
 
 Port Notes:
+
+----- version 3.8-7 -----
+recompile with latest gcc-4.3.4
+updates dependency
+
+----- version 3.8-6 -----
+release-2: fixed packaging: patches
+
+----- version 3.8-5 -----
+release-2 test package with gcc-4.3
+
+----- version 3.8-4 -----
+Allow #include <windows.h> (patched unicode/pwin32.h)
 
 ----- version 3.8-3 -----
 Official cygwin release. Merge of Yaakov's 

@@ -1,5 +1,5 @@
 sdesc: "The ICU docs package"
 ldesc: "The doxygen generated html set for icu." 
 category: Devel Doc
-requires: cygwin
+requires: 
 external-source: icu

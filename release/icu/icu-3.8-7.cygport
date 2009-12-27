@@ -1,0 +1,66 @@
+# -*- shell-script -*-
+# Note: for release-2 with gcc-4
+export CC="gcc-4"
+export CXX="g++-4"
+
+DESCRIPTION="International Components for Unicode"
+HOMEPAGE="http://www.icu-project.org/"
+SRC_URI="http://download.icu-project.org/files/icu4c/${PV}/icu4c-${PV//./_}-src.tgz"
+# mirror_portage should point to a gentoo mirror
+NOT_PATCH_URI="mirror://portage/dev-libs/${PN}/files/${PN}-3.8-setBreakType-public.diff
+	       mirror://portage/dev-libs/${PN}/files/${PN}-3.8-regexp-CVE-2007-4770+4771.diff"
+SRC_DIR="icu/source"
+LICENSE="GPL-2"
+
+PKG_NAMES="${PN} lib${PN}${PV_MAJ_MIN//.} lib${PN}-devel ${PN}-doc"
+PKG_HINTS="icu lib devel doc"
+# icu (dummy)
+PKG_CONTENTS[0]="usr/share/doc/Cygwin"
+# libicu38
+PKG_CONTENTS[1]=" \
+--exclude=usr/bin/cygicutu*.dll \
+usr/bin/cygicu*.dll"
+# libicu-devel
+PKG_CONTENTS[2]=" \
+usr/bin/*.exe \
+usr/bin/icu-config \
+usr/bin/cygicutu*.dll \
+usr/include \
+usr/lib \
+usr/sbin/*.exe \
+usr/share/man \
+usr/share/icu"
+# icu-doc
+PKG_CONTENTS[3]="usr/share/doc/icu*"
+
+NO_AUTOHEADER=1
+CYGCONF_ARGS="--enable-static --without-samples"
+DOCS="../license.html ../readme.html ../unicode-license.txt ../packaging/PACKAGES"
+HTMLDOCS="${B}doc/html"
+
+src_compile() {
+	cd ${B}
+	cygconf
+	cygmake
+	cygmake doc
+}
+
+src_install() {
+	local l
+
+	cd ${B}
+	cyginstall
+        cyginstall install-doc
+
+	for l in data i18n io le lx tu uc ; do
+		mv ${D}/usr/{lib,bin}/cygicu${l}${PV//.}.dll
+		rm -f ${D}/usr/lib/cygicu${l}.dll
+		dosym ../bin/cygicu${l}${PV//.}.dll /usr/lib/libicu${l}.dll.a
+	done
+
+	sed -e '/^ICUUC_FILE=/ s/libdir/bindir/' \
+		-e 's/l${LIBICU}/l${ICUPREFIX}/g' \
+		-e '/l${ICUPREFIX}/ s/${ICULIBSUFFIX_VERSION}//g' \
+		-i ${D}/usr/bin/icu-config \
+		|| error "sed icu-config failed"
+}
