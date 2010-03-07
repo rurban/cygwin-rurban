@@ -21,9 +21,9 @@ diff -u MM_Cygwin.pm.orig MM_Cygwin.pm
 +    if (-e $ori) {
 +        my $imagebase = `/bin/objdump -p $ori | /bin/grep ImageBase | /bin/cut -c12-`;
 +        chomp $imagebase;
-+        if ("$imagebase" > "40000000") {
++        if ("$imagebase" gt "4000f000") {
 +            my $LDDLFLAGS = $self->{LDDLFLAGS};
-+            $LDDLFLAGS =~ s/-Wl,--enable-auto-image-base/-Wl,--image-base=$imagebase/;
++            $LDDLFLAGS =~ s/-Wl,--enable-auto-image-base/-Wl,--image-base=0x$imagebase/;
 +            $s =~ s/ \$\(LDDLFLAGS\) / $LDDLFLAGS /m;
 +        }
 +    }

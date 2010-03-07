@@ -16,8 +16,8 @@ diff -u perl-5.10.1/patchlevel.h.orig perl-5.10.1/patchlevel.h
 +  	,"CYG22 cygwin-1.7 hints"
 +  	,"CYG23 544-stat"
 +  	,"CYG24 build man pages"
-+  	,"CYG26 Cwd for svk"
-+  	,"Bug#55162 File::Spec::case_tolerant performance"
++  	,"CYG25 rebase_privlib"
++  	,"Bug#55162 CYG18 File::Spec::case_tolerant performance"
 +  	,"disable ExtUtils::MakeMaker::Coverage in Sys-Syslog"
  	,NULL
  };

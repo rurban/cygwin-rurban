@@ -1,0 +1,15 @@
+difforig XML-SAX-0.96/Makefile.PL
+
+diff -u XML-SAX-0.96/Makefile.PL.orig XML-SAX-0.96/Makefile.PL
+--- XML-SAX-0.96/Makefile.PL.orig	2008-08-04 23:07:21.000000000 +0200
++++ XML-SAX-0.96/Makefile.PL	2009-08-19 15:24:10.640625000 +0200
+@@ -21,7 +21,8 @@
+     my $write_ini_ok = 0;
+ 
+     eval { require XML::SAX };
+-    if ($@) {
++    my $inc = join(":",@INC);
++    if ($@ or $inc =~ m|usr/src/perl|) {
+         $write_ini_ok = 1;
+     }
+     else {

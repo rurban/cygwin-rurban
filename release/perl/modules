@@ -23,12 +23,12 @@ modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage \
           Params::Util Test::Script CPAN::Checksums CPAN::Inject \
 	Net::Telnet \
 	Module::ScanDeps PAR::Dist \
-	Socket6 IO::Socket::INET6 \
+	Module::Build Socket6 IO::Socket::INET6 \
 	B::Generate PadWalker Alias "
 
-exts="  Pod-Escapes-1.04 Pod-Simple-3.10 Test-Pod-1.40 \
+exts="  Pod-Escapes-1.04 Pod-Simple-3.10 Test-Pod-1.41 \
 	Devel-Symdump-2.08 Pod-Coverage-0.20 Test-Pod-Coverage-1.08 \
-	Compress-Raw-Bzip2-2.023 IO-Compress-2.023 Compress-Bzip2-2.09 \
+	Compress-Raw-Bzip2-2.024 Compress-Raw-Zlib-2.024 IO-Compress-2.024 Compress-Bzip2-2.09 \
         IO-String-1.08	\
         File-Temp-0.22 Archive-Zip-1.30 \
 	Math-BigInt-FastCalc-0.19 \
@@ -37,21 +37,22 @@ exts="  Pod-Escapes-1.04 Pod-Simple-3.10 Test-Pod-1.40 \
 	  XML-LibXML-1.70 \
 	XML-Parser-2.36 \
 	Proc-ProcessTable-0.45 \
-	YAML-0.70 \
+	YAML-0.71 \
 	Config-Tiny-2.12 File-Copy-Recursive-0.38 IPC-Run3-0.043 Probe-Perl-0.01 \
-    	Tee-0.13 IO-CaptureOutput-1.1101 File-pushd-1.00 File-HomeDir-0.88 \
+    	Tee-0.13 IO-CaptureOutput-1.1102 File-pushd-1.00 File-HomeDir-0.89 \
 	Digest-SHA-5.47 \
 	Module-Signature-0.61 \
-        URI-1.51 HTML-Tagset-3.20 HTML-Parser-3.64 libwww-perl-5.834 \
+        URI-1.52 HTML-Tagset-3.20 HTML-Parser-3.64 libwww-perl-5.834 \
 	CPAN-1.9402 \
-	Net-IP-1.25 Net-DNS-0.65 Test-Reporter-1.54 CPAN-Reporter-1.1708 \
-        Text-Glob-0.08 Number-Compare-0.01 File-Find-Rule-0.30 Data-Compare-1.2101 
+	Net-IP-1.25 Net-DNS-0.66 Test-Reporter-1.54 CPAN-Reporter-1.1711 \
+        Text-Glob-0.08 Number-Compare-0.01 File-Find-Rule-0.32 Data-Compare-1.22 
 	  CPAN-Checksums-2.04 File-Remove-1.42 File-chmod-0.32 Params-Util-1.00 
 	  Test-Script-1.07 CPAN-Inject-0.11 \
 	Net-Telnet-3.03 \
-	Module-ScanDeps-0.96 PAR-Dist-0.46 \
-        Module-Build-0.35 Socket6-0.23 IO-Socket-INET6-2.57 \
-	B-Generate-1.21 \
+	Module-ScanDeps-0.96 PAR-Dist-0.47 \
+        ExtUtils-CBuilder-0.2702 ExtUtils-ParseXS-2.2203 Module-Build-0.3603 
+          Socket6-0.23 IO-Socket-INET6-2.57 \
+	B-Generate-1.26 \
         PadWalker-1.9 \
         Alias-2.32 "
 # File::Temp in CORE with 5.11
