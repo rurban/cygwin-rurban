@@ -9,4 +9,4 @@ proportion of the CGI scripts on the web are written in Perl.
 You need the perl package installed on your system so that your
 system can handle Perl scripts."
 category: Interpreters Perl
-requires: cygwin libgcc1 libgdbm4 libdb4.5 crypt libexpat1 libbz2_1
+requires: libssp0 libgcc1 libgdbm4 libdb4.5 crypt libexpat1 libbz2_1

@@ -1,0 +1,15 @@
+diffbk Net-DNS-0.65
+
+diff -u Net-DNS-0.65/Makefile.PL~ Net-DNS-0.65/Makefile.PL
+--- Net-DNS-0.65/Makefile.PL~	2009-01-26 18:31:43.000000000 +0100
++++ Net-DNS-0.65/Makefile.PL	2009-08-28 09:46:52.218750000 +0200
+@@ -45,6 +45,9 @@
+ 	'IPv6-tests!'   => \$IPv6_tests,
+ );
+ 
++# for auto-packacking only:
++$online_tests = 0;
++$IPv6_tests = 1;
+ 
+ 
+ #
