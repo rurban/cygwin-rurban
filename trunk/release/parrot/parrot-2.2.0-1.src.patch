@@ -1,10 +1,10 @@
 --- origsrc/parrot-2.2.0/MANIFEST.generated	2010-03-16 09:45:11.000000000 +0200
-+++ src/parrot-2.2.0/MANIFEST.generated	2010-04-16 15:41:30.875000000 +0200
++++ src/parrot-2.2.0/MANIFEST.generated	2010-04-16 16:27:26.015625000 +0200
 @@ -7,6 +7,8 @@ blib/lib/libparrot.a
  blib/lib/libparrot.dylib                          [main]lib
  blib/lib/libparrot.so.2.2.0                       [main]lib
  blib/lib/libparrot.so                             [main]lib
-+cygparrot2_0_0.dll                                [main]bin
++cygparrot2_2_0.dll                                [main]bin
 +libparrot.dll.a                                   [main]lib
  compilers/data_json/data_json.pbc                 [data_json]
  compilers/json/JSON.pbc                           [json]
