@@ -1,6 +1,6 @@
 --- origsrc/parrot-2.0.0/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-2.0.0/CYGWIN-PATCHES/README	2010-04-16 14:38:22.906250000 +0200
-@@ -0,0 +1,1085 @@
++++ src/parrot-2.0.0/CYGWIN-PATCHES/README	2010-04-16 15:06:12.843750000 +0200
+@@ -0,0 +1,1086 @@
 +parrot
 +----------------------------------
 +Parrot is a virtual machine designed to efficiently compile and
@@ -8,13 +8,13 @@
 +and a lot of other languages.
 +
 +Runtime requirements:
-+  libgcc1 libreadline6 libncurses8 libintl8 libicu38 libgmp3 libgdbm4
++  libgcc1 opengl libglut3 libreadline7 libintl8 libicu38 libgmp3 libgdbm4 libssp0
 +
 +Optional requirements:
 +  w32api pcre libpq5 openssl
 +
 +Build requirements:
-+  readline libncurses-devel libicu-devel libgmp-devel libgdbm-devel perl 
++  readline libncurses-devel libicu-devel libgmp-devel libgdbm-devel perl
 +  make gcc
 +
 +Optional build requirements:
@@ -992,7 +992,8 @@
 +Port Notes:
 +
 +----- version parrot-2.0.0-1 -----
-+??
++* same patches needed. still same FHS violations:
++  /usr/src/parrot/2.0.0
 +
 +----- version parrot-1.4.0-1 (never released) -----
 +* minimized src patch, so there are several FHS violations:
@@ -1087,12 +1088,12 @@
 +Please address all questions to the Cygwin mailing list 
 +at <cygwin@cygwin.com>
 --- origsrc/parrot-2.0.0/CYGWIN-PATCHES/parrot-devel.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-2.0.0/CYGWIN-PATCHES/parrot-devel.hint	2010-04-16 14:27:33.156250000 +0200
++++ src/parrot-2.0.0/CYGWIN-PATCHES/parrot-devel.hint	2010-04-16 15:05:15.234375000 +0200
 @@ -0,0 +1,5 @@
 +sdesc: "Parrot Virtual Machine development headers and libraries"
 +ldesc: "Libraries and headers needed for development against Parrot"
 +category: Libs
-+requires: parrot perl readline libncurses-devel libicu-devel libgmp-devel libgdbm-devel perl pcre-devel
++requires: parrot perl readline libncurses-devel libicu-devel libgmp-devel libgdbm-devel perl pcre-devel openssl-devel
 +external-source: parrot
 --- origsrc/parrot-2.0.0/CYGWIN-PATCHES/parrot-docs.hint	1970-01-01 01:00:00.000000000 +0100
 +++ src/parrot-2.0.0/CYGWIN-PATCHES/parrot-docs.hint	2010-04-16 14:27:33.156250000 +0200
@@ -1102,11 +1103,11 @@
 +requires: parrot
 +external-source: parrot
 --- origsrc/parrot-2.0.0/CYGWIN-PATCHES/parrot.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/parrot-2.0.0/CYGWIN-PATCHES/parrot.hint	2010-04-16 14:27:33.156250000 +0200
++++ src/parrot-2.0.0/CYGWIN-PATCHES/parrot.hint	2010-04-16 15:04:04.015625000 +0200
 @@ -0,0 +1,6 @@
 +sdesc: "Parrot Virtual Machine"
 +ldesc: "Parrot is a virtual machine designed to efficiently compile and
 +execute bytecode for interpreted languages. Parrot is a target for Perl 6 
 +and a lot of other languages"
 +category: Interpreters
-+requires: cygwin libgcc1 w32api opengl libreadline6 libintl8 libicu38 libgmp3 libgdbm4
++requires: libgcc1 w32api opengl libglut3 libreadline7 libintl8 libicu38 libgmp3 libgdbm4 libssp0 openssl
