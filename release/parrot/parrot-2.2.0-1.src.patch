@@ -1,0 +1,121 @@
+--- origsrc/parrot-2.2.0/MANIFEST.generated	2010-03-16 09:45:11.000000000 +0200
++++ src/parrot-2.2.0/MANIFEST.generated	2010-04-16 15:41:30.875000000 +0200
+@@ -7,6 +7,8 @@ blib/lib/libparrot.a
+ blib/lib/libparrot.dylib                          [main]lib
+ blib/lib/libparrot.so.2.2.0                       [main]lib
+ blib/lib/libparrot.so                             [main]lib
++cygparrot2_0_0.dll                                [main]bin
++libparrot.dll.a                                   [main]lib
+ compilers/data_json/data_json.pbc                 [data_json]
+ compilers/json/JSON.pbc                           [json]
+ compilers/json/JSON/grammar.pbc                   [json]
+@@ -184,6 +186,7 @@ runtime/parrot/library/PCT/Grammar.pbc
+ runtime/parrot/library/PCT/HLLCompiler.pbc        [main]
+ runtime/parrot/library/PCT/PAST.pbc               [main]
+ runtime/parrot/library/PCT.pbc                    [main]
++runtime/parrot/library/Pg.pbc                     [main]
+ runtime/parrot/library/PGE/Dumper.pbc             [main]
+ runtime/parrot/library/PGE/Glob.pbc               [main]
+ runtime/parrot/library/PGE/Hs.pbc                 [main]
+@@ -191,6 +194,7 @@ runtime/parrot/library/PGE.pbc
+ runtime/parrot/library/PGE/Perl6Grammar.pbc       [main]
+ runtime/parrot/library/PGE/Text.pbc               [main]
+ runtime/parrot/library/PGE/Util.pbc               [main]
++runtime/parrot/library/postgres.pbc               [main]
+ runtime/parrot/library/Protoobject.pbc            [main]
+ runtime/parrot/library/Range.pbc                  [main]
+ runtime/parrot/library/Regex.pbc                  [main]
+@@ -214,14 +218,17 @@ runtime/parrot/library/Test/Class.pbc
+ runtime/parrot/library/Test/More.pbc              [main]
+ runtime/parrot/library/TGE.pbc                    [tge]
+ runtime/parrot/library/uuid.pbc                   [main]
++runtime/parrot/library/yaml_dumper.pbc            [main]
+ runtime/parrot/library/YAML/Dumper/Base.pmc       [main]
+ runtime/parrot/library/YAML/Dumper/Default.pmc    [main]
+ runtime/parrot/library/YAML/Dumper.pbc            [main]
++runtime/parrot/library/YAML/Parser/Syck.pbc       [main]
+ src/call_list.txt                                 [devel]src
+ src/glut_callbacks.c                              []
+ src/jit_emit.h                                    []
+-src/nci.c                                         []
++src/nci.c                                         [devel]src
+ src/null_config.c                                 []
++src/null_config.o                                 [devel]src
+ src/ops/core_ops_cgp.c                            []
+ src/ops/core_ops_switch.c                         []
+ src/parrot_config.c                               []
+@@ -261,5 +268,6 @@ src/pmc/string.dump
+ src/pmc/sub.dump                                  [devel]src
+ src/pmc/undef.dump                                [devel]src
+ src/string_private_cstring.h                      []
+-tools/build/dynpmc.pl                             []
++tools/build/dynpmc.pl                             [devel]
++tools/build/dynoplibs.pl                          [devel]
+ vtable.dump                                       [devel]src
+--- origsrc/parrot-2.2.0/runtime/parrot/library/OpenGL.pir	2010-03-04 09:10:24.000000000 +0100
++++ src/parrot-2.2.0/runtime/parrot/library/OpenGL.pir	2010-04-16 15:41:30.890625000 +0200
+@@ -114,6 +114,7 @@ the known different filenames for each l
+     push libnames, 'libGL.so.1'
+     push libnames, 'libGL'
+     push libnames, 'opengl32'
++    push libnames, '/usr/bin/cygGL-1.dll'
+     push libnames, '/System/Library/Frameworks/OpenGL.framework/OpenGL'
+     libgl = _load_lib_with_fallbacks('GL', libnames)
+     set_global '_libgl', libgl
+@@ -121,6 +122,7 @@ the known different filenames for each l
+     libnames = new 'ResizableStringArray'
+     push libnames, 'libGLU'
+     push libnames, 'glu32'
++    push libnames, '/usr/bin/cygGLU-1.dll'
+     push libnames, '/System/Library/Frameworks/OpenGL.framework/OpenGL'
+     libglu = _load_lib_with_fallbacks('GLU', libnames)
+     set_global '_libglu', libglu
+@@ -128,6 +130,7 @@ the known different filenames for each l
+     libnames = new 'ResizableStringArray'
+     push libnames, 'libglut'
+     push libnames, 'glut32'
++    push libnames, '/usr/bin/cygglut-3.dll'
+     push libnames, '/System/Library/Frameworks/GLUT.framework/GLUT'
+     libglut = _load_lib_with_fallbacks('GLUT', libnames)
+     set_global '_libglut', libglut
+--- origsrc/parrot-2.2.0/runtime/parrot/library/random_lib.pir	2009-06-22 21:22:45.000000000 +0200
++++ src/parrot-2.2.0/runtime/parrot/library/random_lib.pir	1970-01-01 01:00:00.000000000 +0100
+@@ -1,38 +0,0 @@
+-# Copyright (C) 2005-2009, Parrot Foundation.
+-# $Id: random_lib.pir 38369 2009-04-26 12:57:09Z fperrad $
+-# used by examples/shootout/random.pir and others
+-# by Joshua Isom
+-
+-.const int IM = 139968
+-.const int IA = 3877
+-.const int IC = 29573
+-
+-.sub init :load :anon
+-    .local pmc last
+-    last = new 'Integer'
+-    last = 42
+-    global "_last_seed" = last
+-.end
+-
+-.sub gen_random
+-    .param num max
+-    .local pmc last
+-    last = global "_last_seed"
+-        $I0 = last
+-    $I0 *= IA
+-    $I0 += IC
+-    $I0 %= IM
+-        last = $I0
+-        $N0 = $I0
+-        $N1 = IM
+-    $N0 *= max
+-    $N0 /= $N1
+-    .return($N0)
+-.end
+-
+-
+-# Local Variables:
+-#   mode: pir
+-#   fill-column: 100
+-# End:
+-# vim: expandtab shiftwidth=4 ft=pir:
