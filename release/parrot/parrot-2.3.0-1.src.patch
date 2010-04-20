@@ -1,10 +1,10 @@
 --- origsrc/parrot-2.3.0/MANIFEST.generated	2010-04-20 12:02:47.000000000 +0200
-+++ src/parrot-2.3.0/MANIFEST.generated	2010-04-20 17:15:02.375000000 +0200
++++ src/parrot-2.3.0/MANIFEST.generated	2010-04-20 19:18:53.781250000 +0200
 @@ -7,6 +7,8 @@ blib/lib/libparrot.a
  blib/lib/libparrot.dylib                          [main]lib
  blib/lib/libparrot.so.2.3.0                       [main]lib
  blib/lib/libparrot.so                             [main]lib
-+cygparrot2_2_0.dll                                [main]bin
++cygparrot2_3_0.dll                                [main]bin
 +libparrot.dll.a                                   [main]lib
  compilers/data_json/data_json.pbc                 [data_json]
  compilers/json/JSON.pbc                           [json]
@@ -25,7 +25,7 @@
  runtime/parrot/library/Protoobject.pbc            [main]
  runtime/parrot/library/Range.pbc                  [main]
  runtime/parrot/library/Regex.pbc                  [main]
-@@ -221,14 +225,17 @@ runtime/parrot/library/Test/Class.pbc
+@@ -221,14 +225,16 @@ runtime/parrot/library/Test/Class.pbc
  runtime/parrot/library/Test/More.pbc              [main]
  runtime/parrot/library/TGE.pbc                    [tge]
  runtime/parrot/library/uuid.pbc                   [main]
@@ -33,7 +33,6 @@
  runtime/parrot/library/YAML/Dumper/Base.pmc       [main]
  runtime/parrot/library/YAML/Dumper/Default.pmc    [main]
  runtime/parrot/library/YAML/Dumper.pbc            [main]
-+runtime/parrot/library/YAML/Parser/Syck.pbc       [main]
  src/call_list.txt                                 [devel]src
  src/glut_callbacks.c                              []
  src/jit_emit.h                                    []
@@ -44,7 +43,7 @@
  src/ops/core_ops_cgp.c                            []
  src/ops/core_ops_switch.c                         []
  src/parrot_config.c                               []
-@@ -268,5 +275,6 @@ src/pmc/string.dump
+@@ -268,5 +274,6 @@ src/pmc/string.dump
  src/pmc/sub.dump                                  [devel]src
  src/pmc/undef.dump                                [devel]src
  src/string_private_cstring.h                      []
@@ -120,20 +119,32 @@
 -# End:
 -# vim: expandtab shiftwidth=4 ft=pir:
 --- origsrc/parrot-2.3.0/tools/dev/tapir.pir	2010-04-19 13:53:08.000000000 +0200
-+++ src/parrot-2.3.0/tools/dev/tapir.pir	2010-04-20 18:07:43.703125000 +0200
-@@ -1,6 +1,40 @@
++++ src/parrot-2.3.0/tools/dev/tapir.pir	2010-04-20 19:09:54.953125000 +0200
+@@ -1,6 +1,52 @@
  # Copyright (C) 2010, Parrot Foundation.
  # $Id: tapir.pir 45799 2010-04-19 10:25:43Z fperrad $
  
 +=head1 NAME
 +
-+tapir [options] [files]
++tapir
 +
 +=head1 DESCRIPTION
 +
-+TAP Test::Harness pir
++Tapir is a PIR-based TAP (Test Anything Protocol) Harness
++
++It eats test output (i.e. is a TAP consumer) and tells humans if the
++test suite passed, and if not, which kind of pretty colors of smoke
++came out. A pir based prove.
++
++=head1 SYNOPSIS
++
++  ./tapir t/*.t
 +
 +=head2 OPTIONS
++
++Usage:
++
++  tapir [OPTIONS] <files>
 +
 +=head3 Boolean options
 +
