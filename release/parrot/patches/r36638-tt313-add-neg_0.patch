@@ -1,0 +1,199 @@
+Index: parrot-svn/lib/Parrot/Configure/Step/List.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Configure/Step/List.pm	2009-02-12 16:48:27.818875000 +0000
++++ parrot-svn/lib/Parrot/Configure/Step/List.pm	2009-02-12 17:29:39.656250000 +0000
+@@ -50,6 +50,7 @@
+     auto::memalign
+     auto::signal
+     auto::socklen_t
++    auto::neg_0
+     auto::env
+     auto::gmp
+     auto::readline
+Index: parrot-svn/config/auto/neg_0.pm
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parrot-svn/config/auto/neg_0.pm	2009-02-12 17:42:04.593750000 +0000
+@@ -0,0 +1,67 @@
++# Copyright (C) 2009, The Perl Foundation.
++# $Id: neg_0.pm 30367 2008-08-20 02:21:59Z rurban $
++
++=head1 NAME
++
++config/auto/neg_0.pm - can print negative zero
++
++=head1 DESCRIPTION
++
++Determines whether print -0.0 can print "-0" or just prints "0"
++
++This needs workarounds on older win32 (msvcrt.dll) and openbsd.
++
++=cut
++
++package auto::neg_0;
++
++use strict;
++use warnings;
++
++
++use base qw(Parrot::Configure::Step);
++
++use Parrot::Configure::Utils ':auto';
++
++sub _init {
++    my $self = shift;
++    my %data;
++    $data{description} = q{Determine whether negative zero can be printed};
++    $data{result}      = q{};
++    return \%data;
++}
++
++sub runstep {
++    my ( $self, $conf ) = @_;
++    my ( $verbose ) = $conf->options->get('verbose');
++    $conf->cc_gen('config/auto/neg_0/test_c.in');
++    eval { $conf->cc_build( q{} ); };
++    my $has_neg_0 = 0;
++    if ( !$@ ) {
++        my $test = $conf->cc_run();
++        $has_neg_0 = $self->_evaluate_cc_run($conf, $test, $has_neg_0, $verbose);
++    }
++    $conf->cc_clean();
++    $conf->data->set( has_negative_zero => $has_neg_0 );
++
++    return 1;
++}
++
++sub _evaluate_cc_run {
++    my $self = shift;
++    my ($conf, $test, $has_neg_0, $verbose) = @_;
++    $has_neg_0 = ($test =~ m/^-0/ ? 1 : 0);
++    $self->set_result( $has_neg_0 ? 'yes' : 'no' );
++    $conf->data->set( has_negative_zero => $has_neg_0 );
++    print $has_neg_0 ? ' (yes) ' : ' (no) ' if $verbose;
++    return $has_neg_0;
++}
++
++1;
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
+Index: parrot-svn/MANIFEST
+===================================================================
+--- parrot-svn.orig/MANIFEST	2009-02-12 16:48:27.819875000 +0000
++++ parrot-svn/MANIFEST	2009-02-12 17:29:39.796875000 +0000
+@@ -273,6 +273,8 @@
+ config/auto/memalign/test_c.in                              []
+ config/auto/msvc.pm                                         []
+ config/auto/msvc/test_c.in                                  []
++config/auto/neg_0.pm                                        []
++config/auto/neg_0/test_c.in                                 []
+ config/auto/opengl.pm                                       []
+ config/auto/opengl/opengl_c.in                              []
+ config/auto/ops.pm                                          []
+@@ -3248,6 +3250,7 @@
+ t/steps/auto_macports-02.t                                  []
+ t/steps/auto_memalign-01.t                                  []
+ t/steps/auto_msvc-01.t                                      []
++t/steps/auto_neg_0-01.t                                     []
+ t/steps/auto_opengl-01.t                                    []
+ t/steps/auto_ops-01.t                                       []
+ t/steps/auto_pcre-01.t                                      []
+Index: parrot-svn/config/auto/neg_0/test_c.in
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parrot-svn/config/auto/neg_0/test_c.in	2009-02-12 17:29:39.828125000 +0000
+@@ -0,0 +1,8 @@
++#include <stdio.h>
++
++int
++main(int argc, char* argv[])
++{
++    printf("%.0f", -0.0);
++    return 0;
++}
+Index: parrot-svn/config/gen/config_h/feature_h.in
+===================================================================
+--- parrot-svn.orig/config/gen/config_h/feature_h.in	2009-02-12 16:48:27.796875000 +0000
++++ parrot-svn/config/gen/config_h/feature_h.in	2009-02-12 17:29:39.921875000 +0000
+@@ -154,6 +154,15 @@
+ 
+ print OUT <<'END_PRINT';
+ 
++/* from config/auto/neg_0 */
++END_PRINT
++if (@has_negative_zero@) {
++    print OUT <<'END_PRINT';
++#define PARROT_HAS_NEGATIVE_ZERO 1
++END_PRINT
++}
++
++print OUT <<'END_PRINT';
+ 
+ #endif /* PARROT_FEATURE_H_GUARD */
+ END_PRINT
+Index: parrot-svn/t/op/arithmetics.t
+===================================================================
+--- parrot-svn.orig/t/op/arithmetics.t	2009-02-12 16:49:01.000000000 +0000
++++ parrot-svn/t/op/arithmetics.t	2009-02-12 19:11:19.296875000 +0000
+@@ -152,7 +152,7 @@
+ TODO: {
+     my @todo;
+     @todo = ( todo => '-0.0 not implemented, TT #313' )
+-        if $^O =~ m/(?:openbsd|win32)/i;
++        if $^O =~ m/(?:openbsd)/i;
+ 
+ pasm_output_is( <<'CODE', <<OUTPUT, 'negate -0.0', @todo );
+         set N0, 0
+@@ -843,12 +843,7 @@
+ OUTPUT
+ }
+ 
+-TODO: {
+-    my @todo;
+-    @todo = ( todo => 'inf is not platform-independent' )
+-        if $^O eq 'MSWin32' and $PConfig{cc} =~ /cl/i;
+-
+-pir_output_is( <<'CODE', <<OUTPUT, "Inf/NaN - basic arith", @todo );
++pir_output_is( <<'CODE', <<OUTPUT, "Inf/NaN - basic arith" );
+ .sub 'test' :main
+     $N0 = 'Inf'
+     say $N0
+@@ -860,8 +855,6 @@
+ NaN
+ OUTPUT
+ 
+-}
+-
+ # Local Variables:
+ #   mode: cperl
+ #   cperl-indent-level: 4
+Index: parrot-svn/t/pmc/complex.t
+===================================================================
+--- parrot-svn.orig/t/pmc/complex.t	2009-02-11 17:37:33.000000000 +0000
++++ parrot-svn/t/pmc/complex.t	2009-02-12 19:09:09.796875000 +0000
+@@ -1065,7 +1065,6 @@
+     .complex_op_is("-2-3i", "3.590565-0.530921i", 'sinh' )
+ 
+     eq osname, "openbsd", todo
+-    eq osname, "MSWin32", todo
+     .complex_op_is("0-2i", "-0.000000-0.909297i", 'sinh' )
+     .complex_op_is("0+2i", "-0.000000+0.909297i", 'sinh' )
+     .return()
+Index: parrot-svn/t/pmc/float.t
+===================================================================
+--- parrot-svn.orig/t/pmc/float.t	2009-02-11 13:19:25.000000000 +0000
++++ parrot-svn/t/pmc/float.t	2009-02-12 19:09:18.125000000 +0000
+@@ -506,7 +506,7 @@
+ TODO: {
+     my @todo;
+     @todo = ( todo => '-0.0 not implemented, TT #313' )
+-        if $^O =~ m/(?:openbsd|win32)/i;
++        if $^O =~ m/(?:openbsd)/i;
+ 
+ pasm_output_like( <<'CODE', <<'OUTPUT', 'neg 0', @todo );
+     new P0, ['Float']
