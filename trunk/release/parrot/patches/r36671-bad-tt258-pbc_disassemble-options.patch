@@ -1,0 +1,159 @@
+Index: parrot-svn/include/parrot/embed.h
+===================================================================
+--- parrot-svn.orig/include/parrot/embed.h	2009-02-13 13:45:16.000000000 +0000
++++ parrot-svn/include/parrot/embed.h	2009-02-13 13:47:18.500000000 +0000
+@@ -27,6 +27,11 @@
+     enum_DIS_HEADER    = 2
+ } Parrot_disassemble_options;
+ 
++typedef enum {
++    enum_DIS_BARE      = 1,
++    enum_DIS_HEADER    = 2
++} Parrot_disassemble_options;
++
+ PARROT_EXPORT Parrot_Interp Parrot_new(Parrot_Interp parent);
+ 
+ PARROT_EXPORT void Parrot_init_stacktop(Parrot_Interp, void *);
+@@ -49,9 +54,9 @@
+ 
+ PARROT_EXPORT void Parrot_setwarnings(Parrot_Interp, Parrot_warnclass);
+ 
+-PARROT_EXPORT Parrot_PackFile Parrot_readbc(Parrot_Interp, const char *);
++PARROT_EXPORT Parrot_PackFile Parrot_pbc_read(Parrot_Interp, const char *, int);
+ 
+-PARROT_EXPORT void Parrot_loadbc(Parrot_Interp, Parrot_PackFile);
++PARROT_EXPORT void Parrot_pbc_load(Parrot_Interp, Parrot_PackFile);
+ 
+ PARROT_EXPORT void Parrot_setup_argv(Parrot_Interp, int argc, const char **argv);
+ 
+Index: parrot-svn/src/embed.c
+===================================================================
+--- parrot-svn.orig/src/embed.c	2009-02-13 13:45:11.000000000 +0000
++++ parrot-svn/src/embed.c	2009-02-13 13:47:18.515625000 +0000
+@@ -374,7 +374,7 @@
+ 
+ /*
+ 
+-=item C<PackFile * Parrot_readbc>
++=item C<PackFile * Parrot_pbc_read>
+ 
+ Read in a bytecode, unpack it into a C<PackFile> structure, and do fixups.
+ 
+@@ -385,7 +385,7 @@
+ PARROT_EXPORT
+ PARROT_CAN_RETURN_NULL
+ PackFile *
+-Parrot_readbc(PARROT_INTERP, ARGIN_NULLOK(const char *fullname))
++Parrot_pbc_read(PARROT_INTERP, ARGIN_NULLOK(const char *fullname), int options)
+ {
+     FILE     *io        = NULL;
+     INTVAL    is_mapped = 0;
+@@ -528,6 +528,9 @@
+ 
+     pf = PackFile_new(interp, is_mapped);
+ 
++    /* Make the cmdline option available to the unpackers */
++    pf->options = options;
++
+     if (!PackFile_unpack(interp, pf, (opcode_t *)program_code,
+             (size_t)program_size)) {
+         Parrot_io_eprintf(interp, "Parrot VM: Can't unpack packfile %s.\n",
+@@ -556,9 +559,9 @@
+ 
+ /*
+ 
+-=item C<void Parrot_loadbc>
++=item C<void Parrot_pbc_load>
+ 
+-Loads the C<PackFile> returned by C<Parrot_readbc()>.
++Loads the C<PackFile> returned by C<Parrot_pbc_read()>.
+ 
+ =cut
+ 
+@@ -566,7 +569,7 @@
+ 
+ PARROT_EXPORT
+ void
+-Parrot_loadbc(PARROT_INTERP, NOTNULL(PackFile *pf))
++Parrot_pbc_load(PARROT_INTERP, NOTNULL(PackFile *pf))
+ {
+     if (pf == NULL) {
+         Parrot_io_eprintf(interp, "Invalid packfile\n");
+@@ -1237,7 +1240,7 @@
+     pf->cur_cs->base.data = program_code;
+     pf->cur_cs->base.size = 2;
+ 
+-    Parrot_loadbc(interp, pf);
++    Parrot_pbc_load(interp, pf);
+ 
+     run_native = func;
+ 
+Index: parrot-svn/src/pbc_disassemble.c
+===================================================================
+--- parrot-svn.orig/src/pbc_disassemble.c	2009-02-13 13:45:11.000000000 +0000
++++ parrot-svn/src/pbc_disassemble.c	2009-02-13 13:47:18.515625000 +0000
+@@ -18,6 +18,10 @@
+ 
+ Without non-option arguments it reads the pbc from STDIN.
+ 
++Without non-option arguments it reads the pbc from STDIN.
++
++Without non-option arguments it reads the pbc from STDIN.
++
+ =head2 Functions
+ 
+ =over 4
+Index: parrot-svn/src/pbc_dump.c
+===================================================================
+--- parrot-svn.orig/src/pbc_dump.c	2009-02-13 13:45:11.000000000 +0000
++++ parrot-svn/src/pbc_dump.c	2009-02-13 13:47:18.531250000 +0000
+@@ -180,6 +180,7 @@
+     printf("\t-d ... disassemble bytecode segments\n");
+     printf("\t-h ... dump header only\n");
+     printf("\t-t ... terse output\n");
++    printf("\t--debug debug output\n");
+     printf("\n\t-o converted.pbc repacks a PBC file into "
+            "the platform's native\n");
+     printf("\t   binary format for better efficiency on reading "
+@@ -192,6 +193,7 @@
+     { '?', '?', OPTION_optional_FLAG, { "--help" } },
+     { 't', 't', OPTION_optional_FLAG, { "--terse" } },
+     { 'd', 'd', OPTION_optional_FLAG, { "--disassemble" } },
++    { 'e', 'e', OPTION_optional_FLAG, { "--debug" } },
+     { 'o', 'o', OPTION_required_FLAG, { "--output" } }
+ };
+ 
+@@ -215,6 +217,7 @@
+     int disas = 0;
+     int convert = 0;
+     int header = 0;
++    int debug = 0;
+     const char *file = NULL;
+     struct longopt_opt_info opt = LONGOPT_OPT_INFO_INIT;
+     int status;
+@@ -237,6 +240,9 @@
+             case 'd':
+                 disas = 1;
+                 break;
++            case 'e':
++                debug = 1;
++                break;
+             case 'o':
+                 file = opt.opt_arg;
+                 convert = 1;
+@@ -254,13 +260,13 @@
+     argv += opt.opt_index;
+ 
+ 
+-    pf = Parrot_readbc(interp, *argv);
++    pf = Parrot_pbc_read(interp, *argv, debug);
+ 
+     if (!pf) {
+         printf("Can't read PBC\n");
+         return 1;
+     }
+-    Parrot_loadbc(interp, pf);
++    Parrot_pbc_load(interp, pf);
+     if (convert) {
+         size_t size;
+         opcode_t *pack;

@@ -1,0 +1,68 @@
+Index: PLATFORMS
+===================================================================
+--- PLATFORMS.orig	2009-02-09 20:10:33.663375000 +0000
++++ PLATFORMS	2009-02-10 16:47:26.304000000 +0000
+@@ -13,7 +13,7 @@
+ Platform                     B8    Runloops      Feature Comp Test Inst YYYYMMDD
+                                 CGoto JIT EXEC   Thr Sig
+ --------------------------------------------------------------------------------
+-cygwin1.5.25-x86-gcc3.4.4     4   Y    Y    -     -   -   Y    Y/6*1 ?  20080513
++cygwin1.5.25-x86-gcc3.4.4     4   Y    Y    -     -   -   Y    Y     Y  20090203
+ darwin8.11.1-x86-gcc4.0.1    ??   ?    ?    ?     ?   ?   Y    Y/1*3 ?  20081216
+ freebsd-x86-gcc-3.4.6             Y    ?    ?     ?   ?   Y    Y     ?  20080519
+ linux-x86-gcc4.1.2                Y    Y    ?     Y   Y   Y    Y     ?  20080617
+@@ -42,10 +42,12 @@
+ linux-x86_64-gcc4.1.2         8   Y    -    -     Y   Y   Y    Y     ?  20080220
+ linux-x86_64-gcc4.3.2         8   Y    -    -     Y   Y   Y    Y     ?  20081118
+ opensolaris-x86-gcc_4.0.3     4   Y    Y    ?     ?   ?   Y    Y/2   ?  20080325
++opensolaris10-amd64-cc        8   Y    -    -     Y   -   Y    Y/24*2 ? 20090103
+ sol8-sparc-cc                B    -    -    -     -   -   -    Y/85  ?  20080818
+ sol8-sparc-gcc_4.1.0         B    -    -    -     -   -   -    Y/87  ?  20080818
+ win32-x86-mingw_gcc4.3.0          Y    Y    -     -   -   Y    Y/88  ?  20081203
+-win32-x64-msvc_9.0            8   -    N    -     -   -   Y    Y/51  ?  20081203
++win32-x86-msvc_6.0            4   -    Y    -     -   -   Y    Y/8   ?  20090103
++win32-x64-msvc_9.0            8   -    -    -     -   -   Y    Y/51  ?  20081203
+ win32-x64-mingw_gcc3.4.5      8   Y    Y    ?     ?   ?   Y    Y     ?  20081216
+ 
+ Legend:
+@@ -74,8 +76,9 @@
+ YYYYMMDD  The date tested.
+ 
+ Remarks:
+-*1 need PATH=$PATH:$PWD/blib/lib to locate DLL
+-*2 gcc and cc defaults to 32bits on solaris
++*2 gcc and cc defaults to 32bits on solaris, for 64bit use
++   --ccflags='-m64 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_TS_ERRNO'
++   --linkflags='-m64'
+ *3 http://rt.perl.org/rt3/Ticket/Display.html?id=60926
+ 
+ The following configurations are also working on x86/linux (and possibly
+Index: config/init/hints/solaris.pm
+===================================================================
+--- config/init/hints/solaris.pm.orig	2009-02-10 17:37:01.975875000 +0000
++++ config/init/hints/solaris.pm	2009-02-09 21:12:13.710250000 +0000
+@@ -40,9 +40,14 @@
+         %gnuc = eval $conf->cc_run() or die "Can't run the test program: $!";
+         if ( defined $gnuc{__GNUC__} ) {
+             $link = 'g++';
++            unless ($conf->data->get('rpath')) {
++                $conf->data->set( 'rpath', '-Wl,-rpath=' );
++            }
+         }
+         else {
+-            $link =~ s/\bcc\b/CC/;
++            unless ($conf->data->get('rpath')) {
++                $conf->data->set( 'rpath', '-R' );
++            }
+         }
+         $conf->data->set( link => $link );
+         $conf->data->deltrigger( "cc", "solaris_link" );
+@@ -64,6 +69,8 @@
+         else {
+             $conf->data->set( cc_shared => '-KPIC' );
+         }
++        $conf->data->set( 'has_dynamic_linking', '1' );
++        $conf->data->set( 'parrot_is_shared', '1' );
+         $conf->data->deltrigger( "gccversion", "solaris_cc_shared" );
+     };
+     $conf->data->settrigger(
