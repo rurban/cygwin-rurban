@@ -1,0 +1,59 @@
+--- origsrc/rakudo-2010.04/build/Makefile.in	2010-04-20 22:59:34.000000000 +0200
++++ src/rakudo-2010.04/build/Makefile.in	2010-04-22 17:13:28.578125000 +0200
+@@ -26,6 +26,7 @@ MV            = @mv@
+ RM_F          = @rm_f@
+ MKPATH        = $(PERL) -MExtUtils::Command -e mkpath
+ CHMOD         = $(PERL) -MExtUtils::Command -e chmod
++POD2MAN       = @pod2man@
+ 
+ # locations of parrot resources
+ PARROT           = $(PARROT_BIN_DIR)/parrot$(EXE)
+@@ -44,6 +45,8 @@ DYNEXT_DIR     = dynext
+ PMC_DIR        = src/pmc
+ OPS_DIR        = src/ops
+ PERL6_LANG_DIR = $(PARROT_LIB_DIR)/languages/perl6
++MANDIR         = @mandir@
++DOCDIR         = @prefix@/share/doc
+ 
+ # files we create
+ PERL6_PBC     = perl6.pbc
+@@ -255,6 +258,8 @@ PMC_SOURCES = \
+ 
+ OPS_SOURCE   = perl6.ops
+ 
++DOCS = README CREDITS LICENSE docs/*
++
+ CLEANUPS = \
+   *.manifest \
+   *.pdb \
+@@ -305,6 +310,11 @@ install: all
+ 	$(MKPATH)                     $(DESTDIR)$(PARROT_BIN_DIR)
+ 	$(CP)     $(PERL6_EXE)        $(DESTDIR)$(PARROT_BIN_DIR)
+ 	$(CHMOD)  755                 $(DESTDIR)$(PARROT_BIN_DIR)/$(PERL6_EXE)
++	$(MKPATH) 		      $(DESTDIR)$(DOCDIR)/rakudo
++	$(CP) -r  $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
++	$(MKPATH) $(DESTDIR)$(MANDIR)/man1
++	$(POD2MAN) docs/running.pod > $(DESTDIR)$(MANDIR)/man1/perl6.1
++	$(POD2MAN) docs/running.pod > $(DESTDIR)$(MANDIR)/man1/rakudo.1
+ 
+ xmas: $(PERL6_EXE)
+ 
+@@ -517,7 +527,7 @@ help:
+ #
+ config:
+ 	$(PERL) Configure.pl
+-	
++
+ $(PARROT):
+ 
+ CRITIC_FILES=Configure.pl t/harness build/ tools/
+@@ -542,6 +552,9 @@ release: manifest
+ 
+ $(DYNEXT_TARGET): $(DYNPMC) $(DYNOPS)
+ 	$(CP) $(DYNPMC) $(DYNOPS) $(DYNEXT_DIR)
++	$(CHMOD) 755 $(DYNEXT_TARGET)
++	$(CHMOD) 755 $(DYNEXT_DIR)/$(OPS)$(LOAD_EXT)
++	$(CHMOD) 755 $(DYNEXT_DIR)/$(OPS)_switch$(LOAD_EXT)
+ 
+ # (at)cc_o_out(at) and (at)ld_out(at) below cannot be assigned to
+ # makefile macros, because some make utilities drop the trailing
