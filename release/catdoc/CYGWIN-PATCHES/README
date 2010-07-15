@@ -3,19 +3,19 @@ catdoc
 Dump Word, Excel and Powerpoint files contents
 
 Runtime requirements: (versions given or later)
-  cygwin-1.5.x
+  cygwin-1.7.x
   
 Build requirements: (versions given or later)
-  cygwin-1.5.x
-  gcc-core
+  cygwin-1.7.x
+  gcc4-4.3.4-3
   binutils
   make
   bash
   fileutils
   sed
-  automake1.4-1.4p6-3 (for aclocal-1.4)
-  autoconf2.1-2.13
-  automake
+  automake1.4
+  autoconf2.5-2.65-1
+  autoconf-8.1
 
 Canonical homepage:
   http://ftp.wagner.pp.ru/~vitus/software/catdoc/
@@ -115,6 +115,14 @@ Files included in this package:
 -------------------------------------------------------------------------------
 
 Port Notes:
+
+----- version 0.94.2-4 ----- 
+* first cygwin-1.7 version against gcc4
+* Added https://www.wagner.pp.ru/cgi-bin/cvstrac/catdoc/tktview?tn=14,4
+  for wrong Macintosh 1904 year offsets
+* 64bit fixes from debian #555622 ignored
+  (parses negative integers incorrectly on 64bit architecture)
+* autoconf fixes
 
 ----- version 0.94.2-3 ----- 
 * Added --with-input=cp1252 --with-output=8859-1 

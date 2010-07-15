@@ -5,5 +5,5 @@ ASCII text to stdout, just like Unix cat command.
 It is also able to produce correct escape sequences if some UNICODE
 charachers have to be represented specially in your typesetting system
 such as (La)TeX."
-requires: cygwin tcltk
+requires: tcltk libgcc1
 category: Text
