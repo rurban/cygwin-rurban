@@ -1,0 +1,275 @@
+--- origsrc/mathomatic-15.1.5/lib/makefile	2010-07-07 21:29:38.000000000 +0200
++++ src/mathomatic-15.1.5/lib/makefile	2010-07-24 15:58:40.587750000 +0200
+@@ -11,14 +11,24 @@ VERSION		= `cat ../VERSION`
+ OPTFLAGS	?= -O -Wall -Wshadow -Wno-char-subscripts # gcc specific flags; can be removed
+ CFLAGS		+= $(OPTFLAGS)
+ CFLAGS		+= -DLIBRARY -DVERSION=\"$(VERSION)\" # necessary C compiler flags
+-LDLIBS		+= -lm # libraries to link
++LDLIBS		+= -lm -lncurses # libraries to link
++
++ifdef CYGWIN
++CFLAGS		+= -DCYGWIN
++LDFLAGS		+= -Wl,-enable-auto-import
++endif
++ifdef WINDIR
++EXE             = .exe
++endif
++
++DESTDIR		=
+ 
+ # Install directories follow; installs everything in /usr/local by default:
+ prefix		?= /usr/local
+ libdir		?= $(prefix)/lib
+ includedir	?= $(prefix)/include
+ 
+-AOUT		= mathomatic # The name of the library test executable file to create.
++AOUT		= mathomatic$(EXE) # The name of the library test executable file to create.
+ LIB		= libmathomatic.a # The name of the symbolic math library file to create.
+ HEADERS		= mathomatic.h
+ 
+@@ -26,7 +36,7 @@ OBJECTS		= globals.o am.o solve.o help.o
+ 		  factor.o super.o unfactor.o poly.o diff.o integrate.o \
+ 		  complex.o complex_lib.o list.o gcd.o factor_int.o
+ 
+-all: $(AOUT)
++all: $(LIB) $(AOUT)
+ 
+ lib $(LIB): lib.o $(OBJECTS)
+ 	ar cr $(LIB) lib.o $(OBJECTS)
+@@ -42,10 +52,10 @@ $(AOUT): test.o $(LIB)
+ 	@echo ./$(AOUT) created.
+ 
+ install:
+-	$(INSTALL) -d $(libdir)
+-	$(INSTALL) -d $(includedir)
+-	$(INSTALL_DATA) $(LIB) $(libdir)
+-	$(INSTALL_DATA) $(HEADERS) $(includedir)
++	$(INSTALL) -d $(DESTDIR)$(libdir)
++	$(INSTALL) -d $(DESTDIR)$(includedir)
++	$(INSTALL_DATA) $(LIB) $(DESTDIR)$(libdir)
++	$(INSTALL_DATA) $(HEADERS) $(DESTDIR)$(includedir)
+ 	@echo Mathomatic symbolic math library installed.
+ 
+ clean:
+--- origsrc/mathomatic-15.1.5/list.c	2010-07-06 19:56:16.000000000 +0200
++++ src/mathomatic-15.1.5/list.c	2010-07-24 15:40:44.119000000 +0200
+@@ -174,7 +174,7 @@ int	export_flag;	/* non-zero for exporta
+ 	if (export_flag == 1) {
+ 		len += fprintf(gfp, ";");
+ 	}
+-#if	CYGWIN
++#if	WIN32
+ 	fprintf(gfp, "\r\n");	/* might be redirecting to a Microsoft text file */
+ #else
+ 	fprintf(gfp, "\n");
+--- origsrc/mathomatic-15.1.5/main.c	2010-06-05 13:09:10.000000000 +0200
++++ src/mathomatic-15.1.5/main.c	2010-07-24 15:55:49.697125000 +0200
+@@ -106,7 +106,7 @@ char	**argv;
+ 	bindtextdomain(prog_name, LOCALEDIR);
+ #endif
+ 
+-#if	CYGWIN
++#if	WIN32
+ 	dir_path = strdup(dirname_win(argv[0]));	/* set dir_path to this executable's directory */
+ #endif
+ 	/* initialize the global variables */
+@@ -332,7 +332,7 @@ set_signals()
+ 	return rv;
+ }
+ 
+-#if	CYGWIN
++#if	WIN32
+ /*
+  * dirname(3) function for Microsoft Windows.
+  * dirname(3) strips the non-directory suffix from a filename.
+@@ -375,7 +375,7 @@ load_rc()
+ 		snprintf(rc_file, sizeof(rc_file), "%s/%s", cp, ".mathomaticrc");
+ 		fp = fopen(rc_file, "r");
+ 	}
+-#if	CYGWIN
++#if	WIN32
+ 	if (fp == NULL) {
+ 		snprintf(rc_file, sizeof(rc_file), "%s/%s", dir_path, "mathomatic.rc");
+ 		fp = fopen(rc_file, "r");
+@@ -463,7 +463,6 @@ int	sig;
+ 	if (screen_columns)
+ 		get_screen_size();
+ }
+-#endif
+ 
+ /*
+  * Properly exit this program and return to the operating system.
+@@ -488,3 +487,5 @@ int	exit_value;	/* zero if OK, non-zero
+ 	exit(exit_value);
+ }
+ #endif
++
++#endif
+--- origsrc/mathomatic-15.1.5/makefile	2010-07-19 21:33:49.000000000 +0200
++++ src/mathomatic-15.1.5/makefile	2010-07-24 16:03:00.322125000 +0200
+@@ -15,6 +15,14 @@ CFLAGS		+= $(OPTFLAGS)
+ CFLAGS		+= -DUNIX -DVERSION=\"$(VERSION)\"
+ LDLIBS		+= -lm # libraries to link with to create the Mathomatic executable
+ 
++ifdef CYGWIN
++CFLAGS		+= -DCYGWIN
++LDFLAGS		+= -Wl,-enable-auto-import
++endif
++ifdef WINDIR
++EXE             = .exe
++endif
++
+ # "make READLINE=1" to include readline support:
+ CFLAGS		+= $(READLINE:1=-DREADLINE)
+ LDLIBS		+= $(READLINE:1=-lreadline -lncurses)
+@@ -23,7 +31,8 @@ LDLIBS		+= $(READLINE:1=-lreadline -lncu
+ #CFLAGS		+= -m64
+ #LDFLAGS	+= -m64
+ 
+-# Install directories follow; installs everything in /usr/local by default:
++# Install directories follow; installs everything in /usr/local by default:+ ifdef CYGWIN
++DESTDIR         =
+ prefix		?= /usr/local
+ bindir		?= $(prefix)/bin
+ mandir		?= $(prefix)/share/man
+@@ -31,7 +40,8 @@ docdir		?= $(prefix)/share/doc
+ mathdocdir	?= $(docdir)/mathomatic
+ 
+ # Mathomatic program names (can be changed):
+-AOUT		= mathomatic
++AOUT		= mathomatic$(EXE)
++BINS		= $(AOUT) mathomatic_secure$(EXE)
+ M4SCRIPTNAME	= matho
+ M4SCRIPTPATH	= $(bindir)/$(M4SCRIPTNAME)
+ 
+@@ -55,7 +65,8 @@ DOCS		= VERSION AUTHORS COPYING README.t
+ 
+ PDFDOC		= doc/manual.pdf
+ 
+-all: $(AOUT) html # make these by default
++all: $(BINS) html # make these by default
++	@echo Make completed.
+ 
+ doc html: $(MANHTML)
+ 
+@@ -82,15 +93,21 @@ $(OBJECTS): $(INCLUDES) VERSION
+ 
+ # Create the mathomatic executable:
+ $(AOUT): $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) $(LDLIBS) -o $(AOUT)
++	$(CC) $(LDFLAGS) -o $@ $(OBJECTS) $(LDLIBS)
+ 	@echo ./$(AOUT) created.
+ 
+ # To compile Mathomatic as a stand-alone executable
+ # that has no shared library dependencies, type "make clean static".
+ static: $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) -static $(LDLIBS) -o $(AOUT)
++	$(CC) $(LDFLAGS) -static -o $@ $(OBJECTS) $(LDLIBS)
+ 	@echo ./$(AOUT) created.
+ 
++mathomatic_secure$(EXE): $(OBJECTS)
++	make secure_clean
++	$(CC) -c -DSECURE -DTIMEOUT_SECONDS=3600 $(CFLAGS) *.c
++	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
++	make secure_clean
++
+ # Create the PDF version of the Mathomatic documentation, if desired.
+ # Requires the htmldoc program be installed.
+ pdf $(PDFDOC): doc/manual.html doc/am.html
+@@ -131,28 +148,31 @@ install-strip:
+ 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
+ 
+ bininstall:
+-	$(INSTALL) -d $(bindir)
+-	$(INSTALL) -d $(prefix)/share/applications
+-	$(INSTALL) -d $(prefix)/share/pixmaps
+-	$(INSTALL_PROGRAM) $(AOUT) $(bindir)
+-	$(INSTALL_DATA) icons/mathomatic.desktop $(prefix)/share/applications
+-	$(INSTALL_DATA) icons/mathomatic.png $(prefix)/share/pixmaps
++	$(INSTALL) -d $(DESTDIR)$(bindir)
++	$(INSTALL) -d $(DESTDIR)$(prefix)/share/applications
++	$(INSTALL) -d $(DESTDIR)$(prefix)/share/pixmaps
++	$(INSTALL_PROGRAM) $(BINS) $(DESTDIR)$(bindir)
++	$(INSTALL) -d $(DESTDIR)/etc/defaults/etc/skel
++	$(INSTALL_DATA) mathomatic.rc $(DESTDIR)/etc/defaults/etc/skel/.mathomaticrc
++	$(INSTALL_DATA) icons/mathomatic.desktop $(DESTDIR)$(prefix)/share/applications
++	$(INSTALL_DATA) icons/mathomatic.png $(DESTDIR)$(prefix)/share/pixmaps
++	$(INSTALL_DATA) icons/mathomatic.ico $(DESTDIR)$(prefix)/share/pixmaps
+ 
+ docinstall:
+-	$(INSTALL) -d $(mandir)/man1
+-	$(INSTALL) -d $(mathdocdir)
+-	$(INSTALL) -d $(mathdocdir)/html
+-	$(INSTALL) -d $(mathdocdir)/m4
+-	$(INSTALL) -d $(mathdocdir)/tests
+-	$(INSTALL) -d $(mathdocdir)/factorial
+-	$(INSTALL_DATA) $(MAN1) $(mandir)/man1
+-	$(INSTALL_DATA) $(DOCS) $(mathdocdir)
+-	$(INSTALL_DATA) doc/* $(mathdocdir)/html
+-	$(INSTALL_DATA) m4/* $(mathdocdir)/m4
+-	$(INSTALL_DATA) tests/* $(mathdocdir)/tests
+-	$(INSTALL_DATA) factorial/* $(mathdocdir)/factorial
++	install -d $(DESTDIR)$(mandir)/man1
++	install -d $(DESTDIR)$(mathdocdir)
++	install -d $(DESTDIR)$(mathdocdir)/html
++	install -d $(DESTDIR)$(mathdocdir)/m4
++	install -d $(DESTDIR)$(mathdocdir)/tests
++	install -d $(DESTDIR)$(mathdocdir)/factorial
++	install -m 0644 $(MAN1) $(DESTDIR)$(mandir)/man1
++	install -m 0644 $(DOCS) $(DESTDIR)$(mathdocdir)
++	install -m 0644 doc/* $(DESTDIR)$(mathdocdir)/html
++	install -m 0644 m4/* $(DESTDIR)$(mathdocdir)/m4
++	install -m 0644 tests/* $(DESTDIR)$(mathdocdir)/tests
++	install -m 0644 factorial/* $(DESTDIR)$(mathdocdir)/factorial
+ 	@echo
+-	@echo Documentation is installed in $(mathdocdir)/html
++	@echo Documentation is installed in $(DESTDIR)$(mathdocdir)/html
+ 
+ uninstall:
+ 	rm -f $(bindir)/$(AOUT)
+@@ -169,6 +189,9 @@ clean:
+ 	rm -f */*.o */*.a */*.pyc
+ 	rm -f tests/test.out primes/test.out
+ 
++secure_clean:
++	rm -f *.o */*.o
++
+ distclean: clean
+ 	rm -f $(AOUT) lib/$(AOUT)
+ 	rm -f mathomatic_secure
+--- origsrc/mathomatic-15.1.5/makefile.cygwin	2009-05-13 16:28:05.000000000 +0200
++++ src/mathomatic-15.1.5/makefile.cygwin	1970-01-01 01:00:00.000000000 +0100
+@@ -1,33 +0,0 @@
+-# Makefile for compiling and testing Mathomatic under the Cygwin environment for MS-Windows.
+-
+-VERSION		= `cat VERSION`
+-CFLAGS		= -O -DCYGWIN -DVERSION=\"$(VERSION)\"
+-LDFLAGS		= -s
+-LDLIBS		= -lm
+-
+-CFLAGS		+= -DREADLINE
+-LDLIBS		+= -lreadline -lcurses
+-
+-AOUT		= mathomatic.exe
+-OBJECTS		= main.o globals.o am.o solve.o help.o parse.o cmds.o simplify.o factor.o super.o \
+-		  unfactor.o poly.o diff.o integrate.o complex.o complex_lib.o list.o gcd.o factor_int.o
+-
+-all: $(AOUT)
+-
+-check test: all
+-	cd tests && time ../$(AOUT) -t all 0<&- >test.out && diff -u all.out test.out
+-	@rm tests/test.out
+-	@echo All tests passed.
+-
+-baseline:
+-	cd tests && ../$(AOUT) -t all 0<&- >all.out
+-
+-$(OBJECTS): includes.h license.h am.h externs.h complex.h proto.h altproto.h VERSION
+-
+-$(AOUT): $(OBJECTS)
+-	$(CC) $(LDFLAGS) $(OBJECTS) $(LDLIBS) -o $(AOUT)
+-
+-clean:
+-	rm -f *.o *.a
+-	rm -f lib/*.o lib/*.a
+-	rm -f tests/test.out
