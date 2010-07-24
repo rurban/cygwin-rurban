@@ -6,4 +6,4 @@ polynomial arithmetic. It is designed to be as general as possible,
 with few options. It is a console mode application that compiles and
 installs easily. License: LPGL 2.1"
 category: Math
-requires: libgcc1 libreadline6 libncurses8
+requires: libgcc1
