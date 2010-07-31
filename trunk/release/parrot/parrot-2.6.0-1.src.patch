@@ -1,0 +1,44 @@
+--- origsrc/parrot-2.6.0/MANIFEST.generated	2010-07-21 02:49:10.000000000 +0200
++++ src/parrot-2.6.0/MANIFEST.generated	2010-07-31 19:23:49.603375000 +0200
+@@ -7,6 +7,8 @@ blib/lib/libparrot.a
+ blib/lib/libparrot.dylib                         [main]lib
+ blib/lib/libparrot.so                            [main]lib
+ blib/lib/libparrot.so.2.6.0                      [main]lib
++blib/lib/libparrot.dll.a                         [main]lib
++blib/lib/cygparrot2_6_0.dll                      [main]bin
+ compilers/data_json/data_json.pbc                [data_json]
+ config/gen/call_list/opengl.in                   []
+ docs/ops/bit.pod                                 [doc]
+@@ -270,6 +272,7 @@ runtime/parrot/library/PCT.pbc
+ runtime/parrot/library/PCT/Grammar.pbc           [main]
+ runtime/parrot/library/PCT/HLLCompiler.pbc       [main]
+ runtime/parrot/library/PCT/PAST.pbc              [main]
++runtime/parrot/library/Pg.pbc                    [main]
+ runtime/parrot/library/PGE.pbc                   [main]
+ runtime/parrot/library/PGE/Dumper.pbc            [main]
+ runtime/parrot/library/PGE/Glob.pbc              [main]
+@@ -281,6 +284,7 @@ runtime/parrot/library/Parrot/Capture_PI
+ runtime/parrot/library/Parrot/Coroutine.pbc      [main]
+ runtime/parrot/library/Parrot/Exception.pbc      [main]
+ runtime/parrot/library/Parrot/HLLCompiler.pbc    [main]
++runtime/parrot/library/postgres.pbc              [main]
+ runtime/parrot/library/Protoobject.pbc           [main]
+ runtime/parrot/library/Range.pbc                 [main]
+ runtime/parrot/library/Regex.pbc                 [main]
+@@ -329,8 +333,9 @@ src/glut_callbacks.c
+ src/install_config.o                             [main]lib
+ src/install_config.obj                           [main]lib
+ src/jit_emit.h                                   []
+-src/nci.c                                        []
++src/nci.c                                        [devel]src
+ src/null_config.c                                []
++src/null_config.o                                [devel]src
+ src/parrot_config.c                              []
+ src/pmc/addrregistry.dump                        [devel]src
+ src/pmc/arrayiterator.dump                       [devel]src
+@@ -419,4 +424,5 @@ src/pmc/undef.dump
+ src/pmc/unmanagedstruct.dump                     [devel]src
+ src/string_private_cstring.h                     []
+ tools/build/dynpmc.pl                            []
++tools/build/dynoplibs.pl                         [devel] 
+ vtable.dump                                      [devel]src
