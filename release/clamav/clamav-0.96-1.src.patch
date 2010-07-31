@@ -1,0 +1,591 @@
+--- origsrc/clamav-0.96/clamconf/clamconf.c	2009-12-14 13:25:17.000000000 +0100
++++ src/clamav-0.96/clamconf/clamconf.c	2010-04-25 11:44:14.328125000 +0200
+@@ -306,7 +306,7 @@ int main(int argc, char **argv)
+ 	    strncpy(dbdir, pt, sizeof(dbdir));
+ 	    free(pt);
+ 	} else {
+-	    strncpy(dbdir, DATADIR, sizeof(dbdir));
++	    strncpy(dbdir, CLAMAV_DATADIR, sizeof(dbdir));
+ 	}
+ 	dbdir[sizeof(dbdir) - 1] = 0;
+     }
+--- origsrc/clamav-0.96/clamdtop/Makefile.am	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/clamdtop/Makefile.am	2010-04-25 11:44:14.328125000 +0200
+@@ -10,7 +10,7 @@ clamdtop_SOURCES = \
+     $(top_srcdir)/shared/misc.h \
+     clamdtop.c
+ 
+-AM_CPPFLAGS = -I$(top_srcdir) @CURSES_CPPFLAGS@
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libclamav @CURSES_CPPFLAGS@
+ clamdtop_LDADD = @CURSES_LIBS@ $(top_builddir)/libclamav/libclamav_internal_utils_nothreads.la
+ endif
+ DEFS = @DEFS@ -DCL_NOTHREADS -DCL_NOLIBCLAMAV
+--- origsrc/clamav-0.96/configure.in	2010-03-31 19:25:21.000000000 +0200
++++ src/clamav-0.96/configure.in	2010-04-25 11:44:14.531250000 +0200
+@@ -64,7 +64,7 @@ AC_CONFIG_FILES([libltdl/Makefile])
+ major=`expr $LC_CURRENT - $LC_AGE`
+ AC_DEFINE_UNQUOTED([LIBCLAMAV_FULLVER], "$major.$LC_AGE.$LC_REVISION",
+ 	  ["Full library version number"])
+-AC_DEFINE_UNQUOTED([LIBCLAMAV_MAJORVER], $major,
++AC_DEFINE_UNQUOTED([LIBCLAMAV_MAJORVER], "$major",
+ 	  ["Major library version number"])
+ AC_DEFINE([SCANBUFF], 131072, [scan buffer size])
+ AC_DEFINE([FILEBUFF], 8192,   [file i/o buffer size])
+@@ -503,6 +503,26 @@ fi
+ 
+ AM_CONDITIONAL(ENABLE_COVERAGE, test "x$enable_coverage" = "xyes")
+ 
++dnl Check for broken cygwin-1.5.19 without d_ino or INTERIX (code by David Rothenberger <daveroth*acm.org>)
++AC_MSG_CHECKING([whether struct dirent contains d_ino])
++AC_RUN_IFELSE(
++	[AC_LANG_SOURCE([[
++#include <sys/types.h>
++#include <dirent.h>
++int main(void){struct dirent d;exit(sizeof(d.d_ino)>=0);}
++	]])],
++	[AC_MSG_RESULT(yes)],
++	[
++		AC_MSG_RESULT(no)
++		AC_DEFINE(DIRENT_MISSING_D_INO, 1,
++			[Define if your struct dirent doesn't contain d_ino])
++	],
++	[
++		AC_MSG_WARN([cross compiling: assuming DIRENT_MISSING_D_INO])
++		AC_DEFINE(DIRENT_MISSING_D_INO)
++	]
++)
++
+ have_pthreads=no
+ AC_CHECK_HEADER([pthread.h],[have_pthreads=yes],)
+ 
+@@ -872,7 +892,7 @@ then
+     fi
+ fi
+ 
+-AC_DEFINE_UNQUOTED([DATADIR],"$db_dir", [Path to virus database directory.])
++AC_DEFINE_UNQUOTED([CLAMAV_DATADIR],"$db_dir", [Path to virus database directory.])
+ DBDIR="$db_dir"
+ AC_SUBST([DBDIR])
+ 
+@@ -945,6 +965,23 @@ kfreebsd*-gnu)
+        fi
+     fi
+     ;;
++cygwixxxn*)
++    FRESHCLAM_LIBS="$FRESHCLAM_LIBS -lresolv"
++    if test "$test_clamav" = "yes"; then
++	if test ! -r /etc/passwd; then
++	   test_clamav="no"
++	fi
++    fi
++    if test "$have_pthreads" = "yes"; then
++	#CLAMD_LIBS="$CLAMD_LIBS -lresolv"
++	THREAD_LIBS="-lpthread"
++	TH_SAFE="-thread-safe"
++	AC_DEFINE([CL_THREAD_SAFE],1,[thread safe])
++	AC_DEFINE([_REENTRANT],1,[thread safe])
++    fi
++    AC_DEFINE(BUILD_CLAMD, 1, "build clamd")
++    use_gethostbyname_r="no"
++    ;;
+ solaris*)
+     FRESHCLAM_LIBS="$FRESHCLAM_LIBS -lresolv"
+     if test "$have_pthreads" = "yes"; then
+@@ -1162,7 +1199,7 @@ if test "$have_milter" = "yes"; then
+     ])
+ fi
+ 
+-AM_CONDITIONAL([BUILD_CLAMD],[test "$have_pthreads" = "yes"])
++AM_CONDITIONAL([BUILD_CLAMD],[test "$have_pthreads" = "yes" -o "$target_os" = "cygwin"])
+ AM_CONDITIONAL([HAVE_MILTER],[test "$have_milter" = "yes"])
+ 
+ if test "$have_pthreads" = "yes"
+--- origsrc/clamav-0.96/contrib/init/Cygwin/clamd	1970-01-01 01:00:00.000000000 +0100
++++ src/clamav-0.96/contrib/init/Cygwin/clamd	2010-04-25 11:44:14.531250000 +0200
+@@ -0,0 +1,152 @@
++#! /bin/bash
++#
++# crond   Start/Stop the clam antivirus daemon. 0.8x series
++# v1.0 2004-10-18 Reini Urban rurban@x-ray.at
++#
++# chkconfig: 2345 90 60
++# description: clamd is a standard UNIX program that scans for Viruses.
++# processname: clamd
++# config: /etc/clamd.conf
++# pidfile: /var/run/clamd.pid
++
++PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
++PREFIX=/usr
++CONFIG=/etc/clamd.conf
++PIDFILE=/var/run/clamd.pid
++LOGFILE=/var/log/clamd.log
++SOCKET=/var/run/clamd.sock
++
++# Source function library.
++if [ -f /etc/init.d/functions ] ; then
++  . /etc/init.d/functions
++fi
++
++RETVAL=0
++
++# See how we were called.
++
++prog="clamd"
++progdir="/usr/sbin"
++DAEMON="$progdir/$prog.exe"
++
++test -f $DAEMON || exit 0
++
++# Source configuration
++if [ -f /etc/sysconfig/$prog ] ; then
++    . /etc/sysconfig/$prog
++fi
++
++start() {
++        echo -n $"Starting $prog: "
++	# check if cygrunsrv process
++        cygrunsrv --start $prog
++        RETVAL=$?
++        echo
++        [ $RETVAL -eq 0 ] && touch $PIDFILE  && echo "done."
++        return $RETVAL
++}
++
++stop() {
++        echo -n $"Stopping $prog: "
++	cygrunsrv --stop $prog
++        if test -r $PIDFILE; then
++            kill `cat $PIDFILE` 2> /dev/null || echo -n " failed"
++        else
++            echo -n " no PID file"
++        fi
++	# this really needs a long time to stop.
++        RETVAL=$?
++        echo "."
++        [ $RETVAL -eq 0 ] && rm -f $PIDFILE $SOCKET && echo "done."
++        return $RETVAL
++}
++
++rhstatus() {
++        # service status
++        cygrunsrv -Q $prog
++        # connect(): No such file or directory
++	/usr/bin/clamdscan /usr/sbin/clamd.exe
++	#status clamd
++}
++
++restart() {
++        echo -n $"Restarting $prog: "
++        $0 stop
++        sleep 1
++        $0 start
++        echo "done."
++}
++
++installcron() {
++    ( crontab -l | grep freshclam >/dev/null 2>&1 ) || ( \
++	echo "add something like this to your cronjob:"
++	echo
++	echo "*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1"
++	echo "#*  */3 * * *	/usr/bin/freshclam >>/var/log/freshclam.log 2>&1" >> /var/cron/tabs/$USER
++	kill -s HUP `cat /var/run/cron.pid`
++	crontab -e )
++}
++install() {
++        freshclam
++        echo -n $"Installing $prog daemon: "
++	# some safety measures
++	touch $LOGFILE $PIDFILE
++	chgrp 18 $LOGFILE $PIDFILE
++	chmod g+w $LOGFILE $PIDFILE
++	rm -f $SOCKET
++	#it was compiled with uid=18
++	cygrunsrv --install $prog --path $DAEMON -e CYGWIN="$CYGWIN" --disp "CYGWIN `$DAEMON --version`"
++        echo "done."
++}
++uninstall() {
++        echo -n $"Uninstalling $prog daemon: "
++	stop
++	cygrunsrv --remove $prog
++        echo "done."
++}
++reload() {
++        echo -n $"Reloading $prog daemon configuration: "
++	echo "unsupported. $0 restart"
++	return 1
++
++	/usr/bin/kill -HUP `cat $PIDFILE`
++        RETVAL=$?
++        [ $RETVAL -eq 0 ] && echo "done."
++        RETVAL=$?
++        return $RETVAL
++}
++
++case "$1" in
++  start)
++        start
++        ;;
++  stop)
++        stop
++        ;;
++  restart)
++        restart
++        ;;
++  reload)
++        reload
++        ;;
++  install)
++        install
++        ;;
++  installcron)
++        installcron
++        ;;
++  uninstall)
++        uninstall
++        ;;
++  status)
++        rhstatus
++        ;;
++  condrestart)
++        [ -f $PIDFILE ] && restart || :
++        ;;
++  *)
++        echo $"Usage: $0 {start|stop|status|install|uninstall|installcron|restart|condrestart}"
++        exit 1
++esac
++
++exit $?
+--- origsrc/clamav-0.96/libclamav/others.c	2010-03-24 18:39:43.000000000 +0200
++++ src/clamav-0.96/libclamav/others.c	2010-04-25 11:44:14.546875000 +0200
+@@ -112,7 +112,10 @@ static lt_dlhandle lt_dlfind(const char
+ {
+     static const char *suffixes[] = {
+ 	LT_MODULE_EXT"."LIBCLAMAV_FULLVER,
+-	PASTE(LT_MODULE_EXT".", LIBCLAMAV_MAJORVER),
++	LT_MODULE_EXT"."LIBCLAMAV_MAJORVER,
++#ifdef __CYGWIN__
++	"-"LIBCLAMAV_MAJORVER".dll",
++#endif
+ 	LT_MODULE_EXT,
+ 	"."LT_LIBEXT
+     };
+@@ -163,9 +166,14 @@ static void cli_rarload(void) {
+     if(is_rar_initd) return;
+     is_rar_initd = 1;
+ 
++#ifdef __CYGWIN__
++    // libtool cygwin quirks
++    rhandle = lt_dlfind("cygclamunrar_iface", "unrar");
++#else
+     rhandle = lt_dlfind("libclamunrar_iface", "unrar");
+-    if (!rhandle)
+-	return;
++#endif
++    if (!rhandle) 
++ 	return;
+ 
+     if (!(cli_unrar_open = (int(*)(int, const char *, unrar_state_t *))lt_dlsym(rhandle, "libclamunrar_iface_LTX_unrar_open")) ||
+ 	!(cli_unrar_extract_next_prepare = (int(*)(unrar_state_t *, const char *))lt_dlsym(rhandle, "libclamunrar_iface_LTX_unrar_extract_next_prepare")) ||
+--- origsrc/clamav-0.96/libclamav/readdb.c	2010-03-24 12:10:25.000000000 +0200
++++ src/clamav-0.96/libclamav/readdb.c	2010-04-25 11:44:14.546875000 +0200
+@@ -2595,7 +2595,7 @@ int cl_load(const char *path, struct cl_
+ 
+ const char *cl_retdbdir(void)
+ {
+-    return DATADIR;
++    return CLAMAV_DATADIR;
+ }
+ 
+ int cl_statinidir(const char *dirname, struct cl_stat *dbstat)
+--- origsrc/clamav-0.96/libltdl/Makefile.am	2009-12-11 10:49:12.000000000 +0100
++++ src/clamav-0.96/libltdl/Makefile.am	2010-04-25 12:00:52.921875000 +0200
+@@ -28,9 +28,6 @@
+ ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ #####
+ 
+-# ClamAV: filter -Werror here
+-CFLAGS=`echo "@CFLAGS@" | sed -e 's/-Werror[^=-]//'`
+-
+ ACLOCAL_AMFLAGS = -I m4
+ AUTOMAKE_OPTIONS = foreign
+ AM_CPPFLAGS =
+--- origsrc/clamav-0.96/libltdl/libltdl/lt_dlloader.h	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/libltdl/libltdl/lt_dlloader.h	2010-04-25 12:00:50.687500000 +0200
+@@ -73,8 +73,8 @@ typedef struct {
+ LT_SCOPE int		lt_dlloader_add	   (const lt_dlvtable *vtable);
+ LT_SCOPE lt_dlloader	lt_dlloader_next   (const lt_dlloader loader);
+ 
+-LT_SCOPE lt_dlvtable *	lt_dlloader_remove	(char *name);
+-LT_SCOPE const lt_dlvtable *lt_dlloader_find	(char *name);
++LT_SCOPE lt_dlvtable *	lt_dlloader_remove	(const char *name);
++LT_SCOPE const lt_dlvtable *lt_dlloader_find	(const char *name);
+ LT_SCOPE const lt_dlvtable *lt_dlloader_get	(lt_dlloader loader);
+ 
+ 
+--- origsrc/clamav-0.96/libltdl/libltdl/slist.h	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/libltdl/libltdl/slist.h	2010-04-25 12:00:51.343750000 +0200
+@@ -1,6 +1,6 @@
+ /* slist.h -- generalised singly linked lists
+ 
+-   Copyright (C) 2000, 2004 Free Software Foundation, Inc.
++   Copyright (C) 2000, 2004, 2009 Free Software Foundation, Inc.
+    Written by Gary V. Vaughan, 2000
+ 
+    NOTE: The canonical source of this file is maintained with the
+@@ -48,6 +48,8 @@ or obtained by writing to the Free Softw
+ #  define LT_SCOPE
+ #endif
+ 
++#include <stddef.h>
++
+ #if defined(__cplusplus)
+ extern "C" {
+ #endif
+@@ -65,7 +67,7 @@ LT_SCOPE SList *slist_concat	(SList *hea
+ LT_SCOPE SList *slist_cons	(SList *item, SList *slist);
+ 
+ LT_SCOPE SList *slist_delete	(SList *slist, void (*delete_fct) (void *item));
+-LT_SCOPE void *	slist_remove	(SList **phead, SListCallback *find,
++LT_SCOPE SList *slist_remove	(SList **phead, SListCallback *find,
+ 				 void *matchdata);
+ LT_SCOPE SList *slist_reverse	(SList *slist);
+ LT_SCOPE SList *slist_sort	(SList *slist, SListCompare *compare,
+--- origsrc/clamav-0.96/libltdl/loaders/loadlibrary.c	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/libltdl/loaders/loadlibrary.c	2010-04-25 12:00:48.718750000 +0200
+@@ -156,7 +156,7 @@ vm_open (lt_user_data LT__UNUSED loader_
+ 	  /* Append a `.' to stop Windows from adding an
+ 	     implicit `.dll' extension. */
+ 	  if (!len)
+-	    len = LT_STRLEN (wpath);
++	    len = strlen (wpath);
+ 
+ 	  if (len + 1 >= MAX_PATH)
+ 	    {
+--- origsrc/clamav-0.96/libltdl/lt_dlloader.c	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/libltdl/lt_dlloader.c	2010-04-25 12:00:51.984375000 +0200
+@@ -150,7 +150,7 @@ lt_dlloader_get	(lt_dlloader loader)
+    modules need this loader; in either case, the loader list is not
+    changed if NULL is returned.  */
+ lt_dlvtable *
+-lt_dlloader_remove (char *name)
++lt_dlloader_remove (const char *name)
+ {
+   const lt_dlvtable *	vtable	= lt_dlloader_find (name);
+   static const char	id_string[] = "lt_dlloader_remove";
+@@ -199,12 +199,12 @@ lt_dlloader_remove (char *name)
+ 
+   /* If we got this far, remove the loader from our global list.  */
+   return (lt_dlvtable *)
+-      slist_unbox ((SList *) slist_remove (&loaders, loader_callback, name));
++      slist_unbox ((SList *) slist_remove (&loaders, loader_callback, (void *) name));
+ }
+ 
+ 
+ const lt_dlvtable *
+-lt_dlloader_find (char *name)
++lt_dlloader_find (const char *name)
+ {
+-  return lt_dlloader_get (slist_find (loaders, loader_callback, name));
++  return lt_dlloader_get (slist_find (loaders, loader_callback, (void *) name));
+ }
+--- origsrc/clamav-0.96/libltdl/ltdl.c	2009-12-11 10:49:12.000000000 +0100
++++ src/clamav-0.96/libltdl/ltdl.c	2010-04-25 12:00:52.421875000 +0200
+@@ -994,7 +994,7 @@ trim (char **dest, const char *str)
+ 
+   FREE (*dest);
+ 
+-  if (!end)
++  if (!end || end == str)
+     return 1;
+ 
+   if (len > 3 && str[0] == '\'')
+@@ -1265,7 +1265,7 @@ try_dlopen (lt_dlhandle *phandle, const
+       if (vtable)
+ 	{
+ 	  /* name + "." + libext + NULL */
+-	  archive_name = MALLOC (char, LT_STRLEN (name) + LT_STRLEN (libext) + 2);
++	  archive_name = MALLOC (char, LT_STRLEN (name) + strlen (libext) + 2);
+ 	  *phandle = (lt_dlhandle) lt__zalloc (sizeof (struct lt__handle));
+ 
+ 	  if ((*phandle == NULL) || (archive_name == NULL))
+@@ -1487,7 +1487,7 @@ try_dlopen (lt_dlhandle *phandle, const
+ }
+ 
+ 
+-/* If the last error messge store was `FILE_NOT_FOUND', then return
++/* If the last error message stored was `FILE_NOT_FOUND', then return
+    non-zero.  */
+ static int
+ file_not_found (void)
+@@ -1507,7 +1507,7 @@ file_not_found (void)
+ static int
+ has_library_ext (const char *filename)
+ {
+-  char *	ext     = 0;
++  const char *	ext     = 0;
+ 
+   assert (filename);
+ 
+@@ -2066,7 +2066,7 @@ lt_dlerror (void)
+   LT__GETERROR (error);
+   LT__SETERRORSTR (0);
+ 
+-  return error ? error : NULL;
++  return error;
+ }
+ 
+ static int
+--- origsrc/clamav-0.96/libltdl/slist.c	2009-07-06 15:21:58.000000000 +0200
++++ src/clamav-0.96/libltdl/slist.c	2010-04-25 12:00:52.859375000 +0200
+@@ -1,6 +1,6 @@
+ /* slist.c -- generalised singly linked lists
+ 
+-   Copyright (C) 2000, 2004, 2007, 2008 Free Software Foundation, Inc.
++   Copyright (C) 2000, 2004, 2007, 2008, 2009 Free Software Foundation, Inc.
+    Written by Gary V. Vaughan, 2000
+ 
+    NOTE: The canonical source of this file is maintained with the
+@@ -32,6 +32,7 @@ or obtained by writing to the Free Softw
+ 
+ #include "slist.h"
+ #include <stddef.h>
++#include <stdlib.h>
+ 
+ static SList *	slist_sort_merge    (SList *left, SList *right,
+ 				     SListCompare *compare, void *userdata);
+@@ -73,7 +74,7 @@ slist_delete (SList *head, void (*delete
+            the stale item, you should probably return that from FIND if
+ 	   it makes a successful match.  Don't forget to slist_unbox()
+ 	   every item in a boxed list before operating on its contents.   */
+-void *
++SList *
+ slist_remove (SList **phead, SListCallback *find, void *matchdata)
+ {
+   SList *stale = 0;
+@@ -107,7 +108,7 @@ slist_remove (SList **phead, SListCallba
+ 	}
+     }
+ 
+-  return result;
++  return (SList *) result;
+ }
+ 
+ /* Call FIND repeatedly with each element of SLIST and MATCHDATA, until
+@@ -314,6 +315,9 @@ slist_sort (SList *slist, SListCompare *
+   left = slist;
+   right = slist->next;
+ 
++  if (!right)
++    return left;
++
+   /* Skip two items with RIGHT and one with SLIST, until RIGHT falls off
+      the end.  SLIST must be about half way along.  */
+   while (right && (right = right->next))
+--- origsrc/clamav-0.96/m4/ltdl.m4	2010-01-26 13:53:27.000000000 +0100
++++ src/clamav-0.96/m4/ltdl.m4	2010-04-25 12:00:42.109375000 +0200
+@@ -407,6 +407,7 @@ AC_CHECK_HEADERS([unistd.h dl.h sys/dl.h
+ AC_CHECK_FUNCS([closedir opendir readdir], [], [AC_LIBOBJ([lt__dirent])])
+ AC_CHECK_FUNCS([strlcat strlcpy], [], [AC_LIBOBJ([lt__strl])])
+ 
++m4_pattern_allow([LT_LIBEXT])dnl
+ AC_DEFINE_UNQUOTED([LT_LIBEXT],["$libext"],[The archive extension])
+ 
+ name=ltdl
+@@ -487,7 +488,7 @@ AC_CACHE_CHECK([whether deplibs are load
+     # at 6.2 and later dlopen does load deplibs.
+     lt_cv_sys_dlopen_deplibs=yes
+     ;;
+-  netbsd* | netbsdelf*-gnu)
++  netbsd*)
+     lt_cv_sys_dlopen_deplibs=yes
+     ;;
+   openbsd*)
+@@ -637,7 +638,6 @@ AC_SUBST([LT_DLLOADERS])
+ AC_LANG_PUSH([C])
+ 
+ LIBADD_DLOPEN=
+-lt_save_LIBS="$LIBS"
+ AC_SEARCH_LIBS([dlopen], [dl],
+ 	[AC_DEFINE([HAVE_LIBDL], [1],
+ 		   [Define if you have the libdl library or equivalent.])
+@@ -661,10 +661,11 @@ AC_SEARCH_LIBS([dlopen], [dl],
+ 		LT_DLLOADERS="$LT_DLLOADERS ${lt_dlopen_dir+$lt_dlopen_dir/}dlopen.la"])])])
+ if test x"$libltdl_cv_func_dlopen" = xyes || test x"$libltdl_cv_lib_dl_dlopen" = xyes
+ then
++  lt_save_LIBS="$LIBS"
+   LIBS="$LIBS $LIBADD_DLOPEN"
+   AC_CHECK_FUNCS([dlerror])
++  LIBS="$lt_save_LIBS"
+ fi
+-LIBS="$lt_save_LIBS"
+ AC_SUBST([LIBADD_DLOPEN])
+ 
+ LIBADD_SHL_LOAD=
+--- origsrc/clamav-0.96/shared/optparser.c	2010-03-24 18:39:43.000000000 +0200
++++ src/clamav-0.96/shared/optparser.c	2010-04-25 11:44:14.546875000 +0200
+@@ -80,7 +80,7 @@ const struct clam_option __clam_options[
+     { NULL, "multiscan", 'm', TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMDSCAN, "", "" },
+     { NULL, "fdpass", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMDSCAN, "", "" },
+     { NULL, "stream", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMDSCAN, "", "" },
+-    { NULL, "database", 'd', TYPE_STRING, NULL, -1, DATADIR, FLAG_REQUIRED, OPT_CLAMSCAN, "", "" }, /* merge it with DatabaseDirectory (and fix conflict with --datadir */
++    { NULL, "database", 'd', TYPE_STRING, NULL, -1, CLAMAV_DATADIR, FLAG_REQUIRED, OPT_CLAMSCAN, "", "" }, /* merge it with DatabaseDirectory (and fix conflict with --datadir */
+     { NULL, "recursive", 'r', TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMSCAN, "", "" },
+     { NULL, "bell", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMSCAN, "", "" },
+     { NULL, "no-summary", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMSCAN | OPT_CLAMDSCAN, "", "" },
+@@ -105,8 +105,8 @@ const struct clam_option __clam_options[
+     { NULL, "unpack", 'u', TYPE_STRING, NULL, -1, NULL, 0, OPT_SIGTOOL, "", "" },
+     { NULL, "unpack-current", 0, TYPE_STRING, NULL, -1, NULL, 0, OPT_SIGTOOL, "", "" },
+     { NULL, "info", 'i', TYPE_STRING, NULL, -1, NULL, 0, OPT_SIGTOOL, "", "" },
+-    { NULL, "list-sigs", 'l', TYPE_STRING, NULL, -1, DATADIR, 0, OPT_SIGTOOL, "", "" },
+-    { NULL, "find-sigs", 'f', TYPE_STRING, NULL, -1, DATADIR, FLAG_REQUIRED, OPT_SIGTOOL, "", "" },
++    { NULL, "list-sigs", 'l', TYPE_STRING, NULL, -1, CLAMAV_DATADIR, 0, OPT_SIGTOOL, "", "" },
++    { NULL, "find-sigs", 'f', TYPE_STRING, NULL, -1, CLAMAV_DATADIR, FLAG_REQUIRED, OPT_SIGTOOL, "", "" },
+     { NULL, "decode-sigs", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_SIGTOOL, "", "" },
+     { NULL, "test-sigs", 0, TYPE_STRING, NULL, -1, NULL, 0, OPT_SIGTOOL, "", "" },
+     { NULL, "vba", 0, TYPE_STRING, NULL, -1, NULL, 0, OPT_SIGTOOL, "", "" },
+@@ -181,7 +181,7 @@ const struct clam_option __clam_options[
+ 
+     { "TemporaryDirectory", "tempdir", 0, TYPE_STRING, NULL, -1, NULL, 0, OPT_CLAMD | OPT_MILTER | OPT_CLAMSCAN | OPT_SIGTOOL, "This option allows you to change the default temporary directory.", "/tmp" },
+ 
+-    { "DatabaseDirectory", "datadir", 0, TYPE_STRING, NULL, -1, DATADIR, 0, OPT_CLAMD | OPT_FRESHCLAM, "This option allows you to change the default database directory.\nIf you enable it, please make sure it points to the same directory in\nboth clamd and freshclam.", "/var/lib/clamav" },
++    { "DatabaseDirectory", "datadir", 0, TYPE_STRING, NULL, -1, CLAMAV_DATADIR, 0, OPT_CLAMD | OPT_FRESHCLAM, "This option allows you to change the default database directory.\nIf you enable it, please make sure it points to the same directory in\nboth clamd and freshclam.", "/var/lib/clamav" },
+ 
+     { "OfficialDatabaseOnly", "official-db-only", 0, TYPE_BOOL, MATCH_BOOL, 0, NULL, 0, OPT_CLAMD | OPT_CLAMSCAN, "Only load the official signatures published by the ClamAV project.", "no" },
+ 
+--- origsrc/clamav-0.96/sigtool/sigtool.c	2010-03-19 18:33:35.000000000 +0200
++++ src/clamav-0.96/sigtool/sigtool.c	2010-04-25 11:44:14.562500000 +0200
+@@ -1353,7 +1353,7 @@ static int listsigs(const struct optstru
+ 
+ 	mprintf_stdout = 1;
+ 	if(S_ISDIR(sb.st_mode)) {
+-	    if(!strcmp(name, DATADIR)) {
++	    if(!strcmp(name, CLAMAV_DATADIR)) {
+ 		dbdir = freshdbdir();
+ 		ret = listdir(dbdir, NULL);
+ 		free(dbdir);
+--- origsrc/clamav-0.96/sigtool/vba.c	2010-03-16 13:27:57.000000000 +0200
++++ src/clamav-0.96/sigtool/vba.c	2010-04-25 11:44:14.562500000 +0200
+@@ -993,7 +993,10 @@ static int sigtool_scandir (const char *
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino)
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fname = (char *) cli_calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));
+@@ -1164,7 +1167,10 @@ int sigtool_vba_scandir (const char *dir
+ 
+     if ((dd = opendir (dirname)) != NULL) {
+ 	while ((dent = readdir (dd))) {
+-	    if (dent->d_ino) {
++#ifndef DIRENT_MISSING_D_INO
++	    if (dent->d_ino) 
++#endif
++	    {
+ 		if (strcmp (dent->d_name, ".") && strcmp (dent->d_name, "..")) {
+ 		    /* build the full name */
+ 		    fullname = calloc (strlen (dirname) + strlen (dent->d_name) + 2, sizeof (char));

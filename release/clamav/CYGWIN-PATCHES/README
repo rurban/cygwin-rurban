@@ -26,12 +26,13 @@ Problems:
 
 Runtime requirements: (versions given or later)
 
-  cygwin-1.7.0-64
+  cygwin-1.7.4-1
   libbz2_1-1.0.5-10
-  libgcc1-4.3.2-2
-  libiconv2-1.13-10
-  libltdl7-2.2.7a-12
-  libncurses9-5.7-14
+  libgcc1-4.3.4-3
+  libiconv2-1.13.1-1
+  libltdl7-2.2.7a-15
+  libncurses10-5.7-18
+  libstdc++6-4.3.4-3
   zlib0-1.2.3-10
   
 Build requirements: (versions given or later)
@@ -83,6 +84,7 @@ Files included in the clamav package:
   /etc/rc.d/init.d/clamd
   /etc/postinstall/clamav.sh
   /etc/preremove/clamav.sh
+  /usr/bin/clambc.exe 			(new)
   /usr/bin/clamconf.exe
   /usr/bin/clamdscan.exe
   /usr/bin/clamdtop.exe
@@ -150,6 +152,11 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.96-1 -----
+* lndirs ${B}/libclamav/c++/llvm
+* DIRENT_MISSING_D_INO check is now ignored upstream. only cygwin-1.7 supported
+* still libclamav6
+* adapted libclamav6.hint dependencies
 ----- version 0.95.3-1 -----
 none
 ----- version 0.95.2-1 -----
