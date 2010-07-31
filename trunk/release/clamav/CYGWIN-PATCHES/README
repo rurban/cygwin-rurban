@@ -130,8 +130,8 @@ Files included in the libclamav6 package:
 
 Files included in the clamav-db package:
 
-  /usr/share/clamav/daily.cld
-  /usr/share/clamav/main.cld
+  /usr/share/clamav/daily.cvd
+  /usr/share/clamav/main.cvd
 
 Files included in the libclamav-devel package:
 
@@ -152,6 +152,8 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.96.1-1 -----
+* fixup lib/cygclamunrar_iface-6.dll to bin
 ----- version 0.96-1 -----
 * lndirs ${B}/libclamav/c++/llvm
 * DIRENT_MISSING_D_INO check is now ignored upstream. only cygwin-1.7 supported
