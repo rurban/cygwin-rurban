@@ -1,0 +1,31 @@
+# -*- sh -*-
+DESCRIPTION="Perl6 on Parrot"
+HOMEPAGE="http://www.rakudo.org/"
+# 201007_47 => 2010.07 we want 2010.07-47-g9fd5eaa from rakudo-star-201007-1
+pv="${PV%_*}"
+pv="$(echo $pv|sed -e's/[0-9][0-9][0-9][0-9]/&./')"
+SRC_URI="http://cloud.github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz"
+#SRC_URI="http://cloud.github.com/downloads/rakudo/rakudo/rakudo-$pv.tar.gz"
+SRC_DIR="rakudo-star-$pv/rakudo"
+LICENSE="Artistic2"
+
+src_compile() {
+  cd ${B}
+  test -e Configure.pl || lndirs
+  perl Configure.pl
+  cygmake all
+}
+
+src_check () {
+  cd ${B}
+  cygmake test
+  cygmake spectest
+}
+
+src_install () {
+  cd ${B}
+  cygmake install DESTDIR=${D}
+  cd ${D}/usr/bin
+  ln -s perl6 rakudo
+  ln -s perl6 parrot-perl6
+}

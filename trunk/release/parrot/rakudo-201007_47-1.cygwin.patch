@@ -1,0 +1,193 @@
+--- origsrc/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/README	2010-07-31 20:19:31.415875000 +0200
+@@ -0,0 +1,184 @@
++rakudo
++------
++This is the Perl 6 compiler for Parrot, called "Rakudo Perl 6",
++or "Rakudo" for short.
++This package was previously called "parrot-perl6".
++
++Runtime requirements:
++  libgcc1 parrot
++
++Build requirements:
++  parrot-devel readline libncurses-devel libicu-devel libgmp-devel 
++  libgdbm-devel perl make gcc4 svn
++
++Optional test packages:
++  perl L<Test::Perl::Critic> and L<Perl::Critic>
++
++Canonical homepage:
++  http://www.rakudo.org/
++  http://perlgeek.de/blog-en/perl-6/where-rakudo-lives.writeback
++
++Canonical download:
++  http://cloud.github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++
++  cd /usr/src
++  cygport rakudo-<VER>-<REL>.cygport all
++
++This will create:
++  /usr/src/rakudo-<VER>-<REL>-src.tar.bz2
++  /usr/src/rakudo-<VER>-<REL>.tar.bz2
++
++Or use 'cygport rakudo-<VER>-<REL>.cygport prep' to get a patched 
++source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in the =rakudo= package:
++
++  /usr/bin/parrot-perl6
++  /usr/bin/rakudo
++  /usr/bin/perl6.exe
++  /usr/lib/parrot/2.6.0/dynext/perl6_group.dll
++  /usr/lib/parrot/2.6.0/dynext/perl6_ops.dll
++  /usr/lib/parrot/2.6.0/dynext/perl6_ops_switch.dll
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Safe.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/perl6.pbc
++  /usr/share/doc/Cygwin/rakudo.README
++  /usr/share/doc/rakudo/announce/2009-02
++  /usr/share/doc/rakudo/announce/2009-03
++  /usr/share/doc/rakudo/announce/2009-04
++  /usr/share/doc/rakudo/announce/2009-05
++  /usr/share/doc/rakudo/announce/2009-06
++  /usr/share/doc/rakudo/announce/2009-07
++  /usr/share/doc/rakudo/announce/2009-08
++  /usr/share/doc/rakudo/announce/2009-09
++  /usr/share/doc/rakudo/announce/2009-10
++  /usr/share/doc/rakudo/announce/2009-11
++  /usr/share/doc/rakudo/announce/2009-12
++  /usr/share/doc/rakudo/announce/2010-01
++  /usr/share/doc/rakudo/announce/2010.02
++  /usr/share/doc/rakudo/announce/2010.03
++  /usr/share/doc/rakudo/announce/2010.04
++  /usr/share/doc/rakudo/announce/2010.05
++  /usr/share/doc/rakudo/announce/2010.06
++  /usr/share/doc/rakudo/announce/2010.07
++  /usr/share/doc/rakudo/architecture.html
++  /usr/share/doc/rakudo/architecture.svg
++  /usr/share/doc/rakudo/ChangeLog
++  /usr/share/doc/rakudo/compiler_overview.pod
++  /usr/share/doc/rakudo/CREDITS
++  /usr/share/doc/rakudo/glossary.pod
++  /usr/share/doc/rakudo/guide_to_setting.pod
++  /usr/share/doc/rakudo/LICENSE
++  /usr/share/doc/rakudo/metamodel.pod
++  /usr/share/doc/rakudo/README
++  /usr/share/doc/rakudo/release_guide.pod
++  /usr/share/doc/rakudo/ROADMAP
++  /usr/share/doc/rakudo/running.pod
++  /usr/share/doc/rakudo/S11-Modules-proposal.pod
++  /usr/share/doc/rakudo/spectest-progress.csv
++  /usr/share/man/man1/perl6.1.gz
++  /usr/share/man/man1/rakudo.1.gz
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version rakudo-201007-1 -----
++* took not the official first rakudo version, but the better 2010.07-47
++  version from rakudo-star-2010.07, i.e. rakudo-2010.07-47-g9fd5eaa
++  so that the rakudo-star package can depend on this.
++
++----- version rakudo-20104-2 -----
++* removed wrong gcc4-runtime dependency (/bin/cyggcc_s.dll => /bin/cyggcc_s-1.dll)
++
++----- version rakudo-200904-1 -----
++* no changes
++
++----- version rakudo-200903-1 -----
++* tiny chmod +x patch needed. See https://rt.cpan.org/Ticket/Display.html?id=56666 
++* first seperate package from parrot
++* cygwin 1.7(0.210/5/3) (wchar symlinks!), gcc-4.3 only
++* perl6 and parrot-perl6 are symlinks to rakudo.exe
++* various make install patches
++
++----- version parrot-0.9.1-1 (never uploaded) -----
++* cygwin 1.7, gcc-4.3 only
++* removed parrot-languages, they require now installed parrot, built seperately
++* based on trunk. some critical patches were merged, some rejected, 
++  some not yet applied.
++* moved language pbc's to /usr/lib/parrot/<version>/languages/
++* versioned includedir and libdir
++* removed the postinstall and preremove hacks
++
++----- version parrot-0.8.2-1 -----
++* merged from branches/pdd30install_stage3
++
++----- version parrot-0.8.0-1 -----
++* building and testing with already installed parrot supported
++* includes the patches from 0.7.1-1, plus
++* a merge from the branch pdd30_install, without the languages/jvm
++
++----- version parrot-0.7.1-1 -----
++* building with already installed parrot now supported, testing not.
++* includes the patches from 0.7.0-1, plus
++* a merge from the branch cygwin070patches,
++  without the languages/jvm
++
++----- version parrot-0.7.0-1 -----
++* removed /usr/runtime and its preremove and postinstall scripts
++* added parrot_exists_check to .cygport. Already installed parrot 
++  still not supported, despite my #39742 patch
++* other minor .cygport improvements: export PATH in seperate lines to fix check
++* new patches: 
++  [perl #39742] [BUG]   installed conflict
++  [perl #58034] [TODO]  config_args
++  [perl #56996] [TODO]  FHS runtime paths
++* enhanced patch: 
++  [perl #56554] [TODO]  make install -C languages
++* upstream fixed patches:
++  [perl #56544] [PATCH] install_files.pl
++  [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
++  [perl #57006] [PATCH] add cygwin opengl config quirks
++  [perl #57296] [TODO]  make install -C languages
++* fixed pipp, perl6, pheme, tcl installables. added pcbc's to library  
++
++----- version parrot-0.6.4-2 -----
++* fixed invalid parrot languages and perl6 paths referencing the build_dir
++* fixed runtime lib_path to favor FHS compliant paths
++* temp. add a /usr/runtime symlink. will be removed soon
++* added myconfig parrotbug VERSION to /usr/lib/parrot
++* moved language dll's to parrot-languages
++* added more sublanguage exe's: bfc, bfco
++* added usr/lib/parrot/include/config.fpmc usr/lib/parrot/include/interpinfo.pasm 
++  to parrot
++
++----- version parrot-0.6.4-1 -----
++* libparrot.dll renamed to cygparrot0_6_4.dll
++* moved examples to from libparrot-devel to parrot
++* Added list of local patches to myconfig
++     [perl #51944] [DOCS]  Cygwin Readme
++     [perl #56544] [PATCH] install_files.pl
++     [perl #56558] [PATCH] pdb rename to parrot_debugger
++     [perl #56562] [PATCH] root.in: add cygwin importlib
++     [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
++     [perl #57006] [PATCH] add cygwin opengl config quirks
++     [perl #57110] [PATCH] ncurses for cygwin
++     [perl #57112] [PATCH] postgres for cygwin
++     [perl #57114] [PATCH] urm RealBin issue
++
++----- version parrot-0.6.3-1 -----
++* first port, with the help from #parrot, fedora spec, 
++  gentoo ebuild and freebsd ports.
++* the php implementation plumhead is still named plumhead.
++  will be renamed to pipp from the next release 0.6.4 on.
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list 
++at <cygwin@cygwin.com>
+--- origsrc/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/setup.hint	2010-07-31 20:19:31.415875000 +0200
+@@ -0,0 +1,3 @@
++sdesc: "Perl 6 compiler for Parrot, called Rakudo Perl 6"
++category: Interpreters
++requires: libgcc1 parrot libreadline6 libncurses8 libintl8 libicu38 libgmp3 libgdbm4
