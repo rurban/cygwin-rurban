@@ -1,0 +1,156 @@
+--- origsrc/rakudo-star-2010.07/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++ src/rakudo-star-2010.07/CYGWIN-PATCHES/README	2010-08-01 12:00:56.025250000 +0200
+@@ -0,0 +1,146 @@
++rakudo
++------
++
++rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
++plus some perl6 libraries, docs and libraries and blizkost, a parrot
++language which targets perl5. Contrary to the upstream rakudo-star release
++for the masses, this does not include the external parrot or rakudo
++releases. The external rakudo release matches the rakudo star release, 
++that's why it has the version 201007_47, not just 201007.
++
++Runtime requirements:
++  libgcc1 parrot rakudo
++
++Build requirements:
++  parrot-devel rakudo perl make gcc4 svn
++
++Optional test packages:
++  perl L<Test::Perl::Critic> and L<Perl::Critic>
++
++Canonical homepage:
++  http://www.rakudo.org/
++
++Canonical download:
++  http://github.com/rakudo/star/
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++
++  cd /usr/src
++  cygport rakudo-star-<VER>-<REL> all
++
++This will create:
++  /usr/src/rakudo-star-<VER>-<REL>-src.tar.bz2
++  /usr/src/rakudo-star-<VER>-<REL>.tar.bz2
++
++Or use 'cygport rakudo-star-<VER>-<REL> prep' to get a patched 
++source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in the =rakudo-star= package:
++
++  /usr/bin/parrot-blizkost.exe
++  /usr/bin/ufo
++  /usr/lib/parrot/2.6.0/dynext/blizkost_group.dll
++  /usr/lib/parrot/2.6.0/languages/perl5/perl5.pbc
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Algorithm/Viterbi.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Algorithm/Viterbi.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI/Writer.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI/Writer.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Configure.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Configure.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/File/Find.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/File/Find.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Actions.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Actions.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Field.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Field.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Grammar.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Grammar.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/NumberFormatting.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/NumberFormatting.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/TextFormatting.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/TextFormatting.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/HTTP/Daemon.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/HTTP/Daemon.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Actions.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Actions.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Grammar.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Grammar.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/LWP/Simple.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/LWP/Simple.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MIME/Base64.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MIME/Base64.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/Model.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/Model.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/RungeKutta.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/RungeKutta.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/CSV.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/CSV.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/Pg.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/Pg.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/PgPir.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/PgPir.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/mysql.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/mysql.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBI.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBI.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/NativeCall.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/NativeCall.pm6
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Box.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Box.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Marker.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Marker.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Series.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Series.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Pie.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Pie.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Term/ANSIColor.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Term/ANSIColor.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Differences.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Differences.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Harness.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Harness.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Mock.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Mock.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/XML/Writer.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/XML/Writer.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML.pm
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML/Dumper.pir
++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML/Dumper.pm
++  /usr/share/doc/Cygwin/rakudo-star.README
++  /usr/share/doc/parrot/2.6.0/languages/perl5/CREDITS
++  /usr/share/doc/parrot/2.6.0/languages/perl5/LICENSE
++  /usr/share/doc/parrot/2.6.0/languages/perl5/README
++  /usr/share/doc/parrot/2.6.0/languages/perl5/SEMANTICS
++  /usr/share/doc/parrot/2.6.0/languages/perl5/TODO
++  /usr/share/doc/rakudo-star/LICENSE
++  /usr/share/doc/rakudo-star/README
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version rakudo-star-201007-1 -----
++* first package, using external parrot, and an updated rakudo 2010.07-47
++* some blizkost and make install patches (already applied upstream)
++* some testing hacks
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list 
++at <cygwin@cygwin.com>
+--- origsrc/rakudo-star-2010.07/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
++++ src/rakudo-star-2010.07/CYGWIN-PATCHES/setup.hint	2010-08-01 10:26:18.040875000 +0200
+@@ -0,0 +1,3 @@
++sdesc: "Rakudo modules, plus docs and tools"
++category: Interpreters
++requires: parrot rakudo gcc4-runtime perl
+\ No newline at end of file
