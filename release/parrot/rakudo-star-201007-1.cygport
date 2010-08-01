@@ -1,0 +1,28 @@
+# -*- sh -*-
+DESCRIPTION="Perl6 modules, more docs and tools"
+HOMEPAGE="http://github.com/rakudo/star/"
+# 201007 => 2010.07
+pv="$(echo $PV|sed -e's/[0-9][0-9][0-9][0-9]/&./')"
+SRC_URI="http://cloud.github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz"
+SRC_DIR="rakudo-star-$pv"
+LICENSE="Artistic2"
+
+src_compile() {
+  cd ${B}
+  test -e Configure.pl || lndirs
+  perl Configure.pl
+  cygmake blizkost
+  #cygmake modules
+}
+
+src_test () {
+  cd ${B}
+  cygmake -C modules/blizkost test
+  for d in modules/*; do cd $d; test -d t && test -d lib && (cd lib; prove -e perl6 -r ../t); cd ${B}; done
+}
+
+src_install () {
+  cd ${B}
+  cygmake modules-install DESTDIR=${D}
+  cygmake blizkost-install DESTDIR=${D}
+}

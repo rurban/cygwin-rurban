@@ -1,0 +1,128 @@
+--- origsrc/rakudo-star-2010.07/build/Makefile.in	2010-07-29 13:57:00.000000000 +0200
++++ src/rakudo-star-2010.07/build/Makefile.in	2010-08-01 11:37:00.072125000 +0200
+@@ -81,15 +81,15 @@ rakudo-test: rakudo/perl6
+ 	cd rakudo && $(MAKE) test
+ rakudo-install: rakudo
+ 	cd rakudo && $(MAKE) install
+-	@win32_libparrot_copy@
+ 	$(CP) $(PARROT_BIN_DIR)/$(PERL6_EXE) .
+ 	$(CHMOD) 755 $(PERL6_EXE)
+ 
+ modules-install:
+ 	@echo "Installing 'ufo'"
+-	$(CP)    modules/ufo/ufo     $(PARROT_BIN_DIR)/ufo
+-	$(CHMOD) 755                 $(PARROT_BIN_DIR)/ufo
+-	$(PERL) build/module-install.pl $(PARROT_BIN_DIR)/$(PERL6_EXE) $(DESTDIR)$(PERL6_LANG_DIR)/lib $(MODULES)
++	mkdir -p $(DESTDIR)$(PARROT_BIN_DIR)
++	$(CP)    modules/ufo/ufo     $(DESTDIR)$(PARROT_BIN_DIR)/ufo
++	$(CHMOD) 755                 $(DESTDIR)$(PARROT_BIN_DIR)/ufo
++	PERL6LIB=$(DESTDIR)$(PERL6_LANG_DIR)/lib $(PERL) build/module-install.pl $(PARROT_BIN_DIR)/$(PERL6_EXE) $(DESTDIR)$(PERL6_LANG_DIR)/lib $(MODULES)
+ 
+ blizkost:
+ 	cd modules/blizkost && $(PERL) Configure.pl --parrot-config=$(PARROT_CONFIG) && $(MAKE)
+--- origsrc/rakudo-star-2010.07/modules/blizkost/Configure.pl	2010-07-29 13:57:38.000000000 +0200
++++ src/rakudo-star-2010.07/modules/blizkost/Configure.pl	2010-07-31 21:54:00.244000000 +0200
+@@ -144,6 +144,11 @@ ones is rarely well supported.  If this
+ reconfigure Perl with -Duseshrplib.
+ SHR
+ 
++# cygwin perl uses the gcc alias, but is gcc-4. cygwin parrot uses gcc-4.
++$Perlconfig{cc} = 'gcc-4' if $Perlconfig{cc} eq 'gcc'
++  and $^O eq 'cygwin'
++  and $Perlconfig{gccversion} eq '4.3.4 20090804 (release) 1';
++
+ dubious $Perlconfig{cc} ne $config{cc}, <<TWOCC;
+ Blizkost needs to be built using the same version of the same C compiler as
+ both Perl and Parrot, in order to have a compatible interpretation of runtime
+--- origsrc/rakudo-star-2010.07/modules/blizkost/build/Makefile.in	2010-07-29 13:57:38.000000000 +0200
++++ src/rakudo-star-2010.07/modules/blizkost/build/Makefile.in	2010-08-01 10:27:56.572125000 +0200
+@@ -2,6 +2,7 @@
+ PARROT_ARGS   =
+ 
+ ## configuration settings
++DESTDIR      ?=
+ BIN_DIR       = @bindir@
+ LIB_DIR       = @libdir@$(VERSION_DIR)
+ DOC_DIR       = @docdir@$(VERSION_DIR)
+@@ -12,7 +13,7 @@ SRC_DIR       = @srcdir@$(VERSION_DIR)
+ TOOLS_DIR     = @libdir@$(VERSION_DIR)/tools/lib
+ STAGING_DIR   = dynext
+ #INSTALL_DIR   = $(LIB_DIR)/languages/blizkost/dynext
+-INSTALL_DIR   = $(LIB_DIR)/dynext
++INSTALL_DIR   = $(DESTDIR)$(LIB_DIR)/dynext
+ 
+ # Set up extensions
+ LOAD_EXT      = @load_ext@
+@@ -51,7 +52,7 @@ LINKARGS        = $(LDFLAGS) $(LD_LOAD_F
+ SOURCES = \
+   perl5.pir
+ 
+-DOCS = README
++DOCS = README CREDITS LICENSE TODO docs/SEMANTICS
+ 
+ BUILD_CLEANUPS = \
+   perl5.pbc \
+@@ -173,14 +174,15 @@ test-installable: installable
+ 
+ install: installable
+ 	$(MKPATH) $(INSTALL_DIR)
++	$(MKPATH) $(DESTDIR)$(BIN_DIR)
+ 	$(CP) $(BLIZKOST_GROUP) $(INSTALL_DIR)
+-	$(CP) installable_blizkost@exe@ $(BIN_DIR)/parrot-blizkost@exe@
+-	$(CHMOD) 0755 $(BIN_DIR)/parrot-blizkost@exe@
+-	-$(MKPATH) $(LIB_DIR)/languages/perl5
+-	$(CP) perl5.pbc $(LIB_DIR)/languages/perl5/perl5.pbc
+-	-$(MKPATH) $(MAN_DIR)/man1
+-	-$(MKPATH) $(DOC_DIR)/languages/perl5
+-	$(CP) $(DOCS) $(DOC_DIR)/languages/perl5
++	$(CP) installable_blizkost@exe@ $(DESTDIR)$(BIN_DIR)/parrot-blizkost@exe@
++	$(CHMOD) 0755 $(DESTDIR)$(BIN_DIR)/parrot-blizkost@exe@
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/languages/perl5
++	$(CP) perl5.pbc $(DESTDIR)$(LIB_DIR)/languages/perl5/perl5.pbc
++	-$(MKPATH) $(DESTDIR)$(MAN_DIR)/man1
++	-$(MKPATH) $(DESTDIR)$(DOC_DIR)/languages/perl5
++	$(CP) $(DOCS) $(DESTDIR)$(DOC_DIR)/languages/perl5
+ 
+ uninstall:
+ 	$(RM_F) $(INSTALL_DIR)/$(PMC_BLIZKOST_GROUP)$(LOAD_EXT)
+--- origsrc/rakudo-star-2010.07/modules/blizkost/src/pmc/bkmarshal.c	2010-07-29 13:57:38.000000000 +0200
++++ src/rakudo-star-2010.07/modules/blizkost/src/pmc/bkmarshal.c	2010-07-31 21:57:08.634625000 +0200
+@@ -295,7 +295,7 @@ blizkost_bind_pmc_to_sv(BLIZKOST_NEXUS,
+ }
+ 
+ /* can't really use xsubpp here... */
+-static
++extern
+ XS(blizkost_callable_trampoline)
+ {
+ #ifdef dVAR
+--- origsrc/rakudo-star-2010.07/modules/ufo/Makefile	2010-07-29 13:57:37.000000000 +0200
++++ src/rakudo-star-2010.07/modules/ufo/Makefile	2010-08-01 10:39:10.369000000 +0200
+@@ -1,3 +1,7 @@
++DESTDIR         ?=
++
+ install:
+-	cp ufo /usr/local/bin/
+-	chmod a+x /usr/local/bin/ufo
++	cp ufo $(DESTDIR)/usr/bin/
++	chmod a+x $(DESTDIR)/usr/bin/ufo
++	mkdir -p $(DESTDIR)/usr/share/doc/rakudo-star/ufo
++	cp README $(DESTDIR)/usr/share/doc/rakudo-star/ufo/
+--- origsrc/rakudo-star-2010.07/modules/ufo/ufo	2010-07-29 13:57:37.000000000 +0200
++++ src/rakudo-star-2010.07/modules/ufo/ufo	2010-08-01 10:39:25.400250000 +0200
+@@ -41,6 +41,15 @@ $(TESTS):: build
+ 
+ install:: build $(INSTALL_SOURCES) $(INSTALL_PIRS)
+ 
++DESTDIR  ?=
++
++install:
++	cp ufo $(DESTDIR)/usr/bin/
++	chmod a+x $(DESTDIR)/usr/bin/ufo
++	cp README $(DESTDIR)/usr/bin/
++	mkdir -p $(DESTDIR)/usr/share/doc/rakudo-star/ufo
++	cp README $(DESTDIR)/usr/share/doc/rakudo-star/ufo/
++
+ $(PREFIX)/%.pm:: %.pm
+ 	mkdir -p `dirname '$@'`
+ 	install $< $@
