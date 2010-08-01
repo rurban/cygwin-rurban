@@ -1,0 +1,8 @@
+sdesc: "Rakudo modules, plus docs and tools"
+ldesc: "rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
+plus some perl6 libraries, docs and libraries and blizkost, a perl5
+parrot language which embeds libperl5. Contrary to the upstream
+rakudo-star release for the masses, this does not include the external
+parrot or rakudo releases."
+category: Interpreters
+requires: parrot rakudo libgcc1 perl

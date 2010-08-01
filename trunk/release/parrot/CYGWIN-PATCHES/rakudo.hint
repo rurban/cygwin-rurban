@@ -1,3 +1,4 @@
 sdesc: "Perl 6 compiler for Parrot, called Rakudo Perl 6"
 category: Interpreters
-requires: gcc4-runtime libicu38 parrot
+requires: libgcc1 parrot libreadline6 libncurses8 libintl8 libicu38 libgmp3 libgdbm4
+external-source: rakudo-star
