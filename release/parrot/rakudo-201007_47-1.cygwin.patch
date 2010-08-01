@@ -1,10 +1,12 @@
 --- origsrc/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
-+++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/README	2010-07-31 20:19:31.415875000 +0200
-@@ -0,0 +1,184 @@
++++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/README	2010-08-01 12:19:12.447125000 +0200
+@@ -0,0 +1,186 @@
 +rakudo
 +------
 +This is the Perl 6 compiler for Parrot, called "Rakudo Perl 6",
 +or "Rakudo" for short.
++It matches the rakudo version from the rakudo-star releases, 
++that's why the unusual version number.
 +This package was previously called "parrot-perl6".
 +
 +Runtime requirements:
@@ -186,8 +188,9 @@
 +Please address all questions to the Cygwin mailing list 
 +at <cygwin@cygwin.com>
 --- origsrc/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
-+++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/setup.hint	2010-07-31 20:19:31.415875000 +0200
-@@ -0,0 +1,3 @@
++++ src/rakudo-star-2010.07/rakudo/CYGWIN-PATCHES/setup.hint	2010-08-01 12:17:56.665875000 +0200
+@@ -0,0 +1,4 @@
 +sdesc: "Perl 6 compiler for Parrot, called Rakudo Perl 6"
 +category: Interpreters
 +requires: libgcc1 parrot libreadline6 libncurses8 libintl8 libicu38 libgmp3 libgdbm4
++external-source: rakudo-star
