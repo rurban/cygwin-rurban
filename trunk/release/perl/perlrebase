@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# The default perl modules are properly rebased, a rebase clash is very unlikely.
+# However with more and more CPAN XS extensions being added over time,
+# *** fatal error - unable to remap some.dll to same address as parent
+# will become more likely, and those new DLLs are not rebased by a normal rebaseall.
+# perlrebase starts afresh all perl DLLs from a pretty low base upwards.
+
+suff=$1
+suff=${suff:=5.10.1}
+baseaddr=$2
+# use a rather low base and go upwards, might clash with some Win7 system dlls
+baseaddr=${baseaddr:=0x54000000}
+perl=/usr/local/bin/perl$suff.exe
+if [ ! -f $perl ]; then
+  perl=/usr/bin/perl$suff.exe
+  if [ ! -f $perl ]; then
+    echo "$perl and /usr/local/bin/perl$suff.exe not found"
+    echo "usage: perlrebase [5.13.5 [baseaddr]]"
+    exit
+  fi
+fi
+dll=$(ldd $perl | perl -anle 'print $F[2] if /cygperl/')
+arch=$($perl -MConfig -MFile::Basename -e'print basename($Config{archlib})')
+ver=$($perl -MConfig -MFile::Basename -e'print basename(dirname $Config{archlib})')
+# write to a local .lst to be able to re-order dlls locally
+echo $perl > rebase$suff.lst
+if [ ! -d /usr/lib/perl5/$ver/$arch/auto ]; then
+  echo "no archlib found for $perl"
+  exit
+fi
+if [ ! -e /usr/bin/rebase.exe ]; then
+  echo "/usr/bin/rebase.exe not found. Install the rebase package"
+  exit
+fi
+echo $dll >> rebase$suff.lst
+/usr/bin/find /usr/lib/perl5/{,site_perl/,vendor_perl/}$ver/$arch/auto/ -name \*.dll >> rebase$suff.lst 
+/usr/bin/cat rebase$suff.lst | /usr/bin/xargs chmod ug+w 
+[ -e /usr/bin/peflags.exe ] && /usr/bin/peflags -t $perl 
+/usr/bin/rebase -v -b $baseaddr -T rebase$suff.lst
+[ -e /usr/bin/peflags.exe ] && /usr/bin/grep .dll rebase$suff.lst | /usr/bin/peflags -d -T -
+/usr/bin/cat rebase$suff.lst | /usr/bin/xargs chmod g-w

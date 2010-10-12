@@ -1,0 +1,5516 @@
+diff -Nbur perl-5.10.1/lib/Module/Build/API.pod perl-5.10.1/lib/Module-1/Build/API.pod
+--- perl-5.10.1/lib/Module/Build/API.pod	2009-07-28 01:24:16.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/API.pod	2010-07-29 04:42:42.000000000 +0200
+@@ -78,7 +78,9 @@
+ 
+ This parameter determines whether Module::Build will add itself
+ automatically to configure_requires (and build_requires) if Module::Build
+-is not already there.  The default value is true.
++is not already there.  The required version will be the last 'major' release,
++as defined by the decimal version truncated to two decimal places (e.g. 0.34,
++instead of 0.3402).  The default value is true.
+ 
+ =item auto_features
+ 
+@@ -179,6 +181,11 @@
+ directory will be added to the search path during the compilation and
+ linking phases of any C or XS files.
+ 
++[version 0.3604]
++
++A list of directories can be supplied using an anonymous array
++reference of strings.
++
+ =item conflicts
+ 
+ [version 0.07]
+@@ -387,23 +394,24 @@
+     (
+      module_name => 'Foo::Bar',
+      get_options => {
+-                     loud =>     { store => \$loud },
+-                     dbd  =>     { type  => '=s'   },
+-                     quantity => { type  => '+'    },
++                     Loud =>     { store => \$loud },
++                     Dbd  =>     { type  => '=s'   },
++                     Quantity => { type  => '+'    },
+                     }
+     );
+ 
+   print STDERR "HEY, ARE YOU LISTENING??\n" if $loud;
+-  print "We'll use the ", $build->args('dbd'), " DBI driver\n";
++  print "We'll use the ", $build->args('Dbd'), " DBI driver\n";
+   print "Are you sure you want that many?\n"
+-    if $build->args('quantity') > 2;
++    if $build->args('Quantity') > 2;
+ 
+ The arguments for such a specification can be called like so:
+ 
+-  perl Build.PL --loud --dbd=DBD::pg --quantity --quantity --quantity
++  perl Build.PL --Loud --Dbd=DBD::pg --Quantity --Quantity --Quantity
+ 
+ B<WARNING:> Any option specifications that conflict with Module::Build's own
+-options (defined by its properties) will throw an exception.
++options (defined by its properties) will throw an exception.  Use capitalized
++option names to avoid unintended conflicts with future Module::Build options.
+ 
+ Consult the Getopt::Long documentation for details on its usage.
+ 
+@@ -451,8 +459,13 @@
+ 
+ =item apache
+ 
+-The distribution is licensed under the Apache Software License
+-(L<http://opensource.org/licenses/apachepl.php>).
++The distribution is licensed under the Apache License, Version 2.0
++(L<http://apache.org/licenses/LICENSE-2.0>).
++
++=item apache_1_1
++
++The distribution is licensed under the Apache Software License, Version 1.1
++(L<http://apache.org/licenses/LICENSE-1.1>).
+ 
+ =item artistic
+ 
+@@ -577,6 +590,18 @@
+ Setting C<module_name> won't override a C<dist_*> parameter you
+ specify explicitly.
+ 
++=item needs_compiler
++
++[version 0.36]
++
++The C<needs_compiler> parameter indicates whether a compiler is required to
++build the distsribution.  The default is false, unless XS files are found or
++the C<c_source> parameter is set, in which case it is true.  If true,
++L<ExtUtils::CBuilder> is automatically added to C<build_requires> if needed.
++
++For a distribution where a compiler is I<optional>, e.g. a dual XS/pure-Perl
++distribution, C<needs_compiler> should explicitly be set to a false value.
++
+ =item PL_files
+ 
+ [version 0.06]
+@@ -734,6 +759,36 @@
+ instead of C<script_files>.  Please consider this usage deprecated,
+ though it will continue to exist for several version releases.
+ 
++=item share_dir
++
++[version 0.36]
++
++An optional parameter specifying directories of static data files to
++be installed as read-only files for use with L<File::ShareDir>.  The
++C<share_dir> property supports both distribution-level and
++module-level share files.
++
++The simplest use of C<share_dir> is to set it to a directory name or an
++arrayref of directory names containing files to be installed in the
++distribution-level share directory.
++
++  share_dir => 'share'
++
++Alternatively, if C<share_dir> is a hashref, it may have C<dist> or
++C<module> keys providing full flexibility in defining how share
++directories should be installed.
++
++  share_dir => {
++    dist => [ 'examples', 'more_examples' ],
++    module => {
++      Foo::Templates => ['share/html', 'share/text'],
++      Foo::Config    => 'share/config',
++    }
++  }
++
++If C<share_dir> is set, then File::ShareDir will automatically be added
++to the C<requires> hash.
++
+ =item sign
+ 
+ [version 0.16]
+@@ -799,25 +854,23 @@
+ 
+ [version 0.28]
+ 
+-When called from a directory containing a F<Build.PL> script and a
+-F<META.yml> file (in other words, the base directory of a
+-distribution), this method will run the F<Build.PL> and return the
+-resulting C<Module::Build> object to the caller.  Any key-value
+-arguments given to C<new_from_context()> are essentially like
+-command line arguments given to the F<Build.PL> script, so for example
+-you could pass C<< verbose => 1 >> to this method to turn on
+-verbosity.
++When called from a directory containing a F<Build.PL> script (in other words,
++the base directory of a distribution), this method will run the F<Build.PL> and
++call C<resume()> to return the resulting C<Module::Build> object to the caller.
++Any key-value arguments given to C<new_from_context()> are essentially like
++command line arguments given to the F<Build.PL> script, so for example you
++could pass C<< verbose => 1 >> to this method to turn on verbosity.
+ 
+ =item resume()
+ 
+ [version 0.03]
+ 
+-You'll probably never call this method directly, it's only called from
+-the auto-generated C<Build> script.  The C<new()> method is only
+-called once, when the user runs C<perl Build.PL>.  Thereafter, when
+-the user runs C<Build test> or another action, the C<Module::Build>
+-object is created using the C<resume()> method to re-instantiate with
+-the settings given earlier to C<new()>.
++You'll probably never call this method directly, it's only called from the
++auto-generated C<Build> script (and the C<new_from_context> method).  The
++C<new()> method is only called once, when the user runs C<perl Build.PL>.
++Thereafter, when the user runs C<Build test> or another action, the
++C<Module::Build> object is created using the C<resume()> method to
++re-instantiate with the settings given earlier to C<new()>.
+ 
+ =item subclass()
+ 
+@@ -1135,7 +1188,7 @@
+ Returns a hash reference indicating the C<conflicts> prerequisites
+ that were passed to the C<new()> method.
+ 
+-=item contains_pod($file)
++=item contains_pod($file) [deprecated]
+ 
+ [version 0.20]
+ 
+@@ -1522,24 +1575,61 @@
+ 
+ Assigning the value C<undef> to an element causes it to be removed.
+ 
+-=item prepare_metadata()
++=item get_metadata()
+ 
+-[version 0.28]
++[version 0.36]
+ 
+-This method is provided for authors to override to customize the
+-fields of F<META.yml>.  It is passed a YAML::Node node object which can
+-be modified as desired and then returned.  E.g.
++This method returns a hash reference of metadata that can be used to create a
++YAML datastream. It is provided for authors to override or customize the fields
++of F<META.yml>.   E.g.
+ 
+   package My::Builder;
+   use base 'Module::Build';
+ 
+-  sub prepare_metadata {
+-    my $self = shift;
+-    my $node = $self->SUPER::prepare_metadata( shift );
+-    $node->{custom_field} = 'foo';
+-    return $node;
++  sub get_metadata {
++    my $self, @args = @_;
++    my $data = $self->SUPER::get_metadata(@args);
++    $data->{custom_field} = 'foo';
++    return $data;
+   }
+ 
++Valid arguments include:
++
++=over
++
++=item *
++
++C<fatal> -- indicates whether missing required
++metadata fields should be a fatal error or not.  For META creation, it
++generally should, but for MYMETA creation for end-users, it should not be
++fatal.
++
++=item *
++
++C<auto> -- indicates whether any necessary configure_requires should be
++automatically added.  This is used in META creation.
++
++=back
++
++This method is a wrapper around the old prepare_metadata API now that we
++no longer use YAML::Node to hold metadata.
++
++=item prepare_metadata() [deprecated]
++
++[version 0.36]
++
++[Deprecated] As of 0.36, authors should use C<get_metadata> instead.  This
++method is preserved for backwards compatibility only.
++
++It takes three positional arguments: a hashref (to which metadata will be
++added), an optional arrayref (to which metadata keys will be added in order if
++the arrayref exists), and a hashref of arguments (as provided to get_metadata).
++The latter argument is new as of 0.36.  Earlier versions are always fatal on
++errors.
++
++Prior to version 0.36, this method took a YAML::Node as an argument to hold
++assembled metadata.
++
+ =item prereq_failures()
+ 
+ [version 0.11]
+@@ -1779,6 +1869,10 @@
+ 
+ =item build_script()
+ 
++=item bundle_inc()
++
++=item bundle_inc_preload()
++
+ =item c_source()
+ 
+ =item config_dir()
+@@ -1787,6 +1881,8 @@
+ 
+ =item conflicts()
+ 
++=item cpan_client()
++
+ =item create_license()
+ 
+ =item create_makefile_pl()
+@@ -1809,8 +1905,6 @@
+ 
+ =item install_base()
+ 
+-=item install_sets()
+-
+ =item installdirs()
+ 
+ =item libdoc_dirs()
+@@ -1829,9 +1923,11 @@
+ 
+ =item module_name()
+ 
+-=item orig_dir()
++=item mymetafile()
+ 
+-=item original_prefix()
++=item needs_compiler()
++
++=item orig_dir()
+ 
+ =item perl()
+ 
+@@ -1880,7 +1976,7 @@
+ 
+ If you would like to add other useful metadata, C<Module::Build>
+ supports this with the C<meta_add> and C<meta_merge> arguments to
+-L</new>. The authoritative list of supported metadata can be found at
++L</new()>. The authoritative list of supported metadata can be found at
+ L<http://module-build.sourceforge.net/META-spec-current.html>, but for
+ convenience - here are a few of the more useful ones:
+ 
+@@ -1921,7 +2017,7 @@
+ =head1 SEE ALSO
+ 
+ perl(1), L<Module::Build>(3), L<Module::Build::Authoring>(3),
+-L<Module::Build::Cookbook>(3), L<ExtUtils::MakeMaker>(3), L<YAML>(3)
++L<Module::Build::Cookbook>(3), L<ExtUtils::MakeMaker>(3), L<YAML::Tiny>(3)
+ 
+ F<META.yml> Specification:
+ L<http://module-build.sourceforge.net/META-spec-current.html>
+diff -Nbur perl-5.10.1/lib/Module/Build/Base.pm perl-5.10.1/lib/Module-1/Build/Base.pm
+--- perl-5.10.1/lib/Module/Build/Base.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Base.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -4,7 +4,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ BEGIN { require 5.00503 }
+ 
+@@ -23,6 +23,7 @@
+ use Module::Build::ModuleInfo;
+ use Module::Build::Notes;
+ use Module::Build::Config;
++use Module::Build::Version;
+ 
+ 
+ #################### Constructors ###########################
+@@ -36,13 +37,33 @@
+     if $self->{action} && $self->{action} ne 'Build_PL';
+ 
+   $self->check_manifest;
+-  $self->check_prereq;
+-  $self->check_autofeatures;
++  $self->auto_require;
++  if ( $self->check_prereq + $self->check_autofeatures != 2) {
++    $self->log_warn(<<EOF);
++
++ERRORS/WARNINGS FOUND IN PREREQUISITES.  You may wish to install the versions
++of the modules indicated above before proceeding with this installation
++
++EOF
++    unless (
++      $self->dist_name eq 'Module-Build' ||
++      $ENV{PERL5_CPANPLUS_IS_RUNNING} || $ENV{PERL5_CPAN_IS_RUNNING}
++    ) {
++      $self->log_warn(
++        "Run 'Build installdeps' to install missing prerequisites.\n\n"
++      );
++    }
++  }
++
++  # record for later use in resume;
++  $self->{properties}{_added_to_INC} = [ $self->_added_to_INC ];
++
++  $self->set_bundle_inc;
+ 
+   $self->dist_name;
+   $self->dist_version;
++  $self->_guess_module_name unless $self->module_name;
+ 
+-  $self->_set_install_paths;
+   $self->_find_nested_builds;
+ 
+   return $self;
+@@ -53,6 +74,10 @@
+   my $self = $package->_construct(@_);
+   $self->read_config;
+ 
++  my @added_earlier = @{ $self->{properties}{_added_to_INC} || [] };
++
++  @INC = ($self->_added_to_INC, @added_earlier, $self->_default_INC);
++
+   # If someone called Module::Build->current() or
+   # Module::Build->new_from_context() and the correct class to use is
+   # actually a *subclass* of Module::Build, we may need to load that
+@@ -78,33 +103,24 @@
+ 
+   unless ($self->allow_mb_mismatch) {
+     my $mb_version = $Module::Build::VERSION;
+-    die(" * ERROR: Configuration was initially created with Module::Build version '$self->{properties}{mb_version}',\n".
+-	"   but we are now using version '$mb_version'.  Please re-run the Build.PL or Makefile.PL script,\n".
+-	"   or use --allow_mb_mismatch 1 to skip this version check.\n")
+-    if $mb_version ne $self->{properties}{mb_version};
++    if ( $mb_version ne $self->{properties}{mb_version} ) {
++      $self->log_warn(<<"MISMATCH");
++* WARNING: Configuration was initially created with Module::Build
++  version '$self->{properties}{mb_version}' but we are now using version '$mb_version'.
++  If errors occur, you must re-run the Build.PL or Makefile.PL script.
++MISMATCH
++    }
+   }
+   
+   $self->{invoked_action} = $self->{action} ||= 'build';
+ 
+-  $self->_set_install_paths;
+-  
+   return $self;
+ }
+ 
+ sub new_from_context {
+   my ($package, %args) = @_;
+   
+-  # XXX Read the META.yml and see whether we need to run the Build.PL?
+-  
+-  # Run the Build.PL.  We use do() rather than run_perl_script() so
+-  # that it runs in this process rather than a subprocess, because we
+-  # need to make sure that the environment is the same during Build.PL
+-  # as it is during resume() (and thereafter).
+-  {
+-    local @ARGV = $package->unparse_args(\%args);
+-    do './Build.PL';
+-    die $@ if $@;
+-  }
++  $package->run_perl_script('Build.PL',[],[$package->unparse_args(\%args)]);
+   return $package->resume;
+ }
+ 
+@@ -185,15 +201,15 @@
+ 
+ sub log_info {
+   my $self = shift;
+-  print @_ unless(ref($self) and $self->quiet);
++  print @_ if ref($self) && ( $self->verbose || ! $self->quiet );
+ }
+ sub log_verbose {
+   my $self = shift;
+-  $self->log_info(@_) if(ref($self) and $self->verbose);
++  print @_ if ref($self) && $self->verbose;
+ }
+ sub log_debug {
+   my $self = shift;
+-  print @_ if ref $self && $self->debug;
++  print @_ if ref($self) && $self->debug;
+ }
+ 
+ sub log_warn {
+@@ -208,10 +224,12 @@
+ }
+ 
+ 
+-sub _set_install_paths {
++# install paths must be generated when requested to be sure all changes
++# to config (from various sources) are included
++sub _default_install_paths {
+   my $self = shift;
+   my $c = $self->{config};
+-  my $p = $self->{properties};
++  my $p = {};
+ 
+   my @libstyle = $c->get('installstyle') ?
+       File::Spec->splitdir($c->get('installstyle')) : qw(lib perl5);
+@@ -318,7 +336,7 @@
+ 	      libhtml    => ['html'],
+ 	     },
+     };
+-
++    return $p
+ }
+ 
+ sub _find_nested_builds {
+@@ -498,6 +516,28 @@
+       "in (@paths)\n";
+ }
+ 
++# Adapted from IPC::Cmd::can_run()
++sub find_command {
++    my ($self, $command) = @_;
++
++    if( File::Spec->file_name_is_absolute($command) ) {
++        return $self->_maybe_command($command);
++
++    } else {
++        for my $dir ( File::Spec->path ) {
++            my $abs = File::Spec->catfile($dir, $command);
++            return $abs if $abs = $self->_maybe_command($abs);
++        }
++    }
++}
++
++# Copied from ExtUtils::MM_Unix::maybe_command
++sub _maybe_command {
++    my($self,$file) = @_;
++    return $file if -x $file && ! -d $file;
++    return;
++}
++
+ sub _is_interactive {
+   return -t STDIN && (-t STDOUT || !(-f STDOUT || -c STDOUT)) ;   # Pipe?
+ }
+@@ -589,10 +629,18 @@
+     }
+ 
+     if (my $info = $ph->{auto_features}->access($key)) {
+-      my $failures = $self->prereq_failures($info);
+-      my $disabled = grep( /^(?:\w+_)?(?:requires|conflicts)$/,
+-			   keys %$failures ) ? 1 : 0;
+-      return !$disabled;
++      my $disabled;
++      for my $type ( @{$self->prereq_action_types} ) {
++        next if $type eq 'description' || $type eq 'recommends' || ! exists $info->{$type};
++        my $prereqs = $info->{$type};
++        for my $modname ( sort keys %$prereqs ) {
++          my $spec = $prereqs->{$modname};
++          my $status = $self->check_installed_status($modname, $spec);
++          if ((!$status->{ok}) xor ($type =~ /conflicts$/)) { return 0; }
++          if ( ! eval "require $modname; 1" ) { return 0; }
++        }
++      }
++      return 1;
+     }
+ 
+     return $ph->{features}->access($key, @_);
+@@ -626,6 +674,15 @@
+   }
+ }
+ 
++sub _warn_mb_feature_deps {
++  my $self = shift;
++  my $name = shift;
++  $self->log_warn(
++    "The '$name' feature is not available.  Please install missing\n" .
++    "feature dependencies and try again.\n".
++    $self->_feature_deps_msg($name) . "\n"
++  );
++}
+ 
+ sub add_build_element {
+     my ($self, $elem) = @_;
+@@ -647,7 +704,7 @@
+ 			       $self->config_file('features')
+ 			      ], $notes_pm);
+ 
+-  $self->log_info("Writing config notes to $notes_pm\n");
++  $self->log_verbose("Writing config notes to $notes_pm\n");
+   File::Path::mkpath(File::Basename::dirname($notes_pm));
+ 
+   Module::Build::Notes->write_config_data
+@@ -682,10 +739,10 @@
+ 
+   sub valid_properties_defaults {
+     my %out;
+-    for (reverse shift->_mb_classes) {
+-      @out{ keys %{ $valid_properties{$_} } } = map {
++    for my $class (reverse shift->_mb_classes) {
++      @out{ keys %{ $valid_properties{$class} } } = map {
+         $_->()
+-      } values %{ $valid_properties{$_} };
++      } values %{ $valid_properties{$class} };
+     }
+     return \%out;
+   }
+@@ -711,9 +768,11 @@
+     my %p = @_ == 1 ? ( default => shift ) : @_;
+ 
+     my $type = ref $p{default};
+-    $valid_properties{$class}{$property} = $type eq 'CODE'
+-      ? $p{default}
+-      : sub { $p{default} };
++    $valid_properties{$class}{$property} =
++      $type eq 'CODE' ? $p{default}                           :
++      $type eq 'HASH' ? sub { return { %{ $p{default} } }   } :
++      $type eq 'ARRAY'? sub { return [ @{ $p{default} } ]   } :
++                        sub { return $p{default}            } ;
+ 
+     push @{$additive_properties{$class}->{$type}}, $property
+       if $type;
+@@ -832,12 +891,16 @@
+ __PACKAGE__->add_property(auto_configure_requires => 1);
+ __PACKAGE__->add_property(blib => 'blib');
+ __PACKAGE__->add_property(build_class => 'Module::Build');
+-__PACKAGE__->add_property(build_elements => [qw(PL support pm xs pod script)]);
++__PACKAGE__->add_property(build_elements => [qw(PL support pm xs share_dir pod script)]);
+ __PACKAGE__->add_property(build_script => 'Build');
+ __PACKAGE__->add_property(build_bat => 0);
++__PACKAGE__->add_property(bundle_inc => []);
++__PACKAGE__->add_property(bundle_inc_preload => []);
+ __PACKAGE__->add_property(config_dir => '_build');
+ __PACKAGE__->add_property(include_dirs => []);
++__PACKAGE__->add_property(license => 'unknown');
+ __PACKAGE__->add_property(metafile => 'META.yml');
++__PACKAGE__->add_property(mymetafile => 'MYMETA.yml');
+ __PACKAGE__->add_property(recurse_into => []);
+ __PACKAGE__->add_property(use_rcfile => 1);
+ __PACKAGE__->add_property(create_packlist => 1);
+@@ -845,6 +908,7 @@
+ __PACKAGE__->add_property(config => undef);
+ __PACKAGE__->add_property(test_file_exts => ['.t']);
+ __PACKAGE__->add_property(use_tap_harness => 0);
++__PACKAGE__->add_property(cpan_client => 'cpan');
+ __PACKAGE__->add_property(tap_harness_args => {});
+ __PACKAGE__->add_property(
+   'installdirs',
+@@ -862,8 +926,7 @@
+ );
+ 
+ {
+-  my $Is_ActivePerl = eval {require ActivePerl::DocTools};
+-  __PACKAGE__->add_property(html_css => $Is_ActivePerl ? 'Active.css' : '');
++  __PACKAGE__->add_property(html_css => '');
+ }
+ 
+ {
+@@ -907,10 +970,10 @@
+   has_config_data
+   install_base
+   libdoc_dirs
+-  license
+   magic_number
+   mb_version
+   module_name
++  needs_compiler
+   orig_dir
+   perl
+   pm_files
+@@ -922,6 +985,7 @@
+   recursive_test_files
+   script_files
+   scripts
++  share_dir
+   sign
+   test_files
+   verbose
+@@ -997,7 +1061,7 @@
+   
+   my $filename = File::Spec->catfile($build_dir, 'lib', split '::', $opts{class}) . '.pm';
+   my $filedir  = File::Basename::dirname($filename);
+-  $pack->log_info("Creating custom builder $filename in $filedir\n");
++  $pack->log_verbose("Creating custom builder $filename in $filedir\n");
+   
+   File::Path::mkpath($filedir);
+   die "Can't create directory $filedir: $!" unless -d $filedir;
+@@ -1019,6 +1083,33 @@
+   return $opts{class};
+ }
+ 
++sub _guess_module_name {
++  my $self = shift;
++  my $p = $self->{properties};
++  return if $p->{module_name};
++  if ( $p->{dist_version_from} && -e $p->{dist_version_from} ) {
++    my $mi = Module::Build::ModuleInfo->new_from_file($self->dist_version_from);
++    $p->{module_name} = $mi->name;
++  }
++  else {
++    my $mod_path = my $mod_name = $p->{dist_name};
++    $mod_name =~ s{-}{::}g;
++    $mod_path =~ s{-}{/}g;
++    $mod_path .= ".pm";
++    if ( -e $mod_path || -e "lib/$mod_path" ) {
++      $p->{module_name} = $mod_name;
++    }
++    else {
++      $self->log_warn( << 'END_WARN' );
++No 'module_name' was provided and it could not be inferred
++from other properties.  This will prevent a packlist from
++being written for this file.  Please set either 'module_name'
++or 'dist_version_from' in Build.PL.
++END_WARN
++    }
++  }
++}
++
+ sub dist_name {
+   my $self = shift;
+   my $p = $self->{properties};
+@@ -1090,6 +1181,26 @@
+   return Module::Build::ModuleInfo->find_module_by_name(@_[1,2]);
+ }
+ 
++{
++  # $unlink_list_for_pid{$$} = [ ... ]
++  my %unlink_list_for_pid;
++
++  sub _unlink_on_exit {
++    my $self = shift;
++    for my $f ( @_ ) {
++      push @{$unlink_list_for_pid{$$}}, $f if -f $f;
++    }
++    return 1;
++  }
++
++  END {
++    for my $f ( map glob($_), @{ $unlink_list_for_pid{$$} || [] } ) {
++      next unless -e $f;
++      File::Path::rmtree($f, 0, 0);
++    }
++  }
++}
++
+ sub add_to_cleanup {
+   my $self = shift;
+   my %files = map {$self->localize_file_path($_), 1} @_;
+@@ -1156,13 +1267,82 @@
+   $self->{phash}{$_}->write() foreach qw(notes cleanup features auto_features config_data runtime_params);
+ }
+ 
++{
++  # packfile map -- keys are guts of regular expressions;  If they match,
++  # values are module names corresponding to the packlist
++  my %packlist_map = (
++    '^File::Spec'         => 'Cwd',
++    '^Devel::AssertOS'    => 'Devel::CheckOS',
++  );
++
++  sub _find_packlist {
++    my ($self, $inst, $mod) = @_;
++    my $lookup = $mod;
++    my $packlist = eval { $inst->packlist($lookup) };
++    if ( ! $packlist ) {
++      # try from packlist_map
++      while ( my ($re, $new_mod) = each %packlist_map ) {
++        if ( $mod =~ qr/$re/ ) {
++          $lookup = $new_mod;
++          $packlist = eval { $inst->packlist($lookup) };
++          last;
++        }
++      }
++    }
++    return $packlist ? $lookup : undef;
++  }
++
++  sub set_bundle_inc {
++    my $self = shift;
++
++    my $bundle_inc = $self->{properties}{bundle_inc};
++    my $bundle_inc_preload = $self->{properties}{bundle_inc_preload};
++    # We're in author mode if inc::latest is loaded, but not from cwd
++    return unless inc::latest->can('loaded_modules');
++    require ExtUtils::Installed;
++    # ExtUtils::Installed is buggy about finding additions to default @INC
++    my $inst = eval { ExtUtils::Installed->new(extra_libs => [@INC]) };
++    if ($@) {
++      $self->log_warn( << "EUI_ERROR" );
++Bundling in inc/ is disabled because ExtUtils::Installed could not
++create a list of your installed modules.  Here is the error:
++$@
++EUI_ERROR
++      return;
++    }
++    my @bundle_list = map { [ $_, 0 ] } inc::latest->loaded_modules;
++
++    # XXX TODO: Need to get ordering of prerequisites correct so they are
++    # are loaded in the right order. Use an actual tree?!
++
++    while( @bundle_list ) {
++      my ($mod, $prereq) = @{ shift @bundle_list };
++
++      # XXX TODO: Append prereqs to list
++      # skip if core or already in bundle or preload lists
++      # push @bundle_list, [$_, 1] for prereqs()
++
++      # Locate packlist for bundling
++      my $lookup = $self->_find_packlist($inst,$mod);
++      if ( ! $lookup ) {
++        # XXX Really needs a more helpful error message here
++        die << "NO_PACKLIST";
++Could not find a packlist for '$mod'.  If it's a core module, try
++force installing it from CPAN.
++NO_PACKLIST
++      }
++      else {
++        push @{ $prereq ? $bundle_inc_preload : $bundle_inc }, $lookup;
++      }
++    }
++  } # sub check_bundling
++}
++
+ sub check_autofeatures {
+   my ($self) = @_;
+   my $features = $self->auto_features;
+   
+-  return unless %$features;
+-
+-  $self->log_info("Checking features:\n");
++  return 1 unless %$features;
+ 
+   # TODO refactor into ::Util
+   my $longest = sub {
+@@ -1178,30 +1358,129 @@
+   };
+   my $max_name_len = length($longest->(keys %$features));
+ 
+-  while (my ($name, $info) = each %$features) {
+-    $self->log_info("  $name" . '.' x ($max_name_len - length($name) + 4));
++  my ($num_disabled, $log_text) = (0, "\nChecking optional features...\n");
++  for my $name ( sort keys %$features ) {
++    $log_text .= $self->_feature_deps_msg($name, $max_name_len);
++  }
++
++  $num_disabled = () = $log_text =~ /disabled/g;
+ 
++  # warn user if features disabled
++  if ( $num_disabled ) {
++    $self->log_warn( $log_text );
++    return 0;
++  }
++  else {
++    $self->log_verbose( $log_text );
++    return 1;
++  }
++}
++
++sub _feature_deps_msg {
++  my ($self, $name, $max_name_len) = @_;
++    $max_name_len ||= length $name;
++    my $features = $self->auto_features;
++    my $info = $features->{$name};
++    my $feature_text = "$name" . '.' x ($max_name_len - length($name) + 4);
++
++    my ($log_text, $disabled) = ('','');
+     if ( my $failures = $self->prereq_failures($info) ) {
+-      my $disabled = grep( /^(?:\w+_)?(?:requires|conflicts)$/,
++      $disabled = grep( /^(?:\w+_)?(?:requires|conflicts)$/,
+ 			   keys %$failures ) ? 1 : 0;
+-      $self->log_info( $disabled ? "disabled\n" : "enabled\n" );
++      $feature_text .= $disabled ? "disabled\n" : "enabled\n";
+ 
+-      my $log_text;
+-      while (my ($type, $prereqs) = each %$failures) {
+-	while (my ($module, $status) = each %$prereqs) {
++      for my $type ( @{ $self->prereq_action_types } ) {
++        next unless exists $failures->{$type};
++        $feature_text .= "  $type:\n";
++        my $prereqs = $failures->{$type};
++        for my $module ( sort keys %$prereqs ) {
++          my $status = $prereqs->{$module};
+ 	  my $required =
+ 	    ($type =~ /^(?:\w+_)?(?:requires|conflicts)$/) ? 1 : 0;
+-	  my $prefix = ($required) ? '-' : '*';
+-	  $log_text .= "    $prefix $status->{message}\n";
++          my $prefix = ($required) ? '!' : '*';
++          $feature_text .= "    $prefix $status->{message}\n";
+ 	}
+       }
+-      $self->log_warn("$log_text") unless $self->quiet;
+     } else {
+-      $self->log_info("enabled\n");
++      $feature_text .= "enabled\n";
++    }
++    $log_text .= $feature_text if $disabled || $self->verbose;
++    return $log_text;
++}
++
++# Automatically detect configure_requires prereqs
++sub auto_config_requires {
++  my ($self) = @_;
++  my $p = $self->{properties};
++
++  # add current Module::Build to configure_requires if there
++  # isn't one already specified (but not ourself, so we're not circular)
++  if ( $self->dist_name ne 'Module-Build'
++    && $self->auto_configure_requires
++    && ! exists $p->{configure_requires}{'Module::Build'}
++  ) {
++    (my $ver = $VERSION) =~ s/^(\d+\.\d\d).*$/$1/; # last major release only
++    $self->log_warn(<<EOM);
++Module::Build was not found in configure_requires! Adding it now
++automatically as: configure_requires => { 'Module::Build' => $ver }
++EOM
++    $self->_add_prereq('configure_requires', 'Module::Build', $ver);
++  }
++
++  # if we're in author mode, add inc::latest modules to
++  # configure_requires if not already set.  If we're not in author mode
++  # then configure_requires will have been satisfied, or we'll just
++  # live with what we've bundled
++  if ( inc::latest->can('loaded_module') ) {
++    for my $mod ( inc::latest->loaded_modules ) {
++      next if exists $p->{configure_requires}{$mod};
++      $self->_add_prereq('configure_requires', $mod, $mod->VERSION);
+     }
+   }
+ 
+-  $self->log_warn("\n") unless $self->quiet;
++  return;
++}
++
++# Automatically detect and add prerequisites based on configuration
++sub auto_require {
++  my ($self) = @_;
++  my $p = $self->{properties};
++
++  # If needs_compiler is not explictly set, automatically set it
++  # If set, we need ExtUtils::CBuilder (and a compiler)
++  my $xs_files = $self->find_xs_files;
++  if ( ! defined $p->{needs_compiler} ) {
++    $self->needs_compiler( keys %$xs_files || defined $self->c_source );
++  }
++  if ($self->needs_compiler) {
++    $self->_add_prereq('build_requires', 'ExtUtils::CBuilder', 0);
++    if ( ! $self->have_c_compiler ) {
++      $self->log_warn(<<'EOM');
++Warning: ExtUtils::CBuilder not installed or no compiler detected
++Proceeding with configuration, but compilation may fail during Build
++
++EOM
++    }
++  }
++
++  # If using share_dir, require File::ShareDir
++  if ( $self->share_dir ) {
++    $self->_add_prereq( 'requires', 'File::ShareDir', '1.00' );
++  }
++
++  return;
++}
++
++sub _add_prereq {
++  my ($self, $type, $module, $version) = @_;
++  my $p = $self->{properties};
++  $version = 0 unless defined $version;
++  if ( exists $p->{$type}{$module} ) {
++    return if $self->compare_versions( $version, '<=', $p->{$type}{$module} );
++  }
++  $self->log_verbose("Adding to $type\: $module => $version\n");
++  $p->{$type}{$module} = $version;
++  return 1;
+ }
+ 
+ sub prereq_failures {
+@@ -1214,7 +1493,8 @@
+ 
+   foreach my $type (@types) {
+     my $prereqs = $info->{$type};
+-    while ( my ($modname, $spec) = each %$prereqs ) {
++    for my $modname ( keys %$prereqs ) {
++      my $spec = $prereqs->{$modname};
+       my $status = $self->check_installed_status($modname, $spec);
+ 
+       if ($type =~ /^(?:\w+_)?conflicts$/) {
+@@ -1225,7 +1505,7 @@
+       } elsif ($type =~ /^(?:\w+_)?recommends$/) {
+ 	next if $status->{ok};
+ 	$status->{message} = (!ref($status->{have}) && $status->{have} eq '<none>'
+-			      ? "Optional prerequisite $modname is not installed"
++			      ? "$modname is not installed"
+ 			      : "$modname ($status->{have}) is installed, but we prefer to have $spec");
+       } else {
+ 	next if $status->{ok};
+@@ -1254,44 +1534,29 @@
+ sub check_prereq {
+   my $self = shift;
+ 
+-  # If we have XS files, make sure we can process them.
+-  my $xs_files = $self->find_xs_files;
+-  if (keys %$xs_files && !$self->_mb_feature('C_support')) {
+-    $self->log_warn("Warning: this distribution contains XS files, ".
+-		    "but Module::Build is not configured with C_support.  ".
+-		    "Please install ExtUtils::CBuilder to enable C_support.\n");
+-  }
+-
+   # Check to see if there are any prereqs to check
+   my $info = $self->_enum_prereqs;
+   return 1 unless $info;
+ 
+-  $self->log_info("Checking prerequisites...\n");
++  my $log_text = "Checking prerequisites...\n";
+ 
+   my $failures = $self->prereq_failures($info);
+ 
+   if ( $failures ) {
+-
+-    while (my ($type, $prereqs) = each %$failures) {
+-      while (my ($module, $status) = each %$prereqs) {
+-	my $prefix = ($type =~ /^(?:\w+_)?recommends$/) ? '*' : '- ERROR:';
++    $self->log_warn($log_text);
++    for my $type ( @{ $self->prereq_action_types } ) {
++      my $prereqs = $failures->{$type};
++      $self->log_warn("  ${type}:\n") if keys %$prereqs;
++      for my $module ( sort keys %$prereqs ) {
++        my $status = $prereqs->{$module};
++        my $prefix = ($type =~ /^(?:\w+_)?recommends$/) ? "* " : "! ";
+ 	$self->log_warn(" $prefix $status->{message}\n");
+       }
+     }
+-
+-    $self->log_warn(<<EOF);
+-
+-ERRORS/WARNINGS FOUND IN PREREQUISITES.  You may wish to install the versions
+-of the modules indicated above before proceeding with this installation
+-
+-EOF
+     return 0;
+-
+   } else {
+-
+-    $self->log_info("Looks good\n\n");
++    $self->log_verbose($log_text . "Looks good\n\n");
+     return 1;
+-
+   }
+ }
+ 
+@@ -1338,7 +1603,7 @@
+       return \%status;
+     }
+     
+-    $status{have} = $pm_info->version();
++    $status{have} = eval { $pm_info->version() };
+     if ($spec and !defined($status{have})) {
+       @status{ qw(have message) } = (undef, "Couldn't find a \$VERSION in prerequisite $modname");
+       return \%status;
+@@ -1452,9 +1717,6 @@
+ 
+   my %q = map {$_, $self->$_()} qw(config_dir base_dir);
+ 
+-  my $case_tolerant = 0+(File::Spec->can('case_tolerant')
+-			 && File::Spec->case_tolerant);
+-  $q{base_dir} = uc $q{base_dir} if $case_tolerant;
+   $q{base_dir} = Win32::GetShortPathName($q{base_dir}) if $self->is_windowsish;
+ 
+   $q{magic_numfile} = $self->config_file('magicnum');
+@@ -1530,15 +1792,55 @@
+ EOF
+ }
+ 
++sub create_mymeta {
++  my ($self) = @_;
++  my $mymetafile = $self->mymetafile;
++  my $metafile = $self->metafile;
++
++  # cleanup
++  if ( $self->delete_filetree($mymetafile) ) {
++    $self->log_verbose("Removed previous '$mymetafile'\n");
++  }
++  $self->log_info("Creating new '$mymetafile' with configuration results\n");
++
++  # use old meta and update prereqs, if possible
++  my $mymeta;
++  if ( -f $metafile ) {
++    $mymeta = eval { $self->read_metafile( $self->metafile ) };
++  }
++  # if we read META OK, just update it
++  if ( defined $mymeta ) {
++    my $prereqs = $self->_normalize_prereqs;
++    for my $t ( 'configure_requires', @{$self->prereq_action_types} ) {
++        $mymeta->{$t} = $prereqs->{$t} if $prereqs->{$t};
++    }
++  }
++  # but generate from scratch, ignoring errors if META doesn't exist
++  else {
++    $mymeta = $self->get_metadata( fatal => 0 );
++  }
++
++  # MYMETA is always static
++  $mymeta->{dynamic_config} = 0;
++  # Note which M::B created it
++  $mymeta->{generated_by} = "Module::Build version $Module::Build::VERSION";
++
++  $self->write_metafile( $mymetafile, $mymeta );
++  return 1;
++}
++
+ sub create_build_script {
+   my ($self) = @_;
++
+   $self->write_config;
++  $self->create_mymeta;
+   
++  # Create Build
+   my ($build_script, $dist_name, $dist_version)
+     = map $self->$_(), qw(build_script dist_name dist_version);
+   
+   if ( $self->delete_filetree($build_script) ) {
+-    $self->log_info("Removed previous script '$build_script'\n\n");
++    $self->log_verbose("Removed previous script '$build_script'\n");
+   }
+ 
+   $self->log_info("Creating new '$build_script' script for ",
+@@ -1562,13 +1864,13 @@
+   require ExtUtils::Manifest;  # ExtUtils::Manifest is not warnings clean.
+   local ($^W, $ExtUtils::Manifest::Quiet) = (0,1);
+   
+-  $self->log_info("Checking whether your kit is complete...\n");
++  $self->log_verbose("Checking whether your kit is complete...\n");
+   if (my @missed = ExtUtils::Manifest::manicheck()) {
+     $self->log_warn("WARNING: the following files are missing in your kit:\n",
+ 		    "\t", join("\n\t", @missed), "\n",
+ 		    "Please inform the author.\n\n");
+   } else {
+-    $self->log_info("Looks good\n\n");
++    $self->log_verbose("Looks good\n\n");
+   }
+ }
+ 
+@@ -1684,7 +1986,6 @@
+     create_readme
+     extra_compiler_flags
+     extra_linker_flags
+-    html_css
+     install_base
+     install_path
+     meta_add
+@@ -1693,6 +1994,7 @@
+     use_rcfile
+     use_tap_harness
+     tap_harness_args
++    cpan_client
+   ); # normalize only selected option names
+ 
+   return $opt;
+@@ -1839,6 +2141,8 @@
+ sub _merge_arglist {
+   my( $self, $opts1, $opts2 ) = @_;
+ 
++  $opts1 ||= {};
++  $opts2 ||= {};
+   my %new_opts = %$opts1;
+   while (my ($key, $val) = each %$opts2) {
+     if ( exists( $opts1->{$key} ) ) {
+@@ -1976,7 +2280,10 @@
+ 
+ sub cull_args {
+   my $self = shift;
+-  my ($args, $action) = $self->read_args(@_);
++  my @arg_list = @_;
++  unshift @arg_list, $self->split_like_shell($ENV{PERL_MB_OPT})
++    if $ENV{PERL_MB_OPT};
++  my ($args, $action) = $self->read_args(@arg_list);
+   $self->merge_args($action, %$args);
+   $self->merge_modulebuildrc( $action, %$args );
+ }
+@@ -2178,6 +2485,7 @@
+   while (my ($one, $two) = splice @actions, 0, 2) {
+     $out .= sprintf("  %-12s                   %-12s\n", $one, $two||'');
+   }
++  $out =~ s{\s*$}{}mg; # remove trailing spaces
+   return $out;
+ }
+ 
+@@ -2264,6 +2572,8 @@
+   $self->do_tests;
+ }
+ 
++# Test::Harness dies on failure but TAP::Harness does not, so we must
++# die if running under TAP::Harness
+ sub do_tests {
+   my $self = shift;
+ 
+@@ -2272,7 +2582,10 @@
+   if(@$tests) {
+     my $args = $self->tap_harness_args;
+     if($self->use_tap_harness or ($args and %$args)) {
+-      $self->run_tap_harness($tests);
++      my $aggregate = $self->run_tap_harness($tests);
++      if ( $aggregate->has_errors ) {
++        die "Errors in testing.  Cannot continue.\n";
++      }
+     }
+     else {
+       $self->run_test_harness($tests);
+@@ -2292,12 +2605,14 @@
+ 
+   # TODO allow the test @INC to be set via our API?
+ 
+-  TAP::Harness->new({
++  my $aggregate = TAP::Harness->new({
+     lib => [@INC],
+     verbosity => $self->{properties}{verbose},
+     switches  => [ $self->harness_switches ],
+     %{ $self->tap_harness_args },
+   })->runtests(@$tests);
++
++  return $aggregate;
+ }
+ 
+ sub run_test_harness {
+@@ -2379,7 +2694,7 @@
+   # testcover was run.  If so, start over.
+   if (-e 'cover_db') {
+     my $pm_files = $self->rscan_dir
+-        (File::Spec->catdir($self->blib, 'lib'), file_qr('\.pm$') );
++        (File::Spec->catdir($self->blib, 'lib'), $self->file_qr('\.pm$') );
+     my $cover_files = $self->rscan_dir('cover_db', sub {-f $_ and not /\.html$/});
+     
+     $self->do_system(qw(cover -delete))
+@@ -2419,6 +2734,7 @@
+ 
+ sub ACTION_build {
+   my $self = shift;
++  $self->log_info("Building " . $self->dist_name . "\n");
+   $self->depends_on('code');
+   $self->depends_on('docs');
+ }
+@@ -2439,14 +2755,72 @@
+   my $p = $self->{properties};
+   return unless $p->{c_source};
+   
++  my $files;
++  if (ref($p->{c_source}) eq "ARRAY") {
++      push @{$p->{include_dirs}}, @{$p->{c_source}};
++      for my $path (@{$p->{c_source}}) {
++          push @$files, @{ $self->rscan_dir($path, $self->file_qr('\.c(c|p|pp|xx|\+\+)?$')) };
++      }
++  } else {
+   push @{$p->{include_dirs}}, $p->{c_source};
++      $files = $self->rscan_dir($p->{c_source}, $self->file_qr('\.c(c|p|pp|xx|\+\+)?$'));
++  }
+   
+-  my $files = $self->rscan_dir($p->{c_source}, file_qr('\.c(pp)?$'));
+   foreach my $file (@$files) {
+     push @{$p->{objects}}, $self->compile_c($file);
+   }
+ }
+ 
++sub process_share_dir_files {
++  my $self = shift;
++  my $files = $self->_find_share_dir_files;
++  return unless $files;
++
++  # root for all File::ShareDir paths
++  my $share_prefix = File::Spec->catdir($self->blib, qw/lib auto share/);
++
++  # copy all share files to blib
++  while (my ($file, $dest) = each %$files) {
++    $self->copy_if_modified(
++      from => $file, to => File::Spec->catfile( $share_prefix, $dest )
++    );
++  }
++}
++
++sub _find_share_dir_files {
++  my $self = shift;
++  my $share_dir = $self->share_dir;
++  return unless $share_dir;
++
++  my @file_map;
++  if ( $share_dir->{dist} ) {
++    my $prefix = "dist/".$self->dist_name;
++    push @file_map, $self->_share_dir_map( $prefix, $share_dir->{dist} );
++  }
++
++  if ( $share_dir->{module} ) {
++    for my $mod ( keys %{ $share_dir->{module} } ) {
++      (my $altmod = $mod) =~ s{::}{-}g;
++      my $prefix = "module/$altmod";
++      push @file_map, $self->_share_dir_map($prefix, $share_dir->{module}{$mod});
++    }
++  }
++
++  return { @file_map };
++}
++
++sub _share_dir_map {
++  my ($self, $prefix, $list) = @_;
++  my %files;
++  for my $dir ( @$list ) {
++    for my $f ( @{ $self->rscan_dir( $dir, sub {-f} )} ) {
++      $f =~ s{\A.*\Q$dir\E/}{};
++      $files{"$dir/$f"} = "$prefix/$f";
++    }
++  }
++  return %files;
++}
++
+ sub process_PL_files {
+   my ($self) = @_;
+   my $files = $self->find_PL_files;
+@@ -2513,8 +2887,10 @@
+   }
+   
+   return unless -d 'lib';
+-  return { map {$_, [/^(.*)\.PL$/i ]} @{ $self->rscan_dir('lib',
+-                                                          file_qr('\.PL$')) } };
++  return { 
++    map {$_, [/^(.*)\.PL$/i ]} 
++    @{ $self->rscan_dir('lib', $self->file_qr('\.PL$')) } 
++  };
+ }
+ 
+ sub find_pm_files  { shift->_find_file_by_type('pm',  'lib') }
+@@ -2567,7 +2943,7 @@
+   return { map {$_, $_}
+ 	   map $self->localize_file_path($_),
+ 	   grep !/\.\#/,
+-	   @{ $self->rscan_dir($dir, file_qr("\\.$type\$")) } };
++	   @{ $self->rscan_dir($dir, $self->file_qr("\\.$type\$")) } };
+ }
+ 
+ sub localize_file_path {
+@@ -2595,7 +2971,7 @@
+     next unless $cmd =~ /perl/i;
+     my $interpreter = $self->{properties}{perl};
+     
+-    $self->log_verbose("Changing sharpbang in $file to $interpreter");
++    $self->log_verbose("Changing sharpbang in $file to $interpreter\n");
+     my $shb = '';
+     $shb .= $c->get('sharpbang')."$interpreter $arg\n" if $does_shbang;
+     
+@@ -2640,7 +3016,7 @@
+   my @files = sort keys %{$self->_find_pods($self->libdoc_dirs)},
+                    keys %{$self->_find_pods
+                              ($self->bindoc_dirs,
+-                              exclude => [ file_qr('\.bat$') ])}
++                              exclude => [ $self->file_qr('\.bat$') ])}
+     or die "Couldn't find any POD files to test\n";
+ 
+   { package # hide from PAUSE
+@@ -2694,6 +3070,24 @@
+ 	 ) ? 1 : 0;
+ }
+ 
++sub _is_ActivePerl {
++#  return 0;
++  my $self = shift;
++  unless (exists($self->{_is_ActivePerl})) {
++    $self->{_is_ActivePerl} = (eval { require ActivePerl::DocTools; } || 0);
++  }
++  return $self->{_is_ActivePerl};
++}
++
++sub _is_ActivePPM {
++#  return 0;
++  my $self = shift;
++  unless (exists($self->{_is_ActivePPM})) {
++    $self->{_is_ActivePPM} = (eval { require ActivePerl::PPM; } || 0);
++  }
++  return $self->{_is_ActivePPM};
++}
++
+ sub ACTION_manpages {
+   my $self = shift;
+ 
+@@ -2702,27 +3096,21 @@
+   $self->depends_on('code');
+ 
+   foreach my $type ( qw(bin lib) ) {
++    next unless ( $self->invoked_action eq 'manpages' || $self->_is_default_installable("${type}doc"));
+     my $files = $self->_find_pods( $self->{properties}{"${type}doc_dirs"},
+-                                   exclude => [ file_qr('\.bat$') ] );
++                                   exclude => [ $self->file_qr('\.bat$') ] );
+     next unless %$files;
+ 
+     my $sub = $self->can("manify_${type}_pods");
+-    next unless defined( $sub );
+-
+-    if ( $self->invoked_action eq 'manpages' ) {
+-      $self->$sub();
+-    } elsif ( $self->_is_default_installable("${type}doc") ) {
+-      $self->$sub();
++    $self->$sub() if defined( $sub );
+     }
+-  }
+-
+ }
+ 
+ sub manify_bin_pods {
+   my $self    = shift;
+ 
+   my $files   = $self->_find_pods( $self->{properties}{bindoc_dirs},
+-                                   exclude => [ file_qr('\.bat$') ] );
++                                   exclude => [ $self->file_qr('\.bat$') ] );
+   return unless keys %$files;
+ 
+   my $mandir = File::Spec->catdir( $self->blib, 'bindoc' );
+@@ -2737,8 +3125,9 @@
+ 	          $self->config( 'man1ext' );
+     my $outfile = File::Spec->catfile($mandir, $manpage);
+     next if $self->up_to_date( $file, $outfile );
+-    $self->log_info("Manifying $file -> $outfile\n");
+-    $parser->parse_from_file( $file, $outfile );
++    $self->log_verbose("Manifying $file -> $outfile\n");
++    eval { $parser->parse_from_file( $file, $outfile ); 1 }
++      or $self->log_warn("Error creating '$outfile': $@\n");
+     $files->{$file} = $outfile;
+   }
+ }
+@@ -2761,8 +3150,9 @@
+ 	          $self->config( 'man3ext' );
+     my $outfile = File::Spec->catfile( $mandir, $manpage);
+     next if $self->up_to_date( $file, $outfile );
+-    $self->log_info("Manifying $file -> $outfile\n");
+-    $parser->parse_from_file( $file, $outfile );
++    $self->log_verbose("Manifying $file -> $outfile\n");
++    eval { $parser->parse_from_file( $file, $outfile ); 1 }
++      or $self->log_warn("Error creating '$outfile': $@\n");
+     $files->{$file} = $outfile;
+   }
+ }
+@@ -2804,21 +3194,11 @@
+   $self->depends_on('code');
+ 
+   foreach my $type ( qw(bin lib) ) {
+-    my $files = $self->_find_pods( $self->{properties}{"${type}doc_dirs"},
+-				   exclude => 
+-                                        [ file_qr('\.(?:bat|com|html)$') ] );
+-    next unless %$files;
+-
+-    if ( $self->invoked_action eq 'html' ) {
++    next unless ( $self->invoked_action eq 'html' || $self->_is_default_installable("${type}html"));
+       $self->htmlify_pods( $type );
+-    } elsif ( $self->_is_default_installable("${type}html") ) {
+-      $self->htmlify_pods( $type );
+-    }
+   }
+-
+ }
+ 
+-
+ # 1) If it's an ActiveState perl install, we need to run
+ #    ActivePerl::DocTools->UpdateTOC;
+ # 2) Links to other modules are not being generated
+@@ -2827,13 +3207,10 @@
+   my $type = shift;
+   my $htmldir = shift || File::Spec->catdir($self->blib, "${type}html");
+ 
+-  require Module::Build::PodParser;
+-  require Pod::Html;
+-
+   $self->add_to_cleanup('pod2htm*');
+ 
+   my $pods = $self->_find_pods( $self->{properties}{"${type}doc_dirs"},
+-                                exclude => [ file_qr('\.(?:bat|com|html)$') ] );
++                                exclude => [ $self->file_qr('\.(?:bat|com|html)$') ] );
+   return unless %$pods;  # nothing to do
+ 
+   unless ( -d $htmldir ) {
+@@ -2843,21 +3220,50 @@
+ 
+   my @rootdirs = ($type eq 'bin') ? qw(bin) :
+       $self->installdirs eq 'core' ? qw(lib) : qw(site lib);
++  my $podroot = $self->original_prefix('core');
++
++  my $htmlroot = $self->install_sets('core')->{libhtml};
++  my @podpath = (map { File::Spec->abs2rel($_ ,$podroot) } grep { -d  }
++    ( $self->install_sets('core', 'lib'), # lib
++      $self->install_sets('core', 'bin'), # bin
++      $self->install_sets('site', 'lib'), # site/lib
++    ),File::Spec->rel2abs($self->blib)
++  );
+ 
+-  my $podpath = join ':',
+-                map  $_->[1],
+-                grep -e $_->[0],
+-                map  [File::Spec->catdir($self->blib, $_), $_],
+-                qw( script lib );
++  my $podpath = join(":", map { tr,:\\,|/,; $_ } @podpath);
+ 
++  my $blibdir = join('/', File::Spec->splitdir(
++    (File::Spec->splitpath(File::Spec->rel2abs($htmldir),1))[1]),''
++  );
++
++  my ($with_ActiveState, $htmltool);
++
++  if ( $with_ActiveState = $self->_is_ActivePerl
++    && eval { require ActivePerl::DocTools::Pod; 1 }
++  ) {
++    $htmltool = "ActiveState::DocTools::Pod " .
++      ActiveState::DocTools::Pod->VERSION;
++  }
++  else {
++      require Module::Build::PodParser;
++      require Pod::Html;
++    $htmltool = "Pod::Html " .  Pod::Html->VERSION;
++  }
++  $self->log_verbose("Converting Pod to HTML with $htmltool\n");
++
++  my $errors = 0;
++
++  POD:
+   foreach my $pod ( keys %$pods ) {
+ 
+     my ($name, $path) = File::Basename::fileparse($pods->{$pod},
+-                                                 file_qr('\.(?:pm|plx?|pod)$'));
++      $self->file_qr('\.(?:pm|plx?|pod)$')
++    );
+     my @dirs = File::Spec->splitdir( File::Spec->canonpath( $path ) );
+     pop( @dirs ) if scalar(@dirs) && $dirs[-1] eq File::Spec->curdir;
+ 
+-    my $fulldir = File::Spec->catfile($htmldir, @rootdirs, @dirs);
++    my $fulldir = File::Spec->catdir($htmldir, @rootdirs, @dirs);
++    my $tmpfile = File::Spec->catfile($fulldir, "${name}.tmp");
+     my $outfile = File::Spec->catfile($fulldir, "${name}.html");
+     my $infile  = File::Spec->abs2rel($pod);
+ 
+@@ -2868,11 +3274,23 @@
+         or die "Couldn't mkdir $fulldir: $!";
+     }
+ 
++    $self->log_verbose("HTMLifying $infile -> $outfile\n");
++    if ( $with_ActiveState ) {
++      my $depth = @rootdirs + @dirs;
++      my %opts = ( infile => $infile,
++        outfile => $tmpfile,
++        podpath => $podpath,
++        podroot => $podroot,
++        index => 1,
++        depth => $depth,
++      );
++      eval {
++        ActivePerl::DocTools::Pod::pod2html(%opts);
++        1;
++      } or $self->log_warn("[$htmltool] pod2html (" .
++        join(", ", map { "q{$_} => q{$opts{$_}}" } (keys %opts)) . ") failed: $@");
++    } else {
+     my $path2root = join( '/', ('..') x (@rootdirs+@dirs) );
+-    my $htmlroot = join( '/',
+-			 ($path2root,
+-			  $self->installdirs eq 'core' ? () : qw(site) ) );
+-
+     my $fh = IO::File->new($infile) or die "Can't read $infile: $!";
+     my $abstract = Module::Build::PodParser->new(fh => $fh)->get_abstract();
+ 
+@@ -2884,21 +3302,49 @@
+                 "--title=$title",
+                 "--podpath=$podpath",
+                 "--infile=$infile",
+-                "--outfile=$outfile",
+-                '--podroot=' . $self->blib,
+-                "--htmlroot=$htmlroot",
++        "--outfile=$tmpfile",
++        "--podroot=$podroot",
++        "--htmlroot=$path2root",
+                );
+ 
+     if ( eval{Pod::Html->VERSION(1.03)} ) {
+       push( @opts, ('--header', '--backlink=Back to Top') );
+-      push( @opts, "--css=$path2root/" . $self->html_css) if $self->html_css;
+     }
+ 
+-    $self->log_info("HTMLifying $infile -> $outfile\n");
+-    $self->log_verbose("pod2html @opts\n");
++      $self->log_verbose("P::H::pod2html @opts\n");
+     eval { Pod::Html::pod2html(@opts); 1 } 
+-      or $self->log_warn("pod2html @opts failed: $@");
++        or $self->log_warn("[$htmltool] pod2html( " .
++        join(", ", map { "q{$_}" } @opts) . ") failed: $@");
++    }
++    # We now have to cleanup the resulting html file
++    if ( ! -r $tmpfile ) {
++      $errors++;
++      next POD;
++    }
++    my $fh = IO::File->new($tmpfile) or die "Can't read $tmpfile: $!";
++    my $html = join('',<$fh>);
++    $fh->close;
++    if (!$self->_is_ActivePerl) {
++      # These fixups are already done by AP::DT:P:pod2html
++      # The output from pod2html is NOT XHTML!
++      # IE6+ will display content that is not valid for DOCTYPE
++      $html =~ s#^<!DOCTYPE .*?>#<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">#im;
++      $html =~ s#<html xmlns="http://www.w3.org/1999/xhtml">#<html>#i;
++
++      # IE6+ will not display local HTML files with strict
++      # security without this comment
++      $html =~ s#<head>#<head>\n<!-- saved from url=(0017)http://localhost/ -->#i;
+   }
++    # Fixup links that point to our temp blib
++    $html =~ s/\Q$blibdir\E//g;
++
++    $fh = IO::File->new(">$outfile") or die "Can't write $outfile: $!";
++    print $fh $html;
++    $fh->close;
++    unlink($tmpfile);
++  }
++
++  return ! $errors;
+ 
+ }
+ 
+@@ -2944,7 +3390,7 @@
+   delete $installmap->{read};
+   delete $installmap->{write};
+ 
+-  my $text_suffix = file_qr('\.(pm|pod)$');
++  my $text_suffix = $self->file_qr('\.(pm|pod)$');
+ 
+   while (my $localdir = each %$installmap) {
+     my @localparts = File::Spec->splitdir($localdir);
+@@ -2982,7 +3428,28 @@
+   my ($self) = @_;
+   require ExtUtils::Install;
+   $self->depends_on('build');
+-  ExtUtils::Install::install($self->install_map, !$self->quiet, 0, $self->{args}{uninst}||0);
++  ExtUtils::Install::install($self->install_map, $self->verbose, 0, $self->{args}{uninst}||0);
++  if ($self->_is_ActivePerl && $self->{_completed_actions}{html}) {
++    $self->log_info("Building ActivePerl Table of Contents\n");
++    eval { ActivePerl::DocTools::WriteTOC(verbose => $self->verbose ? 1 : 0); 1; }
++      or $self->log_warn("AP::DT:: WriteTOC() failed: $@");
++  }
++  if ($self->_is_ActivePPM) {
++    # We touch 'lib/perllocal.pod'. There is an existing logic in subroutine _init_db()
++    # of 'ActivePerl/PPM/InstallArea.pm' that says that if 'lib/perllocal.pod' has a 'date-last-touched'
++    # greater than that of the PPM SQLite databases ('etc/ppm-perl-area.db' and/or
++    # 'site/etc/ppm-site-area.db') then the PPM SQLite databases are rebuilt from scratch.
++
++    # in the following line, 'perllocal.pod' this is *always* 'lib/perllocal.pod', never 'site/lib/perllocal.pod'
++    my $F_perllocal = File::Spec->catfile($self->install_sets('core', 'lib'), 'perllocal.pod');
++    my $dt_stamp = time;
++
++    $self->log_info("For ActivePerl's PPM: touch '$F_perllocal'\n");
++
++    open PERLLOCAL, ">>$F_perllocal";
++    close PERLLOCAL;
++    utime($dt_stamp, $dt_stamp, $F_perllocal);
++  }
+ }
+ 
+ sub ACTION_fakeinstall {
+@@ -3013,8 +3480,63 @@
+   only::install::install(%onlyargs);
+ }
+ 
++sub ACTION_installdeps {
++  my ($self) = @_;
++
++  # XXX include feature prerequisites as optional prereqs?
++
++  my $info = $self->_enum_prereqs;
++  if (! $info ) {
++    $self->log_info( "No prerequisites detected\n" );
++    return;
++  }
++
++  my $failures = $self->prereq_failures($info);
++  if ( ! $failures ) {
++    $self->log_info( "All prerequisites satisfied\n" );
++    return;
++  }
++
++  my @install;
++  while (my ($type, $prereqs) = each %$failures) {
++    if($type =~ m/^(?:\w+_)?requires$/) {
++      push(@install, keys %$prereqs);
++      next;
++    }
++    $self->log_info("Checking optional dependencies:\n");
++    while (my ($module, $status) = each %$prereqs) {
++      push(@install, $module) if($self->y_n("Install $module?", 'y'));
++    }
++  }
++
++  return unless @install;
++
++  my ($command, @opts) = $self->split_like_shell($self->cpan_client);
++
++  # relative command should be relative to our active Perl
++  # so we need to locate that command
++  if ( ! File::Spec->file_name_is_absolute( $command ) ) {
++    my @bindirs = File::Basename::dirname($self->perl);
++    push @bindirs, map {$self->config->{"install${_}bin"}} '','site','vendor';
++    for my $d ( @bindirs ) {
++      my $abs_cmd = $self->find_command(File::Spec->catfile( $d, $command ));
++      if ( defined $abs_cmd ) {
++        $command = $abs_cmd;
++        last;
++      }
++    }
++  }
++
++  if ( ! -x $command ) {
++    die "cpan_client '$command' is not executable\n";
++  }
++
++  $self->do_system($command, @opts, @install);
++}
++
+ sub ACTION_clean {
+   my ($self) = @_;
++  $self->log_info("Cleaning up build files\n");
+   foreach my $item (map glob($_), $self->cleanup) {
+     $self->delete_filetree($item);
+   }
+@@ -3023,11 +3545,15 @@
+ sub ACTION_realclean {
+   my ($self) = @_;
+   $self->depends_on('clean');
+-  $self->delete_filetree($self->config_dir, $self->build_script);
++  $self->log_info("Cleaning up configuration files\n");
++  $self->delete_filetree(
++    $self->config_dir, $self->mymetafile, $self->build_script
++  );
+ }
+ 
+ sub ACTION_ppd {
+   my ($self) = @_;
++
+   require Module::Build::PPMMaker;
+   my $ppd = Module::Build::PPMMaker->new();
+   my $file = $ppd->make_ppd(%{$self->{args}}, build => $self);
+@@ -3076,7 +3602,6 @@
+   }
+ 
+   foreach my $type ( qw(bin lib) ) {
+-    local $self->{properties}{html_css} = 'Active.css';
+     $self->htmlify_pods( $type, File::Spec->catdir($ppm, 'blib', 'html') );
+   }
+ 
+@@ -3113,7 +3638,8 @@
+ sub ACTION_dist {
+   my ($self) = @_;
+   
+-  $self->depends_on('distdir');
++  # MUST dispatch() and not depends_ok() so we generate a clean distdir
++  $self->dispatch('distdir');
+   
+   my $dist_dir = $self->dist_dir;
+   
+@@ -3124,6 +3650,8 @@
+ sub ACTION_distcheck {
+   my ($self) = @_;
+ 
++  $self->_check_manifest_skip unless $self->invoked_action eq 'distclean';
++
+   require ExtUtils::Manifest;
+   local $^W; # ExtUtils::Manifest is not warnings clean.
+   my ($missing, $extra) = ExtUtils::Manifest::fullcheck();
+@@ -3138,6 +3666,25 @@
+   }
+ }
+ 
++sub _check_mymeta_skip {
++  my $self = shift;
++  my $maniskip = shift || 'MANIFEST.SKIP';
++
++  require ExtUtils::Manifest;
++  local $^W; # ExtUtils::Manifest is not warnings clean.
++
++  # older ExtUtils::Manifest had a private _maniskip
++  my $skip_factory = ExtUtils::Manifest->can('maniskip')
++                  || ExtUtils::Manifest->can('_maniskip');
++
++  my $mymetafile = $self->mymetafile;
++  # we can't check it, just add it anyway to be safe
++  unless ( $skip_factory && $skip_factory->($maniskip)->($mymetafile) ) {
++    $self->log_warn("File '$maniskip' does not include '$mymetafile'. Adding it now.\n");
++    $self->_append_maniskip("^$mymetafile\$", $maniskip);
++  }
++}
++
+ sub _add_to_manifest {
+   my ($self, $manifest, $lines) = @_;
+   $lines = [$lines] unless ref $lines;
+@@ -3162,7 +3709,7 @@
+   close $fh;
+   chmod($mode, $manifest);
+ 
+-  $self->log_info(map "Added to $manifest: $_\n", @$lines);
++  $self->log_verbose(map "Added to $manifest: $_\n", @$lines);
+ }
+ 
+ sub _sign_dir {
+@@ -3224,7 +3771,11 @@
+   my $self = shift;
+   require Module::Build::Compat;
+   $self->log_info("Creating Makefile.PL\n");
+-  Module::Build::Compat->create_makefile_pl($self->create_makefile_pl, $self, @_);
++  eval { Module::Build::Compat->create_makefile_pl($self->create_makefile_pl, $self, @_) };
++  if ( $@ ) {
++    1 while unlink 'Makefile.PL';
++    die "$@\n";
++  }
+   $self->_add_to_manifest('MANIFEST', 'Makefile.PL');
+ }
+ 
+@@ -3232,15 +3783,23 @@
+   my $self = shift;
+   $self->log_info("Creating LICENSE file\n");
+ 
++  if (  ! $self->_mb_feature('license_creation') ) {
++    $self->_warn_mb_feature_deps('license_creation');
++    die "Aborting.\n";
++  }
++
+   my $l = $self->license
+     or die "No license specified";
+ 
+   my $key = $self->valid_licenses->{$l}
+-    or die "'$l' isn't a license key we know about";
++    or die "'$l' isn't a recognized license\n",
++           "licenses we know about:\n",
++           map { "\t$_\n" } sort keys %{ $self->valid_licenses };
++
+   my $class = "Software::License::$key";
+ 
+   eval "use $class; 1"
+-    or die "Can't load Software::License to create LICENSE file: $@";
++    or die "Can't load Software::License::$key to create LICENSE file: $@";
+ 
+   $self->delete_filetree('LICENSE');
+ 
+@@ -3267,7 +3826,9 @@
+     return;
+   }
+ 
+-  if ( eval {require Pod::Readme; 1} ) {
++  # work around some odd Pod::Readme->new() failures in test reports by
++  # confirming that new() is available
++  if ( eval {require Pod::Readme; Pod::Readme->can('new') } ) {
+     $self->log_info("Creating README using Pod::Readme\n");
+ 
+     my $parser = Pod::Readme->new;
+@@ -3323,13 +3884,27 @@
+   }
+ }
+ 
++sub do_create_bundle_inc {
++  my $self = shift;
++  my $dist_inc = File::Spec->catdir( $self->dist_dir, 'inc' );
++  require inc::latest;
++  inc::latest->write($dist_inc, @{$self->bundle_inc_preload});
++  inc::latest->bundle_module($_, $dist_inc) for @{$self->bundle_inc};
++  return 1;
++}
++
+ sub ACTION_distdir {
+   my ($self) = @_;
+ 
++  if ( @{$self->bundle_inc} && ! $self->_mb_feature('inc_bundling_support') ) {
++    $self->_warn_mb_feature_deps('inc_bundling_support');
++    die "Aborting.\n";
++  }
++
+   $self->depends_on('distmeta');
+ 
+   my $dist_files = $self->_read_manifest('MANIFEST')
+-    or die "Can't create distdir without a MANIFEST file - run 'manifest' action first";
++    or die "Can't create distdir without a MANIFEST file - run 'manifest' action first.\n";
+   delete $dist_files->{SIGNATURE};  # Don't copy, create a fresh one
+   die "No files found in MANIFEST - try running 'manifest' action?\n"
+     unless ($dist_files and keys %$dist_files);
+@@ -3343,9 +3918,12 @@
+   $self->add_to_cleanup($dist_dir);
+   
+   foreach my $file (keys %$dist_files) {
++    next if $file =~ m{^MYMETA\.}; # Double check that we skip MYMETA.*
+     my $new = $self->copy_if_modified(from => $file, to_dir => $dist_dir, verbose => 0);
+   }
+   
++  $self->do_create_bundle_inc if @{$self->bundle_inc};
++
+   $self->_sign_dir($dist_dir) if $self->{properties}{sign};
+ }
+ 
+@@ -3385,8 +3963,7 @@
+     my $self = shift;
+ 
+     require ExtUtils::Manifest;
+-    return ExtUtils::Manifest->VERSION >= 1.50 ? 1 : 0;
+-    return 0;
++    return eval { ExtUtils::Manifest->VERSION(1.50); 1 };
+ }
+ 
+ 
+@@ -3427,11 +4004,45 @@
+ sub _slurp {
+     my $self = shift;
+     my $file = shift;
+-    open my $fh, "<", $file or croak "Can't open $file: $!";
++    my $mode = shift || "";
++    open my $fh, "<$mode", $file or croak "Can't open $file for reading: $!";
+     local $/;
+     return <$fh>;
+ }
+ 
++sub _spew {
++    my $self = shift;
++    my $file = shift;
++    my $content = shift || "";
++    my $mode = shift || "";
++    open my $fh, ">$mode", $file or croak "Can't open $file for writing: $!";
++    print {$fh} $content;
++    close $fh;
++}
++
++sub _case_tolerant {
++  my $self = shift;
++  if ( ref $self ) {
++    $self->{_case_tolerant} = File::Spec->case_tolerant
++      unless defined($self->{_case_tolerant});
++    return $self->{_case_tolerant};
++  }
++  else {
++    return File::Spec->case_tolerant;
++  }
++}
++
++sub _append_maniskip {
++  my $self = shift;
++  my $skip = shift;
++  my $file = shift || 'MANIFEST.SKIP';
++  return unless defined $skip && length $skip;
++  my $fh = IO::File->new(">> $file")
++    or die "Can't open $file: $!";
++
++  print $fh "$skip\n";
++  $fh->close();
++}
+ 
+ sub _write_default_maniskip {
+   my $self = shift;
+@@ -3443,6 +4054,8 @@
+                                                : $self->_slurp( $self->_default_maniskip );
+ 
+   $content .= <<'EOF';
++# Avoid configuration metadata file
++^MYMETA\.
+ 
+ # Avoid Module::Build generated and utility files.
+ \bBuild$
+@@ -3451,6 +4064,7 @@
+ \bBuild.COM$
+ \bBUILD.COM$
+ \bbuild.com$
++^MANIFEST\.SKIP
+ 
+ # Avoid archives of this distribution
+ EOF
+@@ -3463,23 +4077,49 @@
+   return;
+ }
+ 
+-sub ACTION_manifest {
++sub _check_manifest_skip {
+   my ($self) = @_;
+ 
+   my $maniskip = 'MANIFEST.SKIP';
+-  unless ( -e 'MANIFEST' || -e $maniskip ) {
+-    $self->log_warn("File '$maniskip' does not exist: Creating a default '$maniskip'\n");
++
++  if ( ! -e $maniskip ) {
++    $self->log_warn("File '$maniskip' does not exist: Creating a temporary '$maniskip'\n");
+     $self->_write_default_maniskip($maniskip);
++    $self->_unlink_on_exit($maniskip);
++  }
++  else {
++    # MYMETA must not be added to MANIFEST, so always confirm the skip
++    $self->_check_mymeta_skip( $maniskip );
+   }
+ 
++  return;
++}
++
++sub ACTION_manifest {
++  my ($self) = @_;
++
++  $self->_check_manifest_skip;
++
+   require ExtUtils::Manifest;  # ExtUtils::Manifest is not warnings clean.
+   local ($^W, $ExtUtils::Manifest::Quiet) = (0,1);
+   ExtUtils::Manifest::mkmanifest();
+ }
+ 
++sub ACTION_manifest_skip {
++  my ($self) = @_;
++
++  if ( -e 'MANIFEST.SKIP' ) {
++    $self->log_warn("MANIFEST.SKIP already exists.\n");
++    return 0;
++  }
++  $self->log_info("Creating a new MANIFEST.SKIP file\n");
++  return $self->_write_default_maniskip;
++  return -e 'MANIFEST.SKIP'
++}
++
+ # Case insensitive regex for files
+ sub file_qr {
+-    return File::Spec->case_tolerant ? qr($_[0])i : qr($_[0]);
++    return shift->{_case_tolerant} ? qr($_[0])i : qr($_[0]);
+ }
+ 
+ sub dist_dir {
+@@ -3508,6 +4148,62 @@
+   return @files;
+ }
+ 
++sub share_dir {
++  my $self = shift;
++  my $p = $self->{properties};
++
++  $p->{share_dir} = shift if @_;
++
++  # Always coerce to proper hash form
++  if    ( ! defined $p->{share_dir} ) {
++    return;
++  }
++  elsif ( ! ref $p->{share_dir}  ) {
++    # scalar -- treat as a single 'dist' directory
++    $p->{share_dir} = { dist => [ $p->{share_dir} ] };
++  }
++  elsif ( ref $p->{share_dir} eq 'ARRAY' ) {
++    # array -- treat as a list of 'dist' directories
++    $p->{share_dir} = { dist => $p->{share_dir} };
++  }
++  elsif ( ref $p->{share_dir} eq 'HASH' ) {
++    # hash -- check structure
++    my $share_dir = $p->{share_dir};
++    # check dist key
++    if ( defined $share_dir->{dist} ) {
++      if ( ! ref $share_dir->{dist} ) {
++        # scalar, so upgrade to arrayref
++        $share_dir->{dist} = [ $share_dir->{dist} ];
++      }
++      elsif ( ref $share_dir->{dist} ne 'ARRAY' ) {
++        die "'dist' key in 'share_dir' must be scalar or arrayref";
++      }
++    }
++    # check module key
++    if ( defined $share_dir->{module} ) {
++      my $mod_hash = $share_dir->{module};
++      if ( ref $mod_hash eq 'HASH' ) {
++        for my $k ( keys %$mod_hash ) {
++          if ( ! ref $mod_hash->{$k} ) {
++            $mod_hash->{$k} = [ $mod_hash->{$k} ];
++          }
++          elsif( ref $mod_hash->{$k} ne 'ARRAY' ) {
++            die "modules in 'module' key of 'share_dir' must be scalar or arrayref";
++          }
++        }
++      }
++      else {
++          die "'module' key in 'share_dir' must be hashref";
++      }
++    }
++  }
++  else {
++    die "'share_dir' must be hashref, arrayref or string";
++  }
++
++  return $p->{share_dir};
++}
++
+ sub script_files {
+   my $self = shift;
+ 
+@@ -3526,13 +4222,13 @@
+   }
+ 
+   my %pl_files = map {
+-    File::Spec->canonpath( File::Spec->case_tolerant ? uc $_ : $_ ) => 1 
++    File::Spec->canonpath( $_ ) => 1
+   } keys %{ $self->PL_files || {} };
+ 
+   my @bin_files = $self->_files_in('bin');
+ 
+   my %bin_map = map {
+-    $_ => File::Spec->canonpath( File::Spec->case_tolerant ? uc $_ : $_ ) 
++    $_ => File::Spec->canonpath( $_ )
+   } @bin_files;
+ 
+   return $_ = { map {$_ => 1} grep !$pl_files{$bin_map{$_}}, @bin_files };
+@@ -3543,6 +4239,7 @@
+   my %licenses = (
+     perl         => 'Perl_5',
+     apache       => 'Apache_2_0',
++    apache_1_1   => 'Apache_1_1',
+     artistic     => 'Artistic_1_0',
+     artistic_2   => 'Artistic_2_0',
+     lgpl         => 'LGPL_2_1',
+@@ -3565,6 +4262,7 @@
+   my %license_urls = (
+     perl         => 'http://dev.perl.org/licenses/',
+     apache       => 'http://apache.org/licenses/LICENSE-2.0',
++    apache_1_1   => 'http://apache.org/licenses/LICENSE-1.1',
+     artistic     => 'http://opensource.org/licenses/artistic-license.php',
+     artistic_2   => 'http://opensource.org/licenses/artistic-license-2.0.php',
+     lgpl         => 'http://opensource.org/licenses/lgpl-license.php',
+@@ -3602,7 +4300,6 @@
+ 
+ sub ACTION_distmeta {
+   my ($self) = @_;
+-
+   $self->do_create_makefile_pl if $self->create_makefile_pl;
+   $self->do_create_readme if $self->create_readme;
+   $self->do_create_license if $self->create_license;
+@@ -3636,7 +4333,11 @@
+     push @INC, File::Spec->catdir($self->blib, 'lib');
+   }
+ 
+-  if ( $self->write_metafile( $self->metafile, $self->generate_metadata ) ) {
++  if (
++    $self->write_metafile(
++      $self->metafile,$self->get_metadata(fatal=>1, auto => 1)
++    )
++  ){
+     $self->{wrote_metadata} = 1;
+     $self->_add_to_manifest('MANIFEST', $metafile);
+   }
+@@ -3644,42 +4345,40 @@
+   return 1;
+ }
+ 
+-sub generate_metadata {
++# We handle slurping from the metafile to ensure proper utf8 if possible
++sub read_metafile {
+   my $self = shift;
+-  my $node = {};
++  my ($metafile) = @_;
++  my $yaml;
+ 
+-  if ($self->_mb_feature('YAML_support')) {
+-    require YAML;
+-    require YAML::Node;
+-    # We use YAML::Node to get the order nice in the YAML file.
+-    $self->prepare_metadata( $node = YAML::Node->new({}) );
+-  } else {
+-    require Module::Build::YAML;
+-    my @order_keys;
+-    $self->prepare_metadata($node, \@order_keys);
+-    $node->{_order} = \@order_keys;
+-  }
+-  return $node;
++  my $class = $self->_mb_feature('YAML_support')
++            ? 'YAML::Tiny' : 'Module::Build::YAML' ;
++
++  eval "require $class; 1" or die $@;
++
++  my $string = $self->_slurp($metafile, $] < 5.8 ? "" : ":utf8");
++  my $meta = $class->read_string($string)
++    or $self->log_warn( "Error parsing '$metafile': " . $class->errstr . "\n");
++
++  return $meta->[0] || {};
+ }
+ 
++# We handle spewing to the metafile to ensure proper utf8 if possible
+ sub write_metafile {
+   my $self = shift;
+   my ($metafile, $node) = @_;
++  my $yaml;
+ 
+   if ($self->_mb_feature('YAML_support')) {
+     # XXX this is probably redundant, but stick with it
+-    require YAML;
+-    require YAML::Node;
+-    delete $node->{_order}; # XXX also probably redundant, but for safety
+-    # YAML API changed after version 0.30
+-    my $yaml_sub = $YAML::VERSION le '0.30' ? \&YAML::StoreFile : \&YAML::DumpFile;
+-    $yaml_sub->( $metafile, $node );
++    require YAML::Tiny;
++    $yaml = YAML::Tiny->new($node);
+   } else {
+-    # XXX probably redundant
+     require Module::Build::YAML;
+-    &Module::Build::YAML::DumpFile($metafile, $node);
++    $yaml = Module::Build::YAML->new($node);
+   }
+-  return 1;
++  my $string = $yaml->write_string;
++  return $self->_spew($metafile, $string, $] < 5.8 ? "" : ":utf8")
+ }
+ 
+ sub normalize_version {
+@@ -3701,10 +4400,48 @@
+   return $version;
+ }
+ 
++sub _normalize_prereqs {
++  my ($self) = @_;
++  my $p = $self->{properties};
++
++  # copy prereq data structures so we can modify them before writing to META
++  my %prereq_types;
++  for my $type ( 'configure_requires', @{$self->prereq_action_types} ) {
++    if (exists $p->{$type}) {
++      for my $mod ( keys %{ $p->{$type} } ) {
++        $prereq_types{$type}{$mod} =
++          $self->normalize_version($p->{$type}{$mod});
++      }
++    }
++  }
++  return \%prereq_types;
++}
++
++
++# wrapper around old prepare_metadata API;
++sub get_metadata {
++  my ($self, %args) = @_;
++  my $metadata = {};
++  $self->prepare_metadata( $metadata, undef, \%args );
++  return $metadata;
++}
++
++# To preserve compatibility with old API, $node *must* be a hashref
++# passed in to prepare_metadata.  $keys is an arrayref holding a
++# list of keys -- it's use is optional and generally no longer needed
++# but kept for back compatibility.  $args is an optional parameter to
++# support the new 'fatal' toggle
++
+ sub prepare_metadata {
+-  my ($self, $node, $keys) = @_;
++  my ($self, $node, $keys, $args) = @_;
++  unless ( ref $node eq 'HASH' ) {
++    croak "prepare_metadata() requires a hashref argument to hold output\n";
++  }
++  my $fatal = $args->{fatal} || 0;
+   my $p = $self->{properties};
+ 
++  $self->auto_config_requires if $args->{auto};
++
+   # A little helper sub
+   my $add_node = sub {
+     my ($name, $val) = @_;
+@@ -3715,18 +4452,32 @@
+   foreach (qw(dist_name dist_version dist_author dist_abstract license)) {
+     (my $name = $_) =~ s/^dist_//;
+     $add_node->($name, $self->$_());
+-    die "ERROR: Missing required field '$_' for META.yml\n"
+-      unless defined($node->{$name}) && length($node->{$name});
++    unless ( defined($node->{$name}) && length($node->{$name}) ) {
++      my $err = "ERROR: Missing required field '$_' for metafile\n";
++      if ( $fatal ) {
++        die $err;
++      }
++      else {
++        $self->log_warn($err);
++      }
++    }
+   }
+   $node->{version} = $self->normalize_version($node->{version}); 
+ 
+   if (defined( my $l = $self->license )) {
+-    die "Unknown license string '$l'"
+-      unless exists $self->valid_licenses->{ $l };
++    unless ( exists $self->valid_licenses->{ $l } ) {
++      my $err = "Unknown license string '$l'";
++      if ( $fatal ) {
++        die $err;
++      }
++      else {
++        $self->log_warn($err);
++      }
++    }
+ 
+     if (my $key = $self->valid_licenses->{ $l }) {
+       my $class = "Software::License::$key";
+-      if (eval "use $class; 1") {
++      if (eval "require Software::License; require $class; 1") {
+         # S::L requires a 'holder' key
+         $node->{resources}{license} = $class->new({holder=>"nobody"})->url;
+       }
+@@ -3737,28 +4488,10 @@
+     # XXX we are silently omitting the url for any unknown license
+   }
+ 
+-  # copy prereq data structures so we can modify them before writing to META
+-  my %prereq_types;
+-  for my $type ( 'configure_requires', @{$self->prereq_action_types} ) {
+-    if (exists $p->{$type}) {  
+-      for my $mod ( keys %{ $p->{$type} } ) {
+-        $prereq_types{$type}{$mod} = 
+-          $self->normalize_version($p->{$type}{$mod});
+-      }
+-    }
+-  }
+ 
+-  # add current Module::Build to configure_requires if there 
+-  # isn't one already specified (but not ourself, so we're not circular)
+-  if ( $self->dist_name ne 'Module-Build' 
+-    && $self->auto_configure_requires
+-    && ! exists $prereq_types{'configure_requires'}{'Module::Build'}
+-  ) {
+-    $prereq_types{configure_requires}{'Module::Build'} = $VERSION;
+-  }
+-
+-  for my $t ( keys %prereq_types ) {
+-      $add_node->($t, $prereq_types{$t});
++  my $prereqs = $self->_normalize_prereqs;
++  for my $t ( keys %$prereqs ) {
++      $add_node->($t, $prereqs->{$t});
+   }
+ 
+   if (exists $p->{dynamic_config}) {
+@@ -3767,7 +4500,7 @@
+   my $pkgs = eval { $self->find_dist_packages };
+   if ($@) {
+     $self->log_warn("$@\nWARNING: Possible missing or corrupt 'MANIFEST' file.\n" .
+-		    "Nothing to enter for 'provides' field in META.yml\n");
++		    "Nothing to enter for 'provides' field in metafile.\n");
+   } else {
+     $node->{provides} = $pkgs if %$pkgs;
+   }
+@@ -3811,27 +4544,37 @@
+   # private stock.
+ 
+   my $manifest = $self->_read_manifest('MANIFEST')
+-    or die "Can't find dist packages without a MANIFEST file - run 'manifest' action first";
++    or die "Can't find dist packages without a MANIFEST file\nRun 'Build manifest' to generate one\n";
+ 
+   # Localize
+   my %dist_files = map { $self->localize_file_path($_) => $_ }
+                        keys %$manifest;
+ 
+-  my @pm_files = grep {exists $dist_files{$_}} keys %{ $self->find_pm_files };
++  my @pm_files = grep { $_ !~ m{^t} } # skip things in t/
++                   grep {exists $dist_files{$_}}
++                     keys %{ $self->find_pm_files };
++
++  return $self->find_packages_in_files(\@pm_files, \%dist_files);
++}
++
++# XXX Do not document this function; mst wrote it and now says the API is
++# stupid and needs to be fixed and it shouldn't become a public API until then
++sub find_packages_in_files {
++  my ($self, $file_list, $filename_map) = @_;
+ 
+   # First, we enumerate all packages & versions,
+   # separating into primary & alternative candidates
+   my( %prime, %alt );
+-  foreach my $file (@pm_files) {
+-    next if $dist_files{$file} =~ m{^t/};  # Skip things in t/
+-
+-    my @path = split( /\//, $dist_files{$file} );
++  foreach my $file (@{$file_list}) {
++    my $mapped_filename = $filename_map->{$file};
++    my @path = split( /\//, $mapped_filename );
+     (my $prime_package = join( '::', @path[1..$#path] )) =~ s/\.pm$//;
+ 
+     my $pm_info = Module::Build::ModuleInfo->new_from_file( $file );
+ 
+     foreach my $package ( $pm_info->packages_inside ) {
+       next if $package eq 'main';  # main can appear numerous times, ignore
++      next if $package eq 'DB';    # special debugging package, ignore
+       next if grep /^_/, split( /::/, $package ); # private package, ignore
+ 
+       my $version = $pm_info->version( $package );
+@@ -3841,12 +4584,12 @@
+ 	  # M::B::ModuleInfo will handle this conflict
+ 	  die "Unexpected conflict in '$package'; multiple versions found.\n";
+ 	} else {
+-	  $prime{$package}{file} = $dist_files{$file};
++          $prime{$package}{file} = $mapped_filename;
+           $prime{$package}{version} = $version if defined( $version );
+         }
+       } else {
+ 	push( @{$alt{$package}}, {
+-				  file    => $dist_files{$file},
++                                  file    => $mapped_filename,
+ 				  version => $version,
+ 			         } );
+       }
+@@ -3976,13 +4719,21 @@
+     $self->do_system($self->split_like_shell($self->{args}{tar}), $tar_flags, "$file.tar", $dir);
+     $self->do_system($self->split_like_shell($self->{args}{gzip}), "$file.tar") if $self->{args}{gzip};
+   } else {
+-    require Archive::Tar;
++    eval { require Archive::Tar && Archive::Tar->VERSION(1.09); 1 }
++      or die "You must install Archive::Tar 1.09+ to make a distribution tarball\n".
++             "or specify a binary tar program with the '--tar' option.\n".
++             "See the documentation for the 'dist' action.\n";
++
++    my $files = $self->rscan_dir($dir);
+ 
+     # Archive::Tar versions >= 1.09 use the following to enable a compatibility
+     # hack so that the resulting archive is compatible with older clients.
+-    $Archive::Tar::DO_NOT_USE_PREFIX = 0;
++    # If no file path is 100 chars or longer, we disable the prefix field
++    # for maximum compatibility.  If there are any long file paths then we
++    # need the prefix field after all.
++    $Archive::Tar::DO_NOT_USE_PREFIX =
++      (grep { length($_) >= 100 } @$files) ? 0 : 1;
+ 
+-    my $files = $self->rscan_dir($dir);
+     my $tar   = Archive::Tar->new;
+     $tar->add_files(@$files);
+     for my $f ($tar->get_files) {
+@@ -4018,73 +4769,118 @@
+   return $map->{$type} = $value;
+ }
+ 
++sub install_sets {
++  # Usage: install_sets('site'), install_sets('site', 'lib'),
++  #   or install_sets('site', 'lib' => $value);
++  my ($self, $dirs, $key, $value) = @_;
++  $dirs = $self->installdirs unless defined $dirs;
++  # update property before merging with defaults
++  if ( @_ == 4 && defined $dirs && defined $key) {
++    # $value can be undef; will mask default
++    $self->{properties}{install_sets}{$dirs}{$key} = $value;
++  }
++  my $map = { $self->_merge_arglist(
++    $self->{properties}{install_sets},
++    $self->_default_install_paths->{install_sets}
++  )};
++  if ( defined $dirs && defined $key ) {
++    return $map->{$dirs}{$key};
++  }
++  elsif ( defined $dirs ) {
++    return $map->{$dirs};
++  }
++  else {
++    croak "Can't determine installdirs for install_sets()";
++  }
++}
++
++sub original_prefix {
++  # Usage: original_prefix(), original_prefix('lib'),
++  #   or original_prefix('lib' => $value);
++  my ($self, $key, $value) = @_;
++  # update property before merging with defaults
++  if ( @_ == 3 && defined $key) {
++    # $value can be undef; will mask default
++    $self->{properties}{original_prefix}{$key} = $value;
++  }
++  my $map = { $self->_merge_arglist(
++    $self->{properties}{original_prefix},
++    $self->_default_install_paths->{original_prefix}
++  )};
++  return $map unless defined $key;
++  return $map->{$key}
++}
++
+ sub install_base_relpaths {
+   # Usage: install_base_relpaths(), install_base_relpaths('lib'),
+   #   or install_base_relpaths('lib' => $value);
+   my $self = shift;
+-  my $map = $self->{properties}{install_base_relpaths};
++  if ( @_ > 1 ) { # change values before merge
++    $self->_set_relpaths($self->{properties}{install_base_relpaths}, @_);
++  }
++  my $map = { $self->_merge_arglist(
++    $self->{properties}{install_base_relpaths},
++    $self->_default_install_paths->{install_base_relpaths}
++  )};
+   return $map unless @_;
+-  return $self->_relpaths($map, @_);
++  my $relpath = $map->{$_[0]};
++  return defined $relpath ? File::Spec->catdir( @$relpath ) : undef;
+ }
+ 
+-
+-# Translated from ExtUtils::MM_Any::init_INSTALL_from_PREFIX
+-sub prefix_relative {
+-  my ($self, $type) = @_;
+-  my $installdirs = $self->installdirs;
+-
+-  my $relpath = $self->install_sets($installdirs)->{$type};
+-
+-  return $self->_prefixify($relpath,
+-			   $self->original_prefix($installdirs),
+-			   $type,
+-			  );
++# Defaults to use in case the config install paths cannot be prefixified.
++sub prefix_relpaths {
++  # Usage: prefix_relpaths('site'), prefix_relpaths('site', 'lib'),
++  #   or prefix_relpaths('site', 'lib' => $value);
++  my $self = shift;
++  my $installdirs = shift || $self->installdirs
++    or croak "Can't determine installdirs for prefix_relpaths()";
++  if ( @_ > 1 ) { # change values before merge
++    $self->{properties}{prefix_relpaths}{$installdirs} ||= {};
++    $self->_set_relpaths($self->{properties}{prefix_relpaths}{$installdirs}, @_);
++  }
++  my $map = {$self->_merge_arglist(
++    $self->{properties}{prefix_relpaths}{$installdirs},
++    $self->_default_install_paths->{prefix_relpaths}{$installdirs}
++  )};
++  return $map unless @_;
++  my $relpath = $map->{$_[0]};
++  return defined $relpath ? File::Spec->catdir( @$relpath ) : undef;
+ }
+ 
+-sub _relpaths {
++sub _set_relpaths {
+   my $self = shift;
+-  my( $map, $type, $value ) = ( @_, '<empty>' );
++  my( $map, $type, $value ) = @_;
+ 
+   Carp::croak( 'Type argument missing' )
+     unless defined( $type );
+ 
+-  my @value = ();
+-
+-  # delete existing value if $value is literal undef()
+-  unless ( defined( $value ) ) {
+-    delete( $map->{$type} );
+-    return undef;
+-  }
+-
+-  # return existing value if no new $value is given
+-  elsif ( $value eq '<empty>' ) {
+-    return undef unless exists $map->{$type};
+-    @value = @{ $map->{$type} };
++  # set undef if $value is literal undef()
++  if ( ! defined( $value ) ) {
++    $map->{$type} = undef;
++    return;
+   }
+-
+   # set value if $value is a valid relative path
+   else {
+     Carp::croak( "Value must be a relative path" )
+       if File::Spec::Unix->file_name_is_absolute($value);
+ 
+-    @value = split( /\//, $value );
++    my @value = split( /\//, $value );
+     $map->{$type} = \@value;
+   }
+-
+-  return File::Spec->catdir( @value );
+ }
+ 
+-# Defaults to use in case the config install paths cannot be prefixified.
+-sub prefix_relpaths {
+-  # Usage: prefix_relpaths('site'), prefix_relpaths('site', 'lib'),
+-  #   or prefix_relpaths('site', 'lib' => $value);
+-  my $self = shift;
+-  my $installdirs = shift || $self->installdirs;
+-  my $map = $self->{properties}{prefix_relpaths}{$installdirs};
+-  return $map unless @_;
+-  return $self->_relpaths($map, @_);
+-}
++# Translated from ExtUtils::MM_Any::init_INSTALL_from_PREFIX
++sub prefix_relative {
++  my ($self, $type) = @_;
++  my $installdirs = $self->installdirs;
++
++  my $relpath = $self->install_sets($installdirs)->{$type};
+ 
++  return $self->_prefixify($relpath,
++			   $self->original_prefix($installdirs),
++			   $type,
++			  );
++}
+ 
+ # Translated from ExtUtils::MM_Unix::prefixify()
+ sub _prefixify {
+@@ -4169,6 +4965,13 @@
+     my $localdir = File::Spec->catdir( $blib, $type );
+     next unless -e $localdir;
+ 
++    # the line "...next if (($type eq 'bindoc'..." was one of many changes introduced for
++    # improving HTML generation on ActivePerl, see https://rt.cpan.org/Public/Bug/Display.html?id=53478
++    # Most changes were ok, but this particular line caused test failures in t/manifypods.t on windows,
++    # therefore it is commented out.
++
++    # ********* next if (($type eq 'bindoc' || $type eq 'libdoc') && not $self->is_unixish);
++
+     if (my $dest = $self->install_destination($type)) {
+       $map{$localdir} = $dest;
+     } else {
+@@ -4242,7 +5045,7 @@
+   my $deleted = 0;
+   foreach (@_) {
+     next unless -e $_;
+-    $self->log_info("Deleting $_\n");
++    $self->log_verbose("Deleting $_\n");
+     File::Path::rmtree($_, 0, 0);
+     die "Couldn't remove '$_': $!\n" if -e $_;
+     $deleted++;
+@@ -4263,8 +5066,6 @@
+   my $self = shift;
+   my $s = $self->{stash};
+   return $s->{_cbuilder} if $s->{_cbuilder};
+-  die "Module::Build is not configured with C_support"
+-	  unless $self->_mb_feature('C_support');
+ 
+   require ExtUtils::CBuilder;
+   return $s->{_cbuilder} = ExtUtils::CBuilder->new(
+@@ -4277,19 +5078,23 @@
+   my ($self) = @_;
+   
+   my $p = $self->{properties};
+-  return $p->{have_compiler} if defined $p->{have_compiler};
++  return $p->{_have_c_compiler} if defined $p->{_have_c_compiler};
+   
+   $self->log_verbose("Checking if compiler tools configured... ");
+   my $b = eval { $self->cbuilder };
+-  my $have = $b && $b->have_compiler;
++  my $have = $b && eval { $b->have_compiler };
+   $self->log_verbose($have ? "ok.\n" : "failed.\n");
+-  return $p->{have_compiler} = $have;
++  return $p->{_have_c_compiler} = $have;
+ }
+ 
+ sub compile_c {
+   my ($self, $file, %args) = @_;
+-  my $b = $self->cbuilder;
+ 
++  if ( ! $self->have_c_compiler ) {
++    die "Error: no compiler detected to compile '$file'.  Aborting\n";
++  }
++
++  my $b = $self->cbuilder;
+   my $obj_file = $b->object_file($file);
+   $self->add_to_cleanup($obj_file);
+   return $obj_file if $self->up_to_date($file, $obj_file);
+@@ -4330,7 +5135,7 @@
+ sub compile_xs {
+   my ($self, $file, %args) = @_;
+   
+-  $self->log_info("$file -> $args{outfile}\n");
++  $self->log_verbose("$file -> $args{outfile}\n");
+ 
+   if (eval {require ExtUtils::ParseXS; 1}) {
+     
+@@ -4350,7 +5155,7 @@
+         'ExtUtils::typemap', \@INC
+     );
+     my $lib_typemap = Module::Build::ModuleInfo->find_module_by_name(
+-        'typemap', [File::Basename::dirname($file)]
++        'typemap', [File::Basename::dirname($file), File::Spec->rel2abs('.')]
+     );
+     push @typemaps, $lib_typemap if $lib_typemap;
+     @typemaps = map {+'-typemap', $_} @typemaps;
+@@ -4501,7 +5306,7 @@
+ 
+ sub do_system {
+   my ($self, @cmd) = @_;
+-  $self->log_info("@cmd\n");
++  $self->log_verbose("@cmd\n");
+ 
+   # Some systems proliferate huge PERL5LIBs, try to ameliorate:
+   my %seen;
+@@ -4560,7 +5365,7 @@
+   # Create parent directories
+   File::Path::mkpath(File::Basename::dirname($to_path), 0, oct(777));
+   
+-  $self->log_info("Copying $file -> $to_path\n") if $args{verbose};
++  $self->log_verbose("Copying $file -> $to_path\n");
+   
+   if ($^O eq 'os2') {# copy will not overwrite; 0x1 = overwrite
+     chmod 0666, $to_path;
+@@ -4610,7 +5415,7 @@
+ 
+   return 0 if @second_dirs < @first_dirs;
+   
+-  my $is_same = ( File::Spec->case_tolerant
++  my $is_same = ( $self->_case_tolerant
+ 		  ? sub {lc(shift()) eq lc(shift())}
+ 		  : sub {shift() eq shift()} );
+   
+diff -Nbur perl-5.10.1/lib/Module/Build/Bundling.pod perl-5.10.1/lib/Module-1/Build/Bundling.pod
+--- perl-5.10.1/lib/Module/Build/Bundling.pod	1970-01-01 01:00:00.000000000 +0100
++++ perl-5.10.1/lib/Module-1/Build/Bundling.pod	2010-07-29 04:42:42.000000000 +0200
+@@ -0,0 +1,147 @@
++=head1 NAME
++
++Module::Build::Bundling - How to bundle Module::Build with a distribution
++
++=head1 SYNOPSIS
++
++  # Build.PL
++  use inc::latest 'Module::Build';
++
++  Module::Build->new(
++    module_name => 'Foo::Bar',
++    license => 'perl',
++  )->create_build_script;
++
++=head1 DESCRIPTION
++
++B<WARNING -- THIS IS AN EXPERIMENTAL FEATURE>
++
++In order to install a distribution using Module::Build, users must
++have Module::Build available on their systems.  There are two ways
++to do this.  The first way is to include Module::Build in the
++C<configure_requires> metadata field.  This field is supported by
++recent versions L<CPAN> and L<CPANPLUS> and is a standard feature
++in the Perl core as of Perl 5.10.1.  Module::Build now adds itself
++to C<configure_requires> by default.
++
++The second way supports older Perls that have not upgraded CPAN or
++CPANPLUS and involves bundling an entire copy of Module::Build
++into the distribution's C<inc/> directory.  This is the same approach
++used by L<Module::Install>, a modern wrapper around ExtUtils::MakeMaker
++for Makefile.PL based distributions.
++
++The "trick" to making this work for Module::Build is making sure the
++highest version Module::Build is used, whether this is in C<inc/> or
++already installed on the user's system.  This ensures that all necessary
++features are available as well as any new bug fixes.  This is done using
++the new L<inc::latest> module.
++
++A "normal" Build.PL looks like this (with only the minimum required
++fields):
++
++  use Module::Build;
++
++  Module::Build->new(
++    module_name => 'Foo::Bar',
++    license     => 'perl',
++  )->create_build_script;
++
++A "bundling" Build.PL replaces the initial "use" line with a nearly
++transparent replacement:
++
++  use inc::latest 'Module::Build';
++
++  Module::Build->new(
++    module_name => 'Foo::Bar',
++    license => 'perl',
++  )->create_build_script;
++
++For I<authors>, when "Build dist" is run, Module::Build will be
++automatically bundled into C<inc> according to the rules for
++L<inc::latest>.
++
++For I<users>, inc::latest will load the latest Module::Build, whether
++installed or bundled in C<inc/>.
++
++=head1 BUNDLING OTHER CONFIGURATION DEPENDENCIES
++
++The same approach works for other configuration dependencies -- modules
++that I<must> be available for Build.PL to run.  All other dependencies can
++be specified as usual in the Build.PL and CPAN or CPANPLUS will install
++them after Build.PL finishes.
++
++For example, to bundle the L<Devel::AssertOS::Unix> module (which ensures a
++"Unix-like" operating system), one could do this:
++
++  use inc::latest 'Devel::AssertOS::Unix';
++  use inc::latest 'Module::Build';
++
++  Module::Build->new(
++    module_name => 'Foo::Bar',
++    license => 'perl',
++  )->create_build_script;
++
++The C<inc::latest> module creates bundled directories based on the packlist
++file of an installed distribution.  Even though C<inc::latest> takes module
++name arguments, it is better to think of it as bundling and making
++available entire I<distributions>.  When a module is loaded through
++C<inc::latest>, it looks in all bundled distributions in C<inc/> for a
++newer module than can be found in the existing C<@INC> array.
++
++Thus, the module-name provided should usually be the "top-level" module
++name of a distribution, though this is not strictly required.  For example,
++L<Module::Build> has a number of heuristics to map module names to
++packlists, allowing users to do things like this:
++
++  use inc::latest 'Devel::AssertOS::Unix';
++
++even though Devel::AssertOS::Unix is contained within the Devel-CheckOS
++distribution.
++
++At the current time, packlists are required.  Thus, bundling dual-core
++modules, I<including Module::Build>, may require a 'forced install' over
++versions in the latest version of perl in order to create the necessary
++packlist for bundling.  This limitation will hopefully be addressed in a
++future version of Module::Build.
++
++=head2 WARNING -- How to Manage Dependency Chains
++
++Before bundling a distribution you must ensure that all prerequisites are
++also bundled and load in the correct order.  For Module::Build itself, this
++should not be necessary, but it is necessary for any other distribution.
++(A future release of Module::Build will hopefully address this deficiency.)
++
++For example, if you need C<Wibble>, but C<Wibble> depends on C<Wobble>,
++your Build.PL might look like this:
++
++  use inc::latest 'Wobble';
++  use inc::latest 'Wibble';
++  use inc::latest 'Module::Build';
++
++  Module::Build->new(
++    module_name => 'Foo::Bar',
++    license => 'perl',
++  )->create_build_script;
++
++Authors are strongly suggested to limit the bundling of additional
++dependencies if at all possible and to carefully test their distribution
++tarballs on older versions of Perl before uploading to CPAN.
++
++=head1 AUTHOR
++
++David Golden <dagolden@cpan.org>
++
++Development questions, bug reports, and patches should be sent to the
++Module-Build mailing list at <module-build@perl.org>.
++
++Bug reports are also welcome at
++<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Module-Build>.
++
++=head1 SEE ALSO
++
++perl(1), L<inc::latest>, L<Module::Build>(3), L<Module::Build::API>(3),
++L<Module::Build::Cookbook>(3),
++
++=cut
++
++# vim: tw=75
+diff -Nbur perl-5.10.1/lib/Module/Build/Compat.pm perl-5.10.1/lib/Module-1/Build/Compat.pm
+--- perl-5.10.1/lib/Module/Build/Compat.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Compat.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ 
+ use File::Basename ();
+ use File::Spec;
+@@ -10,6 +10,7 @@
+ use Config;
+ use Module::Build;
+ use Module::Build::ModuleInfo;
++use Module::Build::Version;
+ use Data::Dumper;
+ 
+ my %convert_installdirs = (
+@@ -64,6 +65,39 @@
+ # "LIB=foo make" is not the same as "perl Makefile.PL LIB=foo"
+ delete $macro_to_build{LIB};
+ 
++sub _merge_prereq {
++  my ($req, $breq) = @_;
++  $req ||= {};
++  $breq ||= {};
++
++  # validate formats
++  for my $p ( $req, $breq ) {
++    for my $k (keys %$p) {
++      next if $k eq 'perl';
++
++      my $v_obj = eval { Module::Build::Version->new($p->{$k}) };
++      if ( ! defined $v_obj ) {
++          die "A prereq of the form '$p->{$k}' for '$k' is not supported by Module::Build::Compat ( use a simpler version like '0.05' or 'v1.4.25' )\n";
++      }
++
++      # It seems like a lot of people trip over "0.1.2" stuff, so we help them here...
++      if ( $v_obj->is_qv ) {
++        my $proper_ver = $v_obj->numify;
++        warn "Dotted-decimal prereq '$p->{$k}' for '$k' is not portable - converting it to '$proper_ver'\n";
++        $p->{$k} = $proper_ver;
++      }
++    }
++  }
++  # merge
++  my $merge = { %$req };
++  for my $k ( keys %$breq ) {
++    my $v1 = $merge->{$k} || 0;
++    my $v2 = $breq->{$k};
++    $merge->{$k} = $v1 > $v2 ? $v1 : $v2;
++  }
++  return %$merge;
++}
++
+ 
+ sub create_makefile_pl {
+   my ($package, $type, $build, %args) = @_;
+@@ -71,6 +105,17 @@
+   die "Don't know how to build Makefile.PL of type '$type'"
+     unless $type =~ /^(small|passthrough|traditional)$/;
+ 
++  if ($type eq 'passthrough') {
++    $build->log_warn(<<"HERE");
++
++IMPORTANT NOTE: The '$type' style of Makefile.PL is deprecated and
++may be removed in a future version of Module::Build in favor of the
++'configure_requires' property.  See Module::Build::Compat
++documentation for details.
++
++HERE
++  }
++
+   my $fh;
+   if ($args{fh}) {
+     $fh = $args{fh};
+@@ -87,7 +132,8 @@
+   # Makefile.PL
+   my $requires = $build->requires;
+   if ( my $minimum_perl = $requires->{perl} ) {
+-    print {$fh} "require $minimum_perl;\n";
++    my $min_ver = Module::Build::Version->new($minimum_perl)->numify;
++    print {$fh} "require $min_ver;\n";
+   }
+ 
+   # If a *bundled* custom subclass is being used, make sure we add its
+@@ -176,7 +222,7 @@
+ 		  );
+     %MM_Args = (%name, %version);
+     
+-    %prereq = ( %{$build->requires}, %{$build->build_requires} );
++    %prereq = _merge_prereq( $build->requires, $build->build_requires );
+     %prereq = map {$_, $prereq{$_}} sort keys %prereq;
+     
+      delete $prereq{perl};
+@@ -189,7 +235,7 @@
+     $MM_Args{PL_FILES} = $build->PL_files || {};
+ 
+     if ($build->recursive_test_files) {
+-        $MM_Args{TESTS} = join q{ }, $package->_test_globs($build);
++        $MM_Args{test} = { TESTS => join q{ }, $package->_test_globs($build) };
+     }
+ 
+     local $Data::Dumper::Terse = 1;
+@@ -318,7 +364,9 @@
+   my $unlink = $class->oneliner('1 while unlink $ARGV[0]', [], [$args{makefile}]);
+   $unlink =~ s/\$/\$\$/g unless $class->is_vmsish;
+ 
+-  my $maketext = <<"EOF";
++  my $maketext = ($^O eq 'os2' ? "SHELL = sh\n\n" : '');
++
++  $maketext .= <<"EOF";
+ all : force_do_it
+ 	$perl $Build
+ realclean : force_do_it
+@@ -362,14 +410,12 @@
+   my $prereqs = eval do {local $/; <$fh>};
+   close $fh;
+   
++  my %merged = _merge_prereq( $prereqs->{requires}, $prereqs->{build_requires} );
+   my @prereq;
+-  foreach my $section (qw/build_requires requires/) {
+-    foreach (keys %{$prereqs->{$section}}) {
++  foreach (sort keys %merged) {
+       next if $_ eq 'perl';
+-      push @prereq, "$_=>q[$prereqs->{$section}{$_}]";
++    push @prereq, "$_=>q[$merged{$_}]";
+     }
+-  }
+-
+   return unless @prereq;
+   return "#     PREREQ_PM => { " . join(", ", @prereq) . " }\n\n";
+ }
+@@ -412,7 +458,7 @@
+   my $build = Module::Build->new
+     ( module_name => 'Foo::Bar',
+       license     => 'perl',
+-      create_makefile_pl => 'passthrough' );
++      create_makefile_pl => 'traditional' );
+   ...
+ 
+ 
+@@ -446,6 +492,18 @@
+ 
+ =over 4
+ 
++=item traditional
++
++A F<Makefile.PL> will be created in the "traditional" style, i.e. it will
++use C<ExtUtils::MakeMaker> and won't rely on C<Module::Build> at all.
++In order to create the F<Makefile.PL>, we'll include the C<requires> and
++C<build_requires> dependencies as the C<PREREQ_PM> parameter.
++
++You don't want to use this style if during the C<perl Build.PL> stage
++you ask the user questions, or do some auto-sensing about the user's
++environment, or if you subclass C<Module::Build> to do some
++customization, because the vanilla F<Makefile.PL> won't do any of that.
++
+ =item small
+ 
+ A small F<Makefile.PL> will be created that passes all functionality
+@@ -453,24 +511,22 @@
+ already have C<Module::Build> installed in order to use this, or else
+ they'll get a module-not-found error.
+ 
+-=item passthrough
++=item passthrough (DEPRECATED)
+ 
+ This is just like the C<small> option above, but if C<Module::Build> is
+ not already installed on the user's system, the script will offer to
+ use C<CPAN.pm> to download it and install it before continuing with
+ the build.
+ 
+-=item traditional
+-
+-A F<Makefile.PL> will be created in the "traditional" style, i.e. it will
+-use C<ExtUtils::MakeMaker> and won't rely on C<Module::Build> at all.
+-In order to create the F<Makefile.PL>, we'll include the C<requires> and
+-C<build_requires> dependencies as the C<PREREQ_PM> parameter.
+-
+-You don't want to use this style if during the C<perl Build.PL> stage
+-you ask the user questions, or do some auto-sensing about the user's
+-environment, or if you subclass C<Module::Build> to do some
+-customization, because the vanilla F<Makefile.PL> won't do any of that.
++This option has been deprecated and may be removed in a future version
++of Module::Build.  Modern CPAN.pm and CPANPLUS will recognize the
++C<configure_requires> metadata property and install Module::Build before
++running Build.PL if Module::Build is listed and Module::Build now
++adds itself to configure_requires by default.
++
++Perl 5.10.1 includes C<configure_requires> support.  In the future, when
++C<configure_requires> support is deemed sufficiently widespread, the
++C<passthrough> style will be removed.
+ 
+ =back
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Config.pm perl-5.10.1/lib/Module-1/Build/Config.pm
+--- perl-5.10.1/lib/Module/Build/Config.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Config.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Config;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Cookbook.pm perl-5.10.1/lib/Module-1/Build/Cookbook.pm
+--- perl-5.10.1/lib/Module/Build/Cookbook.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Cookbook.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -1,7 +1,7 @@
+ package Module::Build::Cookbook;
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ 
+ 
+ =head1 NAME
+diff -Nbur perl-5.10.1/lib/Module/Build/Dumper.pm perl-5.10.1/lib/Module-1/Build/Dumper.pm
+--- perl-5.10.1/lib/Module/Build/Dumper.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Dumper.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -1,7 +1,7 @@
+ package Module::Build::Dumper;
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ 
+ # This is just a split-out of a wrapper function to do Data::Dumper
+ # stuff "the right way".  See:
+diff -Nbur perl-5.10.1/lib/Module/Build/ModuleInfo.pm perl-5.10.1/lib/Module-1/Build/ModuleInfo.pm
+--- perl-5.10.1/lib/Module/Build/ModuleInfo.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/ModuleInfo.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -8,13 +8,14 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ 
+ use File::Spec;
+ use IO::File;
+ use Module::Build::Version;
+ 
++my $V_NUM_REGEXP = qr{v?[0-9._]+};  # crudely, a v-string or decimal
+ 
+ my $PKG_REGEXP  = qr{   # match a package declaration
+   ^[\s\{;]*             # intro chars on a line
+@@ -22,6 +23,8 @@
+   \s+                   # whitespace
+   ([\w:]+)              # a package name
+   \s*                   # optional whitespace
++  ($V_NUM_REGEXP)?        # optional version number
++  \s*                   # optional whitesapce
+   ;                     # semicolon line terminator
+ }x;
+ 
+@@ -223,8 +226,8 @@
+       if ( $line =~ $PKG_REGEXP ) {
+ 	$pkg = $1;
+ 	push( @pkgs, $pkg ) unless grep( $pkg eq $_, @pkgs );
+-	$vers{$pkg} = undef unless exists( $vers{$pkg} );
+-	$need_vers = 1;
++        $vers{$pkg} = (defined $2 ? $2 : undef)  unless exists( $vers{$pkg} );
++        $need_vers = defined $2 ? 0 : 1;
+ 
+       # VERSION defined with full package spec, i.e. $Module::VERSION
+       } elsif ( $vers_fullname && $vers_pkg ) {
+@@ -318,18 +321,36 @@
+   local $^W;
+   # Try to get the $VERSION
+   eval $eval;
++  # some modules say $VERSION = $Foo::Bar::VERSION, but Foo::Bar isn't
++  # installed, so we need to hunt in ./lib for it
++  if ( $@ =~ /Can't locate/ && -d 'lib' ) {
++    local @INC = ('lib',@INC);
++    eval $eval;
++  }
+   warn "Error evaling version line '$eval' in $self->{filename}: $@\n"
+     if $@;
+   (ref($vsub) eq 'CODE') or
+     die "failed to build version sub for $self->{filename}";
+   my $result = eval { $vsub->() };
++  die "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n"
++    if $@;
+ 
+-  die "Could not get version from $self->{filename} by executing:\n$eval\n\nThe fatal error was: $@\n" if $@;
++  # Activestate apparently creates custom versions like '1.23_45_01', which
++  # cause M::B::Version to think it's an invalid alpha.  So check for that
++  # and strip them
++  my $num_dots = () = $result =~ m{\.}g;
++  my $num_unders = () = $result =~ m{_}g;
++  if ( substr($result,0,1) ne 'v' && $num_dots < 2 && $num_unders > 1 ) {
++    $result =~ s{_}{}g;
++  }
+ 
+   # Bless it into our own version class
+-  $result = Module::Build::Version->new($result);
++  my $vobj;
++  eval { $vobj = Module::Build::Version->new($result) };
++  warn "Version '$result' from $self->{filename} does not appear to be valid:\n$eval\n\nThe error was: $@\n"
++    if $@;
+ 
+-  return $result;
++  return $vobj;
+ }
+ }
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Notes.pm perl-5.10.1/lib/Module-1/Build/Notes.pm
+--- perl-5.10.1/lib/Module/Build/Notes.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Notes.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -4,7 +4,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Data::Dumper;
+ use IO::File;
+@@ -111,13 +111,61 @@
+   print {$fh} Module::Build::Dumper->_data_dump($data);
+ }
+ 
++my $orig_template = do { local $/; <DATA> };
++close DATA;
++
+ sub write_config_data {
+   my ($self, %args) = @_;
+ 
++  my $template = $orig_template;
++  $template =~ s/NOTES_NAME/$args{config_module}/g;
++  $template =~ s/MODULE_NAME/$args{module}/g;
++  $template =~ s/=begin private\n//;
++  $template =~ s/=end private/=cut/;
++
++  # strip out private POD markers we use to keep pod from being
++  # recognized for *this* source file
++  $template =~ s{$_\n}{} for '=begin private', '=end private';
++
+   my $fh = IO::File->new("> $args{file}") or die "Can't create '$args{file}': $!";
++  print {$fh} $template;
++  print {$fh} "\n__DATA__\n";
++  print {$fh} Module::Build::Dumper->_data_dump([$args{config_data}, $args{feature}, $args{auto_features}]);
++
++}
++
++1;
++
++
++=head1 NAME
++
++Module::Build::Notes - Create persistent distribution configuration modules
++
++=head1 DESCRIPTION
++
++This module is used internally by Module::Build to create persistent
++configuration files that can be installed with a distribution.  See
++L<Module::Build::ConfigData> for an example.
++
++=head1 AUTHOR
++
++Ken Williams <kwilliams@cpan.org>
+ 
+-  printf $fh <<'EOF', $args{config_module};
+-package %s;
++=head1 COPYRIGHT
++
++Copyright (c) 2001-2006 Ken Williams.  All rights reserved.
++
++This library is free software; you can redistribute it and/or
++modify it under the same terms as Perl itself.
++
++=head1 SEE ALSO
++
++perl(1), L<Module::Build>(3)
++
++=cut
++
++__DATA__
++package NOTES_NAME;
+ use strict;
+ my $arrayref = eval do {local $/; <DATA>}
+   or die "Couldn't load ConfigData data: $@";
+@@ -129,14 +177,14 @@
+ sub set_config { $config->{$_[1]} = $_[2] }
+ sub set_feature { $features->{$_[1]} = 0+!!$_[2] }  # Constrain to 1 or 0
+ 
+-sub auto_feature_names { grep !exists $features->{$_}, keys %%$auto_features }
++sub auto_feature_names { grep !exists $features->{$_}, keys %$auto_features }
+ 
+ sub feature_names {
+-  my @features = (keys %%$features, auto_feature_names());
++  my @features = (keys %$features, auto_feature_names());
+   @features;
+ }
+ 
+-sub config_names  { keys %%$config }
++sub config_names  { keys %$config }
+ 
+ sub write {
+   my $me = __FILE__;
+@@ -173,17 +221,17 @@
+   
+   my $info = $auto_features->{$key} or return 0;
+   
+-  # Under perl 5.005, each(%%$foo) isn't working correctly when $foo
++  # Under perl 5.005, each(%$foo) isn't working correctly when $foo
+   # was reanimated with Data::Dumper and eval().  Not sure why, but
+   # copying to a new hash seems to solve it.
+-  my %%info = %%$info;
++  my %info = %$info;
+   
+   require Module::Build;  # XXX should get rid of this
+-  while (my ($type, $prereqs) = each %%info) {
++  while (my ($type, $prereqs) = each %info) {
+     next if $type eq 'description' || $type eq 'recommends';
+     
+-    my %%p = %%$prereqs;  # Ditto here.
+-    while (my ($modname, $spec) = each %%p) {
++    my %p = %$prereqs;  # Ditto here.
++    while (my ($modname, $spec) = each %p) {
+       my $status = Module::Build->check_installed_status($modname, $spec);
+       if ((!$status->{ok}) xor ($type =~ /conflicts$/)) { return 0; }
+       if ( ! eval "require $modname; 1" ) { return 0; }
+@@ -192,36 +240,32 @@
+   return 1;
+ }
+ 
+-EOF
+-
+-  my ($module_name, $notes_name) = ($args{module}, $args{config_module});
+-  printf $fh <<"EOF", $notes_name, $module_name;
++=begin private
+ 
+ =head1 NAME
+ 
+-$notes_name - Configuration for $module_name
+-
++NOTES_NAME - Configuration for MODULE_NAME
+ 
+ =head1 SYNOPSIS
+ 
+-  use $notes_name;
+-  \$value = $notes_name->config('foo');
+-  \$value = $notes_name->feature('bar');
+-  
+-  \@names = $notes_name->config_names;
+-  \@names = $notes_name->feature_names;
+-  
+-  $notes_name->set_config(foo => \$new_value);
+-  $notes_name->set_feature(bar => \$new_value);
+-  $notes_name->write;  # Save changes
++  use NOTES_NAME;
++  $value = NOTES_NAME->config('foo');
++  $value = NOTES_NAME->feature('bar');
++
++  @names = NOTES_NAME->config_names;
++  @names = NOTES_NAME->feature_names;
++
++  NOTES_NAME->set_config(foo => $new_value);
++  NOTES_NAME->set_feature(bar => $new_value);
++  NOTES_NAME->write;  # Save changes
+ 
+ 
+ =head1 DESCRIPTION
+ 
+-This module holds the configuration data for the C<$module_name>
++This module holds the configuration data for the C<MODULE_NAME>
+ module.  It also provides a programmatic interface for getting or
+ setting that configuration data.  Note that in order to actually make
+-changes, you'll have to have write access to the C<$notes_name>
++changes, you'll have to have write access to the C<NOTES_NAME>
+ module, and you should attempt to understand the repercussions of your
+ actions.
+ 
+@@ -230,17 +274,17 @@
+ 
+ =over 4
+ 
+-=item config(\$name)
++=item config($name)
+ 
+ Given a string argument, returns the value of the configuration item
+ by that name, or C<undef> if no such item exists.
+ 
+-=item feature(\$name)
++=item feature($name)
+ 
+ Given a string argument, returns the value of the feature by that
+ name, or C<undef> if no such feature exists.
+ 
+-=item set_config(\$name, \$value)
++=item set_config($name, $value)
+ 
+ Sets the configuration item with the given name to the given value.
+ The value may be any Perl scalar that will serialize correctly using
+@@ -248,7 +292,7 @@
+ complex data structures.  It probably does not include transient
+ things like filehandles or sockets.
+ 
+-=item set_feature(\$name, \$value)
++=item set_feature($name, $value)
+ 
+ Sets the feature with the given name to the given boolean value.  The
+ value will be converted to 0 or 1 automatically.
+@@ -256,12 +300,12 @@
+ =item config_names()
+ 
+ Returns a list of all the names of config items currently defined in
+-C<$notes_name>, or in scalar context the number of items.
++C<NOTES_NAME>, or in scalar context the number of items.
+ 
+ =item feature_names()
+ 
+ Returns a list of all the names of features currently defined in
+-C<$notes_name>, or in scalar context the number of features.
++C<NOTES_NAME>, or in scalar context the number of features.
+ 
+ =item auto_feature_names()
+ 
+@@ -273,24 +317,16 @@
+ =item write()
+ 
+ Commits any changes from C<set_config()> and C<set_feature()> to disk.
+-Requires write access to the C<$notes_name> module.
++Requires write access to the C<NOTES_NAME> module.
+ 
+ =back
+ 
+ 
+ =head1 AUTHOR
+ 
+-C<$notes_name> was automatically created using C<Module::Build>.
++C<NOTES_NAME> was automatically created using C<Module::Build>.
+ C<Module::Build> was written by Ken Williams, but he holds no
+-authorship claim or copyright claim to the contents of C<$notes_name>.
+-
+-=cut
+-
+-__DATA__
++authorship claim or copyright claim to the contents of C<NOTES_NAME>.
+ 
+-EOF
++=end private
+ 
+-  print {$fh} Module::Build::Dumper->_data_dump([$args{config_data}, $args{feature}, $args{auto_features}]);
+-}
+-
+-1;
+diff -Nbur perl-5.10.1/lib/Module/Build/PPMMaker.pm perl-5.10.1/lib/Module-1/Build/PPMMaker.pm
+--- perl-5.10.1/lib/Module/Build/PPMMaker.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/PPMMaker.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -1,8 +1,11 @@
+ package Module::Build::PPMMaker;
+ 
+ use strict;
++use Config;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++use IO::File;
++
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ 
+ # This code is mostly borrowed from ExtUtils::MM_Unix 6.10_03, with a
+@@ -34,7 +37,6 @@
+     my $method = "dist_$info";
+     $dist{$info} = $build->$method() or die "Can't determine distribution's $info\n";
+   }
+-  $dist{version} = $self->_ppd_version($dist{version});
+ 
+   $self->_simple_xml_escape($_) foreach $dist{abstract}, @{$dist{author}};
+ 
+@@ -42,15 +44,11 @@
+   # various licenses
+   my $ppd = <<"PPD";
+ <SOFTPKG NAME=\"$dist{name}\" VERSION=\"$dist{version}\">
+-    <TITLE>$dist{name}</TITLE>
+     <ABSTRACT>$dist{abstract}</ABSTRACT>
+ @{[ join "\n", map "    <AUTHOR>$_</AUTHOR>", @{$dist{author}} ]}
+     <IMPLEMENTATION>
+ PPD
+ 
+-  # TODO: We could set <IMPLTYPE VALUE="PERL" /> or maybe
+-  # <IMPLTYPE VALUE="PERL/XS" /> ???
+-
+   # We don't include recommended dependencies because PPD has no way
+   # to distinguish them from normal dependencies.  We don't include
+   # build_requires dependencies because the PPM installer doesn't
+@@ -73,27 +71,18 @@
+         }
+       }
+ 
+-      # Another hack - dependencies are on modules, but PPD expects
+-      # them to be on distributions (I think).
+-      $modname =~ s/::/-/g;
+-
+-      $ppd .= sprintf(<<'EOF', $modname, $self->_ppd_version($min_version));
+-        <DEPENDENCY NAME="%s" VERSION="%s" />
+-EOF
++      # PPM4 spec requires a '::' for top level modules
++      $modname .= '::' unless $modname =~ /::/;
+ 
++      $ppd .= qq!        <REQUIRE NAME="$modname" VERSION="$min_version" />\n!;
+     }
+   }
+ 
+   # We only include these tags if this module involves XS, on the
+-  # assumption that pure Perl modules will work on any OS.  PERLCORE,
+-  # unfortunately, seems to indicate that a module works with _only_
+-  # that version of Perl, and so is only appropriate when a module
+-  # uses XS.
++  # assumption that pure Perl modules will work on any OS.
+   if (keys %{$build->find_xs_files}) {
+     my $perl_version = $self->_ppd_version($build->perl_version);
+-    $ppd .= sprintf(<<'EOF', $perl_version, $^O, $self->_varchname($build->config) );
+-        <PERLCORE VERSION="%s" />
+-        <OS NAME="%s" />
++    $ppd .= sprintf(<<'EOF', $self->_varchname($build->config) );
+         <ARCHITECTURE NAME="%s" />
+ EOF
+   }
+@@ -113,6 +102,10 @@
+   my $ppd_file = "$dist{name}.ppd";
+   my $fh = IO::File->new(">$ppd_file")
+     or die "Cannot write to $ppd_file: $!";
++
++  my $io_file_ok = eval { IO::File->VERSION(1.13); 1 };
++  $fh->binmode(":utf8")
++    if $io_file_ok && $fh->can('binmode') && $] >= 5.008 && $Config{useperlio};
+   print $fh $ppd;
+   close $fh;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/Amiga.pm perl-5.10.1/lib/Module-1/Build/Platform/Amiga.pm
+--- perl-5.10.1/lib/Module/Build/Platform/Amiga.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/Amiga.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/Default.pm perl-5.10.1/lib/Module-1/Build/Platform/Default.pm
+--- perl-5.10.1/lib/Module/Build/Platform/Default.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/Default.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/EBCDIC.pm perl-5.10.1/lib/Module-1/Build/Platform/EBCDIC.pm
+--- perl-5.10.1/lib/Module/Build/Platform/EBCDIC.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/EBCDIC.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/MPEiX.pm perl-5.10.1/lib/Module-1/Build/Platform/MPEiX.pm
+--- perl-5.10.1/lib/Module/Build/Platform/MPEiX.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/MPEiX.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/MacOS.pm perl-5.10.1/lib/Module-1/Build/Platform/MacOS.pm
+--- perl-5.10.1/lib/Module/Build/Platform/MacOS.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/MacOS.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ use vars qw(@ISA);
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/RiscOS.pm perl-5.10.1/lib/Module-1/Build/Platform/RiscOS.pm
+--- perl-5.10.1/lib/Module/Build/Platform/RiscOS.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/RiscOS.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/Unix.pm perl-5.10.1/lib/Module-1/Build/Platform/Unix.pm
+--- perl-5.10.1/lib/Module/Build/Platform/Unix.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/Unix.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/VMS.pm perl-5.10.1/lib/Module-1/Build/Platform/VMS.pm
+--- perl-5.10.1/lib/Module/Build/Platform/VMS.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/VMS.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,9 +2,10 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
++use Config;
+ 
+ use vars qw(@ISA);
+ @ISA = qw(Module::Build::Base);
+@@ -76,10 +77,29 @@
+ =cut
+ 
+ # Translated from ExtUtils::MM_VMS::prefixify()
++
++sub _catprefix {
++    my($self, $rprefix, $default) = @_;
++
++    my($rvol, $rdirs) = File::Spec->splitpath($rprefix);
++    if( $rvol ) {
++        return File::Spec->catpath($rvol,
++                                   File::Spec->catdir($rdirs, $default),
++                                   ''
++                                  )
++    }
++    else {
++        return File::Spec->catdir($rdirs, $default);
++    }
++}
++
++
+ sub _prefixify {
+     my($self, $path, $sprefix, $type) = @_;
+     my $rprefix = $self->prefix;
+ 
++    return '' unless defined $path;
++
+     $self->log_verbose("  prefixify $path from $sprefix to $rprefix\n");
+ 
+     # Translate $(PERLPREFIX) to a real path.
+@@ -89,7 +109,7 @@
+     $self->log_verbose("  rprefix translated to $rprefix\n".
+                        "  sprefix translated to $sprefix\n");
+ 
+-    if( length $path == 0 ) {
++    if( length($path) == 0 ) {
+         $self->log_verbose("  no path to prefixify.\n")
+     }
+     elsif( !File::Spec->file_name_is_absolute($path) ) {
+@@ -173,6 +193,62 @@
+   return `$cmd $args`;
+ }
+ 
++=item find_command
++
++Local an executable program
++
++=cut
++
++sub find_command {
++    my ($self, $command) = @_;
++
++    # a lot of VMS executables have a symbol defined
++    # check those first
++    if ( $^O eq 'VMS' ) {
++        require VMS::DCLsym;
++        my $syms = VMS::DCLsym->new;
++        return $command if scalar $syms->getsym( uc $command );
++    }
++
++    $self->SUPER::find_command($command);
++}
++
++# _maybe_command copied from ExtUtils::MM_VMS::maybe_command
++
++=item _maybe_command (override)
++
++Follows VMS naming conventions for executable files.
++If the name passed in doesn't exactly match an executable file,
++appends F<.Exe> (or equivalent) to check for executable image, and F<.Com>
++to check for DCL procedure.  If this fails, checks directories in DCL$PATH
++and finally F<Sys$System:> for an executable file having the name specified,
++with or without the F<.Exe>-equivalent suffix.
++
++=cut
++
++sub _maybe_command {
++    my($self,$file) = @_;
++    return $file if -x $file && ! -d _;
++    my(@dirs) = ('');
++    my(@exts) = ('',$Config{'exe_ext'},'.exe','.com');
++
++    if ($file !~ m![/:>\]]!) {
++        for (my $i = 0; defined $ENV{"DCL\$PATH;$i"}; $i++) {
++            my $dir = $ENV{"DCL\$PATH;$i"};
++            $dir .= ':' unless $dir =~ m%[\]:]$%;
++            push(@dirs,$dir);
++        }
++        push(@dirs,'Sys$System:');
++        foreach my $dir (@dirs) {
++            my $sysfile = "$dir$file";
++            foreach my $ext (@exts) {
++                return $file if -x "$sysfile$ext" && ! -d _;
++            }
++        }
++    }
++    return;
++}
++
+ =item do_system
+ 
+ Override to ensure that we quote the arguments but not the command.
+@@ -182,7 +258,7 @@
+ sub do_system {
+   # The command must not be quoted but the arguments to it must be.
+   my ($self, @cmd) = @_;
+-  $self->log_info("@cmd\n");
++  $self->log_verbose("@cmd\n");
+   my $cmd = shift @cmd;
+   my $args = $self->_quote_args(@cmd);
+   return !system("$cmd $args");
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/VOS.pm perl-5.10.1/lib/Module-1/Build/Platform/VOS.pm
+--- perl-5.10.1/lib/Module/Build/Platform/VOS.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/VOS.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Base;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/Windows.pm perl-5.10.1/lib/Module-1/Build/Platform/Windows.pm
+--- perl-5.10.1/lib/Module/Build/Platform/Windows.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/Windows.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ 
+ use Config;
+@@ -39,7 +39,7 @@
+ 
+   if ( lc $basename eq lc $self->build_script ) {
+     if ( $self->build_bat ) {
+-      $self->log_info("Deleting $basename.bat\n");
++      $self->log_verbose("Deleting $basename.bat\n");
+       my $full_progname = $0;
+       $full_progname =~ s/(?:\.bat)?$/.bat/i;
+ 
+@@ -273,6 +273,27 @@
+   return !$status;
+ }
+ 
++# Copied from ExtUtils::MM_Win32
++sub _maybe_command {
++    my($self,$file) = @_;
++    my @e = exists($ENV{'PATHEXT'})
++          ? split(/;/, $ENV{PATHEXT})
++	  : qw(.com .exe .bat .cmd);
++    my $e = '';
++    for (@e) { $e .= "\Q$_\E|" }
++    chop $e;
++    # see if file ends in one of the known extensions
++    if ($file =~ /($e)$/i) {
++	return $file if -e $file;
++    }
++    else {
++	for (@e) {
++	    return "$file$_" if -e "$file$_";
++	}
++    }
++    return;
++}
++
+ 
+ 1;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/aix.pm perl-5.10.1/lib/Module-1/Build/Platform/aix.pm
+--- perl-5.10.1/lib/Module/Build/Platform/aix.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/aix.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Platform::Unix;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/cygwin.pm perl-5.10.1/lib/Module-1/Build/Platform/cygwin.pm
+--- perl-5.10.1/lib/Module/Build/Platform/cygwin.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/cygwin.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Platform::Unix;
+ 
+@@ -13,6 +13,22 @@
+    '.'
+ }
+ 
++# Copied from ExtUtils::MM_Cygwin::maybe_command()
++# If our path begins with F</cygdrive/> then we use the Windows version
++# to determine if it may be a command.  Otherwise we use the tests
++# from C<ExtUtils::MM_Unix>.
++
++sub _maybe_command {
++    my ($self, $file) = @_;
++
++    if ($file =~ m{^/cygdrive/}i) {
++        require Module::Build::Platform::Windows;
++        return Module::Build::Platform::Windows->_maybe_command($file);
++    }
++
++    return $self->SUPER::_maybe_command($file);
++}
++
+ 1;
+ __END__
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/darwin.pm perl-5.10.1/lib/Module-1/Build/Platform/darwin.pm
+--- perl-5.10.1/lib/Module/Build/Platform/darwin.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/darwin.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Platform::Unix;
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/Platform/os2.pm perl-5.10.1/lib/Module-1/Build/Platform/os2.pm
+--- perl-5.10.1/lib/Module/Build/Platform/os2.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Platform/os2.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use Module::Build::Platform::Unix;
+ 
+@@ -13,6 +13,16 @@
+ 
+ sub have_forkpipe { 0 }
+ 
++# Copied from ExtUtils::MM_OS2::maybe_command
++sub _maybe_command {
++    my($self,$file) = @_;
++    $file =~ s,[/\\]+,/,g;
++    return $file if -x $file && ! -d _;
++    return "$file.exe" if -x "$file.exe" && ! -d _;
++    return "$file.cmd" if -x "$file.cmd" && ! -d _;
++    return;
++}
++
+ 1;
+ __END__
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build/PodParser.pm perl-5.10.1/lib/Module-1/Build/PodParser.pm
+--- perl-5.10.1/lib/Module/Build/PodParser.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/PodParser.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ 
+ use strict;
+ use vars qw($VERSION);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ use vars qw(@ISA);
+ 
+@@ -42,7 +42,7 @@
+   
+   my @author;
+   while (<$fh>) {
+-    next unless /^=head1\s+AUTHORS?/ ... /^=/;
++    next unless /^=head1\s+AUTHORS?/i ... /^=/;
+     next if /^=/;
+     push @author, $_ if /\@/;
+   }
+@@ -92,10 +92,10 @@
+   my ($self, $text) = @_;
+   $text =~ s/^\s+//;
+   $text =~ s/\s+$//;
+-  if ($self->{_head} eq 'NAME') {
++  if (uc $self->{_head} eq 'NAME') {
+     my ($name, $abstract) = split( /\s+-\s+/, $text, 2 );
+     $self->{abstract} = $abstract;
+-  } elsif ($self->{_head} =~ /^AUTHORS?$/) {
++  } elsif ($self->{_head} =~ /^AUTHORS?$/i) {
+     push @{$self->{author}}, $text if $text =~ /\@/;
+   }
+ }
+diff -Nbur perl-5.10.1/lib/Module/Build/Version.pm perl-5.10.1/lib/Module-1/Build/Version.pm
+--- perl-5.10.1/lib/Module/Build/Version.pm	2009-07-28 01:24:16.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/Version.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -2,7 +2,7 @@
+ use strict;
+ 
+ use vars qw($VERSION);
+-$VERSION = 0.77;
++$VERSION = 0.82;
+ 
+ eval "use version $VERSION";
+ if ($@) { # can't locate version files, use our own
+@@ -48,7 +48,7 @@
+ 
+ use vars qw(@ISA $VERSION $CLASS *declare *qv);
+ 
+-$VERSION = 0.77;
++$VERSION = 0.82;
+ 
+ $CLASS = 'version';
+ 
+@@ -115,21 +115,130 @@
+ 1;
+ 
+ # replace everything from here to the end with the current version/vpp.pm
++package charstar;
++# a little helper class to emulate C char* semantics in Perl
++# so that prescan_version can use the same code as in C
++
++use overload (
++    '""'	=> \&thischar,
++    '0+'	=> \&thischar,
++    '++'	=> \&increment,
++    '--'	=> \&decrement,
++    '+'		=> \&plus,
++    '-'		=> \&minus,
++    '*'		=> \&multiply,
++    'cmp'	=> \&cmp,
++    '<=>'	=> \&spaceship,
++    'bool'	=> \&thischar,
++    '='		=> \&clone,
++);
++
++sub new {
++    my ($self, $string) = @_;
++    my $class = ref($self) || $self;
++
++    my $obj = {
++	string  => [split(//,$string)],
++	current => 0,
++    };
++    return bless $obj, $class;
++}
++
++sub thischar {
++    my ($self) = @_;
++    my $last = $#{$self->{string}};
++    my $curr = $self->{current};
++    if ($curr >= 0 && $curr <= $last) {
++	return $self->{string}->[$curr];
++    }
++    else {
++	return '';
++    }
++}
++
++sub increment {
++    my ($self) = @_;
++    $self->{current}++;
++}
++
++sub decrement {
++    my ($self) = @_;
++    $self->{current}--;
++}
++
++sub plus {
++    my ($self, $offset) = @_;
++    my $rself = $self->clone;
++    $rself->{current} += $offset;
++    return $rself;
++}
++
++sub minus {
++    my ($self, $offset) = @_;
++    my $rself = $self->clone;
++    $rself->{current} -= $offset;
++    return $rself;
++}
++
++sub multiply {
++    my ($left, $right, $swapped) = @_;
++    my $char = $left->thischar();
++    return $char * $right;
++}
++
++sub spaceship {
++    my ($left, $right, $swapped) = @_;
++    unless (ref($right)) { # not an object already
++	$right = $left->new($right);
++    }
++    return $left->{current} <=> $right->{current};
++}
++
++sub cmp {
++    my ($left, $right, $swapped) = @_;
++    unless (ref($right)) { # not an object already
++	if (length($right) == 1) { # comparing single character only
++	    return $left->thischar cmp $right;
++	}
++	$right = $left->new($right);
++    }
++    return $left->currstr cmp $right->currstr;
++}
++
++sub bool {
++    my ($self) = @_;
++    my $char = $self->thischar;
++    return ($char ne '');
++}
++
++sub clone {
++    my ($left, $right, $swapped) = @_;
++    $right = {
++	string  => [@{$left->{string}}],
++	current => $left->{current},
++    };
++    return bless $right, ref($left);
++}
++
++sub currstr {
++    my ($self, $s) = @_;
++    my $curr = $self->{current};
++    my $last = $#{$self->{string}};
++    if (defined($s) && $s->{current} < $last) {
++	$last = $s->{current};
++    }
++
++    my $string = join('', @{$self->{string}}[$curr..$last]);
++    return $string;
++}
++
+ package version::vpp;
+ use strict;
+ 
+ use POSIX qw/locale_h/;
+ use locale;
+ use vars qw ($VERSION @ISA @REGEXS);
+-$VERSION = '0.77';
+-$VERSION = eval $VERSION;
+-
+-push @REGEXS, qr/
+-	^v?	# optional leading 'v'
+-	(\d*)	# major revision not required
+-	\.	# requires at least one decimal
+-	(?:(\d+)\.?){1,}
+-	/x;
++$VERSION = 0.82;
+ 
+ use overload (
+     '""'       => \&stringify,
+@@ -140,8 +249,6 @@
+     'nomethod' => \&vnoop,
+ );
+ 
+-my $VERSION_MAX = 0x7FFFFFFF;
+-
+ eval "use warnings";
+ if ($@) {
+     eval '
+@@ -151,141 +258,291 @@
+     ';
+ }
+ 
+-sub new
+-{
+-	my ($class, $value) = @_;
+-	my $self = bless ({}, ref ($class) || $class);
++my $VERSION_MAX = 0x7FFFFFFF;
+ 	
+-	if ( ref($value) && eval('$value->isa("version")') ) {
+-	    # Can copy the elements directly
+-	    $self->{version} = [ @{$value->{version} } ];
+-	    $self->{qv} = 1 if $value->{qv};
+-	    $self->{alpha} = 1 if $value->{alpha};
+-	    $self->{original} = ''.$value->{original};
+-	    return $self;
++# implement prescan_version as closely to the C version as possible
++use constant TRUE  => 1;
++use constant FALSE => 0;
++
++sub isDIGIT {
++    my ($char) = shift->thischar();
++    return ($char =~ /\d/);
++}
++
++sub isALPHA {
++    my ($char) = shift->thischar();
++    return ($char =~ /[a-zA-Z]/);
++}
++
++sub isSPACE {
++    my ($char) = shift->thischar();
++    return ($char =~ /\s/);
++}
++
++sub BADVERSION {
++    my ($s, $errstr, $error) = @_;
++    if ($errstr) {
++	$$errstr = $error;
+ 	}
++    return $s;
++}
+ 
+-	my $currlocale = setlocale(LC_ALL);
++sub prescan_version {
++    my ($s, $strict, $errstr, $sqv, $ssaw_decimal, $swidth, $salpha) = @_;
++    my $qv          = defined $sqv          ? $$sqv          : FALSE;
++    my $saw_decimal = defined $ssaw_decimal ? $$ssaw_decimal : 0;
++    my $width       = defined $swidth       ? $$swidth       : 3;
++    my $alpha       = defined $salpha       ? $$salpha       : FALSE;
+ 
+-	# if the current locale uses commas for decimal points, we
+-	# just replace commas with decimal places, rather than changing
+-	# locales
+-	if ( localeconv()->{decimal_point} eq ',' ) {
+-	    $value =~ tr/,/./;
++    my $d = $s;
++
++    if ($qv && isDIGIT($d)) {
++	goto dotted_decimal_version;
+ 	}
+ 
+-	if ( not defined $value or $value =~ /^undef$/ ) {
+-	    # RT #19517 - special case for undef comparison
+-	    # or someone forgot to pass a value
+-	    push @{$self->{version}}, 0;
+-	    $self->{original} = "0";
+-	    return ($self);
++    if ($d eq 'v') { # explicit v-string
++	$d++;
++	if (isDIGIT($d)) {
++	    $qv = TRUE;
++	}
++	else { # degenerate v-string
++	    # requires v1.2.3
++	    return BADVERSION($s,$errstr,"Invalid version format (dotted-decimal versions require at least three parts)");
+ 	}
+ 
+-	if ( $#_ == 2 ) { # must be CVS-style
+-	    $value = 'v'.$_[2];
++dotted_decimal_version:
++	if ($strict && $d eq '0' && isDIGIT($d+1)) {
++	    # no leading zeros allowed
++	    return BADVERSION($s,$errstr,"Invalid version format (no leading zeros)");
+ 	}
+ 
+-	$value = _un_vstring($value);
++	while (isDIGIT($d)) { 	# integer part
++	    $d++;
++	}
+ 
+-	# exponential notation
+-	if ( $value =~ /\d+.?\d*e[-+]?\d+/ ) {
+-	    $value = sprintf("%.9f",$value);
+-	    $value =~ s/(0+)$//; # trim trailing zeros
++	if ($d eq '.')
++	{
++	    $saw_decimal++;
++	    $d++; 		# decimal point
++	}
++	else
++	{
++	    if ($strict) {
++		# require v1.2.3
++		return BADVERSION($s,$errstr,"Invalid version format (dotted-decimal versions require at least three parts)");
++	    }
++	    else {
++		goto version_prescan_finish;
++	    }
+ 	}
+ 	
+-	# This is not very efficient, but it is morally equivalent
+-	# to the XS code (as that is the reference implementation).
+-	# See vutil/vutil.c for details
+-	my $qv = 0;
+-	my $alpha = 0;
+-	my $width = 3;
+-	my $saw_period = 0;
+-	my $vinf = 0;
+-	my ($start, $last, $pos, $s);
+-	$s = 0;
++	{
++	    my $i = 0;
++	    my $j = 0;
++	    while (isDIGIT($d)) {	# just keep reading
++		$i++;
++		while (isDIGIT($d)) {
++		    $d++; $j++;
++		    # maximum 3 digits between decimal
++		    if ($strict && $j > 3) {
++			return BADVERSION($s,$errstr,"Invalid version format (maximum 3 digits between decimals)");
++		    }
++		}
++		if ($d eq '_') {
++		    if ($strict) {
++			return BADVERSION($s,$errstr,"Invalid version format (no underscores)");
++		    }
++		    if ( $alpha ) {
++			return BADVERSION($s,$errstr,"Invalid version format (multiple underscores)");
++		    }
++		    $d++;
++		    $alpha = TRUE;
++		}
++		elsif ($d eq '.') {
++		    if ($alpha) {
++			return BADVERSION($s,$errstr,"Invalid version format (underscores before decimal)");
++		    }
++		    $saw_decimal++;
++		    $d++;
++		}
++		elsif (!isDIGIT($d)) {
++		    last;
++		}
++		$j = 0;
++	    }
+ 
+-	while ( substr($value,$s,1) =~ /\s/ ) { # leading whitespace is OK
+-	    $s++;
++	    if ($strict && $i < 2) {
++		# requires v1.2.3
++		return BADVERSION($s,$errstr,"Invalid version format (dotted-decimal versions require at least three parts)");
++	    }
++	}
++    } 					# end if dotted-decimal
++    else
++    {					# decimal versions
++	# special $strict case for leading '.' or '0'
++	if ($strict) {
++	    if ($d eq '.') {
++		return BADVERSION($s,$errstr,"Invalid version format (0 before decimal required)");
++	    }
++	    if ($d eq '0' && isDIGIT($d+1)) {
++		return BADVERSION($s,$errstr,"Invalid version format (no leading zeros)");
++	    }
+ 	}
+ 
+-	if (substr($value,$s,1) eq 'v') {
+-	    $s++;    # get past 'v'
+-	    $qv = 1; # force quoted version processing
++	# consume all of the integer part
++	while (isDIGIT($d)) {
++	    $d++;
+ 	}
+ 
+-	$start = $last = $pos = $s;
++	# look for a fractional part
++	if ($d eq '.') {
++	    # we found it, so consume it
++	    $saw_decimal++;
++	    $d++;
++	}
++	elsif (!$d || $d eq ';' || isSPACE($d) || $d eq '}') {
++	    if ( $d == $s ) {
++		# found nothing
++		return BADVERSION($s,$errstr,"Invalid version format (version required)");
++	    }
++	    # found just an integer
++	    goto version_prescan_finish;
++	}
++	elsif ( $d == $s ) {
++	    # didn't find either integer or period
++	    return BADVERSION($s,$errstr,"Invalid version format (non-numeric data)");
++	}
++	elsif ($d eq '_') {
++	    # underscore can't come after integer part
++	    if ($strict) {
++		return BADVERSION($s,$errstr,"Invalid version format (no underscores)");
++	    }
++	    elsif (isDIGIT($d+1)) {
++		return BADVERSION($s,$errstr,"Invalid version format (alpha without decimal)");
++	    }
++	    else {
++		return BADVERSION($s,$errstr,"Invalid version format (misplaced underscore)");
++	    }
++	}
++	elsif ($d) {
++	    # anything else after integer part is just invalid data
++	    return BADVERSION($s,$errstr,"Invalid version format (non-numeric data)");
++	}
+ 		
+-	# pre-scan the input string to check for decimals/underbars
+-	while ( substr($value,$pos,1) =~ /[._\d,]/ ) {
+-	    if ( substr($value,$pos,1) eq '.' ) {
++	# scan the fractional part after the decimal point
++	if ($d && !isDIGIT($d) && ($strict || ! ($d eq ';' || isSPACE($d) || $d eq '}') )) {
++		# $strict or lax-but-not-the-end
++		return BADVERSION($s,$errstr,"Invalid version format (fractional part required)");
++	}
++
++	while (isDIGIT($d)) {
++	    $d++;
++	    if ($d eq '.' && isDIGIT($d-1)) {
+ 		if ($alpha) {
+-		    Carp::croak("Invalid version format ".
+-		      "(underscores before decimal)");
++		    return BADVERSION($s,$errstr,"Invalid version format (underscores before decimal)");
+ 		}
+-		$saw_period++;
+-		$last = $pos;
++		if ($strict) {
++		    return BADVERSION($s,$errstr,"Invalid version format (dotted-decimal versions must begin with 'v')");
+ 	    }
+-	    elsif ( substr($value,$pos,1) eq '_' ) {
+-		if ($alpha) {
+-		    require Carp;
+-		    Carp::croak("Invalid version format ".
+-			"(multiple underscores)");
++		$d = $s; # start all over again
++		$qv = TRUE;
++		goto dotted_decimal_version;
++	    }
++	    if ($d eq '_') {
++		if ($strict) {
++		    return BADVERSION($s,$errstr,"Invalid version format (no underscores)");
+ 		}
+-		$alpha = 1;
+-		$width = $pos - $last - 1; # natural width of sub-version
++		if ( $alpha ) {
++		    return BADVERSION($s,$errstr,"Invalid version format (multiple underscores)");
++		}
++		if ( ! isDIGIT($d+1) ) {
++		    return BADVERSION($s,$errstr,"Invalid version format (misplaced underscore)");
++		}
++		$d++;
++		$alpha = TRUE;
+ 	    }
+-	    elsif ( substr($value,$pos,1) eq ','
+-		    and substr($value,$pos+1,1) =~ /[0-9]/ ) {
+-		# looks like an unhandled locale
+-		$saw_period++;
+-		$last = $pos;
+ 	    }
+-	    $pos++;
+ 	}
+ 
+-	if ( $alpha && !$saw_period ) {
+-	    require Carp;
+-	    Carp::croak("Invalid version format ".
+-		"(alpha without decimal)");
++version_prescan_finish:
++    while (isSPACE($d)) {
++	$d++;
+ 	}
+ 
+-	if ( $alpha && $saw_period && $width == 0 ) {
+-	    require Carp;
+-	    Carp::croak("Invalid version format ".
+-		"(misplaced _ in number)");
++    if ($d && !isDIGIT($d) && (! ($d eq ';' || $d eq '}') )) {
++	# trailing non-numeric data
++	return BADVERSION($s,$errstr,"Invalid version format (non-numeric data)");
++    }
++
++    if (defined $sqv) {
++	$$sqv = $qv;
++    }
++    if (defined $swidth) {
++	$$swidth = $width;
++    }
++    if (defined $ssaw_decimal) {
++	$$ssaw_decimal = $saw_decimal;
+ 	}
++    if (defined $salpha) {
++	$$salpha = $alpha;
++    }
++    return $d;
++}
++
++sub scan_version {
++    my ($s, $rv, $qv) = @_;
++    my $start;
++    my $pos;
++    my $last;
++    my $errstr;
++    my $saw_decimal = 0;
++    my $width = 3;
++    my $alpha = FALSE;
++    my $vinf = FALSE;
++    my @av;
++
++    $s = new charstar $s;
++
++    while (isSPACE($s)) { # leading whitespace is OK
++	$s++;
++    }
++
++    $last = prescan_version($s, FALSE, \$errstr, \$qv, \$saw_decimal,
++	\$width, \$alpha);
+ 
+-	if ( $saw_period > 1 ) {
+-	    $qv = 1; # force quoted version processing
++    if ($errstr) {
++	# 'undef' is a special case and not an error
++	if ( $s ne 'undef') {
++	    use Carp;
++	    Carp::croak($errstr);
++	}
+ 	}
+ 
+-	$last = $pos;
++    $start = $s;
++    if ($s eq 'v') {
++	$s++;
++    }
+ 	$pos = $s;
+ 
+ 	if ( $qv ) {
+-	    $self->{qv} = 1;
++	$$rv->{qv} = $qv;
+ 	}
+-
+ 	if ( $alpha ) {
+-	    $self->{alpha} = 1;
++	$$rv->{alpha} = $alpha;
+ 	}
+-
+ 	if ( !$qv && $width < 3 ) {
+-	    $self->{width} = $width;
++	$$rv->{width} = $width;
+ 	}
+ 
+-	while ( substr($value,$pos,1) =~ /\d/ ) {
++    while (isDIGIT($pos)) {
+ 	    $pos++;
+ 	}
+-
+-	if ( substr($value,$pos,1) !~ /[a-z]/ ) { ### FIX THIS ###
++    if (!isALPHA($pos)) {
+ 	    my $rev;
+ 
+-	    while (1) {
++	for (;;) {
+ 		$rev = 0;
+ 		{
+-
+ 		    # this is atoi() that delimits on underscores
+ 		    my $end = $pos;
+ 		    my $mult = 1;
+@@ -294,23 +551,23 @@
+ 		    # the following if() will only be true after the decimal
+ 		    # point of a version originally created with a bare
+ 		    # floating point number, i.e. not quoted in any way
+-		    if ( !$qv && $s > $start && $saw_period == 1 ) {
++		#
++ 		if ( !$qv && $s > $start && $saw_decimal == 1 ) {
+ 			$mult *= 100;
+ 			while ( $s < $end ) {
+ 			    $orev = $rev;
+-			    $rev += substr($value,$s,1) * $mult;
++ 			$rev += $s * $mult;
+ 			    $mult /= 10;
+-			    if (   abs($orev) > abs($rev) 
+-				|| abs($rev) > abs($VERSION_MAX) ) {
+-				if ( warnings::enabled("overflow") ) {
+-				    require Carp;
+-				    Carp::carp("Integer overflow in version");
+-				}
++			if (   (abs($orev) > abs($rev)) 
++			    || (abs($rev) > $VERSION_MAX )) {
++			    warn("Integer overflow in version %d",
++					   $VERSION_MAX);
+ 				$s = $end - 1;
+ 				$rev = $VERSION_MAX;
++			    $vinf = 1;
+ 			    }
+ 			    $s++;
+-			    if ( substr($value,$s,1) eq '_' ) {
++			if ( $s eq '_' ) {
+ 				$s++;
+ 			    }
+ 			}
+@@ -318,36 +575,35 @@
+ 		    else {
+ 			while (--$end >= $s) {
+ 			    $orev = $rev;
+-			    $rev += substr($value,$end,1) * $mult;
++ 			$rev += $end * $mult;
+ 			    $mult *= 10;
+-			    if (   abs($orev) > abs($rev) 
+-				|| abs($rev) > abs($VERSION_MAX) ) {
+-				if ( warnings::enabled("overflow") ) {
+-				    require Carp;
+-				    Carp::carp("Integer overflow in version");
+-				}
++			if (   (abs($orev) > abs($rev)) 
++			    || (abs($rev) > $VERSION_MAX )) {
++			    warn("Integer overflow in version");
+ 				$end = $s - 1;
+ 				$rev = $VERSION_MAX;
++			    $vinf = 1;
+ 			    }
+ 			}
+ 		    }
+ 		}
+ 
+ 		# Append revision
+-		push @{$self->{version}}, $rev;
+-		if ( substr($value,$pos,1) eq '.' 
+-		    && substr($value,$pos+1,1) =~ /\d/ ) {
++	    push @av, $rev;
++	    if ( $vinf ) {
++		$s = $last;
++		last;
++	    }
++	    elsif ( $pos eq '.' ) {
+ 		    $s = ++$pos;
+ 		}
+-		elsif ( substr($value,$pos,1) eq '_' 
+-		    && substr($value,$pos+1,1) =~ /\d/ ) {
++	    elsif ( $pos eq '_' && isDIGIT($pos+1) ) {
+ 		    $s = ++$pos;
+ 		}
+-		elsif ( substr($value,$pos,1) eq ',' 
+-		    && substr($value,$pos+1,1) =~ /\d/ ) {
++	    elsif ( $pos eq ',' && isDIGIT($pos+1) ) {
+ 		    $s = ++$pos;
+ 		}
+-		elsif ( substr($value,$pos,1) =~ /\d/ ) {
++	    elsif ( isDIGIT($pos) ) {
+ 		    $s = $pos;
+ 		}
+ 		else {
+@@ -355,14 +611,14 @@
+ 		    last;
+ 		}
+ 		if ( $qv ) {
+-		    while ( substr($value,$pos,1) =~ /\d/ ) {
++		while ( isDIGIT($pos) ) {
+ 			$pos++;
+ 		    }
+ 		}
+ 		else {
+ 		    my $digits = 0;
+-		    while (substr($value,$pos,1) =~ /[\d_]/ && $digits < 3) {
+-			if ( substr($value,$pos,1) ne '_' ) {
++		while ( ( isDIGIT($pos) || $pos eq '_' ) && $digits < 3 ) {
++		    if ( $pos ne '_' ) {
+ 			    $digits++;
+ 			}
+ 			$pos++;
+@@ -371,28 +627,98 @@
+ 	    }
+ 	}
+ 	if ( $qv ) { # quoted versions always get at least three terms
+-	    my $len = scalar @{$self->{version}};
+-	    $len = 3 - $len;
++	my $len = $#av;
++	#  This for loop appears to trigger a compiler bug on OS X, as it
++	#  loops infinitely. Yes, len is negative. No, it makes no sense.
++	#  Compiler in question is:
++	#  gcc version 3.3 20030304 (Apple Computer, Inc. build 1640)
++	#  for ( len = 2 - len; len > 0; len-- )
++	#  av_push(MUTABLE_AV(sv), newSViv(0));
++	# 
++	$len = 2 - $len;
+ 	    while ($len-- > 0) {
+-		push @{$self->{version}}, 0;
++	    push @av, 0;
+ 	    }
+ 	}
+ 
+-	if ( substr($value,$pos) ) { # any remaining text
+-	    if ( warnings::enabled("misc") ) {
+-		require Carp;
+-		Carp::carp("Version string '$value' contains invalid data; ".
+-		     "ignoring: '".substr($value,$pos)."'");
++    # need to save off the current version string for later
++    if ( $vinf ) {
++	$$rv->{original} = "v.Inf";
++	$$rv->{vinf} = 1;
+ 	    }
++    elsif ( $s > $start ) {
++	$$rv->{original} = $start->currstr($s);
++	if ( $qv && $saw_decimal == 1 && $start ne 'v' ) {
++	    # need to insert a v to be consistent
++	    $$rv->{original} = 'v' . $$rv->{original};
+ 	}
+-
+-	# cache the original value for use when stringification
+-	if ( $vinf ) {
+-	    $self->{vinf} = 1;
+-	    $self->{original} = 'v.Inf';
+ 	}
+ 	else {
+-	    $self->{original} = substr($value,0,$pos);
++	$$rv->{original} = '0';
++	push(@av, 0);
++    }
++
++    # And finally, store the AV in the hash
++    $$rv->{version} = \@av;
++
++    # fix RT#19517 - special case 'undef' as string
++    if ($s eq 'undef') {
++	$s += 5;
++    }
++
++    return $s;
++}
++
++sub new
++{
++	my ($class, $value) = @_;
++	my $self = bless ({}, ref ($class) || $class);
++	my $qv = FALSE;
++	
++	if ( ref($value) && eval('$value->isa("version")') ) {
++	    # Can copy the elements directly
++	    $self->{version} = [ @{$value->{version} } ];
++	    $self->{qv} = 1 if $value->{qv};
++	    $self->{alpha} = 1 if $value->{alpha};
++	    $self->{original} = ''.$value->{original};
++	    return $self;
++	}
++
++	my $currlocale = setlocale(LC_ALL);
++
++	# if the current locale uses commas for decimal points, we
++	# just replace commas with decimal places, rather than changing
++	# locales
++	if ( localeconv()->{decimal_point} eq ',' ) {
++	    $value =~ tr/,/./;
++	}
++
++	if ( not defined $value or $value =~ /^undef$/ ) {
++	    # RT #19517 - special case for undef comparison
++	    # or someone forgot to pass a value
++	    push @{$self->{version}}, 0;
++	    $self->{original} = "0";
++	    return ($self);
++	}
++
++	if ( $#_ == 2 ) { # must be CVS-style
++	    $value = $_[2];
++	    $qv = TRUE;
++	}
++
++	$value = _un_vstring($value);
++
++	# exponential notation
++	if ( $value =~ /\d+.?\d*e[-+]?\d+/ ) {
++	    $value = sprintf("%.9f",$value);
++	    $value =~ s/(0+)$//; # trim trailing zeros
++	}
++	
++	my $s = scan_version($value, \$self, $qv);
++
++	if ($s) { # must be something left over
++	    warn("Version string '%s' contains invalid data; "
++                       ."ignoring: '%s'", $value, $s);
+ 	}
+ 
+ 	return ($self);
+@@ -613,12 +939,18 @@
+ sub _un_vstring {
+     my $value = shift;
+     # may be a v-string
+-    if ( $] >= 5.006_000 && length($value) >= 3 && $value !~ /[._]/ ) {
++    if ( $] >= 5.006_000 && length($value) >= 3 && $value !~ /[._]/) {
++	foreach my $char (split(//,$value)) {
++	    # if one of the characters is non-text assume v-string
++	    if (ord($char) < ord(" ")) {
+ 	my $tvalue = sprintf("v%vd",$value);
+-	if ( $tvalue =~ /^v\d+\.\d+\.\d+$/ ) {
++		if ( $tvalue =~ /^v\d+(\.\d+){2,}$/ ) {
+ 	    # must be a v-string
+ 	    $value = $tvalue;
+ 	}
++		last;
++	    }
++	}
+     }
+     return $value;
+ }
+diff -Nbur perl-5.10.1/lib/Module/Build/YAML.pm perl-5.10.1/lib/Module-1/Build/YAML.pm
+--- perl-5.10.1/lib/Module/Build/YAML.pm	2009-07-06 12:20:00.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build/YAML.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -1,161 +1,600 @@
++# Adapted from YAML::Tiny 1.40
+ package Module::Build::YAML;
+ 
+ use strict;
+-use vars qw($VERSION @EXPORT @EXPORT_OK);
+-$VERSION = "0.50";
+-@EXPORT = ();
+-@EXPORT_OK = qw(Dump Load DumpFile LoadFile);
++use Carp 'croak';
+ 
++# UTF Support?
++sub HAVE_UTF8 () { $] >= 5.007003 }
++BEGIN {
++	if ( HAVE_UTF8 ) {
++		# The string eval helps hide this from Test::MinimumVersion
++		eval "require utf8;";
++		die "Failed to load UTF-8 support" if $@;
++	}
++
++	# Class structure
++	require 5.004;
++
++	$Module::Build::YAML::VERSION   = '1.40';
++
++	# Error storage
++	$Module::Build::YAML::errstr    = '';
++}
++
++# The character class of all characters we need to escape
++# NOTE: Inlined, since it's only used once
++# my $RE_ESCAPE   = '[\\x00-\\x08\\x0b-\\x0d\\x0e-\\x1f\"\n]';
++
++# Printed form of the unprintable characters in the lowest range
++# of ASCII characters, listed by ASCII ordinal position.
++my @UNPRINTABLE = qw(
++	z    x01  x02  x03  x04  x05  x06  a
++	x08  t    n    v    f    r    x0e  x0f
++	x10  x11  x12  x13  x14  x15  x16  x17
++	x18  x19  x1a  e    x1c  x1d  x1e  x1f
++);
++
++# Printable characters for escapes
++my %UNESCAPES = (
++	z => "\x00", a => "\x07", t    => "\x09",
++	n => "\x0a", v => "\x0b", f    => "\x0c",
++	r => "\x0d", e => "\x1b", '\\' => '\\',
++);
++
++# Special magic boolean words
++my %QUOTE = map { $_ => 1 } qw{
++	null Null NULL
++	y Y yes Yes YES n N no No NO
++	true True TRUE false False FALSE
++	on On ON off Off OFF
++};
++
++#####################################################################
++# Implementation
++
++# Create an empty Module::Build::YAML object
+ sub new {
+-    my $this = shift;
+-    my $class = ref($this) || $this;
+-    my $self = {};
+-    bless $self, $class;
+-    return($self);
++	my $class = shift;
++	bless [ @_ ], $class;
+ }
+ 
+-sub Dump {
+-    shift if ($_[0] eq __PACKAGE__ || ref($_[0]) eq __PACKAGE__);
+-    my $yaml = "";
+-    foreach my $item (@_) {
+-        $yaml .= "---\n";
+-        $yaml .= &_yaml_chunk("", $item);
++# Create an object from a file
++sub read {
++	my $class = ref $_[0] ? ref shift : shift;
++
++	# Check the file
++	my $file = shift or return $class->_error( 'You did not specify a file name' );
++	return $class->_error( "File '$file' does not exist" )              unless -e $file;
++	return $class->_error( "'$file' is a directory, not a file" )       unless -f _;
++	return $class->_error( "Insufficient permissions to read '$file'" ) unless -r _;
++
++	# Slurp in the file
++	local $/ = undef;
++	local *CFG;
++	unless ( open(CFG, $file) ) {
++		return $class->_error("Failed to open file '$file': $!");
++	}
++	my $contents = <CFG>;
++	unless ( close(CFG) ) {
++		return $class->_error("Failed to close file '$file': $!");
+     }
+-    return $yaml;
++
++	$class->read_string( $contents );
+ }
+ 
+-sub Load {
+-    shift if ($_[0] eq __PACKAGE__ || ref($_[0]) eq __PACKAGE__);
+-    die "not yet implemented";
++# Create an object from a string
++sub read_string {
++	my $class  = ref $_[0] ? ref shift : shift;
++	my $self   = bless [], $class;
++	my $string = $_[0];
++	unless ( defined $string ) {
++		return $self->_error("Did not provide a string to load");
++	}
++
++	# Byte order marks
++	# NOTE: Keeping this here to educate maintainers
++	# my %BOM = (
++	#     "\357\273\277" => 'UTF-8',
++	#     "\376\377"     => 'UTF-16BE',
++	#     "\377\376"     => 'UTF-16LE',
++	#     "\377\376\0\0" => 'UTF-32LE'
++	#     "\0\0\376\377" => 'UTF-32BE',
++	# );
++	if ( $string =~ /^(?:\376\377|\377\376|\377\376\0\0|\0\0\376\377)/ ) {
++		return $self->_error("Stream has a non UTF-8 BOM");
++	} else {
++		# Strip UTF-8 bom if found, we'll just ignore it
++		$string =~ s/^\357\273\277//;
++	}
++
++	# Try to decode as utf8
++	utf8::decode($string) if HAVE_UTF8;
++
++	# Check for some special cases
++	return $self unless length $string;
++	unless ( $string =~ /[\012\015]+\z/ ) {
++		return $self->_error("Stream does not end with newline character");
++	}
++
++	# Split the file into lines
++	my @lines = grep { ! /^\s*(?:\#.*)?\z/ }
++	            split /(?:\015{1,2}\012|\015|\012)/, $string;
++
++	# Strip the initial YAML header
++	@lines and $lines[0] =~ /^\%YAML[: ][\d\.]+.*\z/ and shift @lines;
++
++	# A nibbling parser
++	while ( @lines ) {
++		# Do we have a document header?
++		if ( $lines[0] =~ /^---\s*(?:(.+)\s*)?\z/ ) {
++			# Handle scalar documents
++			shift @lines;
++			if ( defined $1 and $1 !~ /^(?:\#.+|\%YAML[: ][\d\.]+)\z/ ) {
++				push @$self, $self->_read_scalar( "$1", [ undef ], \@lines );
++				next;
++			}
++		}
++
++		if ( ! @lines or $lines[0] =~ /^(?:---|\.\.\.)/ ) {
++			# A naked document
++			push @$self, undef;
++			while ( @lines and $lines[0] !~ /^---/ ) {
++				shift @lines;
++			}
++
++		} elsif ( $lines[0] =~ /^\s*\-/ ) {
++			# An array at the root
++			my $document = [ ];
++			push @$self, $document;
++			$self->_read_array( $document, [ 0 ], \@lines );
++
++		} elsif ( $lines[0] =~ /^(\s*)\S/ ) {
++			# A hash at the root
++			my $document = { };
++			push @$self, $document;
++			$self->_read_hash( $document, [ length($1) ], \@lines );
++
++		} else {
++			croak("Module::Build::YAML failed to classify the line '$lines[0]'");
++		}
++	}
++
++	$self;
+ }
+ 
+-# This is basically copied out of YAML.pm and simplified a little.
+-sub DumpFile {
+-    shift if ($_[0] eq __PACKAGE__ || ref($_[0]) eq __PACKAGE__);
+-    my $filename = shift;
+-    local $/ = "\n"; # reset special to "sane"
+-    my $mode = '>';
+-    if ($filename =~ /^\s*(>{1,2})\s*(.*)$/) {
+-        ($mode, $filename) = ($1, $2);
+-    }
+-    open my $OUT, "$mode $filename"
+-      or die "Can't open $filename for writing: $!";
+-    binmode($OUT, ':utf8') if $] >= 5.008;
+-    print $OUT Dump(@_);
+-    close $OUT;
++# Deparse a scalar string to the actual scalar
++sub _read_scalar {
++	my ($self, $string, $indent, $lines) = @_;
++
++	# Trim trailing whitespace
++	$string =~ s/\s*\z//;
++
++	# Explitic null/undef
++	return undef if $string eq '~';
++
++	# Quotes
++	if ( $string =~ /^\'(.*?)\'\z/ ) {
++		return '' unless defined $1;
++		$string = $1;
++		$string =~ s/\'\'/\'/g;
++		return $string;
++	}
++	if ( $string =~ /^\"((?:\\.|[^\"])*)\"\z/ ) {
++		# Reusing the variable is a little ugly,
++		# but avoids a new variable and a string copy.
++		$string = $1;
++		$string =~ s/\\"/"/g;
++		$string =~ s/\\([never\\fartz]|x([0-9a-fA-F]{2}))/(length($1)>1)?pack("H2",$2):$UNESCAPES{$1}/gex;
++		return $string;
++	}
++
++	# Special cases
++	if ( $string =~ /^[\'\"!&]/ ) {
++		croak("Module::Build::YAML does not support a feature in line '$lines->[0]'");
++	}
++	return {} if $string eq '{}';
++	return [] if $string eq '[]';
++
++	# Regular unquoted string
++	return $string unless $string =~ /^[>|]/;
++
++	# Error
++	croak("Module::Build::YAML failed to find multi-line scalar content") unless @$lines;
++
++	# Check the indent depth
++	$lines->[0]   =~ /^(\s*)/;
++	$indent->[-1] = length("$1");
++	if ( defined $indent->[-2] and $indent->[-1] <= $indent->[-2] ) {
++		croak("Module::Build::YAML found bad indenting in line '$lines->[0]'");
++	}
++
++	# Pull the lines
++	my @multiline = ();
++	while ( @$lines ) {
++		$lines->[0] =~ /^(\s*)/;
++		last unless length($1) >= $indent->[-1];
++		push @multiline, substr(shift(@$lines), length($1));
++	}
++
++	my $j = (substr($string, 0, 1) eq '>') ? ' ' : "\n";
++	my $t = (substr($string, 1, 1) eq '-') ? ''  : "\n";
++	return join( $j, @multiline ) . $t;
+ }
+ 
+-# This is basically copied out of YAML.pm and simplified a little.
+-sub LoadFile {
+-    shift if ($_[0] eq __PACKAGE__ || ref($_[0]) eq __PACKAGE__);
+-    my $filename = shift;
+-    open my $IN, $filename
+-      or die "Can't open $filename for reading: $!";
+-    binmode($IN, ':utf8') if $] >= 5.008;
+-    return Load(do { local $/; <$IN> });
+-    close $IN;
+-}
+-
+-sub _yaml_chunk {
+-  my ($indent, $values) = @_;
+-  my $yaml_chunk = "";
+-  my $ref = ref($values);
+-  my ($value, @allkeys, %keyseen);
+-  if (!$ref) {  # a scalar
+-    $yaml_chunk .= &_yaml_value($values) . "\n";
+-  }
+-  elsif ($ref eq "ARRAY") {
+-    foreach $value (@$values) {
+-      $yaml_chunk .= "$indent-";
+-      $ref = ref($value);
+-      if (!$ref) {
+-        $yaml_chunk .= " " . &_yaml_value($value) . "\n";
+-      }
+-      else {
+-        $yaml_chunk .= "\n";
+-        $yaml_chunk .= &_yaml_chunk("$indent  ", $value);
+-      }
+-    }
+-  }
+-  else { # assume "HASH"
+-    if ($values->{_order} && ref($values->{_order}) eq "ARRAY") {
+-        @allkeys = @{$values->{_order}};
+-        $values = { %$values };
+-        delete $values->{_order};
+-    }
+-    push(@allkeys, sort keys %$values);
+-    foreach my $key (@allkeys) {
+-      next if (!defined $key || $key eq "" || $keyseen{$key});
+-      $keyseen{$key} = 1;
+-      $yaml_chunk .= "$indent$key:";
+-      $value = $values->{$key};
+-      $ref = ref($value);
+-      if (!$ref) {
+-        $yaml_chunk .= " " . &_yaml_value($value) . "\n";
+-      }
+-      else {
+-        $yaml_chunk .= "\n";
+-        $yaml_chunk .= &_yaml_chunk("$indent  ", $value);
+-      }
+-    }
+-  }
+-  return($yaml_chunk);
+-}
+-
+-sub _yaml_value {
+-  my ($value) = @_;
+-  # undefs become ~
+-  return '~' if not defined $value;
+-
+-  # empty strings will become empty strings
+-  return '""' if $value eq '';
+-
+-  # allow simple scalars (without embedded quote chars) to be unquoted
+-  # (includes $%_+=-\;:,./)
+-  return $value if $value !~ /["'`~\n!\@\#^\&\*\(\)\{\}\[\]\|<>\?]/;
+-
+-  # quote and escape strings with special values
+-  return "'$value'"
+-    if $value !~ /['`~\n!\#^\&\*\(\)\{\}\[\]\|\?]/;  # nothing but " or @ or < or > (email addresses)
+-
+-  $value =~ s/\n/\\n/g;    # handle embedded newlines
+-  $value =~ s/"/\\"/g;     # handle embedded quotes
+-  return qq{"$value"};
++# Parse an array
++sub _read_array {
++	my ($self, $array, $indent, $lines) = @_;
++
++	while ( @$lines ) {
++		# Check for a new document
++		if ( $lines->[0] =~ /^(?:---|\.\.\.)/ ) {
++			while ( @$lines and $lines->[0] !~ /^---/ ) {
++				shift @$lines;
++			}
++			return 1;
++		}
++
++		# Check the indent level
++		$lines->[0] =~ /^(\s*)/;
++		if ( length($1) < $indent->[-1] ) {
++			return 1;
++		} elsif ( length($1) > $indent->[-1] ) {
++			croak("Module::Build::YAML found bad indenting in line '$lines->[0]'");
++		}
++
++		if ( $lines->[0] =~ /^(\s*\-\s+)[^\'\"]\S*\s*:(?:\s+|$)/ ) {
++			# Inline nested hash
++			my $indent2 = length("$1");
++			$lines->[0] =~ s/-/ /;
++			push @$array, { };
++			$self->_read_hash( $array->[-1], [ @$indent, $indent2 ], $lines );
++
++		} elsif ( $lines->[0] =~ /^\s*\-(\s*)(.+?)\s*\z/ ) {
++			# Array entry with a value
++			shift @$lines;
++			push @$array, $self->_read_scalar( "$2", [ @$indent, undef ], $lines );
++
++		} elsif ( $lines->[0] =~ /^\s*\-\s*\z/ ) {
++			shift @$lines;
++			unless ( @$lines ) {
++				push @$array, undef;
++				return 1;
++			}
++			if ( $lines->[0] =~ /^(\s*)\-/ ) {
++				my $indent2 = length("$1");
++				if ( $indent->[-1] == $indent2 ) {
++					# Null array entry
++					push @$array, undef;
++				} else {
++					# Naked indenter
++					push @$array, [ ];
++					$self->_read_array( $array->[-1], [ @$indent, $indent2 ], $lines );
++				}
++
++			} elsif ( $lines->[0] =~ /^(\s*)\S/ ) {
++				push @$array, { };
++				$self->_read_hash( $array->[-1], [ @$indent, length("$1") ], $lines );
++
++			} else {
++				croak("Module::Build::YAML failed to classify line '$lines->[0]'");
++			}
++
++		} elsif ( defined $indent->[-2] and $indent->[-1] == $indent->[-2] ) {
++			# This is probably a structure like the following...
++			# ---
++			# foo:
++			# - list
++			# bar: value
++			#
++			# ... so lets return and let the hash parser handle it
++			return 1;
++
++		} else {
++			croak("Module::Build::YAML failed to classify line '$lines->[0]'");
++		}
++	}
++
++	return 1;
+ }
+ 
+-1;
++# Parse an array
++sub _read_hash {
++	my ($self, $hash, $indent, $lines) = @_;
+ 
+-__END__
++	while ( @$lines ) {
++		# Check for a new document
++		if ( $lines->[0] =~ /^(?:---|\.\.\.)/ ) {
++			while ( @$lines and $lines->[0] !~ /^---/ ) {
++				shift @$lines;
++			}
++			return 1;
++		}
+ 
+-=head1 NAME
++		# Check the indent level
++		$lines->[0] =~ /^(\s*)/;
++		if ( length($1) < $indent->[-1] ) {
++			return 1;
++		} elsif ( length($1) > $indent->[-1] ) {
++			croak("Module::Build::YAML found bad indenting in line '$lines->[0]'");
++		}
+ 
+-Module::Build::YAML - Provides just enough YAML support so that Module::Build works even if YAML.pm is not installed
++		# Get the key
++		unless ( $lines->[0] =~ s/^\s*([^\'\" ][^\n]*?)\s*:(\s+|$)// ) {
++			if ( $lines->[0] =~ /^\s*[?\'\"]/ ) {
++				croak("Module::Build::YAML does not support a feature in line '$lines->[0]'");
++			}
++			croak("Module::Build::YAML failed to classify line '$lines->[0]'");
++		}
++		my $key = $1;
++
++		# Do we have a value?
++		if ( length $lines->[0] ) {
++			# Yes
++			$hash->{$key} = $self->_read_scalar( shift(@$lines), [ @$indent, undef ], $lines );
++		} else {
++			# An indent
++			shift @$lines;
++			unless ( @$lines ) {
++				$hash->{$key} = undef;
++				return 1;
++			}
++			if ( $lines->[0] =~ /^(\s*)-/ ) {
++				$hash->{$key} = [];
++				$self->_read_array( $hash->{$key}, [ @$indent, length($1) ], $lines );
++			} elsif ( $lines->[0] =~ /^(\s*)./ ) {
++				my $indent2 = length("$1");
++				if ( $indent->[-1] >= $indent2 ) {
++					# Null hash entry
++					$hash->{$key} = undef;
++				} else {
++					$hash->{$key} = {};
++					$self->_read_hash( $hash->{$key}, [ @$indent, length($1) ], $lines );
++				}
++			}
++		}
++	}
+ 
+-=head1 SYNOPSIS
++	return 1;
++}
+ 
+-    use Module::Build::YAML;
++# Save an object to a file
++sub write {
++	my $self = shift;
++	my $file = shift or return $self->_error('No file name provided');
++
++	# Write it to the file
++	open( CFG, '>' . $file ) or return $self->_error(
++		"Failed to open file '$file' for writing: $!"
++		);
++	print CFG $self->write_string;
++	close CFG;
+ 
+-    ...
++	return 1;
++}
+ 
+-=head1 DESCRIPTION
++# Save an object to a string
++sub write_string {
++	my $self = shift;
++	return '' unless @$self;
+ 
+-Provides just enough YAML support so that Module::Build works even if YAML.pm is not installed.
++	# Iterate over the documents
++	my $indent = 0;
++	my @lines  = ();
++	foreach my $cursor ( @$self ) {
++		push @lines, '---';
+ 
+-Currently, this amounts to the ability to write META.yml files when C<perl Build distmeta>
+-is executed via the Dump() and DumpFile() functions/methods.
++		# An empty document
++		if ( ! defined $cursor ) {
++			# Do nothing
+ 
+-=head1 AUTHOR
++		# A scalar document
++		} elsif ( ! ref $cursor ) {
++			$lines[-1] .= ' ' . $self->_write_scalar( $cursor, $indent );
+ 
+-Stephen Adkins <spadkins@gmail.com>
++		# A list at the root
++		} elsif ( ref $cursor eq 'ARRAY' ) {
++			unless ( @$cursor ) {
++				$lines[-1] .= ' []';
++				next;
++			}
++			push @lines, $self->_write_array( $cursor, $indent, {} );
+ 
+-=head1 COPYRIGHT
++		# A hash at the root
++		} elsif ( ref $cursor eq 'HASH' ) {
++			unless ( %$cursor ) {
++				$lines[-1] .= ' {}';
++				next;
++			}
++			push @lines, $self->_write_hash( $cursor, $indent, {} );
+ 
+-Copyright (c) 2006. Stephen Adkins. All rights reserved.
++		} else {
++			croak("Cannot serialize " . ref($cursor));
++		}
++	}
+ 
+-This program is free software; you can redistribute it and/or modify it
+-under the same terms as Perl itself.
++	join '', map { "$_\n" } @lines;
++}
+ 
+-See L<http://www.perl.com/perl/misc/Artistic.html>
++sub _write_scalar {
++	my $string = $_[1];
++	return '~'  unless defined $string;
++	return "''" unless length  $string;
++	if ( $string =~ /[\x00-\x08\x0b-\x0d\x0e-\x1f\"\'\n]/ ) {
++		$string =~ s/\\/\\\\/g;
++		$string =~ s/"/\\"/g;
++		$string =~ s/\n/\\n/g;
++		$string =~ s/([\x00-\x1f])/\\$UNPRINTABLE[ord($1)]/g;
++		return qq|"$string"|;
++	}
++	if ( $string =~ /(?:^\W|\s)/ or $QUOTE{$string} ) {
++		return "'$string'";
++	}
++	return $string;
++}
+ 
+-=cut
++sub _write_array {
++	my ($self, $array, $indent, $seen) = @_;
++	if ( $seen->{refaddr($array)}++ ) {
++		die "Module::Build::YAML does not support circular references";
++	}
++	my @lines  = ();
++	foreach my $el ( @$array ) {
++		my $line = ('  ' x $indent) . '-';
++		my $type = ref $el;
++		if ( ! $type ) {
++			$line .= ' ' . $self->_write_scalar( $el, $indent + 1 );
++			push @lines, $line;
++
++		} elsif ( $type eq 'ARRAY' ) {
++			if ( @$el ) {
++				push @lines, $line;
++				push @lines, $self->_write_array( $el, $indent + 1, $seen );
++			} else {
++				$line .= ' []';
++				push @lines, $line;
++			}
++
++		} elsif ( $type eq 'HASH' ) {
++			if ( keys %$el ) {
++				push @lines, $line;
++				push @lines, $self->_write_hash( $el, $indent + 1, $seen );
++			} else {
++				$line .= ' {}';
++				push @lines, $line;
++			}
++
++		} else {
++			die "Module::Build::YAML does not support $type references";
++		}
++	}
++
++	@lines;
++}
++
++sub _write_hash {
++	my ($self, $hash, $indent, $seen) = @_;
++	if ( $seen->{refaddr($hash)}++ ) {
++		die "Module::Build::YAML does not support circular references";
++	}
++	my @lines  = ();
++	foreach my $name ( sort keys %$hash ) {
++		my $el   = $hash->{$name};
++		my $line = ('  ' x $indent) . "$name:";
++		my $type = ref $el;
++		if ( ! $type ) {
++			$line .= ' ' . $self->_write_scalar( $el, $indent + 1 );
++			push @lines, $line;
++
++		} elsif ( $type eq 'ARRAY' ) {
++			if ( @$el ) {
++				push @lines, $line;
++				push @lines, $self->_write_array( $el, $indent + 1, $seen );
++			} else {
++				$line .= ' []';
++				push @lines, $line;
++			}
++
++		} elsif ( $type eq 'HASH' ) {
++			if ( keys %$el ) {
++				push @lines, $line;
++				push @lines, $self->_write_hash( $el, $indent + 1, $seen );
++			} else {
++				$line .= ' {}';
++				push @lines, $line;
++			}
++
++		} else {
++			die "Module::Build::YAML does not support $type references";
++		}
++	}
++
++	@lines;
++}
++
++# Set error
++sub _error {
++	$Module::Build::YAML::errstr = $_[1];
++	undef;
++}
++
++# Retrieve error
++sub errstr {
++	$Module::Build::YAML::errstr;
++}
++
++#####################################################################
++# YAML Compatibility
++
++sub Dump {
++	Module::Build::YAML->new(@_)->write_string;
++}
++
++sub Load {
++	my $self = Module::Build::YAML->read_string(@_);
++	unless ( $self ) {
++		croak("Failed to load YAML document from string");
++	}
++	if ( wantarray ) {
++		return @$self;
++	} else {
++		# To match YAML.pm, return the last document
++		return $self->[-1];
++	}
++}
++
++BEGIN {
++	*freeze = *Dump;
++	*thaw   = *Load;
++}
++
++sub DumpFile {
++	my $file = shift;
++	Module::Build::YAML->new(@_)->write($file);
++}
++
++sub LoadFile {
++	my $self = Module::Build::YAML->read($_[0]);
++	unless ( $self ) {
++		croak("Failed to load YAML document from '" . ($_[0] || '') . "'");
++	}
++	if ( wantarray ) {
++		return @$self;
++	} else {
++		# Return only the last document to match YAML.pm,
++		return $self->[-1];
++	}
++}
++
++#####################################################################
++# Use Scalar::Util if possible, otherwise emulate it
++
++BEGIN {
++	eval {
++		require Scalar::Util;
++	};
++	if ( $@ ) {
++		# Failed to load Scalar::Util
++		eval <<'END_PERL';
++sub refaddr {
++	my $pkg = ref($_[0]) or return undef;
++	if (!!UNIVERSAL::can($_[0], 'can')) {
++		bless $_[0], 'Scalar::Util::Fake';
++	} else {
++		$pkg = undef;
++	}
++	"$_[0]" =~ /0x(\w+)/;
++	my $i = do { local $^W; hex $1 };
++	bless $_[0], $pkg if defined $pkg;
++	$i;
++}
++END_PERL
++	} else {
++		Scalar::Util->import('refaddr');
++	}
++}
++
++1;
++
++__END__
+ 
+diff -Nbur perl-5.10.1/lib/Module/Build.pm perl-5.10.1/lib/Module-1/Build.pm
+--- perl-5.10.1/lib/Module/Build.pm	2009-08-10 10:36:03.000000000 +0200
++++ perl-5.10.1/lib/Module-1/Build.pm	2010-07-29 04:42:42.000000000 +0200
+@@ -15,7 +15,7 @@
+ 
+ use vars qw($VERSION @ISA);
+ @ISA = qw(Module::Build::Base);
+-$VERSION = '0.340201';
++$VERSION = '0.36_13';
+ $VERSION = eval $VERSION;
+ 
+ # Okay, this is the brute-force method of finding out what kind of
+@@ -25,6 +25,7 @@
+ my %OSTYPES = qw(
+ 		 aix       Unix
+ 		 bsdos     Unix
++		 beos      Unix
+ 		 dgux      Unix
+ 		 dragonfly Unix
+ 		 dynixptx  Unix
+@@ -167,8 +168,10 @@
+ 'actions'.  In this case the actions run are 'build' (the default
+ action), 'test', and 'install'.  Other actions defined so far include:
+ 
+-  build                          manpages    
+-  clean                          pardist     
++  build                          manifest_skip
++  checkchanges                   manpages
++  checkgit                       pardist
++  clean                          patch_blead
+   code                           ppd         
+   config_data                    ppmdist     
+   diff                           prereq_data 
+@@ -177,15 +180,15 @@
+   distclean                      realclean   
+   distdir                        retest      
+   distmeta                       skipcheck   
+-  distsign                       test        
+-  disttest                       testall     
+-  docs                           testcover   
+-  fakeinstall                    testdb      
+-  help                           testpod     
+-  html                           testpodcoverage
+-  install                        versioninstall
+-  manifest                                   
+-
++  distsign                       tag_git
++  disttest                       test
++  docs                           testall
++  fakeinstall                    testcover
++  help                           testdb
++  html                           testpod
++  install                        testpodcoverage
++  installdeps                    upload
++  manifest                       versioninstall
+ 
+ You can run the 'help' action for a complete list of actions.
+ 
+@@ -355,8 +358,8 @@
+ distribution.  The metadata includes the distribution name, version,
+ abstract, prerequisites, license, and various other data about the
+ distribution.  This file is created as F<META.yml> in YAML format.
+-It is recommended that the C<YAML> module be installed to create it.
+-If the C<YAML> module is not installed, an internal module supplied
++It is recommended that the C<YAML::Tiny> module be installed to create it.
++If the C<YAML::Tiny> module is not installed, an internal module supplied
+ with Module::Build will be used to write the META.yml file, and this
+ will most likely be fine.
+ 
+@@ -445,6 +448,24 @@
+ module from being present on your system, which can be a confusing
+ situation indeed.
+ 
++=item installdeps
++
++[version 0.36]
++
++This action will use the C<cpan_client> parameter as a command to install
++missing prerequisites.  You will be prompted whether to install
++optional dependencies.
++
++The C<cpan_client> option defaults to 'cpan' but can be set as an option or in
++F<.modulebuildrc>.  It must be a shell command that takes a list of modules to
++install as arguments (e.g. 'cpanp -i' for CPANPLUS).  If the program part is a
++relative path (e.g. 'cpan' or 'cpanp'), it will be located relative to the perl
++program that executed Build.PL.
++
++  /opt/perl/5.8.9/bin/perl Build.PL
++  ./Build installdeps --cpan_client 'cpanp -i'
++  # installs to 5.8.9
++
+ =item manifest
+ 
+ [version 0.05]
+@@ -472,6 +493,14 @@
+ See the L<distcheck> and L<skipcheck> actions if you want to find out
+ what the C<manifest> action would do, without actually doing anything.
+ 
++=item manifest_skip
++
++[version 0.3608]
++
++This is an action intended for use by module authors, not people
++installing modules.  It will generate a boilerplate MANIFEST.SKIP file
++if one does not already exist.
++
+ =item manpages
+ 
+ [version 0.28]
+@@ -731,21 +760,28 @@
+ 
+ Suppress informative messages on output.
+ 
++=item verbose
++
++Display extra information about the Build on output.  C<verbose> will
++turn off C<quiet>
++
++=item cpan_client
++
++Sets the C<cpan_client> command for use with the C<installdeps> action.
++See C<installdeps> for more details.
++
+ =item use_rcfile
+ 
+ Load the F<~/.modulebuildrc> option file.  This option can be set to
+ false to prevent the custom resource file from being loaded.
+ 
+-=item verbose
+-
+-Display extra information about the Build on output.
+-
+ =item allow_mb_mismatch
+ 
+ Suppresses the check upon startup that the version of Module::Build
+ we're now running under is the same version that was initially invoked
+ when building the distribution (i.e. when the C<Build.PL> script was
+-first run).  Use with caution.
++first run).  As of 0.3601, a mismatch results in a warning instead of
++a fatal error, so this option effectively just suppresses the warning.
+ 
+ =item debug
+ 
+@@ -754,7 +790,6 @@
+ 
+ =back
+ 
+-
+ =head2 Default Options File (F<.modulebuildrc>)
+ 
+ [version 0.28]
+@@ -786,11 +821,31 @@
+   diff     flags=-u
+   install  --install_base /home/ken
+            --install_path html=/home/ken/docs/html
++  installdeps --cpan_client 'cpanp -i'
+ 
+ If you wish to locate your resource file in a different location, you
+ can set the environment variable C<MODULEBUILDRC> to the complete
+ absolute path of the file containing your options.
+ 
++=head2 Environment variables
++
++=over
++
++=item MODULEBUILDRC
++
++[version 0.28]
++
++Specifies an alternate location for a default options file as described above.
++
++=item PERL_MB_OPT
++
++[version 0.36]
++
++Command line options that are applied to Build.PL or any Build action.  The
++string is split as the shell would (e.g. whitespace) and the result is
++prepended to any actual command-line arguments.
++
++=back
+ 
+ =head1 INSTALL PATHS
+ 
+@@ -1091,7 +1146,7 @@
+ =head1 SEE ALSO
+ 
+ perl(1), L<Module::Build::Cookbook>, L<Module::Build::Authoring>,
+-L<Module::Build::API>, L<ExtUtils::MakeMaker>, L<YAML>
++L<Module::Build::API>, L<ExtUtils::MakeMaker>, L<YAML::Tiny>
+ 
+ F<META.yml> Specification:
+ L<http://module-build.sourceforge.net/META-spec-current.html>

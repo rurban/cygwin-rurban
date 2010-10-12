@@ -1,0 +1,36 @@
+difforig Crypt-SSLeay-0.57
+
+diff -u  Crypt-SSLeay-0.57/Makefile.PL.orig
+--- Crypt-SSLeay-0.57/Makefile.PL.orig	2007-09-17 22:36:59.000000000 +0200
++++ Crypt-SSLeay-0.57/Makefile.PL	2010-08-25 19:57:31.156250000 +0200
+@@ -9,12 +9,13 @@
+ eval "use ExtUtils::MakeMaker::Coverage";
+ $@ or print "Adding testcover target\n";
+ 
+-use vars qw($opt_default $opt_libpath $opt_static);
++use vars qw($opt_default $opt_libpath $opt_static $opt_live);
+ 
+ GetOptions(
+     "default", \$opt_default,
+     "lib=s",   \$opt_libpath,
+     "static",  \$opt_static,
++    "live",    \$opt_live,
+ );
+ 
+ $opt_default ||= $ENV{CRYPT_SSLEAY_DEFAULT};
+@@ -282,9 +283,14 @@
+ these tests may fail (through no fault of the code).
+ 
+ INFO
+-    my $network_tests = prompt
++    my $network_tests;
++    if (!defined($opt_live)) {
++      $network_tests = prompt
+         "Do you want to run the live tests (y/N) ?",
+         'N';
++    } else {
++      $network_tests = "y" if $opt_live;
++    }
+     print OUT "network_tests ", ($network_tests =~ /y/i) ? 1 : 0, "\n";
+     close OUT;
+ }
