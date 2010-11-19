@@ -1,0 +1,61 @@
+Index: t/native_pbc/header.t
+===================================================================
+--- t/native_pbc/header.t	(revision 37448)
++++ t/native_pbc/header.t	(working copy)
+@@ -6,8 +6,10 @@
+ use warnings;
+ use lib qw( . lib ../lib ../../lib );
+ use Test::More;
+-use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
+ 
++#use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
++use Parrot::Test tests => 9;
++
+ use File::Temp;
+ use Parrot::Config;
+ 
+Index: t/native_pbc/integer.t
+===================================================================
+--- t/native_pbc/integer.t	(revision 37448)
++++ t/native_pbc/integer.t	(working copy)
+@@ -9,8 +9,8 @@
+ use Parrot::Config;
+ use Parrot::BuildUtil;
+ 
+-use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
+-#use Parrot::Test tests => 7;
++#use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
++use Parrot::Test tests => 7;
+ 
+ =head1 NAME
+ 
+Index: t/native_pbc/number.t
+===================================================================
+--- t/native_pbc/number.t	(revision 37448)
++++ t/native_pbc/number.t	(working copy)
+@@ -9,8 +9,8 @@
+ use Parrot::Config;
+ use Parrot::BuildUtil;
+ 
+-use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
+-#use Parrot::Test tests => 7;
++#use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
++use Parrot::Test tests => 7;
+ 
+ =head1 NAME
+ 
+Index: t/native_pbc/string.t
+===================================================================
+--- t/native_pbc/string.t	(revision 37448)
++++ t/native_pbc/string.t	(working copy)
+@@ -9,8 +9,8 @@
+ use Parrot::Config;
+ use Parrot::BuildUtil;
+ 
+-use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
+-#use Parrot::Test tests => 6;
++#use Parrot::Test skip_all => 'pending robust testing strategy, TT #357';
++use Parrot::Test tests => 6;
+ 
+ =head1 NAME
+ 

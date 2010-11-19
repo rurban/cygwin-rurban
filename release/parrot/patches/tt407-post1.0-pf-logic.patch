@@ -1,0 +1,53 @@
+Index: src/packfile.c
+===================================================================
+--- src/packfile.c.orig	2009-03-15 08:58:37.000000000 +0100
++++ src/packfile.c	2009-03-15 20:32:41.375000000 +0100
+@@ -954,18 +954,40 @@
+         return 0;
+     }
+ 
+-    /* Ensure the bytecode version is one we can read. Currently, we only
+-     * support bytecode versions matching the current one.
++    /* Ensure the bytecode version is one we can read. pre-1.0 we only
++     * supported bytecode versions matching the current one.
++     * From 1.0 on we at least try to read older pbc's because we
++     * changed our pmc and ops renumbering policy, but removed pmc/ops are
++     * unsupported.
+      *
+-     * tools/dev/pbc_header.pl --upd t/native_pbc/ *.pbc
+-     * stamps version and fingerprint in the native tests. */
++     * With tools/dev/pbc_header.pl --upd t/native_pbc/ *.pbc
++     * we can update the parrot version and fingerprint in the native tests */
+     if (header->bc_major != PARROT_PBC_MAJOR
+     ||  header->bc_minor != PARROT_PBC_MINOR) {
+-        Parrot_io_eprintf(NULL, "PackFile_unpack: This Parrot cannot read "
+-            "bytecode files with version %d.%d.\n",
+-            header->bc_major, header->bc_minor);
+-        if (!(self->options & PFOPT_UTILS))
++        const char *failmsg = "PackFile_unpack: This Parrot cannot read "
++            "bytecode files %s version %d.%d.\n";
++        if (header->major < 1) {
++            Parrot_io_eprintf(NULL, failmsg, "with",
++                              header->bc_major, header->bc_minor);
+             return 0;
++        }
++        else {
++            if (header->bc_major << 0xff + header->bc_minor
++                > PARROT_PBC_MAJOR << 0xff + PARROT_PBC_MINOR) {
++                Parrot_io_eprintf(NULL, failmsg, "newer than",
++                                  PARROT_PBC_MAJOR, PARROT_PBC_MINOR);
++                return 0;
++            }
++            /* Read older, but refuse to read pre-1.0 bytecode as the
++             * pmc and ops numbering changed randomly. post-1.0 the
++             * earlier ops and pmc indices are kept.
++             * See F<lib/Parrot/OpsRenumber.pm>
++             */
++            if (header->bc_major << 0xff + header->bc_minor < 338) {
++                Parrot_io_eprintf(NULL, failmsg, "older than", 3, 38);
++                return 0;
++            }
++        }
+     }
+ 
+     /* Check wordsize, byte order and floating point number type are valid. */
