@@ -1,0 +1,1998 @@
+Index: parrot-svn/Configure.pl
+===================================================================
+--- parrot-svn.orig/Configure.pl	2009-02-21 10:49:26.000000000 +0100
++++ parrot-svn/Configure.pl	2009-03-07 08:53:22.375000000 +0100
+@@ -70,6 +70,7 @@
+ # Log files created by Configure.pl in MANIFEST.configure.generated
+ $conf->{active_configuration} = 1;
+ unlink 'MANIFEST.configure.generated';
++unlink 'MANIFEST.generated';
+ 
+ # Run the actual steps from Parrot::Configure
+ $conf->runsteps or exit(1);
+Index: parrot-svn/config/auto/cpu/i386/auto.pm
+===================================================================
+--- parrot-svn.orig/config/auto/cpu/i386/auto.pm	2009-02-18 00:01:53.000000000 +0100
++++ parrot-svn/config/auto/cpu/i386/auto.pm	2009-03-06 00:00:55.140625000 +0100
+@@ -70,6 +70,7 @@
+     );
+     print " (\U$suffix) " if ($verbose);
+     $conf->data->add( ' ', TEMP_generated => $path_f );
++    $conf->append_configure_log($path_f);
+ }
+ 
+ 1;
+Index: parrot-svn/config/auto/cpu/ppc/auto.pm
+===================================================================
+--- parrot-svn.orig/config/auto/cpu/ppc/auto.pm	2009-02-18 00:01:53.000000000 +0100
++++ parrot-svn/config/auto/cpu/ppc/auto.pm	2009-03-06 00:00:55.062500000 +0100
+@@ -39,6 +39,7 @@
+                 );
+                 print " (\U$suffix) " if ($verbose);
+                 $conf->data->add( ' ', TEMP_generated => $f );
++                $conf->append_configure_log($f);
+             }
+         }
+         $conf->cc_clean();
+Index: parrot-svn/config/auto/cpu/sun4/auto.pm
+===================================================================
+--- parrot-svn.orig/config/auto/cpu/sun4/auto.pm	2009-02-18 00:01:53.000000000 +0100
++++ parrot-svn/config/auto/cpu/sun4/auto.pm	2009-03-06 00:00:55.156250000 +0100
+@@ -62,6 +62,7 @@
+                 );
+                 print " (\U$suffix) " if ($verbose);
+                 $conf->data->add( ' ', TEMP_atomic_o => 'src/atomic/sparc_v9.o' );
++                $conf->append_configure_log($f);
+             }
+         }
+         $conf->cc_clean();
+Index: parrot-svn/config/auto/signal.pm
+===================================================================
+--- parrot-svn.orig/config/auto/signal.pm	2009-02-18 00:01:59.000000000 +0100
++++ parrot-svn/config/auto/signal.pm	2009-03-06 00:00:55.281250000 +0100
+@@ -19,7 +19,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':auto';
+-
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -65,6 +65,7 @@
+     # now generate signal constants
+     my $signalpasm = "runtime/parrot/include/signal.pasm";
+     _print_signalpasm($conf, $signalpasm);
++    add_to_generated($signalpasm, "[main]");
+ 
+     return 1;
+ }
+Index: parrot-svn/config/gen/call_list.pm
+===================================================================
+--- parrot-svn.orig/config/gen/call_list.pm	2009-02-18 00:00:53.000000000 +0100
++++ parrot-svn/config/gen/call_list.pm	2009-03-06 00:00:55.312500000 +0100
+@@ -27,7 +27,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils '_slurp';
+-
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -66,7 +66,7 @@
+     print {$combined} $text_file_coda;
+ 
+     $conf->append_configure_log($combined_file);
+-
++    add_to_generated($combined_file, "[devel]", "doc");
+     return 1;
+ }
+ 
+Index: parrot-svn/config/gen/config_h.pm
+===================================================================
+--- parrot-svn.orig/config/gen/config_h.pm	2009-02-20 15:16:20.000000000 +0100
++++ parrot-svn/config/gen/config_h.pm	2009-03-06 10:22:55.265625000 +0100
+@@ -22,7 +22,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':gen';
+-
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -43,14 +43,17 @@
+         ignore_pattern    => 'PARROT_CONFIG_DATE',
+         conditioned_lines => 1
+     );
++    add_to_generated('include/parrot/config.h', "[main]", "include");
+ 
+     $conf->genfile($self->{templates}->{feature_h}, 'include/parrot/feature.h',
+         ignore_pattern => 'PARROT_CONFIG_DATE',
+         feature_file   => 1
+     );
++    add_to_generated('include/parrot/feature.h', "[main]", "include");
+ 
+     my $hh = "include/parrot/has_header.h";
+     $conf->append_configure_log($hh);
++    add_to_generated($hh, "[main]", "include");
+     open( my $HH, ">", "$hh.tmp" )
+         or die "Can't open has_header.h: $!";
+ 
+Index: parrot-svn/config/gen/config_pm.pm
+===================================================================
+--- parrot-svn.orig/config/gen/config_pm.pm	2009-03-05 20:33:16.000000000 +0100
++++ parrot-svn/config/gen/config_pm.pm	2009-03-06 00:00:56.671875000 +0100
+@@ -20,6 +20,7 @@
+ 
+ use base qw(Parrot::Configure::Step);
+ use Parrot::Configure::Utils ':gen';
++use Parrot::BuildUtil;
+ 
+ use Cwd qw(cwd);
+ use File::Spec::Functions qw(catdir);
+@@ -86,6 +87,7 @@
+     open( $IN,  "<", $template ) or die "Can't open '$template': $!";
+     my $c_l_pasm = q{config_lib.pasm};
+     $conf->append_configure_log($c_l_pasm);
++    add_to_generated($c_l_pasm, "[main]", "lib");
+     open( $OUT, ">", $c_l_pasm ) or die "Can't open $c_l_pasm: $!";
+ 
+     print {$OUT} <<"END";
+Index: parrot-svn/config/gen/core_pmcs.pm
+===================================================================
+--- parrot-svn.orig/config/gen/core_pmcs.pm	2009-02-18 00:00:53.000000000 +0100
++++ parrot-svn/config/gen/core_pmcs.pm	2009-03-07 08:19:24.296875000 +0100
+@@ -20,6 +20,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':gen';
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -44,6 +45,7 @@
+ 
+     my $file = "include/parrot/core_pmcs.h";
+     $conf->append_configure_log($file);
++    add_to_generated($file, "[main]", "include");
+     open( my $OUT, ">", "$file.tmp" );
+ 
+     print {$OUT} <<"END_H";
+@@ -97,6 +99,7 @@
+     my @pmcs = split( / /, $conf->data->get('pmc_names') );
+ 
+     $conf->append_configure_log($file);
++    add_to_generated($file, "[]", "");
+     open( my $OUT, ">", "$file.tmp" );
+ 
+     print {$OUT} <<"END_C";
+@@ -182,6 +185,7 @@
+     my @pmcs = split( / /, $conf->data->get('pmc_names') );
+ 
+     $conf->append_configure_log($file);
++    #add_to_generated($file, "[devel]", "");
+     open( my $OUT, ">", "$file.tmp" );
+ 
+     print $OUT <<'END_PM';
+Index: parrot-svn/config/gen/makefiles/docs.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/docs.in	2009-03-05 20:33:11.000000000 +0100
++++ parrot-svn/config/gen/makefiles/docs.in	2009-03-07 10:14:48.171875000 +0100
+@@ -1,4 +1,4 @@
+-# Copyright (C) 2001-2006, Parrot Foundation.
++# Copyright (C) 2001-2009, Parrot Foundation.
+ # $Id: docs.in 37071 2009-03-02 09:29:16Z fperrad $
+ 
+ # Setup of some commands
+@@ -8,6 +8,7 @@
+ RM_F    := @rm_f@
+ RM_RF   := @rm_rf@
+ PERLDOC := @perldoc@
++ADDGENERATED = cd .. && $(PERL) tools/build/addgenerated.pl
+ 
+ # long list of .pod files
+ POD := @TEMP_pod@
+@@ -38,6 +39,7 @@
+ packfile-c.pod: ../src/packfile.c
+ #IF(new_perldoc):	$(PERLDOC) -ud packfile-c.pod ../src/packfile.c
+ #ELSE:	$(PERLDOC) -u ../src/packfile.c > packfile-c.pod
++	$(ADDGENERATED) "docs/packfile-c.pod" "[main]" doc
+ 
+ clean:
+ 	$(RM_F) packfile-c.pod $(POD)
+Index: parrot-svn/config/gen/makefiles/dynoplibs_pl.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/dynoplibs_pl.in	2009-02-18 00:00:49.000000000 +0100
++++ parrot-svn/config/gen/makefiles/dynoplibs_pl.in	2009-03-06 00:00:56.171875000 +0100
+@@ -17,6 +17,12 @@
+ use warnings;
+ 
+ use File::Copy qw(copy);
++use FindBin;
++use lib "$FindBin::Bin/../..";
++use lib "$FindBin::Bin/../../lib";
++use Cwd;
++use Parrot::BuildUtil;
++use File::Spec;
+ 
+ # qq[] isn't guaranteed to work, but it's safer than "" as some platforms
+ # (eg FreeBSD) have ""s embedded in their substution values. q[] is used in
+@@ -122,6 +128,7 @@
+     my $dest = $1;
+ 
+     my $core_suffix;
++    my $pwd = cwd();
+     foreach $core_suffix (values %cores) {
+         foreach (@oplibs) {
+             my $src = $_ . "_ops$core_suffix$LOAD_EXT";
+@@ -133,6 +140,9 @@
+             if ($^O eq 'hpux' or $^O eq 'cygwin') {
+                 chmod 0755, "$dest@slash@$src";
+             }
++	    chdir "@build_dir@";
++	    add_to_generated("$dest@slash@$src", "[library]");
++	    chdir $pwd;
+         }
+     }
+ }
+Index: parrot-svn/config/gen/makefiles/dynpmc_pl.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/dynpmc_pl.in	2009-02-18 00:00:49.000000000 +0100
++++ parrot-svn/config/gen/makefiles/dynpmc_pl.in	2009-03-06 00:00:55.781250000 +0100
+@@ -21,6 +21,9 @@
+ 
+ use File::Copy qw(copy);
+ use Storable;
++use Cwd;
++use Parrot::BuildUtil;
++use File::Spec;
+ 
+ # Config stuff
+ # q[] isn't guaranteed to work, but it's safer than "" as some platforms
+@@ -176,6 +179,7 @@
+ 
+     die "nothing found to copy" unless @list_to_process;
+ 
++    my $pwd = cwd();
+     foreach (@list_to_process) {
+         copy("$_$LOAD_EXT", $dest) or die "Copy $_$LOAD_EXT failed ($?)\n";
+ 
+@@ -184,6 +188,10 @@
+         if ($^O eq 'hpux' or $^O eq 'cygwin') {
+             chmod 0755, "$dest@slash@$_$LOAD_EXT";
+         }
++	chdir "@build_dir@";
++        # FIXME: strip build_dir
++	add_to_generated("$dest@slash@$_$LOAD_EXT", "[library]");
++	chdir $pwd;
+ 
+     }
+ }
+Index: parrot-svn/config/gen/makefiles/ext.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/ext.in	2009-02-27 00:31:41.000000000 +0100
++++ parrot-svn/config/gen/makefiles/ext.in	2009-03-07 08:44:53.656250000 +0100
+@@ -7,13 +7,13 @@
+ PERL      := @perl@
+ RM_F      := @rm_f@
+ 
+-# add new languages here
+-# remove obsolete languages here
+ EXT := \
+     Parrot-Embed
+ 
+ # the default target
+-all: $(EXT)
++build: $(EXT)
++
++all: build
+ 
+ # hard-code these for now
+ test: Parrot-Embed
+@@ -25,23 +25,14 @@
+ 	@echo ""
+ 	@echo "Following targets are available for the user:"
+ 	@echo ""
+-	@echo "  all:          Make a lot of language implementations."
++	@echo "  all:          Make Parrot-Embed."
+ 	@echo "                This is the default."
+-	@echo "  test:         Unified test suite for a lot of languages."
++	@echo "  test:         "
+ 	@echo ""
+-	@echo "  clean:        Clean up a lot of languages."
++	@echo "  clean:        Clean up"
+ 	@echo ""
+ 	@echo "  help:         Print this help message."
+ 	@echo ""
+-	@echo "Following languages are available:"
+-	@echo "  $(LANGUAGES)"
+-	@echo "A particular language <lang> can be built, tested and cleand up"
+-	@echo "  make <lang>"
+-	@echo "  make <lang>.test"
+-	@echo "  make <lang>.clean"
+-	@echo "For the status of individual languages see:"
+-	@echo " https://trac.parrot.org/parrot/wiki/Languages"
+-	@echo ""
+ 
+ clean: \
+     Parrot-Embed.clean
+@@ -55,12 +46,10 @@
+ Parrot-Embed : Parrot-Embed.dummy
+ 
+ Parrot-Embed.dummy:
+-#IF(win32):	- cd Parrot-Embed && $(PERL) Makefile.PL && nmake
+-#UNLESS(win32):	- cd Parrot-Embed && $(PERL) Makefile.PL && $(MAKE)
++	- cd Parrot-Embed && $(PERL) Makefile.PL && $(MAKE)
+ 
+ Parrot-Embed.clean:
+-#IF(win32):	- cd Parrot-Embed && nmake clean
+-#UNLESS(win32):	- cd Parrot-Embed && $(MAKE) clean
++	- cd Parrot-Embed && $(MAKE) clean
+ 
+ # Local variables:
+ #   mode: makefile
+Index: parrot-svn/config/gen/makefiles/json.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/json.in	2009-02-27 00:31:41.000000000 +0100
++++ parrot-svn/config/gen/makefiles/json.in	2009-03-06 16:01:44.140625000 +0100
+@@ -4,10 +4,12 @@
+ PERL     := @perl@
+ RM_F     := @rm_f@
+ PARROT   := ../../parrot@exe@
++ADDGENERATED  = $(PERL) ../../tools/build/addgenerated.pl
+ 
+ TOOL_DIR := ../..
+ PGE_DIR  := ../../compilers/pge
+ TGE_DIR  := ../../compilers/tge
++LIBS     := JSON/grammar.pbc JSON/pge2pir.pbc
+ 
+ # the default target
+ all: JSON.pbc
+@@ -19,6 +21,8 @@
+ 	@echo ""
+ 	@echo "  all:               JSON.pbc"
+ 	@echo "                     This is the default."
++	@echo "  install:           copy pbc's to runtime/parrot/library"
++	@echo ""
+ 	@echo "Testing:"
+ 	@echo "  test:              Run the test suite."
+ 	@echo "  testclean:         Clean up test results and temporary files."
+@@ -38,19 +42,29 @@
+ 
+ JSON.pbc : JSON/grammar.pbc JSON/pge2pir.pbc JSON.pir
+ 	$(PARROT) --output=JSON.pbc JSON.pir
++	$(ADDGENERATED) "compilers/json/$@"
+ 
+ JSON/grammar.pbc : JSON/grammar.pir
+ 	$(PARROT) --output=JSON/grammar.pbc JSON/grammar.pir
++	$(ADDGENERATED) "compilers/json/$@"
+ 
+ JSON/grammar.pir : JSON/grammar.pg
+ 	$(PARROT) $(TOOL_DIR)/runtime/parrot/library/PGE/Perl6Grammar.pbc --output=JSON/grammar.pir JSON/grammar.pg
+ 
+ JSON/pge2pir.pbc : JSON/pge2pir.pir
+ 	$(PARROT) --output=JSON/pge2pir.pbc JSON/pge2pir.pir
++	$(ADDGENERATED) "compilers/json/$@"
+ 
+ JSON/pge2pir.pir : JSON/pge2pir.tg
+ 	$(PARROT) $(TGE_DIR)/tgc.pir --output=JSON/pge2pir.pir JSON/pge2pir.tg
+ 
++# into runtime
++install : build
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/parrot/library
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/parrot/library/JSON
++	$(CP) JSON.pbc $(DESTDIR)$(LIB_DIR)/parrot/library
++	$(CP) $(LIBS) $(DESTDIR)$(LIB_DIR)/parrot/library/JSON
++
+ clean : testclean
+ 	$(RM_F) "JSON/*.pbc" "JSON/*.pir" JSON.pbc
+ 
+Index: parrot-svn/config/gen/makefiles/nqp.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/nqp.in	2009-02-27 00:31:41.000000000 +0100
++++ parrot-svn/config/gen/makefiles/nqp.in	2009-03-07 08:49:18.562500000 +0100
+@@ -5,9 +5,11 @@
+ PERL     := @perl@
+ RM_F     := @rm_f@
+ PARROT   := ../../parrot@exe@
++ADDGENERATED  = $(PERL) ../../tools/build/addgenerated.pl
+ 
+ PARROT_LIBRARY := @build_dir@/runtime/parrot/library
+ PGE_LIBRARY    := @build_dir@/runtime/parrot/library/PGE
++LIB_DIR        := @lib_dir@
+ 
+ all: nqp.pbc
+ 
+@@ -26,6 +28,8 @@
+ 	$(PARROT) $(PARROT_ARGS) $(PGE_LIBRARY)/Perl6Grammar.pir \
+ 	    --output=src/Grammar_gen.pir src/Grammar.pg
+ 	$(PARROT) -o nqp.pbc nqp.pir
++	$(CP) nqp.pbc $(PARROT_LIBRARY)/nqp.pbc
++	$(ADDGENERATED) "runtime/parrot/library/nqp.pbc"
+ 
+ boot: $(BOOTSRC)
+ 	$(PARROT) nqp.pbc \
+@@ -41,6 +45,8 @@
+ 	@echo ""
+ 	@echo "  all:               nqp.pbc"
+ 	@echo "                     This is the default."
++	@echo "  install:           nqp.pbc only"
++	@echo ""
+ 	@echo "Testing:"
+ 	@echo "  test:              Run the test suite."
+ 	@echo "  testclean:         Clean up test results."
+@@ -57,6 +63,10 @@
+ test: all
+ 	$(PERL) t/harness t
+ 
++install: build
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/parrot/library
++	$(CP) nqp.pbc $(DESTDIR)$(LIB_DIR)/parrot/library
++
+ # this target has nothing to do
+ testclean:
+ 
+Index: parrot-svn/config/gen/makefiles/root.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/root.in	2009-03-05 20:33:11.000000000 +0100
++++ parrot-svn/config/gen/makefiles/root.in	2009-03-06 18:57:12.171875000 +0100
+@@ -109,6 +109,7 @@
+ RECONFIGURE      := $(PERL) tools/dev/reconfigure.pl
+ INNO_SETUP       := iscc
+ JIT_BUILD_TOOL   := $(BUILD_TOOLS_DIR)/jit2c.pl
++ADDGENERATED     := $(PERL) $(BUILD_TOOLS_DIR)/addgenerated.pl
+ #IF(darwin):export MACOSX_DEPLOYMENT_TARGET := @osx_version@
+ 
+ ###############################################################################
+@@ -199,6 +200,7 @@
+     myconfig  \
+     $(GEN_PASM_INCLUDES) \
+     $(SRC_DIR)/call_list.txt \
++    MANIFEST.generated \
+     MANIFEST.configure.generated \
+     .configure_trace.sto \
+     .parrot_current_rev
+@@ -532,9 +534,11 @@
+ 
+ .pir.pbc : # suffix rule (limited support)
+ 	$(PARROT) -o $@ $<
++	@$(ADDGENERATED) "$@"
+ 
+ .pbc$(O) : # suffix rule (limited support)
+ 	$(PARROT) -o $@ $<
++	@$(ADDGENERATED) "$@"
+ 
+ 
+ ###############################################################################
+@@ -554,7 +558,7 @@
+     docs \
+     $(LIBNCI_TEST_SO) \
+ #IF(has_glut):    $(LIBGLUTCB_SO) \
+-    $(GEN_LIBRARY) \
++    gen_library \
+     dynpmc \
+     dynoplibs \
+     compilers \
+@@ -566,7 +570,7 @@
+     $(PDUMP) \
+     $(PINFO) \
+ 
+-$(GEN_LIBRARY) : $(PARROT)
++gen_library : $(GEN_LIBRARY) $(PARROT)
+ 
+ # constant string support
+ .c.str : # suffix rule (limited support)
+@@ -755,26 +759,31 @@
+ 
+ runtime/parrot/include/parrotlib.pbc: runtime/parrot/library/parrotlib.pir $(PARROT)
+ 	$(PARROT) -o $@ runtime/parrot/library/parrotlib.pir
++	$(ADDGENERATED) "$@"
+ 
+ runtime/parrot/include/config.fpmc : myconfig config_lib.pasm $(MINIPARROT)
+-	@echo Invoking Parrot to generate runtime/parrot/include/config.fpmc --cross your fingers
++	@echo "Invoking Parrot to generate runtime/parrot/include/config.fpmc --cross your fingers"
+ 	$(MINIPARROT) config_lib.pasm > $@
++	$(ADDGENERATED) "$@"
+ 
+ $(PARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) CFLAGS \
+     lib/Parrot/OpLib/core.pm $(SRC_DIR)/parrot_config$(O) \
+     $(MINIPARROT)
+ 	$(LINK) @ld_out@$@ \
+-	$(SRC_DIR)/main$(O) $(SRC_DIR)/parrot_config$(O) \
+-	@rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS) $(LINK_DYNAMIC)
++    $(SRC_DIR)/main$(O) $(SRC_DIR)/parrot_config$(O) \
++    @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS) $(LINK_DYNAMIC)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(PBC_TO_EXE) : tools/dev/pbc_to_exe.pir runtime/parrot/library/config.pir $(PARROT)
+ 	$(PARROT) -o pbc_to_exe.pbc tools/dev/pbc_to_exe.pir
+ 	$(PARROT) pbc_to_exe.pbc pbc_to_exe.pbc
++	$(ADDGENERATED) "$@" "[main]" bin
+ 
+ $(PARROT_CONFIG) : tools/util/parrot-config.pir $(PARROT) $(PBC_TO_EXE)
+ 	$(PARROT) -o parrot_config.pbc tools/util/parrot-config.pir
+ 	$(PARROT) pbc_to_exe.pbc parrot_config.pbc
++	$(ADDGENERATED) "$@" "[main]" bin
+ 
+ #IF(win32):pirc : $(PIRC)
+ 
+@@ -782,12 +791,14 @@
+ 	$(MAKE) compilers/pirc
+ 	$(CP) compilers/pirc/pirc$(EXE) $(PIRC)
+ 	$(CHMOD) 0755 $(PIRC)
++	$(ADDGENERATED) "$@" "[main]" bin
+ 
+ $(MINIPARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) \
+     lib/Parrot/OpLib/core.pm $(SRC_DIR)/null_config$(O)
+ 	$(LINK) @ld_out@$@ $(SRC_DIR)/main$(O) $(SRC_DIR)/null_config$(O) \
+ 	@rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
++	$(ADDGENERATED) "# $@" "[main]" bin
+ 
+ $(INSTALLABLEPARROT) : $(SRC_DIR)/main$(O) $(GEN_HEADERS) $(LIBPARROT) \
+     lib/Parrot/OpLib/core.pm $(SRC_DIR)/install_config$(O) \
+@@ -796,6 +807,7 @@
+     $(SRC_DIR)/main$(O) $(SRC_DIR)/install_config$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
++	$(ADDGENERATED) "$@" "[main]" bin
+ 
+ $(INC_DIR)/parrot.h : $(INC_DIR)/pbcversion.h $(INC_DIR)/vtable.h
+ 
+@@ -808,19 +820,23 @@
+     $(BUILD_TOOLS_DIR)/parrot_config_c.pl
+ 	$(PERL) $(BUILD_TOOLS_DIR)/parrot_config_c.pl > \
+     $(SRC_DIR)/parrot_config.c
++	$(ADDGENERATED) "$@" "[main]"
+ 
+ $(SRC_DIR)/install_config.c :  install_config.fpmc \
+     $(BUILD_TOOLS_DIR)/parrot_config_c.pl
+ 	$(PERL) $(BUILD_TOOLS_DIR)/parrot_config_c.pl --install > \
+     $(SRC_DIR)/install_config.c
++	$(ADDGENERATED) "$@" "[main]"
+ 
+ $(SRC_DIR)/null_config.c : myconfig $(BUILD_TOOLS_DIR)/parrot_config_c.pl
+ 	$(PERL) $(BUILD_TOOLS_DIR)/parrot_config_c.pl --mini > \
+     $(SRC_DIR)/null_config.c
++	$(ADDGENERATED) "$@" "[main]"
+ 
+ install_config.fpmc : myconfig config_lib.pasm $(PARROT)
+ 	@echo "Invoking Parrot to generate install_config.fpmc"
+ 	$(PARROT) config_lib.pasm --install > $@
++	$(ADDGENERATED) "$@" "[main]"
+ 
+ $(SRC_DIR)/parrot_config$(O) : $(SRC_DIR)/parrot_config.c
+ 
+@@ -856,21 +872,26 @@
+ #IF(has_static_linking):  $(LIBPARROT_STATIC) \
+ #IF(has_dynamic_linking): $(LIBPARROT_SHARED)
+ 
++#IF(cygwin):IMPORTLIB = libparrot.dll.a
++#IF(win32 and cc==gcc):IMPORTLIB = libparrot.lib
++
+ $(LIBPARROT_STATIC) : $(O_FILES)
+ 	$(MKPATH) @blib_dir@
+ 	$(AR_CR) @ar_out@$@ @ar_extra@ $(O_FILES)
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;2
+ 	$(RANLIB) $@
++	$(ADDGENERATED) "$@" "[main]" lib
+ 
+ $(LIBPARROT_SHARED) : $(O_FILES)
+ 	$(MKPATH) @blib_dir@
+ 	$(LD) $(LD_SHARE_FLAGS) $(LDFLAGS) @ld_out@$@ @libparrot_soname@ \
+-#IF(cygwin):		-Wl,--out-implib=libparrot.dll.a \
+-#IF(win32 and cc==gcc):		-Wl,--out-implib=libparrot.lib \
++#IF(cygwin or (win32 and cc==gcc)):		-Wl,--out-implib=$(IMPORTLIB) \
+ 		$(O_FILES) $(C_LIBS) $(ICU_SHARED)
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;2
+ #IF(libparrot_shared_alias):	( cd @blib_dir@ ; ln -sf @libparrot_shared@ @libparrot_shared_alias@ )
+-
++#IF(libparrot_shared_alias):	$(ADDGENERATED) "@blib_dir@/@libparrot_shared_alias@" "[main]" lib
++	$(ADDGENERATED) "$@" "[main]" lib
++#IF(cygwin or (win32 and cc==gcc)):	$(ADDGENERATED) "$(IMPORTLIB)" "[main]" lib
+ 
+ $(INSTALLABLECONFIG) : $(SRC_DIR)/install_config$(O) $(PARROT_CONFIG) $(PBC_TO_EXE)
+ 	$(PARROT) -o parrot_config.pbc tools/util/parrot-config.pir
+@@ -890,6 +911,7 @@
+     $(SRC_DIR)/parrot_debugger$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(INSTALLABLEPDB) : $(SRC_DIR)/parrot_debugger$(O) $(LIBPARROT) $(SRC_DIR)/parrot_config$(O)
+@@ -897,6 +919,7 @@
+     $(SRC_DIR)/parrot_debugger$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ #
+@@ -909,12 +932,14 @@
+ 	$(LINK) @ld_out@$@ \
+     $(SRC_DIR)/pbc_disassemble$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(INSTALLABLEDIS) : $(SRC_DIR)/pbc_disassemble$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$@ \
+     $(SRC_DIR)/pbc_disassemble$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ #
+@@ -926,6 +951,7 @@
+ 	$(LINK) @ld_out@$@ \
+     $(SRC_DIR)/pbc_dump$(O) \
+     $(SRC_DIR)/packdump$(O) @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(SRC_DIR)/pbc_dump$(O) : $(GEN_HEADERS)
+@@ -935,6 +961,7 @@
+     $(SRC_DIR)/pbc_dump$(O) \
+     $(SRC_DIR)/packdump$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ 
+@@ -943,6 +970,7 @@
+ 	$(LINK) @ld_out@$@ \
+     $(SRC_DIR)/pbc_info$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(SRC_DIR)/pbc_info$(O) : $(GEN_HEADERS)
+@@ -951,6 +979,7 @@
+ 	$(LINK) @ld_out@$@ \
+     $(SRC_DIR)/pbc_info$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ #
+@@ -962,6 +991,7 @@
+     $(SRC_DIR)/pbc_merge$(O) \
+     $(SRC_DIR)/parrot_config$(O) \
+     @rpath_blib@ $(ALL_PARROT_LIBS) $(LINK_DYNAMIC) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ $(INSTALLABLEPBCMERGE) : $(SRC_DIR)/pbc_merge$(O) $(LIBPARROT) $(INSTALLABLECONFIG)
+@@ -969,6 +999,7 @@
+     $(SRC_DIR)/pbc_merge$(O) \
+     $(SRC_DIR)/install_config$(O) \
+     @rpath_lib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@" "[main]" bin
+ #IF(win32):	if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
+ 
+ 
+@@ -983,6 +1014,7 @@
+ $(INC_DIR)/oplib/ops.h lib/Parrot/OpLib/core.pm : $(OPS_FILES) $(BUILD_TOOLS_DIR)/ops2pm.pl \
+     lib/Parrot/OpsFile.pm lib/Parrot/Op.pm $(OPS_DIR)/ops.num $(OPS_DIR)/ops.skip
+ 	$(PERL) $(BUILD_TOOLS_DIR)/ops2pm.pl $(OPS_FILES)
++	$(ADDGENERATED) "$@" "[main]" include
+ 
+ ###############################################################################
+ #
+@@ -1182,6 +1214,7 @@
+ $(SRC_DIR)/nci.c : $(SRC_DIR)/call_list.txt $(BUILD_TOOLS_DIR)/nativecall.pl \
+ 	$(SRC_DIR)/pmc/pmc_nci.h
+ 	$(PERL) $(BUILD_TOOLS_DIR)/nativecall.pl $(SRC_DIR)/call_list.txt
++	$(ADDGENERATED) "$@" "[main]"
+ 
+ $(SRC_DIR)/warnings$(O) : $(GENERAL_H_FILES)
+ 
+@@ -1241,17 +1274,22 @@
+ 
+ $(SRC_DIR)/jit_emit.h : $(SRC_DIR)/jit/@jitcpuarch@/jit_emit.h
+ 	$(CP) $(SRC_DIR)/jit/@jitcpuarch@/jit_emit.h $(SRC_DIR)/jit_emit.h
++	$(ADDGENERATED) "$@" "[main]" include
+ $(SRC_DIR)/exec_dep.h : $(SRC_DIR)/jit/@jitcpuarch@/exec_dep.h
+ 	$(CP) $(SRC_DIR)/jit/@jitcpuarch@/exec_dep.h $(SRC_DIR)/exec_dep.h
++	$(ADDGENERATED) "$@" "[main]" include
+ $(SRC_DIR)/jit_cpu.c : lib/Parrot/OpLib/core.pm $(SRC_DIR)/jit_emit.h \
+     $(SRC_DIR)/jit/@jitcpuarch@/core.jit $(JIT_BUILD_TOOL)
+ 	$(PERL) $(JIT_BUILD_TOOL) @jitcpuarch@ $(SRC_DIR)/jit_cpu.c
++	$(ADDGENERATED) "$@" "[devel]"
+ $(SRC_DIR)/jit_defs.c : $(SRC_DIR)/jit/@jitcpuarch@/jit_emit.h \
+ 	$(SRC_DIR)/jit/@jitcpuarch@/jit_defs.c
+ 	$(CP) $(SRC_DIR)/jit/@jitcpuarch@/jit_defs.c $(SRC_DIR)/jit_defs.c
++	$(ADDGENERATED) "$@" "[devel]"
+ $(SRC_DIR)/exec_cpu.c : lib/Parrot/OpLib/core.pm $(SRC_DIR)/jit_emit.h \
+     $(SRC_DIR)/jit/@jitcpuarch@/core.jit @TEMP_exec_h@ $(SRC_DIR)/exec_dep.h $(JIT_BUILD_TOOL)
+ 	$(PERL) $(JIT_BUILD_TOOL) @jitcpuarch@ $(SRC_DIR)/exec_cpu.c
++	$(ADDGENERATED) "$@" "[devel]"
+ @TEMP_exec_dep@
+ 
+ # imcc file dependencies
+@@ -1266,10 +1304,13 @@
+ 	$(PERL) $(BUILD_TOOLS_DIR)/fixup_gen_file.pl -noheaderizer $(IMCC_DIR)/imcparser.c $(IMCC_DIR)/imcc.y
+ 	$(PERL) $(BUILD_TOOLS_DIR)/fixup_gen_file.pl -noheaderizer $(IMCC_DIR)/imcparser.h $(IMCC_DIR)/imcc.y
+ 	$(TOUCH) $(IMCC_DIR)/imcc.y.flag $(IMCC_DIR)/imcparser.c $(IMCC_DIR)/imcparser.h
++	$(PERL) tools/build/addgenerated.pl $(IMCC_DIR)/imcparser.c "[main]"
++	$(PERL) tools/build/addgenerated.pl $(IMCC_DIR)/imcparser.h "[main]"
+ 
+ $(IMCC_DIR)/imcc.l.flag $(IMCC_DIR)/imclexer.c : $(IMCC_DIR)/imcc.l
+ 	$(LEX) -o$(IMCC_DIR)/imclexer.c $(IMCC_DIR)/imcc.l
+ 	$(TOUCH) $(IMCC_DIR)/imcc.l.flag $(IMCC_DIR)/imclexer.c
++	$(PERL) tools/build/addgenerated.pl $(IMCC_DIR)/imclexer.c "[main]"
+ 
+ $(IMCC_O_FILES) : $(IMCC_H_FILES) $(ALL_H_FILES)
+ 
+@@ -1359,7 +1400,7 @@
+ 
+ compilers : compilers.dummy
+ 
+-compilers.dummy : $(PARROT) $(GEN_LIBRARY)
++compilers.dummy : $(PARROT)
+ 	$(MAKE) compilers/pct
+ 	$(MAKE) compilers/pge
+ 	$(MAKE) compilers/tge
+@@ -2195,6 +2236,10 @@
+     --versiondir=$(VERSION_DIR) \
+     MANIFEST MANIFEST.generated
+ 
++# legacy, to be deprecated
++reallyinstall: install
++	@echo "make reallyinstall is deprecated. Use make install now"
++
+ ###############################################################################
+ #
+ # release targets
+@@ -2230,6 +2275,7 @@
+ 
+ exec : $(SRC_DIR)/exec_start$(O) $(SRC_DIR)/parrot_config$(O) $(LIBPARROT)
+ 	$(LINK) @ld_out@$(EXEC)$(EXE) $(EXEC)$(O) $(SRC_DIR)/exec_start$(O) $(SRC_DIR)/parrot_config$(O) @rpath_blib@ $(ALL_PARROT_LIBS) $(LINKFLAGS)
++	$(ADDGENERATED) "$@"
+ 
+ ###### OS depend targets ##########
+ 
+@@ -2237,12 +2283,14 @@
+ $(LIBNCI_TEST_SO): $(SRC_DIR)/nci_test$(O)
+ 	$(LD) $(LD_LOAD_FLAGS) @ncilib_link_extra@ $(LDFLAGS) \
+     @ld_out@$@ $(SRC_DIR)/nci_test$(O) $(C_LIBS)
++	$(ADDGENERATED) "$@"
+ 
+ # for use by runtime/parrot/library/OpenGL.pir
+ $(LIBGLUTCB_SO): $(LIBPARROT) $(SRC_DIR)/glut_callbacks$(O)
+ 	$(LD) $(LD_LOAD_FLAGS) $(LDFLAGS) \
+     @ld_out@$@ $(SRC_DIR)/glut_callbacks$(O) \
+     $(ALL_PARROT_LIBS) @opengl_lib@
++	$(ADDGENERATED) "$@"
+ 
+ # emacs etags
+ # this needs exuberant-ctags
+@@ -2256,12 +2304,14 @@
+         --languages=c,perl --langmap=c:+.h,c:+.pmc,c:+.ops \
+         -I NOTNULL,NULLOK,ARGIN,ARGMOD,ARGOUT,ARGINOUT,ARGIN_NULLOK,ARGOUT_NULLOK,ARGMOD_NULLOK \
+         $(CUR_DIR)
++	$(ADDGENERATED) "TAGS" "[devel]"
+ 
+ # this works with an old etags (XEmacs 21.5*)
+ tags-xemacs: tags.emacs.dummy
+ 	$(RM_F) TAGS
+ 	find $(CUR_DIR) \
+         -name \*.c -o -name \*.h -o -name \*.pmc -o -name \*.ops | etags -l c - -o TAGS
++	$(ADDGENERATED) "TAGS" "[devel]"
+ 
+ tags.emacs.dummy:
+ 
+@@ -2278,6 +2328,7 @@
+     -I NOTNULL,NULLOK,ARGIN,ARGMOD,ARGOUT,ARGINOUT,ARGIN_NULLOK,ARGOUT_NULLOK,ARGMOD_NULLOK \
+     $(CUR_DIR)
+ 	$(PERL) $(BUILD_TOOLS_DIR)/addopstags.pl $(OPS_FILES)
++	$(ADDGENERATED) "TAGS" "[devel]"
+ 
+ tags.vi.dummy:
+ 
+Index: parrot-svn/config/gen/makefiles/tge.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/tge.in	2009-02-27 00:31:41.000000000 +0100
++++ parrot-svn/config/gen/makefiles/tge.in	2009-03-06 11:52:41.890625000 +0100
+@@ -5,16 +5,19 @@
+ PERL     := @perl@
+ RM_F     := @rm_f@
+ PARROT   := ../../parrot@exe@
++ADDGENERATED  := $(PERL) ../../tools/build/addgenerated.pl
+ 
+ # Where to put things
+ PARROT_LIBRARY    := ../../runtime/parrot/library
+ PERL6GRAMMAR      := $(PARROT_LIBRARY)/PGE/Perl6Grammar.pbc
++LIBS = TGE/Rule.pbc TGE/Parser.pbc TGE/Grammar.pbc TGE/Compiler.pbc TGE/Tree.pbc
+ 
+ # the default target
+ all: $(PARROT_LIBRARY)/TGE.pbc
+ 
+ $(PARROT_LIBRARY)/TGE.pbc: TGE.pir TGE/Rule.pir TGE/Parser.pir TGE/Grammar.pir TGE/Compiler.pir TGE/Tree.pir
+ 	$(PARROT) -o $(PARROT_LIBRARY)/TGE.pbc --output-pbc TGE.pir
++	$(ADDGENERATED) "runtime/parrot/library/TGE.pbc"
+ 
+ TGE/Parser.pir: TGE/Parser.pg
+ 	$(PARROT) $(PERL6GRAMMAR) --output=TGE/Parser.pir TGE/Parser.pg
+@@ -26,6 +29,8 @@
+ 	@echo ""
+ 	@echo "  all:               TGE.pbc"
+ 	@echo "                     This is the default."
++	@echo "  install:           copy pbc's to $lib_dir/parrot/library"
++	@echo ""
+ 	@echo "Testing:"
+ 	@echo "  test:              Run the test suite."
+ 	@echo "  testclean:         Clean up test results."
+@@ -42,6 +47,17 @@
+ test: all
+ 	prove -r ../../t/compilers/tge
+ 
++install: build
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/parrot/library
++	-$(MKPATH) $(DESTDIR)$(LIB_DIR)/parrot/library/TGE
++	$(CP) TGE.pbc $(DESTDIR)$(LIB_DIR)/parrot/library
++	$(CP) $(LIBS) $(DESTDIR)$(LIB_DIR)/parrot/library/TGE
++	$(CP) tgc.pir $(DESTDIR)$(LIB_DIR)/parrot/library/tgc.pir
++
++install-tgc:
++	$(CP) tgc.pir $(PARROT_LIBRARY)/TGE/tgc.pir
++	$(ADDGENERATED) runtime/parrot/library/TGE/tgc.pir
++
+ testclean:
+ 	$(RM_F) "../../t/compilers/tge/*.pir"
+ 
+Index: parrot-svn/config/gen/opengl.pm
+===================================================================
+--- parrot-svn.orig/config/gen/opengl.pm	2009-02-18 00:00:53.000000000 +0100
++++ parrot-svn/config/gen/opengl.pm	2009-03-06 10:18:55.953125000 +0100
+@@ -44,7 +44,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':gen';
+-
++use Parrot::BuildUtil;
+ 
+ my @GLUT_1_CALLBACKS = (
+     [ 'Display',          'void' ],
+@@ -562,6 +562,7 @@
+     }
+ 
+     $conf->append_configure_log($MACRO_FILE);
++    add_to_generated($MACRO_FILE, "[main]");
+ 
+     return 1;
+ }
+@@ -840,6 +841,7 @@
+ 
+     close $funcs;
+     $conf->append_configure_log($FUNCS_FILE);
++    add_to_generated($FUNCS_FILE, "[main]");
+ 
+     # PHASE 4: Print statistical info on parse results if verbose
+     if ($verbose) {
+@@ -1155,7 +1157,7 @@
+     print $c_file $footer;
+ 
+     $conf->append_configure_log($C_FILE);
+-
++    add_to_generated($C_FILE, "[devel]");
+ 
+     return 1;
+ }
+Index: parrot-svn/config/gen/parrot_include.pm
+===================================================================
+--- parrot-svn.orig/config/gen/parrot_include.pm	2009-02-18 00:00:53.000000000 +0100
++++ parrot-svn/config/gen/parrot_include.pm	2009-03-06 00:00:55.375000000 +0100
+@@ -19,7 +19,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':gen';
+-
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -220,6 +220,7 @@
+                 $target =~ m[/] or $target = "$self->{destdir}/$target";
+                 move_if_diff( $target_tmp, $target );
+                 push @generated, $target;
++                add_to_generated($target, "[main]");
+             }
+         }
+     }
+Index: parrot-svn/config/gen/platform.pm
+===================================================================
+--- parrot-svn.orig/config/gen/platform.pm	2009-02-18 00:00:53.000000000 +0100
++++ parrot-svn/config/gen/platform.pm	2009-03-06 10:21:48.265625000 +0100
+@@ -19,6 +19,7 @@
+ use base qw(Parrot::Configure::Step);
+ 
+ use Parrot::Configure::Utils ':gen';
++use Parrot::BuildUtil;
+ 
+ sub _init {
+     my $self = shift;
+@@ -54,8 +55,9 @@
+     $self->_handle_asm($conf, $platform);
+ 
+     # interface is the same for all platforms
+-    copy_if_diff( $self->{platform_interface},
+-        "include/parrot/platform_interface.h" );
++    my $tgt = "include/parrot/platform_interface.h";
++    copy_if_diff( $self->{platform_interface}, $tgt);
++    add_to_generated($tgt, "[main]", "include");
+ 
+     $self->_set_limits($conf, $verbose, $platform);
+ 
+@@ -106,6 +108,8 @@
+ 
+     my $plat_h = q{include/parrot/platform.h};
+     $conf->append_configure_log($plat_h);
++    add_to_generated($plat_h, "[main]", "include");
++
+     open my $PLATFORM_H, ">", $plat_h
+         or die "Can't open $plat_h: $!";
+ 
+@@ -154,6 +158,7 @@
+ END_HERE
+             print {$PLATFORM_H} $in_h, "\n\n";
+             close $IN_H;
++            add_to_generated($header_file, "[main]", "include");
+         }
+ 
+         # just fall through if file is missing; means neither this platform nor
+@@ -178,6 +183,7 @@
+ END_HERE
+             print {$PLATFORM_H} <$IN_H>, "\n\n";
+             close $IN_H;
++            add_to_generated($h, "[main]", "include");
+         }
+         else {
+             warn("Header file '$h' listed in TEMP_generated but not found\n");
+@@ -203,7 +209,9 @@
+     if ( -e "config/gen/platform/$platform/platform_limits.h" ) {
+         $limits = "config/gen/platform/$platform/platform_limits.h";
+     }
+-    copy_if_diff( $limits, "include/parrot/platform_limits.h" );
++    my $tgt = "include/parrot/platform_limits.h";
++    copy_if_diff( $limits, $tgt );
++    add_to_generated($tgt, "[main]", "include");
+ 
+     return;
+ }
+@@ -244,7 +252,7 @@
+ END_HERE
+ 
+     # We need to put things from begin.c before the parrot.h include.
+-    $self->_handle_begin_c($platform, $PLATFORM_C);
++    $self->_handle_begin_c($conf, $platform, $PLATFORM_C);
+ 
+     # Copy the rest.
+     print {$PLATFORM_C} <<'END_HERE';
+@@ -277,6 +285,7 @@
+ END_HERE
+             print {$PLATFORM_C} $in_c, "\n\n";
+             close $IN_C;
++            $conf->append_configure_log($impl_file);
+         }
+     }
+ 
+@@ -295,6 +304,7 @@
+ END_HERE
+             print {$PLATFORM_C} <$IN_C>, "\n\n";
+             close $IN_C;
++            $conf->append_configure_log($im);
+         }
+     }
+ 
+@@ -310,10 +320,11 @@
+ 
+ sub _handle_begin_c {
+     my $self = shift;
+-    my ($platform, $PLATFORM_C) = @_;
+-    if ( -e "config/gen/platform/$platform/begin.c" ) {
++    my ($conf, $platform, $PLATFORM_C) = @_;
++    my $f = "config/gen/platform/$platform/begin.c";
++    if ( -e $f ) {
+         local $/ = undef;
+-        open my $IN_C, "<", "config/gen/platform/$platform/begin.c" or die "Can't open begin.c: $!";
++        open my $IN_C, "<", $f or die "Can't open $f: $!";
+ 
+         # slurp in the C file
+         my $in_c = <$IN_C>;
+@@ -325,10 +336,11 @@
+ /*
+ ** begin.c
+ */
+-#line 1 "config/gen/platform/$platform/begin.c"
++#line 1 "$f"
+ END_HERE
+         print {$PLATFORM_C} $in_c, "\n\n";
+         close $IN_C;
++        $conf->append_configure_log($f);
+     }
+ 
+     return;
+@@ -341,6 +353,7 @@
+         my $asm_file = "config/gen/platform/$platform/asm.s";
+         if ( -e $asm_file ) {
+             copy_if_diff( $asm_file, "src/platform_asm.s" );
++            $conf->append_configure_log("src/platform_asm.s");
+         }
+     }
+ 
+Index: parrot-svn/lib/Parrot/BuildUtil.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/BuildUtil.pm	2009-02-28 13:28:14.000000000 +0100
++++ parrot-svn/lib/Parrot/BuildUtil.pm	2009-03-06 09:10:32.687500000 +0100
+@@ -5,6 +5,13 @@
+ 
+ use strict;
+ use warnings;
++use vars qw( @ISA @EXPORT );
++use Exporter;
++@ISA = qw( Exporter );
++@EXPORT = qw( add_to_generated );
++
++use File::Basename qw/basename/;
++use File::Spec;
+ 
+ =head1 NAME
+ 
+@@ -14,7 +21,8 @@
+ 
+ This package holds pre-configure time subroutines, which are not exported
+ and should not require Parrot::Config.
+-Each must be requested by using a fully qualified name.
++
++One exception though: C<add_to_generated()> is exported.
+ 
+ =head1 SUBROUTINES
+ 
+@@ -109,7 +117,6 @@
+     die qq{unknown style "$style"}
+         if $style !~ m/\A(?:perl|c)\z/;
+ 
+-    require File::Spec;
+     my $script = File::Spec->abs2rel($0);
+     $script =~ s/\\/\//g;
+ 
+@@ -160,6 +167,65 @@
+     return ( $bc_major, $bc_minor );
+ }
+ 
++=item C<add_to_generated($filename, $section, $dir)>
++
++Adds the C<$filename> to MANIFEST.generated into the given C<$section>.
++C<$dir> is optional.
++
++Note that Parrot::Config might not be generated yet, so
++we must assure that the current directory is the the build_dir.
++This is the job of F<tools/build/addgenerated.pl>, but
++within some perl5 modules you must take care by yourself.
++
++=cut
++
++sub add_to_generated {
++    my ($filename, $section, $dir) = @_;
++
++    # Support quirky Makefile invocation as
++    #   $(PERL) -Ilib -MParrot::BuildUtil -e add_to_generated "$@",'[main]','lib'
++    ($filename, $section, $dir) = @ARGV unless $filename;
++    if ($filename =~ /,/ and !$section) { # split it here, when the shell is fooled
++        ($filename, $section, $dir) = split /,/, $filename;
++    }
++
++    my $path = File::Spec->abs2rel($filename);
++    $path =~ s/\\/\//g;
++    $section = "[library]" unless $section;
++    $dir = "" unless $dir;
++
++    open( my $M, '>>', "MANIFEST.generated" ) or die "open 'MANIFEST.generated': $!";
++    printf $M "%-49s %s%s\n", $path, $section, $dir;
++
++    # Additional .manifest logic on windows and [main]bin
++    if ($section eq '[main]' and $dir eq 'bin' and $^O =~ /cygwin|MSWin32/) {
++        my $base = basename($filename,'.exe');
++        if (-e "$base.manifest") {
++            my $mpath = File::Spec->abs2rel($base) . ".manifest";
++            $mpath =~ s/\\/\//g;
++            printf $M "%-49s %s%s\n", $mpath, $section, $dir;
++        }
++    }
++    close $M;
++    ''
++}
++
++=item C<add_list_to_generated( [$section,] @files)>
++
++Adds the list of filenames to MANIFEST.generated into $section,
++Default: '[library]'.
++
++$section is optional.
++
++=cut
++
++sub add_list_to_generated {
++    @_ = @ARGV unless @_;
++    my $section = '';
++    $section = shift @_ if $_[0] =~ /^\[/;
++    add_to_generated($_, $section) for @_;
++}
++
+ 1;
+ 
+ =back
+Index: parrot-svn/lib/Parrot/Configure/Compiler.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Configure/Compiler.pm	2009-03-05 19:42:51.000000000 +0100
++++ parrot-svn/lib/Parrot/Configure/Compiler.pm	2009-03-06 10:14:32.828125000 +0100
+@@ -33,6 +33,7 @@
+     _run_command _build_compile_command
+     move_if_diff
+ );
++use Parrot::BuildUtil;
+ 
+ # report the makefile and lineno
+ sub makecroak {
+@@ -342,6 +343,11 @@
+     if ( $calling_sub !~ /cc_gen$/ ) {
+         $conf->append_configure_log($target);
+     }
++    # special rules for to be installed files:
++    add_to_generated($target, "[main]", "pkgconfig")
++        if $target eq 'parrot.pc';
++    add_to_generated($target, "[devel]")
++        if $target =~ m{tools/build/(dynpmc|dynoplibs).pl};
+ 
+     open my $in,  '<', $source       or die "Can't open $source: $!";
+     open my $out, '>', "$target.tmp" or die "Can't open $target.tmp: $!";
+@@ -689,6 +695,14 @@
+     cond_eval_single($conf, $expr);
+ }
+ 
++=item C<append_configure_log()>
++
++    $conf->append_configure_log($target)
++
++Adds $target to MANIFEST.configure.generated.
++
++=cut
++
+ sub append_configure_log {
+     my $conf = shift;
+     my $target = shift;
+Index: parrot-svn/lib/Parrot/Docs/POD2HTML.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Docs/POD2HTML.pm	2009-02-18 00:01:17.000000000 +0100
++++ parrot-svn/lib/Parrot/Docs/POD2HTML.pm	2009-03-06 10:11:00.265625000 +0100
+@@ -33,6 +33,8 @@
+ our $VERSION = '1.0';
+ 
+ use Parrot::Docs::HTMLPage;
++use Parrot::BuildUtil;
++use Parrot::Config;
+ 
+ =item C<do_beginning()>
+ 
+@@ -582,6 +584,14 @@
+     $self->{RESOURCES_URL} = "$rel_path/resources";
+ 
+     $docs_file->write( $self->html_for_file($file) );
++    my $path = File::Spec->abs2rel(
++       File::Spec->catfile($docs_file->{PATH}), $PConfig{build_dir});
++
++    unless ($self->{TESTING}) {
++        chdir "..";
++        add_to_generated($path, "[main]", "html");
++        chdir "docs";
++    }
+ }
+ 
+ =item C<append_html_suffix($path)>
+Index: parrot-svn/lib/Parrot/Ops2c/Utils.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Ops2c/Utils.pm	2009-02-18 00:01:16.000000000 +0100
++++ parrot-svn/lib/Parrot/Ops2c/Utils.pm	2009-03-06 10:09:45.953125000 +0100
+@@ -8,6 +8,7 @@
+ use Parrot::OpsFile;
+ use File::Spec ();
+ use IO::File ();
++use Parrot::BuildUtil;
+ 
+ =head1 NAME
+ 
+@@ -249,6 +250,8 @@
+ 
+     open my $HEADER, '>', $self->{header}
+         or die "ops2c.pl: Cannot open header file '$self->{header}' for writing: $!!\n";
++    add_to_generated($self->{header}, '[main]', 'include')
++      if $self->{flag}->{core};
+ 
+     $self->_print_guard_prefix($HEADER);
+ 
+@@ -298,6 +301,7 @@
+ 
+     my $source = IO::File->new('>' . $self->{source})
+         or die "ops2c.pl: Cannot open source file '$self->{source}' for writing: $!!\n";
++
+     $self->print_c_source_top($source);
+ 
+     $self->_reset_line_number($source);
+@@ -307,6 +311,7 @@
+     $source->close() or die "Unable to close handle to $self->{source}: $!";
+ 
+     my $c_source_final = $self->_rename_source();
++    add_to_generated($c_source_final,'[main]') if $self->{flag}->{core};
+     return $c_source_final;
+ }
+ 
+Index: parrot-svn/lib/Parrot/Ops2pm.pm
+===================================================================
+--- parrot-svn.orig/lib/Parrot/Ops2pm.pm	2009-02-18 00:01:20.000000000 +0100
++++ parrot-svn/lib/Parrot/Ops2pm.pm	2009-03-06 10:10:16.640625000 +0100
+@@ -10,6 +10,7 @@
+ use lib qw ( lib );
+ use base qw( Parrot::Ops2pm::Base );
+ use Parrot::OpsFile;
++use Parrot::BuildUtil;
+ 
+ =head1 NAME
+ 
+@@ -291,6 +292,8 @@
+     open my $MODULE, '>', $fullpath
+         or die "$self->{script}: Could not open module file '$fullpath' for writing: $!!\n";
+ 
++    add_to_generated(File::Spec->catfile( $self->{moddir}, $self->{module} ),
++                     '[main]');
+     my $version = $self->{real_ops}->version();
+     ( my $pod = <<"END_POD") =~ s/^    //osmg;
+     =head1 NAME
+@@ -380,6 +383,7 @@
+     my $fullpath = File::Spec->catfile( ($fulldir), $self->{inc_f} );
+     open my $OUT, '>', $fullpath
+         or die "$self->{script}: Could not open module file '$fullpath' for writing: $!!\n";
++    add_to_generated($fullpath, '[main]', 'include');
+ 
+     print $OUT <<END_C;
+ /* ex: set ro:
+Index: parrot-svn/t/perl/Parrot_Docs.t
+===================================================================
+--- parrot-svn.orig/t/perl/Parrot_Docs.t	2009-03-05 20:33:07.000000000 +0100
++++ parrot-svn/t/perl/Parrot_Docs.t	2009-03-06 09:57:50.937500000 +0100
+@@ -112,6 +112,8 @@
+ 
+ my $tgt = Parrot::Docs::Directory->new( tmp_dir_path('tgt') );
+ 
++# hack to omit adding the files to MANIFEST.generated
++$s->{TESTING} = 1;
+ $s->write_html( $src, $tgt, 1 );
+ 
+ $f = $tgt->file_with_name('index.html');
+Index: parrot-svn/tools/build/addgenerated.pl
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parrot-svn/tools/build/addgenerated.pl	2009-03-06 09:46:11.625000000 +0100
+@@ -0,0 +1,77 @@
++#! perl
++# Copyright (C) 2008-2009, Parrot Foundation.
++# $Id$
++use warnings;
++use strict;
++use lib qw(lib ../../lib);
++use Parrot::BuildUtil;
++use Parrot::Config;
++use Cwd;
++
++my $pwd = cwd();
++my $build_dir = $PConfig{'build_dir'};
++if ($build_dir and ($pwd ne $build_dir)) {
++    chdir $build_dir;
++}
++if ($ARGV[0] eq '-l' or $ARGV[0] eq '--list') {
++    shift;
++    Parrot::BuildUtil::add_list_to_generated(@ARGV);
++} else {
++    Parrot::BuildUtil::add_to_generated(@ARGV);
++}
++if ($pwd ne $build_dir) {
++    chdir $pwd;
++}
++exit 0;
++
++#################### DOCUMENTATION ####################
++
++=head1 NAME
++
++tools/build/addgenerated.pl - Helper for build-time MANIFEST.generated
++
++=head1 SYNOPSIS
++
++    % perl tools/build/addgenerated.pl file [section] dir
++    % perl tools/build/addgenerated.pl file1 file2 ...
++    % perl tools/build/addgenerated.pl -l [section] file1 file2 ...
++
++=head1 DESCRIPTION
++
++This script is a simple front-end for C<Parrot::BuildUtil::add_to_generated>
++
++=over
++
++=back
++
++=head2 Options
++
++=over 4
++
++=item C<-l> or C<--list>
++
++There's no dir argument, but a list of filenames instead
++
++=item C<--help>
++
++Print synopsis.
++
++=back
++
++=head1 SEE ALSO
++
++=over 4
++
++=item C<Parrot::BuildUtil>
++
++=back
++
++=cut
++
++# Local Variables:
++#   mode: cperl
++#   cperl-indent-level: 4
++#   fill-column: 100
++# End:
++# vim: expandtab shiftwidth=4:
++
+Index: parrot-svn/tools/build/c2str.pl
+===================================================================
+--- parrot-svn.orig/tools/build/c2str.pl	2009-02-18 00:01:11.000000000 +0100
++++ parrot-svn/tools/build/c2str.pl	2009-03-06 11:46:45.562500000 +0100
+@@ -1,7 +1,7 @@
+ #! perl
+ # $Id: c2str.pl 36833 2009-02-17 20:09:26Z allison $
+ 
+-# Copyright (C) 2004-2008, Parrot Foundation.
++# Copyright (C) 2004-2009, Parrot Foundation.
+ 
+ =head1 NAME
+ 
+@@ -18,6 +18,7 @@
+ use Math::BigInt ();
+ use Getopt::Long ();
+ use IO::File ();
++use Parrot::BuildUtil;
+ 
+ my $outfile          = 'all_cstring.str';
+ my $string_private_h = 'src/string/private_cstring.h';
+@@ -196,6 +197,8 @@
+ sub create_c_include {
+     open my $OUT, '>', $string_private_h
+         or die "Can't write '$string_private_h': $!";
++    add_to_generated($string_private_h, '[main]', 'include');
++
+     print $OUT <<"HEADER";
+ /* ex: set ro:
+  * !!!!!!!   DO NOT EDIT THIS FILE   !!!!!!!
+Index: parrot-svn/tools/build/jit2c.pl
+===================================================================
+--- parrot-svn.orig/tools/build/jit2c.pl	2009-02-18 00:01:11.000000000 +0100
++++ parrot-svn/tools/build/jit2c.pl	2009-03-06 09:50:32.171875000 +0100
+@@ -1,5 +1,5 @@
+ #! perl
+-# Copyright (C) 2001-2006, Parrot Foundation.
++# Copyright (C) 2001-2006, 2009, Parrot Foundation.
+ # $Id: jit2c.pl 36833 2009-02-17 20:09:26Z allison $
+ 
+ =head1 NAME
+@@ -24,6 +24,7 @@
+ use Parrot::OpLib::core;
+ use Parrot::Op;
+ use Parrot::OpTrans::C;
++use Parrot::BuildUtil;
+ 
+ my $trans = Parrot::OpTrans::C->new;
+ 
+@@ -513,6 +514,7 @@
+  */
+ EOC
+ 
++add_to_generated($genfile, "[main]");
+ print("jit2c: JITed $njit (+ $vjit vtable) of $core_numops ops\n");
+ 
+ sub make_subs {
+Index: parrot-svn/tools/build/vtable_extend.pl
+===================================================================
+--- parrot-svn.orig/tools/build/vtable_extend.pl	2009-02-18 00:01:11.000000000 +0100
++++ parrot-svn/tools/build/vtable_extend.pl	2009-03-06 09:50:08.984375000 +0100
+@@ -6,6 +6,7 @@
+ 
+ use lib 'lib';
+ use Parrot::Vtable;
++use Parrot::BuildUtil;
+ 
+ my $vtable = parse_vtable('src/vtable.tbl');
+ 
+@@ -21,6 +22,7 @@
+ EOH
+ 
+ open my $OUT, '>', 'include/parrot/extend_vtable.h' or die $!;
++add_to_generated('include/parrot/extend_vtable.h', '[main]', 'include');
+ 
+ print $OUT $header, <<'EOF';
+ 
+Index: parrot-svn/tools/build/vtable_h.pl
+===================================================================
+--- parrot-svn.orig/tools/build/vtable_h.pl	2009-02-18 00:01:11.000000000 +0100
++++ parrot-svn/tools/build/vtable_h.pl	2009-03-06 09:49:41.546875000 +0100
+@@ -1,5 +1,5 @@
+ #! perl
+-# Copyright (C) 2001-2003, Parrot Foundation.
++# Copyright (C) 2001-2003, 2009, Parrot Foundation.
+ # $Id: vtable_h.pl 36833 2009-02-17 20:09:26Z allison $
+ 
+ =head1 NAME
+@@ -30,10 +30,12 @@
+ 
+ use lib 'lib';
+ use Parrot::Vtable;
++use Parrot::BuildUtil;
+ 
+ my $vtable = parse_vtable();
+-
+-open my $OUT, '>', 'include/parrot/vtable.h' or die $!;
++my $filename = 'include/parrot/vtable.h';
++open my $OUT, '>', $filename or die $!;
++add_to_generated($filename, '[main]', 'include');
+ 
+ print $OUT <<'EOF';
+ /* ex: set ro:
+Index: parrot-svn/tools/docs/ops_summary.pl
+===================================================================
+--- parrot-svn.orig/tools/docs/ops_summary.pl	2009-02-18 00:01:11.000000000 +0100
++++ parrot-svn/tools/docs/ops_summary.pl	2009-03-06 00:00:40.437500000 +0100
+@@ -8,6 +8,7 @@
+ package OpsSummary;
+ 
+ use base 'Pod::Parser';
++use Parrot::BuildUtil;
+ 
+ my $current_file;
+ my $current_op;
+@@ -69,6 +70,7 @@
+     next if $_ eq 'index.pod';
+     $current_file = $_;
+     $parser->parse_from_file($_);
++    add_to_generated($_, "[main]", "doc");
+ }
+ 
+ print << "EOH";
+Index: parrot-svn/MANIFEST.generated
+===================================================================
+--- parrot-svn.orig/MANIFEST.generated	2009-03-03 16:42:43.000000000 +0100
++++ parrot-svn/MANIFEST.generated	2009-03-07 10:23:55.078125000 +0100
+@@ -1,31 +1,84 @@
+-# $Id: MANIFEST.generated 37093 2009-03-03 15:43:34Z rurban $
+-# See tools/dev/install_files.pl for documentation on the
+-# format of this file.
+-# Please re-sort this file after *EVERY* modification
+-blib/lib/libparrot.0.9.1.dylib                    [main]lib
+-blib/lib/libparrot.a                              [main]lib
+-blib/lib/libparrot.dylib                          [main]lib
+-blib/lib/libparrot.so.0.9.1                       [main]lib
+-blib/lib/libparrot.so                             [main]lib
+-compilers/imcc/imclexer.c                         []
+-compilers/json/JSON/grammar.pbc                   [json]
+-compilers/json/JSON.pbc                           [json]
+-compilers/json/JSON/pge2pir.pbc                   [json]
+-compilers/nqp/nqp.pbc                             [nqp]
+-compilers/nqp/nqp.pbc                             [nqp]
+-config/auto/cpu/i386/memcpy_mmx.c                 []
+-config/auto/cpu/i386/memcpy_sse.c                 []
+-config/gen/call_list/opengl.in                    []
+-config/gen/platform/ansi/dl.c                     []
+-config/gen/platform/ansi/time.c                   []
+-config/gen/platform/darwin/memalign.c             []
+-config/gen/platform/generic/stat.c                []
+-config/gen/platform/win32/stat.c                  []
++runtime/parrot/include/signal.pasm                [main]
++include/parrot/config.h                           [main]include
++include/parrot/feature.h                          [main]include
++include/parrot/has_header.h                       [main]include
++include/parrot/core_pmcs.h                        [main]include
++src/core_pmcs.c                                   []
++include/parrot/vtable.h                           [main]include
++runtime/parrot/include/cclass.pasm                [main]
++runtime/parrot/include/datatypes.pasm             [main]
++runtime/parrot/include/iterator.pasm              [main]
++runtime/parrot/include/call_bits.pasm             [main]
++lib/Parrot/Pmc2c/PCCMETHOD_BITS.pm                [main]
++runtime/parrot/include/io_thr_msg.pasm            [main]
++runtime/parrot/include/timer.pasm                 [main]
++runtime/parrot/include/except_types.pasm          [main]
++runtime/parrot/include/except_severity.pasm       [main]
++runtime/parrot/include/interpflags.pasm           [main]
++runtime/parrot/include/interpdebug.pasm           [main]
++runtime/parrot/include/interptrace.pasm           [main]
++runtime/parrot/include/interpcores.pasm           [main]
++runtime/parrot/include/cloneflags.pasm            [main]
++runtime/parrot/include/iglobals.pasm              [main]
++runtime/parrot/include/sysinfo.pasm               [main]
++runtime/parrot/include/stdio.pasm                 [main]
++runtime/parrot/include/longopt.pasm               [main]
++runtime/parrot/include/interpinfo.pasm            [main]
++runtime/parrot/include/stat.pasm                  [main]
++runtime/parrot/include/stringinfo.pasm            [main]
++runtime/parrot/include/warnings.pasm              [main]
++runtime/parrot/include/errors.pasm                [main]
++runtime/parrot/include/tm.pasm                    [main]
++runtime/parrot/include/mmd.pasm                   [main]
++runtime/parrot/include/pmctypes.pasm              [main]
++src/call_list.txt                                 [devel]doc
++tools/build/dynpmc.pl                             [devel]
++parrot.pc                                         [main]pkgconfig
++tools/build/dynoplibs.pl                          [devel]
++include/parrot/platform.h                         [main]include
++config/gen/platform/generic/io.h                  [main]include
++config/gen/platform/generic/math.h                [main]include
++config/gen/platform/generic/dl.h                  [main]include
++config/gen/platform/generic/signal.h              [main]include
++config/gen/platform/generic/stat.h                [main]include
++config/gen/platform/generic/threads.h             [main]include
++include/parrot/platform_interface.h               [main]include
++include/parrot/platform_limits.h                  [main]include
++config_lib.pasm                                   [main]lib
++include/parrot/extend_vtable.h                    [main]include
++lib/Parrot/OpLib/core.pm                          [main]
++include/parrot/oplib/ops.h                        [main]include
++lib/Parrot/OpLib/core.pm                          [main]include
++include/parrot/oplib/core_ops.h                   [main]include
++src/ops/core_ops.c                                [main]
++include/parrot/oplib/core_ops_switch.h            [main]include
++src/ops/core_ops_switch.c                         [main]
++include/parrot/oplib/core_ops_cg.h                [main]include
++src/ops/core_ops_cg.c                             [main]
++include/parrot/oplib/core_ops_cgp.h               [main]include
++src/ops/core_ops_cgp.c                            [main]
++src/nci.c                                         [main]
++src/string/private_cstring.h                      [main]include
++src/exec_dep.h                                    [main]include
++src/jit_emit.h                                    [main]include
++src/exec_cpu.c                                    [main]
++src/exec_cpu.c                                    [devel]
++src/jit_cpu.c                                     [main]
++src/jit_cpu.c                                     [devel]
++src/jit_defs.c                                    [devel]
++cygparrot0_9_1.dll                                [main]lib
++libparrot.dll.a                                   [main]lib
++src/null_config.c                                 [main]
++# miniparrot.exe                                  [main]bin
++runtime/parrot/include/config.fpmc                [library]
++src/parrot_config.c                               [main]
++parrot.exe                                        [main]bin
++runtime/parrot/include/parrotlib.pbc              [library]
++docs/packfile-c.pod                               [main]doc
+ docs/ops/bit.pod                                  [main]doc
+ docs/ops/cmp.pod                                  [main]doc
+ docs/ops/core.pod                                 [main]doc
+ docs/ops/debug.pod                                [main]doc
+-docs/ops/dotgnu.pod                               [main]doc
+ docs/ops/experimental.pod                         [main]doc
+ docs/ops/io.pod                                   [main]doc
+ docs/ops/math.pod                                 [main]doc
+@@ -33,260 +86,56 @@
+ docs/ops/obscure.pod                              [main]doc
+ docs/ops/pic.pod                                  [main]doc
+ docs/ops/pmc.pod                                  [main]doc
+-docs/ops/python.pod                               [main]doc
+ docs/ops/set.pod                                  [main]doc
+-docs/ops/stack.pod                                [main]doc
+ docs/ops/string.pod                               [main]doc
+ docs/ops/sys.pod                                  [main]doc
+ docs/ops/var.pod                                  [main]doc
+-include/parrot/config.h                           [main]include
+-include/parrot/core_pmcs.h                        [main]include
+-include/parrot/exec_dep.h                         [main]include
+-include/parrot/extend_vtable.h                    [main]include
+-include/parrot/feature.h                          [main]include
+-include/parrot/has_header.h                       [main]include
+-include/parrot/oplib/core_ops_cg.h                [main]include
+-include/parrot/oplib/core_ops_cgp.h               [main]include
+-include/parrot/oplib/core_ops.h                   [main]include
+-include/parrot/oplib/core_ops_switch.h            [main]include
+-include/parrot/oplib/ops.h                        [main]include
+-include/parrot/pbcversion.h                       [devel]include
+-include/parrot/platform.h                         [main]include
+-include/parrot/platform_interface.h               [main]include
+-include/parrot/platform_limits.h                  [devel]include
+-include/parrot/vtable.h                           [main]include
+-install_config.fpmc                               [main]lib
+-installable_parrot_config.exe                     [main]bin
+-installable_parrot_config                         [main]bin
+-installable_parrot_debugger.exe                   [main]bin
+-installable_parrot_debugger                       [main]bin
+-installable_parrot.exe                            [main]bin
+-installable_parrot                                [main]bin
+-installable_pbc_disassemble.exe                   [main]bin
+-installable_pbc_disassemble                       [main]bin
+-installable_pbc_dump.exe                          [main]bin
+-installable_pbc_dump                              [main]bin
+-installable_pbc_info.exe                          [main]bin
+-installable_pbc_info                              [main]bin
+-installable_pbc_merge.exe                         [main]bin
+-installable_pbc_merge                             [main]bin
+-installable_pbc_to_exe.exe                        [main]bin
+-installable_pbc_to_exe                            [main]bin
+-languages/abc/abc.pbc                             [abc]
+-languages/APL/APL.pbc                             [APL]
+-languages/befunge/befunge.pbc                     [befunge]
+-languages/bf/bfco.pbc                             [bf]
+-languages/bf/bfc.pbc                              [bf]
+-languages/bf/bf.pbc                               [bf]
+-languages/cardinal/cardinal.pbc                   [cardinal]
+-languages/dotnet/net2pbc.pbc                      [dotnet]
+-languages/ecmascript/js.pbc                       [ecmascript]
+-languages/forth/forth.pbc                         [forth]
+-languages/lisp/lisp.pbc                           [lisp]
+-languages/lolcode/lolcode.pbc                     [lolcode]
+-languages/ook/ook.pbc                             [ook]
+-languages/pheme/pheme.pbc                         [pheme]
+-languages/pipp/pipp.pbc                           [pipp]
+-languages/pipp/src/common/php_ctype.pbc           [pipp]
+-languages/pipp/src/common/php_pcre.pbc            [pipp]
+-languages/pipp/src/common/pipplib.pbc             [pipp]
+-languages/PIR/pirc.pbc                            [PIR]
+-languages/punie/punie.pbc                         [punie]
+-languages/pynie/pynie.pbc                         [pynie]
+-languages/squaak/squaak.pbc                       [squaak]
+-lib/Parrot/Config/Generated.pm                    [devel]lib
+-libparrot.dll                                     [main]bin
+-lib/Parrot/OpLib/core.pm                          [devel]lib
+-lib/Parrot/Pmc2c/PCCMETHOD_BITS.pm                [devel]lib
+-lib/Parrot/PMC.pm                                 [devel]lib
+-parrot.pc                                         [main]pkgconfig
+-pbc_disassemble.exe                               [main]bin
+-pbc_disassemble                                   [main]bin
+-pbc_dump.exe                                      [main]bin
+-pbc_dump                                          [main]bin
+-pbc_info.exe                                      [main]bin
+-pbc_info                                          [main]bin
+-pbc_merge.exe                                     [main]bin
+-pbc_merge                                         [main]bin
+-pbc_to_exe.exe                                    [main]bin
+-pbc_to_exe                                        [main]bin
+-parrot_debugger.exe                               [main]bin
+-parrot_debugger                                   [main]bin
+-runtime/parrot/dynext/apl_group.bundle            [apl]
+-runtime/parrot/dynext/apl_group.dll               [apl]
+-runtime/parrot/dynext/apl_group.dylib             [apl]
+-runtime/parrot/dynext/apl_group.so                [apl]
+-runtime/parrot/dynext/digest_group.bundle         [library]
+-runtime/parrot/dynext/digest_group.dll            [library]
+-runtime/parrot/dynext/digest_group.dylib          [library]
+-runtime/parrot/dynext/digest_group.so             [library]
+-runtime/parrot/dynext/dotnet.bundle               [dotnet]
+-runtime/parrot/dynext/dotnet.dll                  [dotnet]
+-runtime/parrot/dynext/dotnet.dylib                [dotnet]
+-runtime/parrot/dynext/dotnet_ops.bundle           [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cg.bundle        [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cg.dll           [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cg.dylib         [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cgp.bundle       [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cgp.dll          [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cgp.dylib        [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cgp.so           [dotnet]
+-runtime/parrot/dynext/dotnet_ops_cg.so            [dotnet]
+-runtime/parrot/dynext/dotnet_ops.dll              [dotnet]
+-runtime/parrot/dynext/dotnet_ops.dylib            [dotnet]
+-runtime/parrot/dynext/dotnet_ops.so               [dotnet]
+-runtime/parrot/dynext/dotnet_ops_switch.bundle    [dotnet]
+-runtime/parrot/dynext/dotnet_ops_switch.dll       [dotnet]
+-runtime/parrot/dynext/dotnet_ops_switch.dylib     [dotnet]
+-runtime/parrot/dynext/dotnet_ops_switch.so        [dotnet]
+-runtime/parrot/dynext/dotnet_runtime.bundle       [dotnet]
+-runtime/parrot/dynext/dotnet_runtime.dll          [dotnet]
+-runtime/parrot/dynext/dotnet_runtime.dylib        [dotnet]
+-runtime/parrot/dynext/dotnet_runtime.so           [dotnet]
+-runtime/parrot/dynext/dotnet.so                   [dotnet]
+-runtime/parrot/dynext/dynlexpad.bundle            [library]
+-runtime/parrot/dynext/dynlexpad.dll               [library]
+-runtime/parrot/dynext/dynlexpad.dylib             [library]
+-runtime/parrot/dynext/dynlexpad.so                [library]
+-runtime/parrot/dynext/gdbmhash.bundle             [library]
+-runtime/parrot/dynext/gdbmhash.dll                [library]
+-runtime/parrot/dynext/gdbmhash.dylib              [library]
+-runtime/parrot/dynext/gdbmhash.so                 [library]
+-runtime/parrot/dynext/libglutcb.bundle            [library]
+-runtime/parrot/dynext/libglutcb.dll               [library]
+-runtime/parrot/dynext/libglutcb.dylib             [library]
+-runtime/parrot/dynext/libglutcb.so                [library]
+-runtime/parrot/dynext/libnci_test.bundle          [library]
+ runtime/parrot/dynext/libnci_test.dll             [library]
+-runtime/parrot/dynext/libnci_test.dylib           [library]
+-runtime/parrot/dynext/libnci_test.so              [library]
+-runtime/parrot/dynext/match_group.bundle          [library]
+-runtime/parrot/dynext/match_group.dll             [library]
+-runtime/parrot/dynext/match_group.dylib           [library]
+-runtime/parrot/dynext/match_group.so              [library]
+-runtime/parrot/dynext/php_group.bundle            [pipp]
+-runtime/parrot/dynext/php_group.dll               [pipp]
+-runtime/parrot/dynext/php_group.dylib             [pipp]
+-runtime/parrot/dynext/php_group.so                [pipp]
+-runtime/parrot/dynext/rational.bundle             [library]
+-runtime/parrot/dynext/rational.dll                [library]
+-runtime/parrot/dynext/rational.dylib              [library]
+-runtime/parrot/dynext/rational.so                 [library]
+-runtime/parrot/dynext/ruby_group.bundle           [cardinal]
+-runtime/parrot/dynext/ruby_group.dll              [cardinal]
+-runtime/parrot/dynext/ruby_group.dylib            [cardinal]
+-runtime/parrot/dynext/ruby_group.so               [cardinal]
+-runtime/parrot/dynext/subproxy.bundle             [library]
+-runtime/parrot/dynext/subproxy.dll                [library]
+-runtime/parrot/dynext/subproxy.dylib              [library]
+-runtime/parrot/dynext/subproxy.so                 [library]
+-runtime/parrot/include/call_bits.pasm             [main]
+-runtime/parrot/include/cclass.pasm                [main]
+-runtime/parrot/include/config.fpmc                []
+-runtime/parrot/include/datatypes.pasm             [main]
+-runtime/parrot/include/errors.pasm                [main]
+-runtime/parrot/include/except_severity.pasm       [main]
+-runtime/parrot/include/except_types.pasm          [main]
+-runtime/parrot/include/iglobals.pasm              [main]
+-runtime/parrot/include/interpcores.pasm           [main]
+-runtime/parrot/include/interpdebug.pasm           [main]
+-runtime/parrot/include/interpflags.pasm           [main]
+-runtime/parrot/include/interpinfo.pasm            [main]
+-runtime/parrot/include/interptrace.pasm           [main]
+-runtime/parrot/include/iotypes.pasm               [main]
+-runtime/parrot/include/iterator.pasm              [main]
+-runtime/parrot/include/longopt.pasm               [main]
+-runtime/parrot/include/mmd.pasm                   [main]
+-runtime/parrot/include/opengl_defines.pasm        [main]
+-runtime/parrot/include/parrotlib.pbc              [main]
+-runtime/parrot/include/pmctypes.pasm              [main]
+-runtime/parrot/include/signal.pasm                [main]
+-runtime/parrot/include/stat.pasm                  [main]
+-runtime/parrot/include/stdio.pasm                 [main]
+-runtime/parrot/include/stringinfo.pasm            [main]
+-runtime/parrot/include/sysinfo.pasm               [main]
+-runtime/parrot/include/timer.pasm                 [main]
+-runtime/parrot/include/tm.pasm                    [main]
+-runtime/parrot/include/vtable_methods.pasm        [main]
+-runtime/parrot/include/warnings.pasm              [main]
+-runtime/parrot/library/CGI/QueryHash.pbc          [main]
+-runtime/parrot/library/config.pbc                 [main]
+-runtime/parrot/library/config.pir                 [main]
+-runtime/parrot/library/Data/Dumper/Base.pbc       [main]
+-runtime/parrot/library/Data/Dumper/Default.pbc    [main]
+-runtime/parrot/library/Data/Dumper.pbc            [main]
+-runtime/parrot/library/dumper.pbc                 [main]
+-runtime/parrot/library/Getopt/Obj.pbc             [main]
+-runtime/parrot/library/Math/Random/mt19937ar.pbc  [main]
+-runtime/parrot/library/Math/Rand.pbc              [main]
+-runtime/parrot/library/MIME/Base64.pbc            [main]
+-runtime/parrot/library/NCI/call_toolkit_init.pbc  [main]
+-runtime/parrot/library/ncurses.pbc                [main]
+-runtime/parrot/library/OpenGL_funcs.pir           [main]
+-runtime/parrot/library/OpenGL.pbc                 [main]
+-runtime/parrot/library/P6object.pbc               [main]
+-runtime/parrot/library/Parrot/Capture_PIR.pbc     [main]
+-runtime/parrot/library/Parrot/Coroutine.pbc       [main]
+-runtime/parrot/library/Parrot/Exception.pbc       [main]
+-runtime/parrot/library/Parrot/HLLCompiler.pbc     [main]
+-runtime/parrot/library/parrotlib.pbc              [main]
+-runtime/parrot/library/pcre.pbc                   [main]
+-runtime/parrot/library/PCT/Grammar.pbc            [pct]
+-runtime/parrot/library/PCT/HLLCompiler.pbc        [pct]
+-runtime/parrot/library/PCT/PAST.pbc               [pct]
+-runtime/parrot/library/PCT.pbc                    [pct]
+-runtime/parrot/library/PGE/Dumper.pbc             [main]
+-runtime/parrot/library/PGE/Glob.pbc               [main]
+-runtime/parrot/library/PGE/Hs.pbc                 [main]
+-runtime/parrot/library/PGE.pbc                    [main]
+-runtime/parrot/library/PGE/Perl6Grammar.pbc       [main]
+-runtime/parrot/library/PGE/Text.pbc               [main]
+-runtime/parrot/library/PGE/Util.pbc               [main]
+-runtime/parrot/library/Protoobject.pbc            [main]
+-runtime/parrot/library/Stream/Base.pbc            [main]
+-runtime/parrot/library/Stream/Combiner.pbc        [main]
+-runtime/parrot/library/Stream/Coroutine.pbc       [main]
+-runtime/parrot/library/Stream/Filter.pbc          [main]
+-runtime/parrot/library/Stream/Lines.pbc           [main]
+-runtime/parrot/library/Stream/ParrotIO.pbc        [main]
+-runtime/parrot/library/Stream/Replay.pbc          [main]
+-runtime/parrot/library/Stream/Sub.pbc             [main]
+-runtime/parrot/library/Stream/Writer.pbc          [main]
+-runtime/parrot/library/TGE.pbc                    [tge]
+-src/call_list.txt                                 [devel]src
+-src/glut_callbacks.c                              []
+-src/jit_emit.h                                    []
+-src/nci.c                                         []
+-src/null_config.c                                 []
+-src/ops/core_ops_cgp.c                            []
+-src/ops/core_ops_switch.c                         []
+-src/parrot_config.c                               []
+-src/pmc/boolean.dump                              [devel]src
+-src/pmc/default.dump                              [devel]src
+-src/pmc/fixedpmcarray.dump                        [devel]src
+-src/pmc/float.dump                                [devel]src
+-src/pmc/hash.dump                                 [devel]src
+-src/pmc/integer.dump                              [devel]src
+-src/pmc/multisub.dump                             [devel]src
+-src/pmc/pmc_boolean.h                             [devel]include
+-src/pmc/pmc_default.h                             [devel]include
+-src/pmc/pmc_fixedintegerarray.h                   [devel]include
+-src/pmc/pmc_fixedpmcarray.h                       [devel]include
+-src/pmc/pmc_float.h                               [devel]include
+-src/pmc/pmc_hash.h                                [devel]include
+-src/pmc/pmc_integer.h                             [devel]include
+-src/pmc/pmc_multisub.h                            [devel]include
+-src/pmc/pmc_object.h                              [devel]include
+-src/pmc/pmc_resizablepmcarray.h                   [devel]include
+-src/pmc/pmc_scalar.h                              [devel]include
+-src/pmc/pmc_string.h                              [devel]include
+-src/pmc/pmc_sub.h                                 [devel]include
+-src/pmc/pmc_undef.h                               [devel]include
+-src/pmc/resizablepmcarray.dump                    [devel]src
+-src/pmc/scalar.dump                               [devel]src
+-src/pmc/string.dump                               [devel]src
+-src/pmc/sub.dump                                  [devel]src
+-src/pmc/undef.dump                                [devel]src
+-src/string_private_cstring.h                      []
+-tools/build/dynpmc.pl                             []
+-vtable.dump                                       [devel]src
++runtime/parrot/library/CGI/QueryHash.pbc          [library]
++runtime/parrot/library/Crow.pbc                   [library]
++runtime/parrot/library/config.pbc                 [library]
++runtime/parrot/library/Config/JSON.pbc            [library]
++runtime/parrot/library/Data/Dumper/Base.pbc       [library]
++runtime/parrot/library/Data/Dumper/Default.pbc    [library]
++runtime/parrot/library/Data/Dumper.pbc            [library]
++runtime/parrot/library/Digest/MD5.pbc             [library]
++runtime/parrot/library/dumper.pbc                 [library]
++runtime/parrot/library/yaml_dumper.pbc            [library]
++runtime/parrot/library/Getopt/Obj.pbc             [library]
++runtime/parrot/library/JSON.pbc                   [library]
++runtime/parrot/library/Math/Random/mt19937ar.pbc  [library]
++runtime/parrot/library/Math/Rand.pbc              [library]
++runtime/parrot/library/MIME/Base64.pbc            [library]
++runtime/parrot/library/NCI/call_toolkit_init.pbc  [library]
++runtime/parrot/library/ncurses.pbc                [library]
++runtime/parrot/library/P6object.pbc               [library]
++runtime/parrot/library/parrotlib.pbc              [library]
++runtime/parrot/library/pcre.pbc                   [library]
++runtime/parrot/library/Parrot/Coroutine.pbc       [library]
++runtime/parrot/library/Parrot/Exception.pbc       [library]
++runtime/parrot/library/PGE/Dumper.pbc             [library]
++runtime/parrot/library/PGE/Glob.pbc               [library]
++runtime/parrot/library/PGE/Perl6Grammar.pbc       [library]
++runtime/parrot/library/PGE/Text.pbc               [library]
++runtime/parrot/library/PGE/Util.pbc               [library]
++runtime/parrot/library/Protoobject.pbc            [library]
++runtime/parrot/library/Stream/Base.pbc            [library]
++runtime/parrot/library/Stream/Combiner.pbc        [library]
++runtime/parrot/library/Stream/Coroutine.pbc       [library]
++runtime/parrot/library/Stream/Filter.pbc          [library]
++runtime/parrot/library/Stream/Lines.pbc           [library]
++runtime/parrot/library/Stream/ParrotIO.pbc        [library]
++runtime/parrot/library/Stream/Replay.pbc          [library]
++runtime/parrot/library/Stream/Sub.pbc             [library]
++runtime/parrot/library/Stream/Writer.pbc          [library]
++runtime/parrot/library/String/Utils.pbc           [library]
++runtime/parrot/library/Test/Builder/Output.pbc    [library]
++runtime/parrot/library/Test/Builder/Test.pbc      [library]
++runtime/parrot/library/Test/Builder/Tester.pbc    [library]
++runtime/parrot/library/Test/Builder/TestPlan.pbc  [library]
++runtime/parrot/library/Test/Builder.pbc           [library]
++runtime/parrot/library/Test/Class.pbc             [library]
++runtime/parrot/library/Test/More.pbc              [library]
++runtime/parrot/library/Tcl/Glob.pbc               [library]
++runtime/parrot/library/uuid.pbc                   [library]
++runtime/parrot/library/YAML/Parser/Syck.pbc       [library]
+Index: parrot-svn/config/auto/perldoc.pm
+===================================================================
+--- parrot-svn.orig/config/auto/perldoc.pm	2009-02-18 00:01:59.000000000 +0100
++++ parrot-svn/config/auto/perldoc.pm	2009-03-07 08:42:38.281250000 +0100
+@@ -70,6 +70,7 @@
+ ops$slash$pod: ..${slash}src${slash}ops${slash}$ops
+ \t\$(PERLDOC) -ud ops${slash}$pod ..${slash}src${slash}ops${slash}$ops
+ \t\$(CHMOD) 0644 ops${slash}$pod
++\t\$(ADDGENERATED) \"docs${slash}ops${slash}$pod\" \"[main]\" doc
+ 
+ END
+         }
+@@ -78,6 +79,7 @@
+ ops$slash$pod: ..${slash}src${slash}ops${slash}$ops
+ \t\$(PERLDOC) -u ..${slash}ops${slash}$ops > ops${slash}$pod
+ \t\$(CHMOD) 0644 ..${slash}ops${slash}$pod
++\t\$(ADDGENERATED) \"docs${slash}ops${slash}$pod\" \"[main]\" doc
+ 
+ END
+         }
+Index: parrot-svn/config/gen/makefiles/dynpmc.in
+===================================================================
+--- parrot-svn.orig/config/gen/makefiles/dynpmc.in	2009-02-28 13:08:14.000000000 +0100
++++ parrot-svn/config/gen/makefiles/dynpmc.in	2009-03-06 19:01:03.890625000 +0100
+@@ -8,6 +8,7 @@
+ LOAD_EXT      := @load_ext@
+ BUILD_DIR     := @build_dir@
+ RECONFIGURE   := $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
++ADDGENERATED  := $(PERL) ../../tools/build/addgenerated.pl
+ INSTALL_DIR   := $(BUILD_DIR)@slash@runtime@slash@parrot@slash@dynext
+ O             := @o@
+ CC            := @cc@ -c
+@@ -100,6 +101,7 @@
+ 
+ dynlexpad$(LOAD_EXT): dynlexpad$(O)
+ 	$(LD) $(LD_OUT)dynlexpad$(LOAD_EXT) dynlexpad$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ dynlexpad$(O): dynlexpad.c
+ 	$(CC) $(CC_OUT)dynlexpad$(O) $(INCLUDES) $(CFLAGS) dynlexpad.c
+@@ -112,6 +114,7 @@
+ 
+ foo$(LOAD_EXT): foo$(O)
+ 	$(LD) $(LD_OUT)foo$(LOAD_EXT) foo$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ foo$(O): foo.c
+ 	$(CC) $(CC_OUT)foo$(O) $(INCLUDES) $(CFLAGS) foo.c
+@@ -124,6 +127,7 @@
+ 
+ pair$(LOAD_EXT): pair$(O)
+ 	$(LD) $(LD_OUT)pair$(LOAD_EXT) pair$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ pair$(O): pair.c
+ 	$(CC) $(CC_OUT)pair$(O) $(INCLUDES) $(CFLAGS) pair.c
+@@ -136,6 +140,7 @@
+ 
+ rotest$(LOAD_EXT): rotest$(O)
+ 	$(LD) $(LD_OUT)rotest$(LOAD_EXT) rotest$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ rotest$(O): rotest.c
+ 	$(CC) $(CC_OUT)rotest$(O) $(INCLUDES) $(CFLAGS) rotest.c
+@@ -148,6 +153,7 @@
+ 
+ gdbmhash$(LOAD_EXT): gdbmhash$(O)
+ 	$(LD) $(LD_OUT)gdbmhash$(LOAD_EXT) gdbmhash$(O) $(LINKARGS) $(LIB_GDBM)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ gdbmhash$(O): gdbmhash.c
+ 	$(CC) $(CC_OUT)gdbmhash$(O) $(INCLUDES) $(CFLAGS) gdbmhash.c
+@@ -160,6 +166,7 @@
+ 
+ rational$(LOAD_EXT): rational$(O)
+ 	$(LD) $(LD_OUT)rational$(LOAD_EXT) rational$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ rational$(O): rational.c
+ 	$(CC) $(CC_OUT)rational$(O) $(INCLUDES) $(CFLAGS) rational.c
+@@ -172,6 +179,7 @@
+ 
+ digest_group$(LOAD_EXT): $(OBJS_DIGEST) lib-digest_group$(O)
+ 	$(LD) $(LD_OUT)digest_group$(LOAD_EXT) lib-digest_group$(O) $(OBJS_DIGEST) $(LINKARGS) $(LIB_CRYPTO)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ lib-digest_group$(O): digest_group.c
+ 	$(CC) $(CC_OUT)lib-digest_group$(O) $(INCLUDES) $(CFLAGS) digest_group.c
+@@ -253,6 +261,7 @@
+ 
+ subproxy$(LOAD_EXT): subproxy$(O)
+ 	$(LD) $(LD_OUT)subproxy$(LOAD_EXT) subproxy$(O) $(LINKARGS)
++	@$(ADDGENERATED) "$(INSTALL_DIR)@slash@$@"
+ 
+ subproxy$(O): subproxy.c
+ 	$(CC) $(CC_OUT)subproxy$(O) $(INCLUDES) $(CFLAGS) subproxy.c
