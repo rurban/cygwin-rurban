@@ -26,7 +26,7 @@ Problems:
 
 Runtime requirements: (versions given or later)
 
-  cygwin-1.7.4-1
+  cygwin-1.7.x
   libbz2_1-1.0.5-10
   libgcc1-4.3.4-3
   libiconv2-1.13.1-1
@@ -98,12 +98,6 @@ Files included in the clamav package:
   /usr/share/doc/clamav-<VER>/COPYING
   /usr/share/doc/clamav-<VER>/FAQ
   /usr/share/doc/clamav-<VER>/INSTALL  
-  /usr/lib/libclamunrar.a
-  /usr/lib/libclamunrar.dll.a
-  /usr/lib/libclamunrar.la
-  /usr/lib/libclamunrar_iface.a
-  /usr/lib/libclamunrar_iface.dll.a
-  /usr/lib/libclamunrar_iface.la
   /usr/share/doc/clamav-<VER>/NEWS
   /usr/share/doc/clamav-<VER>/README
   /usr/share/doc/clamav-<VER>/clamav-mirror-howto.pdf
@@ -130,8 +124,8 @@ Files included in the libclamav6 package:
 
 Files included in the clamav-db package:
 
-  /usr/share/clamav/daily.cvd
-  /usr/share/clamav/main.cvd
+  /usr/share/clamav/daily.cld
+  /usr/share/clamav/main.cld
 
 Files included in the libclamav-devel package:
 
@@ -152,8 +146,15 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.97-1 -----
+* add os_cygwin to bytecode_detect
+* symlink more libclamav subdirs (still not --build ready)
+* configure.in: fixed VERSIONSCRIPT logic
+* rebase 2 0.96.1-1 patches
 ----- version 0.96.1-1 -----
-* fixup lib/cygclamunrar_iface-6.dll to bin
+* fixup lib/cygclamunrar_iface-6.dll to bin 
+----- version 0.96-2 -----
+* ?
 ----- version 0.96-1 -----
 * lndirs ${B}/libclamav/c++/llvm
 * DIRENT_MISSING_D_INO check is now ignored upstream. only cygwin-1.7 supported
