@@ -1,4 +1,4 @@
-sdesc: "The clamav dll since v0.95"
+sdesc: "The clamav dll since v0.97"
 category: Utils
 requires: zlib0 libbz2_1 libiconv2 libgcc1 libltdl7 libncurses10 libstdc++6
 external-source: clamav
