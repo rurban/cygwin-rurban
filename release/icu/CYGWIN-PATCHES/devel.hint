@@ -1,5 +1,5 @@
 category: Devel
-requires: icu libicu38 gcc4-core gcc4-g++
+requires: icu libicu48 gcc4-core gcc4-g++
 external-source: icu
 sdesc: "IBM Internationalization Components for Unicode (development)"
 ldesc: "All the files necessary to write applications that use ICU, 
@@ -12,6 +12,6 @@ using ICU, to faciliate their building, along with a platform-specific
 configuration file included by this fragment.
 - The sample applications from the ICU source tree, in an appropriate
 location for the system that the package is installed on (for example,
-in /usr/share/doc/icu-3.8-5/examples).
+in /usr/share/doc/icu-4.8.1-5/examples).
 This package depends on the ICU libraries package with the exact same
 version, since it provides .dll.a symbolic links to the latest libraries."

@@ -1,5 +1,5 @@
 category: Libs
-requires: cygwin libicu38
+requires: cygwin libicu48
 sdesc: "IBM Internationalization Components for Unicode (apps and docs)"
 ldesc: "ICU is a set of C and C++ libraries that provides robust and full-featured
 Unicode and locale support. The library provides calendar support, conversions
