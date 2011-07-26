@@ -26,18 +26,18 @@ Canonical download:
 -------------------------------------------
 
 Build instructions:
-  unpack icu-3.8-X-src.tar.bz2
+  unpack icu-4.8.1-X-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./icu-3.8-X all
+  cygport ./icu-4.8.1-X all
 
 This will create:
-  /usr/src/icu-3.8-X-src.tar.bz2
-  /usr/src/icu-3.8-X.tar.bz2
-  /usr/src/libicu38-3.8-X.tar.bz2
-  /usr/src/libicu-devel-3.8-X.tar.bz2
-  /usr/src/icu-doc-3.8-X.tar.bz2
+  /usr/src/icu-4.8.1-X-src.tar.bz2
+  /usr/src/icu-4.8.1-X.tar.bz2
+  /usr/src/libicu38-4.8.1-X.tar.bz2
+  /usr/src/libicu-devel-4.8.1-X.tar.bz2
+  /usr/src/icu-doc-4.8.1-X.tar.bz2
 
 -------------------------------------------
 
@@ -45,20 +45,20 @@ Files included in the binary packages:
 
 =icu= package:
 
-  usr/share/doc/Cygwin/icu-3.8.README
+  usr/share/doc/Cygwin/icu-4.8.1.README
 
-=libicu38= package:
+=libicu48= package:
 
-  usr/bin/cygicudt38.dll	The huge DATA library
-  usr/bin/cygicuin38.dll	i18n Library
-  usr/bin/cygicuio38.dll	Optional stdio-like API with Unicode support
-  usr/bin/cygicule38.dll	Optional Font Layout Engine  
-  usr/bin/cygiculx38.dll 	Optional Font Layout Extensions Engine
-  usr/bin/cygicuuc38.dll	Base library required by all other ICU libraries
+  usr/bin/cygicudt48.dll	The huge DATA library
+  usr/bin/cygicuin48.dll	i18n Library
+  usr/bin/cygicuio48.dll	Optional stdio-like API with Unicode support
+  usr/bin/cygicule48.dll	Optional Font Layout Engine  
+  usr/bin/cygiculx48.dll 	Optional Font Layout Extensions Engine
+  usr/bin/cygicuuc48.dll	Base library required by all other ICU libraries
 
 =libicu-devel= package:
 
-  usr/bin/cygicuut38.dll	Internal Tool Utility Library
+  usr/bin/cygicuut48.dll	Internal Tool Utility Library
   usr/bin/derb.exe
   usr/bin/genbrk.exe
   usr/bin/gencnval.exe
@@ -90,23 +90,23 @@ Files included in the binary packages:
   usr/sbin/icuswap.exe
   usr/include/layout/*
   usr/include/unicode/*
-  usr/lib/icu/3.8/Makefile.inc
+  usr/lib/icu/4.5/Makefile.inc
   usr/lib/icu/Makefile.inc
   usr/lib/icu/current
-  usr/lib/libicudt38.0.dll.a
-  usr/lib/libicudt38.dll.a
-  usr/lib/libicuin38.0.dll.a
-  usr/lib/libicuin38.dll.a
-  usr/lib/libicuio38.0.dll.a
-  usr/lib/libicuio38.dll.a
-  usr/lib/libicule38.0.dll.a
-  usr/lib/libicule38.dll.a
-  usr/lib/libiculx38.0.dll.a
-  usr/lib/libiculx38.dll.a
-  usr/lib/libicuuc38.0.dll.a
-  usr/lib/libicuuc38.dll.a
-  usr/share/icu/3.8/config/mh-cygwin
-  usr/share/icu/3.8/mkinstalldirs
+  usr/lib/libicudt48.0.dll.a
+  usr/lib/libicudt48.dll.a
+  usr/lib/libicuin48.0.dll.a
+  usr/lib/libicuin48.dll.a
+  usr/lib/libicuio48.0.dll.a
+  usr/lib/libicuio48.dll.a
+  usr/lib/libicule48.0.dll.a
+  usr/lib/libicule48.dll.a
+  usr/lib/libiculx48.0.dll.a
+  usr/lib/libiculx48.dll.a
+  usr/lib/libicuuc48.0.dll.a
+  usr/lib/libicuuc48.dll.a
+  usr/share/icu/4.8/config/mh-cygwin
+  usr/share/icu/4.8/mkinstalldirs
 
 =icu-doc= package:
 
@@ -119,6 +119,13 @@ Files included in the binary packages:
 ------------------
 
 Port Notes:
+
+----- version 4.8.1-1 -----
+moved all /usr/lib/cygicu*.dll /usr/bin/
+fixed libicu*.dll.a symlinks
+
+----- version 4.5.1-1 -----
+most patches applied. at least 4.2 needed for hiphop.
 
 ----- version 3.8-7 -----
 recompile with latest gcc-4.3.4

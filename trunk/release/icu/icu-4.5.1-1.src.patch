@@ -1,0 +1,31 @@
+--- origsrc/icu/source/common/unicode/pwin32.h	2010-06-23 23:32:38.000000000 +0200
++++ src/icu/source/common/unicode/pwin32.h	2010-09-16 09:53:32.238418500 +0200
+@@ -46,6 +46,11 @@
+ #       define U_HAVE_INTTYPES_H 0
+ #   endif
+ #endif
++/* allow #include <windows.h> */ 
++#ifdef __CYGWIN__
++#   define U_HAVE_INTTYPES_H 1
++#endif
++
+ 
+ /**
+  * Define what support for C++ streams is available.
+--- origsrc/icu/source/common/unicode/rbbi.h	2010-06-23 23:32:36.000000000 +0200
++++ src/icu/source/common/unicode/rbbi.h	2010-09-16 09:39:32.954498500 +0200
+@@ -633,12 +633,14 @@ protected:
+     virtual int32_t getBreakType() const;
+ #endif
+ 
++public:
+     /**
+       * Set the type of the break iterator.
+       * @internal
+       */
+     virtual void setBreakType(int32_t type);
+ 
++protected:
+     /**
+       * Common initialization function, used by constructors and bufferClone.
+       *   (Also used by DictionaryBasedBreakIterator::createBufferClone().)

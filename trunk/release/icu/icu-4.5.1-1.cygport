@@ -1,0 +1,68 @@
+# -*- shell-script -*-
+# Note: for release-2 with gcc-4
+export CC="gcc-4"
+export CXX="g++-4"
+
+DESCRIPTION="International Components for Unicode"
+HOMEPAGE="http://www.icu-project.org/"
+SRC_URI="http://download.icu-project.org/files/icu4c/${PV}/icu4c-${PV//./_}-src.tgz"
+SRC_DIR="icu/source"
+LICENSE="GPL-2"
+dllver=${PV_MAJ_MIN//.}
+
+PKG_NAMES="${PN} lib${PN}${dllver} lib${PN}-devel ${PN}-doc"
+PKG_HINTS="icu lib devel doc"
+# icu (dummy)
+PKG_CONTENTS[0]="usr/share/doc/Cygwin"
+# libicu45
+PKG_CONTENTS[1]=" \
+--exclude=usr/bin/cygicutu*.dll \
+usr/bin/cygicu*.dll"
+# libicu-devel
+PKG_CONTENTS[2]=" \
+usr/bin/*.exe \
+usr/bin/icu-config \
+usr/bin/cygicutu*.dll \
+usr/include \
+usr/lib \
+usr/sbin/*.exe \
+usr/share/man \
+usr/share/icu"
+# icu-doc
+PKG_CONTENTS[3]="usr/share/doc/icu*"
+
+NO_AUTOHEADER=1
+CYGCONF_ARGS="--enable-static"
+DOCS="../license.html ../readme.html ../unicode-license.txt ../packaging/PACKAGES"
+HTMLDOCS="${B}doc/html"
+
+src_compile() {
+	cd ${B}
+	cygconf
+	cygmake
+	cygmake doc
+}
+
+src_test() {
+	cd ${B}
+	make check
+}
+
+src_install() {
+	local l
+
+	cd ${B}
+	cyginstall
+        cyginstall install-doc
+
+	for l in data i18n io le lx tu uc ; do
+		mv ${D}/usr/lib/cygicu${l}${dllver}.dll ${D}/usr/bin/cygicu${l}${dllver}.dll
+		dosym ../bin/cygicu${l}${dllver}.dll /usr/lib/libicu${l}.dll.a
+	done
+
+	sed -e '/^ICUUC_FILE=/ s/libdir/bindir/' \
+		-e 's/l${LIBICU}/l${ICUPREFIX}/g' \
+		-e '/l${ICUPREFIX}/ s/${ICULIBSUFFIX_VERSION}//g' \
+		-i ${D}/usr/bin/icu-config \
+		|| error "sed icu-config failed"
+}
