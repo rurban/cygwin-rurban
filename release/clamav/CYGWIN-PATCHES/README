@@ -27,13 +27,13 @@ Problems:
 Runtime requirements: (versions given or later)
 
   cygwin-1.7.x
-  libbz2_1-1.0.5-10
-  libgcc1-4.3.4-3
-  libiconv2-1.13.1-1
-  libltdl7-2.2.7a-15
+  libbz2_1-1.0.6-2
+  libgcc1-4.5.3-2
+  libiconv2-1.14-1
+  libltdl7-2.4-1
   libncurses10-5.7-18
-  libstdc++6-4.3.4-3
-  zlib0-1.2.3-10
+  libstdc++6-4.5.3-2
+  zlib0-1.2.5-1
   
 Build requirements: (versions given or later)
   autoconf2.5-2.63
@@ -84,7 +84,7 @@ Files included in the clamav package:
   /etc/rc.d/init.d/clamd
   /etc/postinstall/clamav.sh
   /etc/preremove/clamav.sh
-  /usr/bin/clambc.exe 			(new)
+  /usr/bin/clambc.exe
   /usr/bin/clamconf.exe
   /usr/bin/clamdscan.exe
   /usr/bin/clamdtop.exe
@@ -106,6 +106,7 @@ Files included in the clamav package:
   /usr/share/doc/clamav-<VER>/signatures.pdf
   /usr/share/doc/clamav-<VER>/html/*
   /usr/share/doc/Cygwin/clamav-<VER>-<CYGREL>.README
+  /usr/share/man/man1/clambc.1.gz
   /usr/share/man/man1/clamconf.1.gz
   /usr/share/man/man1/clamdscan.1.gz
   /usr/share/man/man1/clamdtop.1.gz
@@ -146,6 +147,12 @@ Files included in the libclamav-devel package:
 
 Port Notes:
 
+----- version 0.97.2-3 -----
+* no src changes, just rebuilt with latest gcc-4.5.3-2
+----- version 0.97.2-2 -----
+* add the forgotten _alloca and jit patch by Mike Bonnet
+----- version 0.97.2-1 -----
+* no changes
 ----- version 0.97-1 -----
 * add os_cygwin to bytecode_detect
 * symlink more libclamav subdirs (still not --build ready)
