@@ -1,0 +1,40 @@
+=head1 NAME
+
+perlrebase
+
+=head1 SYNOPSIS
+
+B<perlrebase> [I<5.13.5> [I<baseaddr>]]
+
+=head1 DESCRIPTION
+
+The default perl modules are properly rebased, a rebase clash is very unlikely.
+
+However with more and more CPAN XS extensions being added over time,
+C<*** fatal error - unable to remap some.dll to same address as parent> error
+will become more likely, which requires to fix the rebase clash
+and those new DLLs are not rebased by a normal B<rebaseall>.
+
+perlrebase starts afresh all perl DLLs from a pretty low base upwards.
+
+perlrebase leaves a B<rebaseE<lt>version suffixE<gt>.lst> file in the curent directory 
+for inspection. You may want to remove that.
+
+=head1 OPTIONS
+
+The first optional option is the B<version suffix> for a self-built perl executable 
+in F</usr/local/bin/perl*.exe>.
+C<5.13.5> refers to C</usr/local/bin/perl5.13.5.exe> and its associated C<cygperl5_13_5.dll>
+and all DLLs in its extension paths.
+
+The second optional option is the B<baseaddr>. Default C<0x57000000>
+
+=head1 SEE ALSO
+
+L<rebase>
+
+L<rebaseall>
+
+=head1 AUTHOR
+
+Reini Urban

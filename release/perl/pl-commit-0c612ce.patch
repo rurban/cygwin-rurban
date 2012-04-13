@@ -1,0 +1,41 @@
+commit 0c612ce8203a9badc077399e8421a9a0e5183a94
+Author: Reini Urban <rurban@x-ray.at>
+Date:   Fri Dec 17 11:02:08 2010 +0100
+
+    Fix building static extensions on cygwin, -UUSEIMPORTLIB
+    
+    Similar to the outstanding Dynaloader problem
+      undefined reference to `__imp__PL_stack_sp'
+    when linking against the static libperl.a, not against the .dll.a importlib,
+    the same problem remains for all other static core extensions (tested with Cwd)
+    so fix it at the central place for LINKTYPE=static.
+
+diff -u perl-5.14.2/make_ext.pl.orig perl-5.14.2/make_ext.pl
+--- perl-5.14.2/make_ext.pl.orig	2011-09-26 04:44:34.000000000 -0500
++++ perl-5.14.2/make_ext.pl	2012-03-20 10:02:06.156250000 -0500
+@@ -286,7 +286,7 @@
+     } else {
+ 	$makefile = 'Makefile';
+     }
+-    
++
+     if (!-f $makefile) {
+ 	if (!-f 'Makefile.PL') {
+ 	    print "\nCreating Makefile.PL in $ext_dir for $mname\n";
+@@ -373,6 +373,16 @@
+     ) : ()),
+ );
+ 
++sub MY::cflags {
++  package MY;
++  my $flags = $_[0]->SUPER::cflags(@_);
++  my $linktype = $_[0]->{LINKTYPE};
++  if ($linktype eq 'static' and $flags =~ /-DUSEIMPORTLIB/m) {
++    $flags =~ s/-DUSEIMPORTLIB/-UUSEIMPORTLIB/m;
++  }
++  $flags;
++}
++
+ # ex: set ro:
+ EOM
+ 	    close $fh or die "Can't close Makefile.PL: $!";

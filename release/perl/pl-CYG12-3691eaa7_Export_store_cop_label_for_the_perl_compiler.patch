@@ -1,0 +1,107 @@
+commit 3691eaa79cc6a196b6a424b4c7abc6c8f5a481e2
+Author: Reini Urban <rurban@x-ray.at>
+Date:   Tue Apr 12 14:14:01 2011 +0200
+
+    Export store_cop_label for the perl compiler
+
+diff --git a/embed.fnc b/embed.fnc
+index b891b43..9067a89 100644
+--- a/embed.fnc
++++ b/embed.fnc
+@@ -2440,8 +2440,8 @@ Apon	|void	|sys_init3	|NN int* argc|NN char*** argv|NN char*** env
+ Apon	|void	|sys_term
+ ApoM	|const char *|fetch_cop_label|NN COP *const cop \
+ 		|NULLOK STRLEN *len|NULLOK U32 *flags
+-: Only used  in op.c
+-xpoM	|void|store_cop_label \
++: Only used  in op.c and the perl compiler
++EXpoM	|void|store_cop_label \
+ 		|NN COP *const cop|NN const char *label|STRLEN len|U32 flags
+ 
+ xpo	|int	|keyword_plugin_standard|NN char* keyword_ptr|STRLEN keyword_len|NN OP** op_ptr
+diff --git a/ext/XS-APItest/APItest.xs b/ext/XS-APItest/APItest.xs
+index 0ce4d51..4298e7d 100644
+--- a/ext/XS-APItest/APItest.xs
++++ b/ext/XS-APItest/APItest.xs
+@@ -2328,6 +2328,26 @@ test_cophh()
+ #undef msvpvs
+ #undef msviv
+ 
++void
++test_coplabel()
++    PREINIT:
++	COP *cop;
++        char *label;
++        int len, utf8;
++    CODE:
++	cop = &PL_compiling;
++	Perl_store_cop_label(aTHX_ cop, "foo", 3, 0);
++	label = Perl_fetch_cop_label(aTHX_ cop, &len, &utf8);
++        if (strcmp(label,"foo")) croak("fail # fetch_cop_label label");
++        if (len != 3) croak("fail # fetch_cop_label len");
++        if (utf8) croak("fail # fetch_cop_label utf8");
++	Perl_store_cop_label(aTHX_ cop, "foä", 3, SVf_UTF8);
++	label = Perl_fetch_cop_label(aTHX_ cop, &len, &utf8);
++        if (strcmp(label,"foä")) croak("fail # fetch_cop_label label");
++        if (len != 3) croak("fail # fetch_cop_label len");
++        if (!utf8) croak("fail # fetch_cop_label utf8");
++
++
+ HV *
+ example_cophh_2hv()
+     PREINIT:
+diff --git a/ext/XS-APItest/t/coplabel.t b/ext/XS-APItest/t/coplabel.t
+new file mode 100644
+index 0000000..8f0e0e3
+--- /dev/null
++++ b/ext/XS-APItest/t/coplabel.t
+@@ -0,0 +1,10 @@
++use warnings;
++use strict;
++use Test::More tests => 1;
++
++use XS::APItest;
++
++XS::APItest::test_coplabel();
++ok 1;
++
++1;
+diff --git a/global.sym b/global.sym
+old mode 100644
+new mode 100755
+diff --git a/hv.c b/hv.c
+index ed5061f..e0ea3e2 100644
+--- a/hv.c
++++ b/hv.c
+@@ -3391,6 +3391,15 @@ Perl_refcounted_he_inc(pTHX_ struct refcounted_he *he)
+     return he;
+ }
+ 
++/*
++=for apidoc fetch_cop_label
++
++Returns the label attached to a cop.
++The flags pointer may be set to C<SVf_UTF8> or 0.
++
++=cut
++*/
++
+ /* pp_entereval is aware that labels are stored with a key ':' at the top of
+    the linked list.  */
+ const char *
+@@ -3427,6 +3436,15 @@ Perl_fetch_cop_label(pTHX_ COP *const cop, STRLEN *len, U32 *flags) {
+     return chain->refcounted_he_data + 1;
+ }
+ 
++/*
++=for apidoc store_cop_label
++
++Save a label into a C<cop_hints_hash>. You need to set flags to C<SVf_UTF8>
++for a utf-8 label.
++
++=cut
++*/
++
+ void
+ Perl_store_cop_label(pTHX_ COP *const cop, const char *label, STRLEN len,
+ 		     U32 flags)

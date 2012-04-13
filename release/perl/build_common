@@ -33,9 +33,9 @@ if [ -z "$patch" -a -z "$make_all" -a $pkg_ver = perl-git ]; then
     patch="`cd perl-git; git rev-parse HEAD | cut -b1-8; cd ..`";
 fi
 if [ -z "$usethreads" ]; then usethreads=yes; fi
-if [ -z "$rebasebase" ]; then rebasebase=0x54000000; fi
+if [ -z "$rebasebase" ]; then rebasebase=0x58000000; fi
 if [ -z "$srcdir" ];     then srcdir=${dir}/${pkg_ver}; fi
-if [ -z "$download_url" ];then download_url="http://search.cpan.org/CPAN/authors/id/D/DA/DAPM/perl-5.10.1.tar.gz"; fi
+if [ -z "$download_url" ];then download_url="http://www.cpan.org/src/5.0/perl-$ver.tar.gz"; fi
 if [ -z "$rsync_url" ];  then rsync_url="rsync://public.activestate.com/perl-current/"; fi
 #TODO: detect cygwin-1.5
 if [ -z "$docdir" ]; then
@@ -57,20 +57,13 @@ rebase_all() {
     echo "./perl.exe" > $dir/rebase.lst
     find -type f -name \*.exe | grep -v "perl.exe" >> $dir/rebase.lst
     peflags -t1 -T $dir/rebase.lst
+
     find -type f -name \*.dll > $dir/rebase.lst
     peflags -d1 -T $dir/rebase.lst
-
-    echo "./perl.exe" >> $dir/rebase.lst
-    find -type f -name \*.exe | grep -v "perl.exe" >> $dir/rebase.lst
     cat $dir/rebase.lst | rebase -v -b $rebasebase -T -
     true
 }
 
-_strip_debug() {
-    echo "## skip strip_debug skipped"
-}
-
-## this does not work yet, broken cygwin binutils
 strip_debug() {
     echo "## seperate debug symbols into extra /usr/lib/debug/path/file.dbg"
     test -z $instdir && exit
@@ -175,7 +168,13 @@ stage_pre_vendorprep() {
 	  echo `grep -h "localfile: " $x | cut -c14-|head -n1`
 	  cp `grep -h "localfile: " $x | cut -c14-|head -n1` .
 	else
-	  echo "preq $i.tar.gz not found"
+	  f=`find ~/.cpan/sources/authors/id -name $i.tar.gz`
+	  if [ -n "$f" ]; then
+	    echo "preq $i.tar.gz not found. But found $f:"
+	    cp $f .
+	  else
+	    echo "preq $i.tar.gz not found"
+          fi
 	fi
       fi
     fi
@@ -393,6 +392,7 @@ sitehtml3dir='${docdir}/html/html3'
 vendorhtml1dir='${docdir}/html/html1'
 vendorhtml3dir='${docdir}/html/html3'
 
+archname='${archname}'
 privlib='${prefix}/lib/perl5/${archver}'
 sitelib='${prefix}/lib/perl5/site_perl/${archver}'
 vendorlib='${prefix}/lib/perl5/vendor_perl/${archver}'
@@ -412,7 +412,7 @@ cf_email='cygwin@cygwin.com'
 
 EOF
     stage_configure_policy
-    CONF_ARGS="-de -Dlibperl=$libperl -Dcc=gcc-4 -Dld=g++-4"
+    CONF_ARGS="-de -Dlibperl=$libperl -Dcc=gcc-4 -Dld=g++-4 -Darchname=${archname}"
     if [ -z "$make_all" ]; then
 	test -s ../Policy.local && cat ../Policy.local >> Policy.sh
 	test -s ../conf_args.local && . ../conf_args.local
@@ -426,7 +426,7 @@ EOF
     else
 	CONF_ARGS="$CONF_ARGS -Dusethreads"
     fi
-    if [ $minor -gt 9 ] ; then
+    if [ $minor -gt 9 -a $minor -lt 14 ] ; then
 	CONF_ARGS="$CONF_ARGS -Dmad=y"
     fi
     if [ $minor = 13 ] ; then
@@ -446,9 +446,14 @@ EOF
     if [ -n "$make_debug" ]; then
 	CONF_ARGS="$CONF_ARGS -DDEBUGGING -Doptimize=-g3"
     else
+        # -g for strip_debug
         # tricky: only -DEBUGGING=-g lets us generate debuginfo without -DDEBUGGING
         # fedora fell into that trap
-        CONF_ARGS="$CONF_ARGS -Doptimize=-O3 -Accflags=-g3"
+	if [ -n "$make_all" ]; then
+	    CONF_ARGS="$CONF_ARGS -Accflags=-g"
+        else
+            CONF_ARGS="$CONF_ARGS -Accflags=-g3"
+        fi
     fi
     echo "sh ${srcdir}/Configure $CONF_ARGS" |\
 	tee -a ${log}
@@ -539,6 +544,7 @@ stage_post_install_fixups() {
 stage_install() {
   if [ -n "$stage_install" ]; then
     __stage "install"
+make_all=1
     # versiononly will not install lib
     cd ${builddir}
     test -f perl.exe || (echo "${builddir}/perl.exe missing"; exit)
@@ -558,11 +564,13 @@ stage_install() {
     /usr/bin/install -m 644 INSTALL Changes* ${instdir}${docdir}
 
     cd ${dir}
-    /usr/bin/install -m 644 README ${instdir}${prefix}/share/doc/Cygwin/${pkg}-${shortver}.README 
+    /usr/bin/install -m 644 README ${instdir}${prefix}/share/doc/Cygwin/${pkg}.README 
 
     stage_post_install_hook
     if [ -n "$make_all" ]; then
+	cd ${dir}
         stage_post_install_fixups
+	cd ${dir}
 	# since 5.10.1-3
 	/usr/bin/install -m 755 perlrebase ${instdir}${prefix}/bin
         pod2man perlrebase.pod | gzip -c > ${instdir}${prefix}/share/man/man1/perlrebase.1.gz
@@ -579,6 +587,7 @@ stage_install() {
 stage_installvendor() {
   if [ -n "$stage_installvendor" ]; then
     __stage "installvendor"
+    instvdir=$instdir
     cd ${dir}
     if [ -e ${instdir}/usr/bin/perl${longver} ]; then
 	PERL=${instdir}/usr/bin/perl${longver}
@@ -606,7 +615,7 @@ stage_installvendor() {
     echo "cp -rpf ${instdir}${prefix}/lib/perl5/${archver}/${archname}/* ${prefix}/lib/perl5/${archver}/${archname}/" | tee -a $logmake
     /usr/bin/cp -rpf ${instdir}${prefix}/lib/perl5/${archver}/${archname}/* ${prefix}/lib/perl5/${archver}/${archname}/
 
-    PERL_I="$PERL -I${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}"
+    PERL_I=$PERL # "-I${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}"
     # CPAN, libXML and more
     for i in $exts
     do 
@@ -640,15 +649,15 @@ stage_installvendor() {
 	  fi
           #XXX Some not to vendor. Most do it automatically
 	  if [ ${i#ExtUtils-ParseXS} != $i -o ${i#ExtUtils-CBuilder}  != $i ]; then
-	    __substage "${i}: make install DESTDIR=${instdir}" | /usr/bin/tee -a $loginstall
-	    make -j1 install DESTDIR=${instdir} 2>&1 | /usr/bin/tee -a $loginstall
+	    __substage "${i}: make install DESTDIR=${instvdir}" | /usr/bin/tee -a $loginstall
+	    make -j1 install DESTDIR=${instvdir} 2>&1 | /usr/bin/tee -a $loginstall
           else
-	    __substage "${i}: make install_vendor DESTDIR=${instdir}" | /usr/bin/tee -a $loginstall
-	    make -j1 install_vendor DESTDIR=${instdir} 2>&1 | /usr/bin/tee -a $loginstall
+	    __substage "${i}: make install_vendor DESTDIR=${instvdir}" | /usr/bin/tee -a $loginstall
+	    make -j1 install_vendor DESTDIR=${instvdir} 2>&1 | /usr/bin/tee -a $loginstall
           fi
         else
-	  __substage "${i}: $PERL_I Build.PL --destdir=${instdir} --installdirs=vendor" | /usr/bin/tee -a $logmake
-	  PATH="${instdir}${prefix}/bin:$PATH" $PERL_I Build.PL --destdir=${instdir} --installdirs=vendor 2>&1 | tee -a $logmake
+	  __substage "${i}: $PERL_I Build.PL --destdir=${instvdir} --installdirs=vendor" | /usr/bin/tee -a $logmake
+	  PATH="${instdir}${prefix}/bin:$PATH" $PERL_I Build.PL --destdir=${instvdir} --installdirs=vendor 2>&1 | tee -a $logmake
 	  __substage "${i}: Build" | tee -a $logmake
 	  ./Build 2>&1 | tee -a $logmake
 	  __substage "${i}: Build install" | tee -a $loginstall
@@ -657,16 +666,14 @@ stage_installvendor() {
 	cd ${dir}
 	/usr/bin/rm -rf ${dir}/${i}
     done
-    /usr/bin/find ${instdir} -name .packlist -exec sed -i -e"s,${instdir},," \{\} \;
+    /usr/bin/find ${instvdir} -name .packlist -exec sed -i -e"s,${instdir},," \{\} \;
 
     #for taint
-    /usr/bin/chmod -R g-w ${instdir}/usr/bin ${instdir}/usr/lib/perl5/vendor_perl/
+    /usr/bin/chmod -R g-w ${instvdir}/usr/bin ${instvdir}/usr/lib/perl5/vendor_perl/
 
     stage_post_install_fixups
-    #pushd ${instdir}${prefix}/bin > /dev/null
-    #if [ -e scandeps.pl ]; then mv scandeps.pl scandeps; fi
-    #popd
-    cd ${instdir}
+    if [ -e ${instvdir}${prefix}/scandeps.pl ]; then mv ${instvdir}${prefix}/scandeps.pl ${instvdir}${prefix}/scandeps; fi
+    cd ${instvdir}
     if [ -n "$make_all" ]; then
         /usr/bin/mkdir ../.instunstripped
         /usr/bin/find . -name \*.exe -o -name \*.dll -exec cp \{\} ../.instunstripped/\{\} \;
@@ -698,7 +705,7 @@ stage_pkg() {
 	rm -rf ${pkg}-${ver}${release}
 	sleep 2
 	mkdir ${pkg}-${ver}${release}
-	cp ${pkg}-${ver}.tar.gz ${pkg}-${ver}${release}/
+	cp ${pkg}-${ver}.tar.{gz,bz2} ${pkg}-${ver}${release}/
     fi
     cp -p README setup.hint pl-*.patch build perlrebase perlrebase.pod build_common modules ${pkg}-${ver}${release}/
     for i in $exts; do 
@@ -711,9 +718,16 @@ stage_pkg() {
 
     files=${dir}/pkg.files
     cd ${instdir}
-    find $debugpath -type f -print > ${files}.debuginfo
-    find usr/bin usr/lib/perl5 usr/share/doc \( -type f -o -type l \) -print > ${files}.perl
-    echo usr/lib/perl5/site_perl >>${files}.perl
+    find usr/lib/debug -type f -print > ${files}.debuginfo
+    vendorbin="pod_cover crc32 ptee shasum cpansign lwp-download lwp-dump lwp-mirror lwp-request ipcount iptab json_xs metabase-profile findrule cpaninject scandeps"
+    find usr/lib/perl5/vendor_perl \( -type f -o -type l \) -print > ${files}.vendor
+    find usr/bin usr/lib/perl5/${archver}/ usr/share/doc \( -type f -o -type l \) -print > ${files}.perl
+    for v in $vendorbin; do
+      echo "usr/bin/$v" >> ${files}.vendor
+      sed -i -e"s,usr/bin/$v,," ${files}.perl
+    done
+    touch usr/lib/perl5/site_perl/${archver}/${archname}/.create
+    echo usr/lib/perl5/site_perl/${archver}/${archname}/.create >>${files}.perl
 
     cd ${instdir}
     echo compress manpages
@@ -728,6 +742,8 @@ stage_pkg() {
     stage_pkg_hook
     echo "## pkg ${pkg}_debuginfo-${ver}${release}.tar.bz2"
     tar -c -T ${files}.debuginfo | bzip2 -9 > ${dir}/${pkg}_debuginfo-${ver}${release}.tar.bz2
+    echo "## pkg ${pkg}_vendor-${ver}${release}.tar.bz2"
+    tar -c -T ${files}.vendor | bzip2 -9 > ${dir}/${pkg}_vendor-${ver}${release}.tar.bz2
     # bin
     echo "## pkg ${pkg}-${ver}${release}.tar.bz2"
     tar -c -T ${files}.perl | bzip2 -9 > ${dir}/${pkg}-${ver}${release}.tar.bz2
@@ -795,12 +811,12 @@ if [ -z "$instdir" ];    then
 fi
 if [ -z "$archname" ]; then
     if [ "$usethreads" = "no" ]; then
-	if [ -n "$make_debug" ]; then archname="i686-nothreads-debug-cygwin"
-	else archname="i686-nothreads-cygwin"
+	if [ -n "$make_debug" ]; then archname="i686-cygwin-64int-debug"
+	else archname="i686-cygwin-64int"
 	fi
     else
-	if [ -n "$make_debug" ]; then archname="i686-debug-cygwin"; 
-	else archname="i686-cygwin"
+	if [ -n "$make_debug" ]; then archname="i686-cygwin-threads-64int-debug"; 
+	else archname="i686-cygwin-threads-64int"
         fi
     fi
     #k=`uname -r`
@@ -848,15 +864,9 @@ while test -n "$1" ; do
 	;;
     --nothreads|--no-threads|-nt)
 	usethreads="no"
-	#archname="i686-nothreads-cygwin" 
-	#builddir=${dir}/buildnothreads
-	#instdir=${dir}/instnothreads
 	;;
     --debug|--debugging|-d)
 	make_debug=1
-	#archname="i686-debug-cygwin" 
-	#builddir=${dir}/builddebug
-	#instdir=${dir}/instdebug
 	;;
     --no-mksymlinks|--no-s|-ns)
 	CONF_no_mksymlinks=1

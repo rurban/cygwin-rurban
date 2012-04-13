@@ -1,4 +1,4 @@
-This is a description of the Perl 5.10.1 package for Cygwin.
+This is a description of the Perl 5.14.1 package for Cygwin.
 
 Runtime requirements: (versions given or later)
 
@@ -21,27 +21,42 @@ Non-base build requirements: (versions given or later)
   libexpat-devel
 
 Build instructions:
-  tar xfvj perl-5.10.1-4-src.tar.bz2
+  tar xfvj perl-5.14.2-1-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
-  cd perl-5.10.0-4
+  cd perl-5.14.2-1
   ./build all
 
   This will create:
-    perl-5.10.1-4-src.tar.bz2
-    perl-5.10.1-4.tar.bz2
-    perl_manpages-5.10.1-4.tar.bz2
+    perl-5.14.2-1-src.tar.bz2
+    perl-5.14.2-1.tar.bz2
+    perl_manpages-5.14.2-1.tar.bz2
+    perl_vendor-5.14.2-1.tar.bz2
+    perl_debuginfo-5.14.2-1.tar.bz2
 
 Canonical homepages:
   http://www.perl.org/
-  http://search.cpan.org/dist/perl-5.10.1/
-
+  http://search.cpan.org/dist/perl-5.14.2/
 Canonical download:
-  http://search.cpan.org/CPAN/authors/id/D/DA/DAPM/perl-5.10.1.tar.gz
+  http://www.cpan.org/src/5.0/perl-5.14.2.tar.bz2
 
 --------------------
 
 NEWS:
+
+5.14.2-1
+  - improved rebase handling of dll's in EUMM while building and testing
+    with global rebase.db and private next perl imagebase.
+  - removed mad (Misc Attribute Decoration) support, Data::Alias fails
+  - more thread fixes
+
+5.14.0-1 (never released)
+  - static_ext=Cwd Win32CORE
+  - no usemymalloc
+  - seperate perl_vendor package
+
+5.10.1-5
+   - fixed perlrebase
 
 5.10.1-4
   - $Config{cc} changed from gcc to gcc-4
@@ -282,10 +297,7 @@ OLDER NEWS:
  - IPC support is enabled, however to make use of it, it is required
    to have cygserver running and CYGWIN=server in your env. See the 
    cygserver README in /usr/doc/Cygwin how to setup / run cygserver.
- - there are still some issues with PERLIO, best bet is to use binary
-   mounted directories, define PERLIO=perlio in your environment, with
-   this environment setting nearly all tests are passing when running on
-   NTFS. 
+ - There are still some issues with PERLIO and textmode.
  - Perl 5.8.x should be binary compatible with Cygwin perl >= 5.8.2,
    if you are seeing problems with older extensions, please try to
    recompile these at first.
@@ -294,36 +306,20 @@ OLDER NEWS:
 - Moved distributed addon extensions from site_perl under vendor_perl
   path.
 - The CPAN repository and build directory *must* reside in a path 
-  mounted in binmode:
-
-    mount -s -b -f c:/cygwin/home/username/.cpan /home/username/.cpan
-    mount -u -b -f c:/cygwin/home/username/.cpan /home/username/.cpan
-
-  where username is your home path and cygwin / windows username.
-  After mounting like this it should work with only few warnings or 
-  completely without problems, depending on your environment settings 
-  for the CYGWIN variable.
+  mounted in binmode.
 
 --------------------
 
 GENERAL:
 
-- This package is configured to support dynamic loading.  Binaries 
-  are stripped.  Run `perl -V' to see a summary of the configuration.
+- This package is configured to support dynamic loading. Binaries 
+  are stripped. Self-compiled libraries are not stripped.
+  Run `perl -V' to see a summary of the configuration.
   Some of the Perl features that require optional libraries are 
   enabled (crypt, GDBM_File).
 
 - The CPAN repository and build directory *must* reside in a path 
-  mounted in binmode:
-
-    mount -s -b -f c:/cygwin/home/username/.cpan /home/username/.cpan
-    mount -u -b -f c:/cygwin/home/username/.cpan /home/username/.cpan
-
-  where username is your home path and cygwin / windows username.
-  After mounting like this it should work with only few warnings or 
-  completely without problems, depending on your environment settings 
-  for the CYGWIN variable.
-
+  mounted in binmode.
 
 --------------------
 
@@ -429,9 +425,6 @@ Directory of Perl training companies in the world:
 
 Perl Development: 
   Perl 5: http://dev.perl.org/perl5/
-  Perl 6: http://dev.perl.org/perl6/
-  Parrot: http://www.parrotcode.org/
-  Pugs - Perl6 User's Golfing System: http://www.pugscode.org/
 
 --------------------
 
@@ -501,7 +494,7 @@ Build Instructions
   build.sh script:
 
     cd perl-X.Y.Z
-    ./build.sh all
+    ./build all
     # this runs for a long time
 
   The logs captured while building Perl are also
@@ -547,4 +540,4 @@ Vendor modules included in this distribution (mainly needed for CPAN):
 Reini Urban <rurban@x-ray.at>
 All questions should be directed to <cygwin@cygwin.com>
 
-Last Updated: 2009-08-30
+Last Updated: 2010-11-27

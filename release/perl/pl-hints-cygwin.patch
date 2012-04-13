@@ -1,0 +1,13 @@
+difforig buildperl/hints/cygwin.sh
+
+diff -u buildperl/hints/cygwin.sh.orig buildperl/hints/cygwin.sh
+--- buildperl/hints/cygwin.sh.orig	2011-09-19 08:18:22.000000000 -0500
++++ buildperl/hints/cygwin.sh	2012-03-23 09:33:16.687500000 -0500
+@@ -31,6 +31,7 @@
+ man3ext='3pm'
+ test -z "$use64bitint" && use64bitint='define'
+ test -z "$usethreads" && usethreads='define'
++test -z "$usemymalloc" && usemymalloc='undef'
+ ccflags="$ccflags -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__"
+ # - otherwise i686-cygwin
+ archname='cygwin'
