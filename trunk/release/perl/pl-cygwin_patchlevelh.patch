@@ -1,0 +1,19 @@
+difforig perl-5.14.2/patchlevel.h
+
+diff -u perl-5.14.2/patchlevel.h.orig perl-5.14.2/patchlevel.h
+--- perl-5.14.2/patchlevel.h.orig	2011-09-26 04:44:34.000000000 -0500
++++ perl-5.14.2/patchlevel.h	2012-03-20 10:09:37.109375000 -0500
+@@ -137,6 +137,13 @@
+ 	,"uncommitted-changes"
+ #endif
+ 	PERL_GIT_UNPUSHED_COMMITS    	/* do not remove this line */
++        ,"Bug#55162 File::Spec::case_tolerant performance"
++        ,"CYG07 $vendorarch/auto/.rebase"
++        ,"CYG15 static Win32CORE"
++        ,"CYG17 cyg-1.7 paths-utf8" 
++        ,"0c612ce82 Fix building static extensions on cygwin, -UUSEIMPORTLIB"
++        ,"1bac5ecc1 Fix 64-bit threading sv.c: S_anonymise_cv_maybe"
++        ,"Cygwin::sync_winenv added"
+ 	,NULL
+ };
+ 

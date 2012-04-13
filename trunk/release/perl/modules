@@ -1,22 +1,20 @@
 # -*- shell-script -*-
 # only CPAN dependant and libxml modules
-modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage \
-	  Test::Pod::Coverage \
-	Compress::Raw::Bzip2 IO::Compress::Bzip2 Compress::Bzip2 \
+# Term::ReadLine now in CORE
+modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage Test::Pod::Coverage \
+	Compress::Bzip2 \
         IO::String \
-        File::Temp Archive::Zip \
-	Math::BigInt::FastCalc \
+        Archive::Zip \
 	Term::ReadKey Term::ReadLine::Perl Term::ReadLine::Gnu \
         XML::NamespaceSupport XML::SAX XML::LibXML::Common XML::LibXML \
 	XML::Parser \
 	Proc::ProcessTable \
 	YAML \
-	Config::Tiny File::Copy::Recursive IPC::Run3 Probe::Perl \
+	Config::Tiny File::Copy::Recursive IPC::Run3 Probe::Perl  \
     	Tee IO::CaptureOutput File::pushd File::HomeDir \
 	Digest::SHA \
 	Module::Signature \
         URI HTML::Tagset HTML::Parser LWP \
-	CPAN \
 	Net::IP Net::DNS Test::Reporter \
 	  Net::SSL common::sense JSON::XS JSON Metabase::Client::Simple \
 	  Data::UUID Data::GUID CPAN::DistnameInfo Metabase::Fact \
@@ -27,44 +25,41 @@ modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage \
           Params::Util Test::Script CPAN::Inject \
 	Net::Telnet \
 	Module::ScanDeps PAR::Dist \
-	YAML::Tiny Software::License Module::Build \
-	  Socket6 IO::Socket::INET6 \
-	B::Generate PadWalker Alias "
+	Socket6 IO::Socket::INET6 \
+	B::Generate PadWalker Data::Alias"
 
-exts="  Pod-Escapes-1.04 Pod-Simple-3.14 Test-Pod-1.41 \
-	Devel-Symdump-2.08 Pod-Coverage-0.21 Test-Pod-Coverage-1.08 \
-	Compress-Raw-Bzip2-2.030 IO-Compress-2.030 Compress-Bzip2-2.09 \
+# already in CORE
+# Compress-Raw-Bzip2-2.024 IO-Compress-2.024 IO-Compress-Bzip2-2.024
+
+exts="Pod-Escapes-1.04 Pod-Simple-3.20 Test-Pod-1.45 \
+	Devel-Symdump-2.08 Pod-Coverage-0.22 Test-Pod-Coverage-1.08 \
+	Compress-Bzip2-2.09 \
         IO-String-1.08	\
         Archive-Zip-1.30 \
-	TermReadKey-2.30 Term-ReadLine-Perl-1.0303 Term-ReadLine-Gnu-1.19 \
-        XML-NamespaceSupport-1.10 XML-SAX-0.96 XML-LibXML-1.70 \
-	XML-Parser-2.36 \
+	TermReadKey-2.30 Term-ReadLine-Perl-1.0303 Term-ReadLine-Gnu-1.20 \
+        XML-NamespaceSupport-1.11 XML-SAX-0.99 XML-LibXML-1.96 \
+	XML-Parser-2.41 \
 	Proc-ProcessTable-0.45 \
-	  YAML-0.71 \
-	  Config-Tiny-2.12 File-Copy-Recursive-0.38 IPC-Run3-0.044 Probe-Perl-0.01 \
-    	  Tee-0.13 IO-CaptureOutput-1.1102 File-pushd-1.00 File-HomeDir-0.89 \
-	  Digest-SHA-5.48 \
-	  Module-Signature-0.61 \
-          URI-1.54 HTML-Tagset-3.20 HTML-Parser-3.64 libwww-perl-5.836 \
-	  CPAN-1.9402 \
-	Net-IP-1.25 Net-DNS-0.66_01 Test-Reporter-1.57 \
-	  Crypt-SSLeay-0.58 common-sense-3.3 JSON-XS-2.3 JSON-2.22 \
+	YAML-0.80 \
+	Config-Tiny-2.14 File-Copy-Recursive-0.38 IPC-Run3-0.045 Probe-Perl-0.01 \
+    	Tee-0.14 IO-CaptureOutput-1.1102 File-pushd-1.002 File-HomeDir-0.99 \
+	Digest-SHA-5.71 \
+	Module-Signature-0.68 \
+        URI-1.59 HTML-Tagset-3.20 HTML-Parser-3.69 libwww-perl-6.04 \
+	Net-IP-1.25 Net-DNS-0.68 Test-Reporter-1.58 \
+	  Crypt-SSLeay-0.58 common-sense-3.4 JSON-XS-2.32 JSON-2.53 \
 	    Metabase-Client-Simple-0.008 \
-	  Data-UUID-1.215 Data-GUID-0.045 CPAN-DistnameInfo-0.10 Metabase-Fact-0.017 \
-	    Config-Perl-V-0.12 CPAN-Testers-Report-1.999001 \
-            Test-Reporter-Transport-Metabase-1.999008 CPAN-Reporter-1.1800 \
-        Text-Glob-0.08 Number-Compare-0.01 File-Find-Rule-0.32 Data-Compare-1.22 
-	  CPAN-Checksums-2.04 File-Remove-1.42 File-chmod-0.32 Params-Util-1.01 
-	  Test-Script-1.07 CPAN-Inject-0.11 \
+	  Data-UUID-1.217 Data-GUID-0.046 CPAN-DistnameInfo-0.12 Metabase-Fact-0.021 \
+	    Config-Perl-V-0.14 CPAN-Testers-Report-1.999001 \
+            Test-Reporter-Transport-Metabase-1.999008 CPAN-Reporter-1.2005 \
+        Text-Glob-0.09 Number-Compare-0.03 File-Find-Rule-0.33 Data-Compare-1.22 CPAN-Checksums-2.08 File-Remove-1.52 File-chmod-0.32 Params-Util-1.07 Test-Script-1.07 CPAN-Inject-1.13 \
 	Net-Telnet-3.03 \
-	Module-ScanDeps-0.98 PAR-Dist-0.47 \
-        ExtUtils-CBuilder-0.2702 ExtUtils-ParseXS-2.2206 YAML-Tiny-1.44 Software-License-0.102340 \
-	  Module-Build-0.36_13 Socket6-0.23 IO-Socket-INET6-2.65 \
-	B-Generate-1.29 \
-        PadWalker-1.92 \
-        Alias-2.32"
+	Module-ScanDeps-1.08 PAR-Dist-0.48 \
+        Socket6-0.23 IO-Socket-INET6-2.69 \
+	B-Generate-1.44 \
+        PadWalker-1.93 \
+        Data-Alias-1.16"
 
-# File-Temp-0.22 Math-BigInt-FastCalc-0.19 already in CORE with 5.10.1
-# XML-LibXML-Common-0.13 ?
+# File-Temp-0.22 now in CORE
 # PAR not because of /usr/bin/pp
 # Algorithm-Diff-1.1902 Text-Diff-0.35 not needed because we removed usr/bin/ptardiff

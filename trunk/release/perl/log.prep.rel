@@ -1,0 +1,44 @@
+[1;39m## stage_patch pl-commit-0c612ce.patch[0;0m
+patching file make_ext.pl
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-commit-1bac5ec.patch[0;0m
+patching file sv.c
+Hunk #1 succeeded at 5987 (offset 94 lines).
+Hunk #2 succeeded at 6006 (offset 94 lines).
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG07-cygwin_vendorarchautorebase-2.patch[0;0m
+patching file cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG08-b722195e_CYG17_utf8_paths.patch[0;0m
+patching file cygwin/cygwin.c
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG10-95f6fab9_skip_testing_cygwin_utf8_readdir_with_Win32_ANSI_API.patch[0;0m
+patching file cpan/Win32/t/Unicode.t
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG11-fabf0235_Fix_test_50_on_cygwin_WINDOWS.patch[0;0m
+patching file cpan/Win32API-File/t/file.t
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG12-3691eaa7_Export_store_cop_label_for_the_perl_compiler.patch[0;0m
+patching file embed.fnc
+Hunk #1 succeeded at 2441 (offset 1 line).
+patching file ext/XS-APItest/APItest.xs
+Hunk #1 succeeded at 2348 (offset 20 lines).
+patching file ext/XS-APItest/t/coplabel.t
+patching file hv.c
+Hunk #1 succeeded at 3406 (offset 15 lines).
+Hunk #2 succeeded at 3451 (offset 15 lines).
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-CYG13-31abdf84_APItest_coplabel_fix_warnings.patch[0;0m
+patching file ext/XS-APItest/APItest.xs
+Hunk #1 succeeded at 2353 (offset 20 lines).
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-cygwin_patchlevelh.patch[0;0m
+patching file patchlevel.h
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-Cygwin-sync_winenv.patch[0;0m
+patching file README.cygwin
+patching file cygwin/cygwin.c
+/usr/src/perl/perl-5.14
+[1;39m## stage_patch pl-hints-cygwin.patch[0;0m
+patching file hints/cygwin.sh
+/usr/src/perl/perl-5.14

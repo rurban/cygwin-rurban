@@ -1,8 +1,17 @@
-difforig perl-5.10.1/cygwin/cygwin.c perl-5.10.1/t/lib/cygwin.t
+From: Reini Urban <rurban@x-ray.at>
+Subject: [PATCH] CYG17 utf8 paths
+Author: Reini Urban <rurban@x-ray.at>
+Date:   Tue Apr 12 12:19:36 2011 +0200
+commit b722195e24a6c67310eb30e8f18601966a96ba78
 
-diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
---- perl-5.10.1/cygwin/cygwin.c.orig	2009-05-03 16:54:56.000000000 +0000
-+++ perl-5.10.1/cygwin/cygwin.c	2009-08-29 23:41:12.719875000 +0000
+    CYG17 utf8 paths
+    
+    Use cygwin_conv_path since cygwin-1.7 and support native utf-8 paths.
+
+diff --git a/cygwin/cygwin.c b/cygwin/cygwin.c
+index aa6938d..3206f91 100644
+--- a/cygwin/cygwin.c
++++ b/cygwin/cygwin.c
 @@ -10,9 +10,13 @@
  #include <unistd.h>
  #include <process.h>
@@ -17,13 +26,22 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  
  /*
   * pp_system() implemented via spawn()
-@@ -140,6 +144,44 @@
+@@ -125,7 +129,7 @@ do_spawn (char *cmd)
+ 	    return do_spawnvp("sh",command);
+ 	}
+ 
+-    Newx (PL_Argv,(s-cmd)/2+2,const char*);
++    Newx (PL_Argv,(s-cmd)/2+2,char*);
+     PL_Cmd=savepvn (cmd,s-cmd);
+     a=PL_Argv;
+     for (s=PL_Cmd; *s;) {
+@@ -143,6 +147,44 @@ do_spawn (char *cmd)
      return do_spawnvp(PL_Argv[0],(const char * const *)PL_Argv);
  }
  
 +#if (CYGWIN_VERSION_API_MINOR >= 181)
 +char*
-+wide_to_utf8(const wchar_t *wbuf) 
++wide_to_utf8(const wchar_t *wbuf)
 +{
 +    char *buf;
 +    int wlen = 0;
@@ -41,7 +59,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
 +}
 +
 +wchar_t*
-+utf8_to_wide(const char *buf) 
++utf8_to_wide(const char *buf)
 +{
 +    wchar_t *wbuf;
 +    mbstate_t mbs;
@@ -62,7 +80,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  /* see also Cwd.pm */
  XS(Cygwin_cwd)
  {
-@@ -191,7 +233,12 @@
+@@ -194,7 +236,12 @@ XS(XS_Cygwin_winpid_to_pid)
  
      pid = (pid_t)SvIV(ST(0));
  
@@ -76,7 +94,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
          XSprePUSH; PUSHi((IV)RETVAL);
          XSRETURN(1);
      }
-@@ -199,34 +246,91 @@
+@@ -202,34 +249,91 @@ XS(XS_Cygwin_winpid_to_pid)
  }
  
  XS(XS_Cygwin_win_to_posix_path)
@@ -85,9 +103,8 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
      dXSARGS;
      int absolute_flag = 0;
      STRLEN len;
--    int err;
+     int err;
 -    char *pathname, *buf;
-+    int err = 0;
 +    char *src_path;
 +    char *posix_path;
 +    int isutf8 = 0;
@@ -178,13 +195,11 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  	XSRETURN_UNDEF;
      }
  }
-@@ -236,30 +340,81 @@
-     dXSARGS;
+@@ -240,29 +344,80 @@ XS(XS_Cygwin_posix_to_win_path)
      int absolute_flag = 0;
      STRLEN len;
--    int err;
+     int err;
 -    char *pathname, *buf;
-+    int err = 0;
 +    char *src_path, *win_path;
 +    int isutf8 = 0;
  
@@ -271,7 +286,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  	XSRETURN_UNDEF;
      }
  }
-@@ -290,24 +445,22 @@
+@@ -293,24 +448,22 @@ XS(XS_Cygwin_mount_flags)
  {
      dXSARGS;
      char *pathname;
@@ -300,12 +315,12 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  
 -	cygwin_internal (CW_GET_CYGDRIVE_INFO, user, system, user_flags,
 -			 system_flags);
-+	cygwin_internal (CW_GET_CYGDRIVE_INFO, user, system, 
++	cygwin_internal (CW_GET_CYGDRIVE_INFO, user, system,
 +			 user_flags, system_flags);
  
          if (strlen(user) > 0) {
              sprintf(flags, "%s,cygdrive,%s", user_flags, user);
-@@ -320,6 +473,7 @@
+@@ -323,6 +476,7 @@ XS(XS_Cygwin_mount_flags)
  
      } else {
  	struct mntent *mnt;
@@ -313,7 +328,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
  	setmntent (0, 0);
  	while ((mnt = getmntent (0))) {
  	    if (!strcmp(pathname, mnt->mnt_dir)) {
-@@ -328,12 +482,42 @@
+@@ -331,12 +485,42 @@ XS(XS_Cygwin_mount_flags)
  		    strcat(flags, ",");
  		    strcat(flags, mnt->mnt_opts);
  		}
@@ -334,7 +349,7 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
 +	    char user_flags[PATH_MAX];
 +	    char system_flags[PATH_MAX];
 +
-+	    cygwin_internal (CW_GET_CYGDRIVE_INFO, user, system, 
++	    cygwin_internal (CW_GET_CYGDRIVE_INFO, user, system,
 +			     user_flags, system_flags);
 +
 +	    if (strlen(user) > 0) {
@@ -358,62 +373,3 @@ diff -u perl-5.10.1/cygwin/cygwin.c.orig perl-5.10.1/cygwin/cygwin.c
      }
  }
  
-diff -u perl-5.10.1/t/lib/cygwin.t.orig perl-5.10.1/t/lib/cygwin.t
---- perl-5.10.1/t/lib/cygwin.t.orig	2009-02-12 22:58:20.000000000 +0000
-+++ perl-5.10.1/t/lib/cygwin.t	2009-08-29 23:32:45.782375000 +0000
-@@ -9,7 +9,7 @@
-     }
- }
- 
--use Test::More tests => 16;
-+use Test::More tests => 18;
- 
- is(Cygwin::winpid_to_pid(Cygwin::pid_to_winpid($$)), $$,
-    "perl pid translates to itself");
-@@ -43,12 +43,27 @@
- is(Cygwin::win_to_posix_path($winpath, 1), "/", "win to absolute posix path");
- 
- my $mount = join '', `/usr/bin/mount`;
--$mount =~ m|on /usr/bin type .+ \((\w+mode)[,\)]|m;
--my $binmode = $1 eq 'binmode';
--is(Cygwin::is_binmount("/"),  $binmode ? 1 : '', "check / for binmount");
-+my $binmode = 'binmode';
-+my $textmode = 'textmode';
-+my $check;
-+sub Cygwin::version() {
-+    my $k = `/bin/uname -r`;
-+    $k =~ s/^(\d\.\d+)(\..*)$/$1/;
-+    return $k*1.0;
-+}
-+if (Cygwin::version > 1.5) {
-+    $binmode = 'binary';
-+    $textmode = 'text';
-+    $mount =~ m|on /usr/bin type .+ \((\w+)[,\)]|m;
-+    $check = $1 eq $binmode;
-+} else {
-+    $mount =~ m|on /usr/bin type .+ \((\w+mode)[,\)]|m;
-+    $check = $1 eq $binmode;
-+}
-+is(Cygwin::is_binmount("/"),  $check ? 1 : '', "check / for $binmode");
- 
- my $rootmnt = Cygwin::mount_flags("/");
--ok($binmode ? ($rootmnt =~ /,binmode/) : ($rootmnt =~ /,textmode/), "check / mount_flags");
-+ok($binmode ? ($rootmnt =~ /,$binmode/) : ($rootmnt =~ /,$textmode/), "check / mount_flags");
- is(Cygwin::mount_flags("/cygdrive") =~ /,cygdrive/,  1, "check cygdrive mount_flags");
- 
- # Cygdrive mount prefix
-@@ -72,3 +87,14 @@
- }
- 
- ok(Cwd->cwd(), "bug#38628 legacy");
-+
-+SKIP: {
-+    skip "utf-8 paths require cygwin-1.7", 2 if Cygwin::version() < 1.7;
-+    
-+    my $u = "lib/cygwin\x{263a}.tmp";
-+    ok(open(F,"> $u"), "open utf8-filename");
-+    print F 1;
-+    ok(-f $u, , "-f utf8-filename");
-+    close F;
-+    unlink $u;
-+}

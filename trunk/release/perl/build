@@ -1,54 +1,110 @@
 #!/bin/sh
-# 5.10.1-3 i686-cygwin
+# 5.14.2 i686-cygwin-64int
 
 ## stages: 
 make_debug=
-# cpan checks externally all newer modules, needs manual update of the version list then
+# cpan check all newer modules, needs manual update of the version list then
 stage_cpan=
-# check if all required modules exist
 stage_vendorprep=
 # delete buildperl, unpack src and apply patches
 stage_prep=
 stage_configure=1
 stage_make=1
-stage_check=1
+stage_check=
 stage_install=1
 stage_installvendor=
+stage_installlocal=
 stage_pkg=
 
 prefix=/usr
+release=-1
 pkg=perl
-
-ver=5.10.1
-release=-4
-pkg_ver=perl-5.10.1
-shortver=5.10
-subversion=1
-major=5
-minor=10
-longver=${ver}
-usethreads=yes
-#archname="i686-cygwin"
-download_url="http://search.cpan.org/CPAN/authors/id/D/DA/DAPM/perl-5.10.1.tar.gz"
-rsync_url="rsync://ftp.linux.activestate.com/perl-5.10.x/"
-
+ver=5.14.2
+pkg_ver=perl-5.14.2
+shortver=5.14
+download_url=http://www.cpan.org/src/5.0/perl-5.14.2.tar.bz2
+subversion=
 dir=`pwd`
 srcdir=${dir}/${pkg_ver}
 
-source build_common
-source modules
-
-libperl=cygperl5_10.dll
+source ./build_common
+source ./modules
 
 stage_cpan
 stage_vendorprep
 stage_prep
+
+if [ -e "${srcdir}/.patch" ]; then 
+#    patch="`cat ${srcdir}/.patch`"
+    release="-${patch}"
+    exesuffix="${exesuffix}@${patch}"
+fi
+if [ -n "$make_all" ]; then
+  libperl="cygperl5_${minor}${exesuffix}.dll"
+  prefix=/usr
+else
+  libperl="cygperl5_${minor}_${subversion}${exesuffix}.dll"
+fi
+
 stage_configure_policy() {
-  echo "otherlibdirs='/usr/lib/perl5/site_perl/5.8:/usr/lib/perl5/vendor_perl/5.8'" >> Policy.sh
+    echo "libperl='$libperl'" >> ${builddir}/Policy.sh
+    echo "otherlibdirs='/usr/lib/perl5/site_perl/5.10:/usr/lib/perl5/vendor_perl/5.10:/usr/lib/perl5/site_perl/5.8'" >> ${builddir}/Policy.sh
+}
+
+stage_post_configure_hook() {
+    mv log.configure log.configure${exesuffix}
+    pushd $builddir
+    sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
+    mkdir -p lib/auto/Cwd
+    touch lib/auto/Cwd/Cwd.dll
+    popd
+}
+stage_post_make_hook() {
+    mv log.make log.make${exesuffix}
+    pushd $builddir
+    sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
+    popd
+}
+stage_post_check_hook() {
+    for i in test test.failed test.skipped harness; do mv log.$i log.${i}${exesuffix}; done
 }
 stage_configure
 stage_make
 stage_check
+
+stage_post_install_hook() {
+    __substage "post_install_hook"
+    if [ ! -e $instdir/usr/lib/perl5/$archver/$archname/auto/Win32CORE/Win32CORE.a ]
+    then
+	cp $builddir/lib/auto/Win32CORE/Win32CORE.a $instdir/usr/lib/perl5/$archver/$archname/auto/Win32CORE/Win32CORE.a
+    fi
+    if [ ! -e $instdir/usr/lib/perl5/$archver/$archname/auto/Cwd/Cwd.a ]
+    then
+	cp $builddir/lib/auto/Cwd/Cwd.a $instdir/usr/lib/perl5/$ver/$archname/auto/Cwd/Cwd.a
+    fi
+    rm $instdir/usr/lib/perl5/$archver/$archname/auto/Cwd/Cwd.dll
+    rm $builddir/lib/auto/Cwd/Cwd.dll
+    mkdir -p $instdir/usr/lib/perl5/site_perl/$archver
+
+    if [ false ]; then
+     __substage "real_install"
+     cp $instdir/usr/bin/perl${ver}.exe /usr/local/bin/perl${ver}${exesuffix}.exe
+     cp $instdir/usr/bin/cygperl*.dll /usr/local/bin/
+     if [ ! -e /usr/lib/perl5/${ver}/strict.pm ]; then
+        cp -r $instdir/usr/lib/perl5/$archver /usr/lib/perl5/
+     else
+        cp -r $instdir/usr/lib/perl5/$archver/$archname /usr/lib/perl5/$archver/
+     fi
+     if [ -d /usr/lib/perl5/$archver/$archname/CORE ]; then
+        cd /usr/lib/perl5/$archver/$archname/CORE
+        ln -sf /usr/local/bin/$libperl
+        cd -
+     fi
+    fi
+    perlrebase ${exesuffix}
+}
+
 stage_install
 stage_installvendor
+#stage_installlocal
 stage_pkg
