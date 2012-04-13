@@ -1,0 +1,45 @@
+--- origsrc/Win32-GUI-1.06/Win32-GUI-Constants/t/10_inherit.t	2006-05-13 10:39:30.000000000 -0500
++++ src/Win32-GUI-1.06/Win32-GUI-Constants/t/10_inherit.t	2012-04-13 13:30:17.093750000 -0500
+@@ -23,7 +23,7 @@ our @ISA = qw(Win32::GUI::Constants);
+ package main;
+ 
+ #use Win32::ABC qw(CW_USEDEFAULT);
+-Win32::ABC->import qw(CW_USEDEFAULT);  # Equililent to use() when package doesn't come from seperate file
++Win32::ABC->import ('CW_USEDEFAULT');  # Equililent to use() when package doesn't come from seperate file
+ 
+ # Test exporting of default constant
+ can_ok("main", "CW_USEDEFAULT");
+--- origsrc/Win32-GUI-1.06/Win32-GUI-Constants/t/98_pod.t	2006-05-16 13:57:26.000000000 -0500
++++ src/Win32-GUI-1.06/Win32-GUI-Constants/t/98_pod.t	2012-04-13 13:30:17.093750000 -0500
+@@ -13,4 +13,4 @@ use Test::More;
+ eval "use Test::Pod 1.14";
+ plan skip_all => "Test::Pod 1.14 required for testing POD" if $@;
+ plan skip_all => "Pod tests for Win32::GUI::Constants done by core" if $ENV{W32G_CORE};
+-all_pod_files_ok();
++all_pod_files_ok(all_pod_files('.'));
+--- origsrc/Win32-GUI-1.06/Win32-GUI-Scintilla/Scintilla.PL	2008-02-09 06:53:44.000000000 -0600
++++ src/Win32-GUI-1.06/Win32-GUI-Scintilla/Scintilla.PL	2012-04-13 13:34:51.343750000 -0500
+@@ -40,7 +40,7 @@ package Win32::GUI::Scintilla;
+ use strict;
+ use warnings;
+ 
+-use Win32::GUI qw(WS_CLIPCHILDREN WS_TABSTOP WS_VISIBLE WS_HSCROLL WS_VSCROLL);
++use Win32::GUI (qw(WS_CLIPCHILDREN WS_TABSTOP WS_VISIBLE WS_HSCROLL WS_VSCROLL));
+ 
+ require DynaLoader;
+ 
+@@ -127,12 +127,12 @@ sub new {
+   my %out;
+ 
+   ### Filtering option
+-  for my $option qw(
++  for my $option (qw(
+         -name -parent
+         -left -top -width -height -pos -size
+         -pushstyle -addstyle -popstyle -remstyle -notstyle -negstyle
+         -exstyle -pushexstyle -addexstyle -popexstyle -remexstyle -notexstyle
+-        ) {
++        )) {
+     $out{$option} = $in{$option} if exists $in{$option};
+   }
+ 
