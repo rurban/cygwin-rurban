@@ -1,0 +1,15 @@
+DESCRIPTION="Handling page faults in user mode"
+HOMEPAGE="http://libsigsegv.sourceforge.net/"
+# SRC_URI="ftp://www.gnu.ftp.uni-erlangen.de/pub/gnu/${PN}/${PN}-${PV}.tar.gz"
+# SRC_URI="http://puzzle.dl.sourceforge.net/sourceforge/${PN}/${PN}-${PV}.tar.bz2"
+# SRC_URI="ftp://ftp.gnu.org/pub/gnu/${PN}/${PN}-${PV}.tar.gz"
+SRC_URI="http://ftpmirror.gnu.org/${PN}/${PN}-${PV}.tar.gz"
+PATCH_URI="0001-Avoid-polluting-cygwin-namespace.patch"
+
+DLLREV=2
+MAKEOPTS="-j1"
+CYGCONF_ARGS="--enable-shared" 
+
+PKG_NAMES="${PN} ${PN}${DLLREV}"
+PKG_CONTENTS[0]="--exclude=usr/bin/cygsigsegv-${DLLREV}.dll usr"
+PKG_CONTENTS[1]="usr/bin/cygsigsegv-${DLLREV}.dll"
