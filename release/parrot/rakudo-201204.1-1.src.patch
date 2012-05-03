@@ -1,17 +1,17 @@
---- origsrc/rakudo-2012.04/tools/build/Makefile.in	2012-04-16 20:01:41.000000000 -0500
-+++ src/rakudo-2012.04/tools/build/Makefile.in	2012-05-03 10:54:24.312500000 -0500
-@@ -306,8 +306,8 @@ install: all
+--- origsrc/rakudo-2012.04.1/tools/build/Makefile.in	2012-04-23 12:33:32.000000000 -0500
++++ src/rakudo-2012.04.1/tools/build/Makefile.in	2012-05-03 13:01:13.109375000 -0500
+@@ -308,8 +308,8 @@ install: all
  	$(CHMOD)  755                 $(DESTDIR)$(PARROT_BIN_DIR)/$(PERL6_EXE)
  	$(MKPATH) 		              $(DESTDIR)$(DOCDIR)/rakudo
  	$(MKPATH) 		              $(DESTDIR)$(DOCDIR)/rakudo/announce
 -	$(CP)     $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
 -	$(CP)     $(DOCS)/announce    $(DESTDIR)$(DOCDIR)/rakudo/announce
-+	$(CP) -f  $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
-+	$(CP)     $(DOCS)/announce/*  $(DESTDIR)$(DOCDIR)/rakudo/announce
++	-$(CP) -f  $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
++	$(CP)     docs/announce/*  $(DESTDIR)$(DOCDIR)/rakudo/announce
  	$(MKPATH) $(DESTDIR)$(MANDIR)/man1
  	-$(POD2MAN) docs/running.pod --name=perl6 > $(DESTDIR)$(MANDIR)/man1/perl6.1
  	-$(POD2MAN) docs/running.pod --name=rakudo > $(DESTDIR)$(MANDIR)/man1/rakudo.1
-@@ -315,10 +315,10 @@ install: all
+@@ -317,10 +317,10 @@ install: all
  xmas: $(PERL6_EXE) $(SETTING) $(S_SETTING)
  
  ##  targets for building a standalone perl6 executable.

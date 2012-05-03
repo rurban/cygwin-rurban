@@ -1,0 +1,21 @@
+--- origsrc/rakudo-star-2012.04/tools/build/Makefile.in	2012-04-26 06:41:14.000000000 -0500
++++ src/rakudo-star-2012.04/tools/build/Makefile.in	2012-05-03 13:26:18.015625000 -0500
+@@ -74,7 +74,8 @@ MODULES = \
+ 
+ all: rakudo
+ 
+-rakudo: $(RAKUDO)/$(PERL6_EXE)
++rakudo: $(PARROT_BIN_DIR)/$(PERL6_EXE)
++
+ $(RAKUDO)/$(PERL6_EXE):
+ 	@echo "== Configuring and building Rakudo"
+ 	cd $(RAKUDO) && $(PERL) Configure.pl --with-nqp=$(NQP_EXE) && $(MAKE)
+@@ -100,7 +101,7 @@ modules-install: rakudo
+ 	$(CP)    modules/panda/bin/panda $(DESTDIR)$(PARROT_BIN_DIR)/panda
+ 	$(CHMOD) 755                    $(DESTDIR)$(PARROT_BIN_DIR)/panda
+ 
+-install: rakudo-install modules-install
++install: modules-install
+ 
+ test:
+ 	@echo ""
