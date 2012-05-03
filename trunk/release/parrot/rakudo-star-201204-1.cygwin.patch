@@ -1,0 +1,622 @@
+--- origsrc/rakudo-star-2012.04/CYGWIN-PATCHES/README	1969-12-31 18:00:00.000000000 -0600
++++ src/rakudo-star-2012.04/CYGWIN-PATCHES/README	2012-05-03 13:32:13.953125000 -0500
+@@ -0,0 +1,155 @@
++rakudo
++------
++
++rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
++plus some perl6 libraries, docs and libraries and blizkost, a perl5
++parrot language which embeds libperl5. Contrary to the upstream
++rakudo-star release for the masses, this does not include the external
++parrot or rakudo releases. The external rakudo release will match the
++rakudo star release.
++
++Runtime requirements:
++  libgcc1 parrot rakudo
++
++Build requirements:
++  parrot-devel rakudo perl make gcc4 svn
++
++Optional test packages:
++  perl L<Test::Perl::Critic> and L<Perl::Critic>
++
++Canonical homepage:
++  http://www.rakudo.org/
++
++Canonical download:
++  http://github.com/rakudo/star/
++
++-------------------------------------------------------------------------------
++
++Build instructions:
++
++  cd /usr/src
++  cygport rakudo-star-<VER>-<REL> all
++
++This will create:
++  /usr/src/rakudo-star-<VER>-<REL>-src.tar.bz2
++  /usr/src/rakudo-star-<VER>-<REL>.tar.bz2
++
++Or use 'cygport rakudo-star-<VER>-<REL> prep' to get a patched 
++source directory.
++
++-------------------------------------------------------------------------------
++
++Files included in the =rakudo-star= package:
++
++  /usr/bin/panda
++  /usr/bin/ufo
++  /usr/bin/ufobuilder
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/App.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/Request.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/Request.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/Response.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/Response.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Bailador/Test.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Digest/MD5.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Digest/MD5.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/File/Find.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/File/Find.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Grammar/Debugger.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Grammar/Profiler/Simple.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Grammar/Profiler/Simple.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Grammar/Tracer.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/HTTP/Easy.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/HTTP/Easy.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/HTTP/Easy/PSGI.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/HTTP/Status.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/HTTP/Status.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/IETF/RFC_Grammar.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/IETF/RFC_Grammar.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/IETF/RFC_Grammar/IPv6.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/IETF/RFC_Grammar/IPv6.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/IETF/RFC_Grammar/URI.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/RPC/Client.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/RPC/Error.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/RPC/Error.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/RPC/Server.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/Tiny.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/Tiny/Actions.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/Tiny/Actions.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/Tiny/Grammar.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/JSON/Tiny/Grammar.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/LWP/Simple.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MIME/Base64.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MIME/Base64.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Math/Model.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Math/RungeKutta.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Math/RungeKutta.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD/CSV.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD/Pg.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD/SQLite.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBD/mysql.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBI.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/MiniDBI.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/NativeCall.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/NativeCall.pm6
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Builder.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Common.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Ecosystem.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Fetcher.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Installer.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Resources.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Panda/Tester.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Pies.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Pies.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Ratel.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Ratel.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Box.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Box.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Data/Marker.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Data/Marker.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Data/Series.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Data/Series.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Pie.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Positioned.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/SVG/Plot/Positioned.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Shell/Command.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Shell/Command.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Term/ANSIColor.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Term/ANSIColor.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Test/Mock.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/Test/Mock.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/URI.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/URI/DefaultPort.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/URI/DefaultPort.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/URI/Escape.pm
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/XML/Writer.pir
++  /usr/lib/parrot/4.3.0/languages/perl6/lib/XML/Writer.pm
++  /usr/share/doc/Cygwin/rakudo-star.README
++  /usr/share/doc/rakudo-star/LICENSE
++  /usr/share/doc/rakudo-star/README
++
++-------------------------------------------------------------------------------
++
++Port Notes:
++
++----- version rakudo-star-201204-1 -----
++* patched to use installed rakudo-201204.1-1
++* tests do not work if not fully installed (needs a full PERL6LIB to all
++  modules/*/lib)
++----- version rakudo-star-201107-1 -----
++* using plain rakudo-201107
++* patched blitzkost to disable undefined PARROT_CALLIN_START/PARROT_CALLIN_END
++
++----- version rakudo-star-201007-1 -----
++* first package, using external parrot, and an updated rakudo 2010.07-47
++* some blizkost and make install patches (already applied upstream)
++* some testing hacks
++
++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++Please address all questions to the Cygwin mailing list 
++at <cygwin@cygwin.com>
+--- origsrc/rakudo-star-2012.04/CYGWIN-PATCHES/rakudo-star-201107-1.cygport	1969-12-31 18:00:00.000000000 -0600
++++ src/rakudo-star-2012.04/CYGWIN-PATCHES/rakudo-star-201107-1.cygport	2012-05-03 13:11:08.828125000 -0500
+@@ -0,0 +1,29 @@
++# -*- sh -*-
++DESCRIPTION="Perl6 modules, more docs and tools"
++HOMEPAGE="http://github.com/rakudo/star/"
++# 201107 => 2011.07
++pv="$(echo $PV|sed -e's/[0-9][0-9][0-9][0-9]/&./')"
++SRC_URI="https://github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz"
++SRC_DIR="rakudo-star-$pv"
++LICENSE="Artistic2"
++
++src_compile() {
++  cd ${B}
++  test -e Configure.pl || lndirs
++  perl Configure.pl
++  cygmake blizkost
++  #cygmake modules
++}
++
++src_test () {
++  cd ${B}
++  cygmake -C modules/blizkost test
++  for d in modules/*; do cd $d; test -d t && test -d lib && (cd lib; prove -e perl6 -r ../t); cd ${B}; done
++}
++
++src_install () {
++  cd ${B}
++  mkdir -p $D/usr/bin
++  cygmake modules-install DESTDIR=${D}
++  cygmake blizkost-install DESTDIR=${D}
++}
+--- origsrc/rakudo-star-2012.04/CYGWIN-PATCHES/rakudo-star-201107-1.cygwin.patch	1969-12-31 18:00:00.000000000 -0600
++++ src/rakudo-star-2012.04/CYGWIN-PATCHES/rakudo-star-201107-1.cygwin.patch	2012-05-03 13:11:08.843750000 -0500
+@@ -0,0 +1,418 @@
++--- origsrc/rakudo-star-2010.10/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
+++++ src/rakudo-star-2010.10/CYGWIN-PATCHES/README	2010-08-01 12:15:38.665875000 +0200
++@@ -0,0 +1,147 @@
+++rakudo
+++------
+++
+++rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
+++plus some perl6 libraries, docs and libraries and blizkost, a perl5
+++parrot language which embeds libperl5. Contrary to the upstream
+++rakudo-star release for the masses, this does not include the external
+++parrot or rakudo releases. The external rakudo release will match the
+++rakudo star release. 
+++That's why rakudo has the version 201007_47, not just 201007.
+++
+++Runtime requirements:
+++  libgcc1 parrot rakudo
+++
+++Build requirements:
+++  parrot-devel rakudo perl make gcc4 svn
+++
+++Optional test packages:
+++  perl L<Test::Perl::Critic> and L<Perl::Critic>
+++
+++Canonical homepage:
+++  http://www.rakudo.org/
+++
+++Canonical download:
+++  http://github.com/rakudo/star/
+++
+++-------------------------------------------------------------------------------
+++
+++Build instructions:
+++
+++  cd /usr/src
+++  cygport rakudo-star-<VER>-<REL> all
+++
+++This will create:
+++  /usr/src/rakudo-star-<VER>-<REL>-src.tar.bz2
+++  /usr/src/rakudo-star-<VER>-<REL>.tar.bz2
+++
+++Or use 'cygport rakudo-star-<VER>-<REL> prep' to get a patched 
+++source directory.
+++
+++-------------------------------------------------------------------------------
+++
+++Files included in the =rakudo-star= package:
+++
+++  /usr/bin/parrot-blizkost.exe
+++  /usr/bin/ufo
+++  /usr/lib/parrot/2.6.0/dynext/blizkost_group.dll
+++  /usr/lib/parrot/2.6.0/languages/perl5/perl5.pbc
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Algorithm/Viterbi.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Algorithm/Viterbi.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI/Writer.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Config/INI/Writer.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Configure.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Configure.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/File/Find.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/File/Find.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Actions.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Actions.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Field.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Field.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Grammar.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/Grammar.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/NumberFormatting.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/NumberFormatting.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/TextFormatting.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Form/TextFormatting.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/HTTP/Daemon.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/HTTP/Daemon.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Actions.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Actions.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Grammar.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/JSON/Tiny/Grammar.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/LWP/Simple.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/LWP/Simple.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MIME/Base64.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MIME/Base64.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/Model.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/Model.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/RungeKutta.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Math/RungeKutta.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/CSV.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/CSV.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/Pg.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/Pg.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/PgPir.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/PgPir.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/mysql.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBD/mysql.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBI.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/MiniDBI.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/NativeCall.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/NativeCall.pm6
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Box.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Box.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Marker.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Marker.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Series.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Data/Series.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Pie.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/SVG/Plot/Pie.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Term/ANSIColor.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Term/ANSIColor.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Differences.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Differences.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Harness.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Harness.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Mock.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test/Mock.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/XML/Writer.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/XML/Writer.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML.pm
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML/Dumper.pir
+++  /usr/lib/parrot/2.6.0/languages/perl6/lib/YAML/Dumper.pm
+++  /usr/share/doc/Cygwin/rakudo-star.README
+++  /usr/share/doc/parrot/2.6.0/languages/perl5/CREDITS
+++  /usr/share/doc/parrot/2.6.0/languages/perl5/LICENSE
+++  /usr/share/doc/parrot/2.6.0/languages/perl5/README
+++  /usr/share/doc/parrot/2.6.0/languages/perl5/SEMANTICS
+++  /usr/share/doc/parrot/2.6.0/languages/perl5/TODO
+++  /usr/share/doc/rakudo-star/LICENSE
+++  /usr/share/doc/rakudo-star/README
+++
+++-------------------------------------------------------------------------------
+++
+++Port Notes:
+++
+++----- version rakudo-star-201007-1 -----
+++* first package, using external parrot, and an updated rakudo 2010.07-47
+++* some blizkost and make install patches (already applied upstream)
+++* some testing hacks
+++
+++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
+++Please address all questions to the Cygwin mailing list 
+++at <cygwin@cygwin.com>
++--- origsrc/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.cygport	1970-01-01 01:00:00.000000000 +0100
+++++ src/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.cygport	2010-07-31 20:18:04.415875000 +0200
++@@ -0,0 +1,31 @@
+++# -*- sh -*-
+++DESCRIPTION="Perl6 on Parrot"
+++HOMEPAGE="http://www.rakudo.org/"
+++# 201007_47 => 2010.07 we want 2010.07-47-g9fd5eaa from rakudo-star-201007-1
+++pv="${PV%_*}"
+++pv="$(echo $pv|sed -e's/[0-9][0-9][0-9][0-9]/&./')"
+++SRC_URI="http://cloud.github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz"
+++#SRC_URI="http://cloud.github.com/downloads/rakudo/rakudo/rakudo-$pv.tar.gz"
+++SRC_DIR="rakudo-star-$pv/rakudo"
+++LICENSE="Artistic2"
+++
+++src_compile() {
+++  cd ${B}
+++  test -e Configure.pl || lndirs
+++  perl Configure.pl
+++  cygmake all
+++}
+++
+++src_check () {
+++  cd ${B}
+++  cygmake test
+++  cygmake spectest
+++}
+++
+++src_install () {
+++  cd ${B}
+++  cygmake install DESTDIR=${D}
+++  cd ${D}/usr/bin
+++  ln -s perl6 rakudo
+++  ln -s perl6 parrot-perl6
+++}
++--- origsrc/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.cygwin.patch	1970-01-01 01:00:00.000000000 +0100
+++++ src/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.cygwin.patch	2010-08-01 12:41:08.697125000 +0200
++@@ -0,0 +1,196 @@
+++--- origsrc/rakudo-star-2010.10/rakudo/CYGWIN-PATCHES/README	1970-01-01 01:00:00.000000000 +0100
++++++ src/rakudo-star-2010.10/rakudo/CYGWIN-PATCHES/README	2010-08-01 12:19:12.447125000 +0200
+++@@ -0,0 +1,186 @@
++++rakudo
++++------
++++This is the Perl 6 compiler for Parrot, called "Rakudo Perl 6",
++++or "Rakudo" for short.
++++It matches the rakudo version from the rakudo-star releases, 
++++that's why the unusual version number.
++++This package was previously called "parrot-perl6".
++++
++++Runtime requirements:
++++  libgcc1 parrot
++++
++++Build requirements:
++++  parrot-devel readline libncurses-devel libicu-devel libgmp-devel 
++++  libgdbm-devel perl make gcc4 svn
++++
++++Optional test packages:
++++  perl L<Test::Perl::Critic> and L<Perl::Critic>
++++
++++Canonical homepage:
++++  http://www.rakudo.org/
++++  http://perlgeek.de/blog-en/perl-6/where-rakudo-lives.writeback
++++
++++Canonical download:
++++  http://cloud.github.com/downloads/rakudo/star/rakudo-star-$pv.tar.gz
++++
++++-------------------------------------------------------------------------------
++++
++++Build instructions:
++++
++++  cd /usr/src
++++  cygport rakudo-<VER>-<REL>.cygport all
++++
++++This will create:
++++  /usr/src/rakudo-<VER>-<REL>-src.tar.bz2
++++  /usr/src/rakudo-<VER>-<REL>.tar.bz2
++++
++++Or use 'cygport rakudo-<VER>-<REL>.cygport prep' to get a patched 
++++source directory.
++++
++++-------------------------------------------------------------------------------
++++
++++Files included in the =rakudo= package:
++++
++++  /usr/bin/parrot-perl6
++++  /usr/bin/rakudo
++++  /usr/bin/perl6.exe
++++  /usr/lib/parrot/2.6.0/dynext/perl6_group.dll
++++  /usr/lib/parrot/2.6.0/dynext/perl6_ops.dll
++++  /usr/lib/parrot/2.6.0/dynext/perl6_ops_switch.dll
++++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Safe.pm
++++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test.pir
++++  /usr/lib/parrot/2.6.0/languages/perl6/lib/Test.pm
++++  /usr/lib/parrot/2.6.0/languages/perl6/perl6.pbc
++++  /usr/share/doc/Cygwin/rakudo.README
++++  /usr/share/doc/rakudo/announce/2009-02
++++  /usr/share/doc/rakudo/announce/2009-03
++++  /usr/share/doc/rakudo/announce/2009-04
++++  /usr/share/doc/rakudo/announce/2009-05
++++  /usr/share/doc/rakudo/announce/2009-06
++++  /usr/share/doc/rakudo/announce/2009-07
++++  /usr/share/doc/rakudo/announce/2009-08
++++  /usr/share/doc/rakudo/announce/2009-09
++++  /usr/share/doc/rakudo/announce/2009-10
++++  /usr/share/doc/rakudo/announce/2009-11
++++  /usr/share/doc/rakudo/announce/2009-12
++++  /usr/share/doc/rakudo/announce/2010-01
++++  /usr/share/doc/rakudo/announce/2010.02
++++  /usr/share/doc/rakudo/announce/2010.03
++++  /usr/share/doc/rakudo/announce/2010.04
++++  /usr/share/doc/rakudo/announce/2010.05
++++  /usr/share/doc/rakudo/announce/2010.06
++++  /usr/share/doc/rakudo/announce/2010.07
++++  /usr/share/doc/rakudo/architecture.html
++++  /usr/share/doc/rakudo/architecture.svg
++++  /usr/share/doc/rakudo/ChangeLog
++++  /usr/share/doc/rakudo/compiler_overview.pod
++++  /usr/share/doc/rakudo/CREDITS
++++  /usr/share/doc/rakudo/glossary.pod
++++  /usr/share/doc/rakudo/guide_to_setting.pod
++++  /usr/share/doc/rakudo/LICENSE
++++  /usr/share/doc/rakudo/metamodel.pod
++++  /usr/share/doc/rakudo/README
++++  /usr/share/doc/rakudo/release_guide.pod
++++  /usr/share/doc/rakudo/ROADMAP
++++  /usr/share/doc/rakudo/running.pod
++++  /usr/share/doc/rakudo/S11-Modules-proposal.pod
++++  /usr/share/doc/rakudo/spectest-progress.csv
++++  /usr/share/man/man1/perl6.1.gz
++++  /usr/share/man/man1/rakudo.1.gz
++++
++++-------------------------------------------------------------------------------
++++
++++Port Notes:
++++
++++----- version rakudo-201007-1 -----
++++* took not the official first rakudo version, but the better 2010.07-47
++++  version from rakudo-star-2010.07, i.e. rakudo-2010.07-47-g9fd5eaa
++++  so that the rakudo-star package can depend on this.
++++
++++----- version rakudo-20104-2 -----
++++* removed wrong gcc4-runtime dependency (/bin/cyggcc_s.dll => /bin/cyggcc_s-1.dll)
++++
++++----- version rakudo-200904-1 -----
++++* no changes
++++
++++----- version rakudo-200903-1 -----
++++* tiny chmod +x patch needed. See https://rt.cpan.org/Ticket/Display.html?id=56666 
++++* first seperate package from parrot
++++* cygwin 1.7(0.210/5/3) (wchar symlinks!), gcc-4.3 only
++++* perl6 and parrot-perl6 are symlinks to rakudo.exe
++++* various make install patches
++++
++++----- version parrot-0.9.1-1 (never uploaded) -----
++++* cygwin 1.7, gcc-4.3 only
++++* removed parrot-languages, they require now installed parrot, built seperately
++++* based on trunk. some critical patches were merged, some rejected, 
++++  some not yet applied.
++++* moved language pbc's to /usr/lib/parrot/<version>/languages/
++++* versioned includedir and libdir
++++* removed the postinstall and preremove hacks
++++
++++----- version parrot-0.8.2-1 -----
++++* merged from branches/pdd30install_stage3
++++
++++----- version parrot-0.8.0-1 -----
++++* building and testing with already installed parrot supported
++++* includes the patches from 0.7.1-1, plus
++++* a merge from the branch pdd30_install, without the languages/jvm
++++
++++----- version parrot-0.7.1-1 -----
++++* building with already installed parrot now supported, testing not.
++++* includes the patches from 0.7.0-1, plus
++++* a merge from the branch cygwin070patches,
++++  without the languages/jvm
++++
++++----- version parrot-0.7.0-1 -----
++++* removed /usr/runtime and its preremove and postinstall scripts
++++* added parrot_exists_check to .cygport. Already installed parrot 
++++  still not supported, despite my #39742 patch
++++* other minor .cygport improvements: export PATH in seperate lines to fix check
++++* new patches: 
++++  [perl #39742] [BUG]   installed conflict
++++  [perl #58034] [TODO]  config_args
++++  [perl #56996] [TODO]  FHS runtime paths
++++* enhanced patch: 
++++  [perl #56554] [TODO]  make install -C languages
++++* upstream fixed patches:
++++  [perl #56544] [PATCH] install_files.pl
++++  [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
++++  [perl #57006] [PATCH] add cygwin opengl config quirks
++++  [perl #57296] [TODO]  make install -C languages
++++* fixed pipp, perl6, pheme, tcl installables. added pcbc's to library  
++++
++++----- version parrot-0.6.4-2 -----
++++* fixed invalid parrot languages and perl6 paths referencing the build_dir
++++* fixed runtime lib_path to favor FHS compliant paths
++++* temp. add a /usr/runtime symlink. will be removed soon
++++* added myconfig parrotbug VERSION to /usr/lib/parrot
++++* moved language dll's to parrot-languages
++++* added more sublanguage exe's: bfc, bfco
++++* added usr/lib/parrot/include/config.fpmc usr/lib/parrot/include/interpinfo.pasm 
++++  to parrot
++++
++++----- version parrot-0.6.4-1 -----
++++* libparrot.dll renamed to cygparrot0_6_4.dll
++++* moved examples to from libparrot-devel to parrot
++++* Added list of local patches to myconfig
++++     [perl #51944] [DOCS]  Cygwin Readme
++++     [perl #56544] [PATCH] install_files.pl
++++     [perl #56558] [PATCH] pdb rename to parrot_debugger
++++     [perl #56562] [PATCH] root.in: add cygwin importlib
++++     [perl #56998] [TODO]  rename cygwin dll to cygparrot$MAJOR_$MINOR_$PATCH.dll
++++     [perl #57006] [PATCH] add cygwin opengl config quirks
++++     [perl #57110] [PATCH] ncurses for cygwin
++++     [perl #57112] [PATCH] postgres for cygwin
++++     [perl #57114] [PATCH] urm RealBin issue
++++
++++----- version parrot-0.6.3-1 -----
++++* first port, with the help from #parrot, fedora spec, 
++++  gentoo ebuild and freebsd ports.
++++* the php implementation plumhead is still named plumhead.
++++  will be renamed to pipp from the next release 0.6.4 on.
++++
++++Cygwin port maintained by: Reini Urban <rurban@x-ray.at>
++++Please address all questions to the Cygwin mailing list 
++++at <cygwin@cygwin.com>
+++--- origsrc/rakudo-star-2010.10/rakudo/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
++++++ src/rakudo-star-2010.10/rakudo/CYGWIN-PATCHES/setup.hint	2010-08-01 12:17:56.665875000 +0200
+++@@ -0,0 +1,4 @@
++++sdesc: "Perl 6 compiler for Parrot, called Rakudo Perl 6"
++++category: Interpreters
++++requires: libgcc1 parrot libreadline6 libncurses8 libintl8 libicu38 libgmp3 libgdbm4
++++external-source: rakudo-star
++--- origsrc/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.src.patch	1970-01-01 01:00:00.000000000 +0100
+++++ src/rakudo-star-2010.10/CYGWIN-PATCHES/rakudo-201007_47-1.src.patch	2010-08-01 12:41:08.697125000 +0200
++@@ -0,0 +1,21 @@
+++--- origsrc/rakudo-star-2010.10/rakudo/build/Makefile.in	2010-07-29 13:57:36.000000000 +0200
++++++ src/rakudo-star-2010.10/rakudo/build/Makefile.in	2010-07-31 20:57:22.509625000 +0200
+++@@ -292,8 +292,6 @@ install: all
+++ 	$(CP)     perl6.pbc           $(DESTDIR)$(PERL6_LANG_DIR)
+++ 	$(CP)     Test.pm             $(DESTDIR)$(PERL6_LANG_DIR)/lib
+++ 	$(CP)     Test.pir            $(DESTDIR)$(PERL6_LANG_DIR)/lib
+++-	$(CP)     lib/*.pm            $(DESTDIR)$(PERL6_LANG_DIR)/lib
+++-	$(CP)     lib/*.pir           $(DESTDIR)$(PERL6_LANG_DIR)/lib
+++ 
+++ 	$(MKPATH)                     $(DESTDIR)$(PARROT_LIB_DIR)/dynext
+++ 	$(CP)     $(DYNPMC) $(DYNOPS) $(DESTDIR)$(PARROT_LIB_DIR)/dynext
+++@@ -301,7 +299,9 @@ install: all
+++ 	$(CP)     $(PERL6_EXE)        $(DESTDIR)$(PARROT_BIN_DIR)
+++ 	$(CHMOD)  755                 $(DESTDIR)$(PARROT_BIN_DIR)/$(PERL6_EXE)
+++ 	$(MKPATH) 		      $(DESTDIR)$(DOCDIR)/rakudo
++++	$(MKPATH) 		      $(DESTDIR)$(DOCDIR)/rakudo/announce
+++ 	$(CP)     $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
++++	$(CP)     $(DOCS)/announce    $(DESTDIR)$(DOCDIR)/rakudo/announce
+++ 	$(MKPATH) $(DESTDIR)$(MANDIR)/man1
+++ 	-$(POD2MAN) docs/running.pod --name=perl6 > $(DESTDIR)$(MANDIR)/man1/perl6.1
+++ 	-$(POD2MAN) docs/running.pod --name=rakudo > $(DESTDIR)$(MANDIR)/man1/rakudo.1
++--- origsrc/rakudo-star-2010.10/CYGWIN-PATCHES/setup.hint	1970-01-01 01:00:00.000000000 +0100
+++++ src/rakudo-star-2010.10/CYGWIN-PATCHES/setup.hint	2010-08-01 12:28:01.587750000 +0200
++@@ -0,0 +1,8 @@
+++sdesc: "Rakudo modules, plus docs and tools"
+++ldesc: "rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
+++plus some perl6 libraries, docs and libraries and blizkost, a perl5
+++parrot language which embeds libperl5. Contrary to the upstream
+++rakudo-star release for the masses, this does not include the external
+++parrot or rakudo releases."
+++category: Interpreters
+++requires: parrot rakudo libgcc1 perl
+--- origsrc/rakudo-star-2012.04/CYGWIN-PATCHES/setup.hint	1969-12-31 18:00:00.000000000 -0600
++++ src/rakudo-star-2012.04/CYGWIN-PATCHES/setup.hint	2012-05-03 13:11:08.859375000 -0500
+@@ -0,0 +1,8 @@
++sdesc: "Rakudo modules, plus docs and tools"
++ldesc: "rakudo-star is parrot plus rakudo (a perl6 implemention on parrot)
++plus some perl6 libraries, docs and libraries and blizkost, a perl5
++parrot language which embeds libperl5. Contrary to the upstream
++rakudo-star release for the masses, this does not include the external
++parrot or rakudo releases."
++category: Interpreters
++requires: parrot rakudo libgcc1 perl
