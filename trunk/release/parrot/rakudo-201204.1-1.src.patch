@@ -1,0 +1,26 @@
+--- origsrc/rakudo-2012.04/tools/build/Makefile.in	2012-04-16 20:01:41.000000000 -0500
++++ src/rakudo-2012.04/tools/build/Makefile.in	2012-05-03 10:54:24.312500000 -0500
+@@ -306,8 +306,8 @@ install: all
+ 	$(CHMOD)  755                 $(DESTDIR)$(PARROT_BIN_DIR)/$(PERL6_EXE)
+ 	$(MKPATH) 		              $(DESTDIR)$(DOCDIR)/rakudo
+ 	$(MKPATH) 		              $(DESTDIR)$(DOCDIR)/rakudo/announce
+-	$(CP)     $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
+-	$(CP)     $(DOCS)/announce    $(DESTDIR)$(DOCDIR)/rakudo/announce
++	$(CP) -f  $(DOCS)             $(DESTDIR)$(DOCDIR)/rakudo
++	$(CP)     $(DOCS)/announce/*  $(DESTDIR)$(DOCDIR)/rakudo/announce
+ 	$(MKPATH) $(DESTDIR)$(MANDIR)/man1
+ 	-$(POD2MAN) docs/running.pod --name=perl6 > $(DESTDIR)$(MANDIR)/man1/perl6.1
+ 	-$(POD2MAN) docs/running.pod --name=rakudo > $(DESTDIR)$(MANDIR)/man1/rakudo.1
+@@ -315,10 +315,10 @@ install: all
+ xmas: $(PERL6_EXE) $(SETTING) $(S_SETTING)
+ 
+ ##  targets for building a standalone perl6 executable.
+-$(PERL6_EXE): $(PERL6_PBC) $(PARROT_DLL_COPY)
++$(PERL6_EXE): $(PERL6_PBC)
+ 	$(PBC_TO_EXE) $(PERL6_PBC)
+ 
+-@make_dllcopy@
++## @make_dllcopy@
+ 
+ # the complete compiler
+ $(PERL6_PBC): $(PERL6_G_PBC) $(PERL6_A_PBC) $(PERL6_C_PBC) $(PERL6_P_PBC) src/main.nqp
