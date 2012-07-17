@@ -144,8 +144,10 @@ stage_cpan_vendorprep() {
       myperl=perl${longver}
     fi
     for m in $modules; do
-      echo $myperl -MCPAN -e"get \"$m\""
-      $myperl -MCPAN -e"get \"$m\""
+      if [ $m != YAML ]; then # is broken, endless EUMM cycle
+        echo $myperl -MCPAN -e"get \"$m\""
+        $myperl -MCPAN -e"get \"$m\""
+      fi
     done
   fi
 }
@@ -566,6 +568,9 @@ make_all=1
     cd ${dir}
     /usr/bin/install -m 644 README ${instdir}${prefix}/share/doc/Cygwin/${pkg}.README 
 
+    mkdir -p ${instdir}/etc/postinstall/
+    /usr/bin/install -m 755 postinstall.sh ${instdir}/etc/postinstall/perl.sh
+
     stage_post_install_hook
     if [ -n "$make_all" ]; then
 	cd ${dir}
@@ -618,12 +623,16 @@ stage_installvendor() {
     PERL_I=$PERL # "-I${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/${archver} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}/${archname} -I${instdir}${prefix}/lib/perl5/vendor_perl/${archver}"
     # CPAN, libXML and more
     for i in $exts
-    do 
-        echo rm -rf ${i} | tee -a $logmake
-        /usr/bin/rm -rf ${i}
+    do
+	test -n ${i} || exit
+	if [ -d ${i} ]; then
+            echo rm -rf ${i} | tee -a $logmake
+            /usr/bin/rm -rf ${i}
+	fi
 	echo tar xvzf ${i}.tar.gz | tee -a $logmake
         if [ ! -e ${i}.tar.gz ]; then echo "${i}.tar.gz does not exist"; exit; fi
 	(/usr/bin/tar xvzf ${i}.tar.gz 2>&1 || exit) | /usr/bin/tee -a $logmake
+	if [ ! -d ${dir}/${i} ]; then echo "${dir}/${i} not created. Aborted"; exit; fi
 	echo cd ${dir}/${i} | tee -a $logmake
 	cd ${dir}/${i}
 	if test -f ${dir}/$i.patch; then
@@ -707,7 +716,8 @@ stage_pkg() {
 	mkdir ${pkg}-${ver}${release}
 	cp ${pkg}-${ver}.tar.{gz,bz2} ${pkg}-${ver}${release}/
     fi
-    cp -p README setup.hint pl-*.patch build perlrebase perlrebase.pod build_common modules ${pkg}-${ver}${release}/
+    SRC="README *.hint pl-*.patch perlrebase perlrebase.pod build build_common modules postinstall.sh"
+    cp -p $SRC ${pkg}-${ver}${release}/
     for i in $exts; do 
 	cp $i.tar.gz $i.patch ${pkg}-${ver}${release}/ 2>/dev/null
     done
@@ -719,7 +729,7 @@ stage_pkg() {
     files=${dir}/pkg.files
     cd ${instdir}
     find usr/lib/debug -type f -print > ${files}.debuginfo
-    vendorbin="pod_cover crc32 ptee shasum cpansign lwp-download lwp-dump lwp-mirror lwp-request ipcount iptab json_xs metabase-profile findrule cpaninject scandeps"
+    vendorbin="pod_cover crc32 ptee shasum cpansign lwp-download lwp-dump lwp-mirror lwp-request ipcount iptab json_xs metabase-profile scandeps"
     find usr/lib/perl5/vendor_perl \( -type f -o -type l \) -print > ${files}.vendor
     find usr/bin usr/lib/perl5/${archver}/ usr/share/doc \( -type f -o -type l \) -print > ${files}.perl
     for v in $vendorbin; do
@@ -731,7 +741,7 @@ stage_pkg() {
 
     cd ${instdir}
     echo compress manpages
-    find ${instdir}${prefix}/share/man -type f ! -name \*.gz -exec gzip \{\} \;
+    find ${instdir}${prefix}/share/man -type f ! -name \*.gz -exec gzip -f \{\} \;
     find ${instdir}${prefix}/share/man -type f ! -name \*.gz -delete
     find usr/share/man -type f -print > ${files}.manpages
     tar -c -T ${files}.manpages | bzip2 -9 > ${dir}/${pkg}_manpages-${ver}${release}.tar.bz2
@@ -751,6 +761,17 @@ stage_pkg() {
     echo "## pkg ${pkg}-${ver}${release}.lst"
     tar tfj ${pkg}-${ver}${release}.tar.bz2 > ${pkg}-${ver}${release}.lst
     cd ${dir}
+
+    echo "## dist ${pkg}"
+    mkdir -p dist/${pkg}
+    cp setup.hint dist/${pkg}/
+    mv ${pkg}-${ver}${release}.tar.bz2 dist/${pkg}/
+    for s in vendor manpages debuginfo; do
+      echo "## dist ${pkg}/${pkg}_${s}"
+      mkdir -p dist/${pkg}/${pkg}_${s}
+      cp $s.hint dist/${pkg}/${pkg}_${s}/setup.hint
+      mv ${pkg}_${s}-${ver}${release}.tar.bz2 dist/${pkg}/${pkg}_${s}/
+    done
   fi
 }
 

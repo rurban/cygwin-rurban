@@ -1,5 +1,5 @@
 #!/bin/sh
-# 5.14.2 i686-cygwin-64int
+# 5.14.2 i686-cygwin-threads-64int
 
 ## stages: 
 make_debug=
@@ -17,7 +17,7 @@ stage_installlocal=
 stage_pkg=
 
 prefix=/usr
-release=-1
+release=-3
 pkg=perl
 ver=5.14.2
 pkg_ver=perl-5.14.2
@@ -53,17 +53,17 @@ stage_configure_policy() {
 
 stage_post_configure_hook() {
     mv log.configure log.configure${exesuffix}
-    pushd $builddir
-    sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
-    mkdir -p lib/auto/Cwd
-    touch lib/auto/Cwd/Cwd.dll
+    #pushd $builddir
+    #sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
+    #mkdir -p lib/auto/Cwd
+    #touch lib/auto/Cwd/Cwd.dll
     popd
 }
 stage_post_make_hook() {
     mv log.make log.make${exesuffix}
-    pushd $builddir
-    sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
-    popd
+    #pushd $builddir
+    #sed -i -e's,Cwd/Cwd$(DLSUFFIX),Cwd/Cwd$(LIB_EXT),; s,Cwd/Cwd.dll,Cwd/Cwd$(LIB_EXT),' GNUMakefile
+    #popd
 }
 stage_post_check_hook() {
     for i in test test.failed test.skipped harness; do mv log.$i log.${i}${exesuffix}; done

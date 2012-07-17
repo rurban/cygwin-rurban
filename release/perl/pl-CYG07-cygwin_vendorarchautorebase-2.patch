@@ -2,13 +2,13 @@ difforig perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm
 
 diff -u perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm.orig perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm
 --- perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm.orig	2012-02-07 09:21:23.910375000 -0600
-+++ perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm	2012-03-21 08:32:59.944125000 -0500
++++ perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm	2012-07-11 08:32:59.944125000 -0500
 @@ -9,7 +9,7 @@
  require ExtUtils::MM_Win32;
  our @ISA = qw( ExtUtils::MM_Unix );
  
 -our $VERSION = '6.57_05';
-+our $VERSION = '6.57_06';
++our $VERSION = '6.57_07';
  
  
  =head1 NAME
@@ -37,7 +37,7 @@ diff -u perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm.orig perl-
  
 -    return $self->SUPER::maybe_command($file);
 +    return (substr($filepath,0,length($cygpath)) eq $cygpath)
-+        ? $self->SUPER::maybe_command($file) 	    # Unix
++        ? $self->SUPER::maybe_command($file) 	     # Unix
 +        : ExtUtils::MM_Win32->maybe_command($file); # Win32
  }
  
@@ -121,9 +121,9 @@ diff -u perl-5.14.2/cpan/ExtUtils-MakeMaker/lib/ExtUtils/MM_Cygwin.pm.orig perl-
 +    $rebasever =~ s/(\d\.\d+)\./$1/;
 +    if ($rebasever > 3.01) {  # new rebase 3.0.2 with database
 +      my $INSTALLDIRS = $self->{INSTALLDIRS};
-+      my $INSTALLLIB = $self->{"INSTALL".uc($INSTALLDIRS)."ARCH"};
++      my $INSTALLLIB = $self->{"INSTALL". ($INSTALLDIRS eq 'perl' ? 'ARCHLIB' : uc($INSTALLDIRS)."ARCH")};
 +      my $dll = "$INSTALLLIB/auto/$self->{FULLEXT}/$self->{BASEEXT}.$self->{DLEXT}";
-+      $s =~ s|^(pure_install :: pure_\$\(INSTALLDIRS\)_install\n\t)\$\(NOECHO\) \$\(NOOP\)\n|$1\$(CHMOD) \$(PERM_RWX) $dll\n\t/bin/rebase -s $dll\n|m;
++      $s =~ s|^(pure_install :: pure_\$\(INSTALLDIRS\)_install\n\t)\$\(NOECHO\) \$\(NOOP\)\n|$1\$(CHMOD) \$(PERM_RWX) \$(DESTDIR)$dll\n\ttest -n "\$(DESTDIR)\" \|\| /bin/rebase -s $dll\n|m;
      }
      $s;
  }

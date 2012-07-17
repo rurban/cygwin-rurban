@@ -1924,7 +1924,7 @@ Failed 1/2 subtests
 ../ext/Fcntl/t/autoload.t ......................................... ok
 ../ext/Fcntl/t/fcntl.t ............................................ ok
 ../ext/Fcntl/t/mode.t ............................................. ok
-../ext/Fcntl/t/syslfs.t ........................................... ok
+../ext/Fcntl/t/syslfs.t ........................................... skipped: no sparse files?
 ../ext/File-Glob/t/basic.t ........................................ ok
 ../ext/File-Glob/t/case.t ......................................... ok
 ../ext/File-Glob/t/global.t ....................................... ok
@@ -1986,7 +1986,7 @@ Failed 1/2 subtests
 ../ext/XS-APItest/t/blockhooks-csc.t .............................. ok
 ../ext/XS-APItest/t/blockhooks.t .................................. ok
 ../ext/XS-APItest/t/call.t ........................................ ok
-fail 5801a880!=5939c6d0 at APItest.xs line 2208 at t/call_checker.t line 7.
+fail 5801a880!=5951c6d0 at APItest.xs line 2208 at t/call_checker.t line 7.
 # Looks like your test exited with 255 before it could output anything.
 ../ext/XS-APItest/t/call_checker.t ................................ 
 Dubious, test returned 255 (wstat 65280, 0xff00)
@@ -2144,7 +2144,6 @@ Failed 19/117 subtests
 ../lib/overload.t ................................................. ok
 ../lib/overload64.t ............................................... ok
 ../lib/overloading.t .............................................. ok
-sh: line 1:   232 Aborted                 (core dumped) /usr/src/perl/perl-5.14/buildperl/perl.exe "-I../lib" -d "../lib/perl5db/t/rt-61222" 2>&1
 ../lib/perl5db.t .................................................. ok
 ../lib/sigtrap.t .................................................. ok
 ../lib/sort.t ..................................................... ok
@@ -2200,5 +2199,5 @@ porting/regen.t                                                 (Wstat: 0 Tests:
 ../lib/locale.t                                                 (Wstat: 5632 Tests: 98 Failed: 0)
   Non-zero exit status: 22
   Parse errors: Bad plan.  You planned 117 tests but ran 98.
-Files=2107, Tests=465840, 2514 wallclock secs (42.17 usr 19.75 sys + 1101.87 cusr 1213.95 csys = 2377.74 CPU)
+Files=2107, Tests=465835, 2526 wallclock secs (43.61 usr 19.17 sys + 1105.91 cusr 1247.60 csys = 2416.29 CPU)
 Result: FAIL

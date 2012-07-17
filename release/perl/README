@@ -1,4 +1,4 @@
-This is a description of the Perl 5.14.1 package for Cygwin.
+This is a description of the Perl 5.14.2 package for Cygwin.
 
 Runtime requirements: (versions given or later)
 
@@ -21,18 +21,18 @@ Non-base build requirements: (versions given or later)
   libexpat-devel
 
 Build instructions:
-  tar xfvj perl-5.14.2-1-src.tar.bz2
+  tar xfvj perl-5.14.2-3-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
-  cd perl-5.14.2-1
+  cd perl-5.14.2-3
   ./build all
 
   This will create:
-    perl-5.14.2-1-src.tar.bz2
-    perl-5.14.2-1.tar.bz2
-    perl_manpages-5.14.2-1.tar.bz2
-    perl_vendor-5.14.2-1.tar.bz2
-    perl_debuginfo-5.14.2-1.tar.bz2
+    perl-5.14.2-3-src.tar.bz2
+    perl-5.14.2-3.tar.bz2
+    perl_manpages-5.14.2-3.tar.bz2
+    perl_vendor-5.14.2-3.tar.bz2
+    perl_debuginfo-5.14.2-3.tar.bz2
 
 Canonical homepages:
   http://www.perl.org/
@@ -44,7 +44,28 @@ Canonical download:
 
 NEWS:
 
-5.14.2-1
+5.14.2-3
+  - added postinstall script to properly initialize cpan
+  - fix deps and a syntax error in modules which caused rm -rf /
+
+  Changes in perl_vendor:
+  - added missing dependencies: Sub::Install Params::Util Data::OptList
+    Sub::Exporter Test::Tester Test::NoWarnings IPC::Run File::Which
+    XML::SAX::Base HTTP::Date Encode::Locale LWP::MediaTypes
+    HTTP::Message File::Listing HTTP::Daemon WWW::RobotRules
+    HTTP::Negotiate HTTP::Cookies Net::HTTP WWW::RobotRules
+    Capture::Tiny Devel::Autoflush IPC::Cmd
+  - removed Net::Telnet and CPAN::Inject and its deps from vendor:
+    Text::Glob Number::Compare File::Find::Rule Data::Compare CPAN::Checksums 
+    File::Remove File::chmod Test::Script CPAN::Inject Net::Telnet
+
+5.14.2-2 (test version only)
+  - added DESTDIR support to EU::MM_Cygwin (Yaakov)
+  - added new LWP deps to perl_vendor: HTML::Parser HTTP::Date HTTP::Message
+    File::Listing HTTP::Daemon WWW::RobotRules HTTP::Negotiate
+
+5.14.2-1 (test version only)
+  - no usemymalloc, changed archname i686-cygwin-threads-64int
   - improved rebase handling of dll's in EUMM while building and testing
     with global rebase.db and private next perl imagebase.
   - removed mad (Misc Attribute Decoration) support, Data::Alias fails

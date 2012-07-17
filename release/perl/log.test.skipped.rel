@@ -50,6 +50,7 @@ dist/Net-Ping/t/400_ping_syn...................................skipped
 dist/Net-Ping/t/410_syn_host...................................skipped
 dist/Storable/t/compat01.......................................skipped
 dist/threads/t/no_threads......................................skipped
+ext/Fcntl/t/syslfs.............................................skipped
 lib/Net/netent.................................................skipped
 t/porting/authors..............................................skipped
 t/porting/cmp_version..........................................skipped
