@@ -1,0 +1,14 @@
+difforig Module-Signature-0.68
+
+diff -u  Module-Signature-0.68/Makefile.PL.orig
+--- Module-Signature-0.68/Makefile.PL.orig	2011-05-13 04:46:24.000000000 -0500
++++ Module-Signature-0.68/Makefile.PL	2012-07-12 13:30:11.352655600 -0500
+@@ -113,7 +113,7 @@
+ 
+ 	return 1 if grep { /^--installdeps/} @ARGV;
+ 
+-	if ( prompt("Import PAUSE and author keys to GnuPG?", 'y' ) =~ /^y/i) {
++	if ( 0 and prompt("Import PAUSE and author keys to GnuPG?", 'y' ) =~ /^y/i) {
+ 		print 'Importing... ';
+ 		system 'gpg', '--quiet', '--import', glob('*.pub');
+ 		print "done.\n";

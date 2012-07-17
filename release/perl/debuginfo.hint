@@ -1,0 +1,4 @@
+sdesc: "optional debuginfo symbols for debugging stacktraces"
+category: Perl
+requires: perl binutils gdb
+external-source: perl

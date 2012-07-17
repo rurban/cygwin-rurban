@@ -1,0 +1,15 @@
+sdesc: "Additional vendor modules previously packaged in perl-5.10"
+ldesc: "Common modules to install, test, debug and report CPAN modules: 
+Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage Test::Pod::Coverage
+Compress::Bzip2 IO::String Archive::Zip Term::ReadKey Term::ReadLine::Perl Term::ReadLine::Gnu
+XML::NamespaceSupport XML::SAX XML::LibXML::Common XML::LibXML XML::Parser Proc::ProcessTable 
+YAML Config::Tiny File::Copy::Recursive IPC::Run3 Probe::Perl Tee IO::CaptureOutput File::pushd 
+File::HomeDir Digest::SHA Module::Signature URI HTML::Tagset HTML::Parser LWP Net::IP Net::DNS 
+Test::Reporter Net::SSL common::sense JSON::XS JSON Metabase::Client::Simple Data::UUID Data::GUID
+CPAN::DistnameInfo Metabase::Fact Config::Perl::V CPAN::Testers::Report Test::Reporter::Transport::Metabase
+CPAN::Reporter Text::Glob Number::Compare File::Find::Rule Data::Compare CPAN::Checksums File::Remove 
+File::chmod Params::Util Test::Script CPAN::Inject Net::Telnet Module::ScanDeps PAR::Dist Socket6 
+IO::Socket::INET6 B::Generate PadWalker Data::Alias"
+category: Perl
+requires: perl libssp0 libgcc1 libbz2_1 zlib0 libopenssl100 libncurses10 libreadline7 libncursesw10 libxml2 libiconv2 libexpat1
+external-source: perl
