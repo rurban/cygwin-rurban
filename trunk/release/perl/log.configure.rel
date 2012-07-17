@@ -125,7 +125,7 @@ to leave it blank.
 
 Operating system name? [cygwin]  
  
-Operating system version? [1.7.12(0.26053)]  
+Operating system version? [1.7.15(0.26053)]  
 
 By default, perl5 will be installed in /usr/bin, manual pages
 under /usr/man, etc..., i.e. with /usr as prefix for all
@@ -279,10 +279,10 @@ Your C compiler might also need additional flags, such as -D_POSIX_SOURCE.
 To use no flags, specify the word "none".
 
 Any additional cc flags?
-[-DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include]  
+[-DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector]  
  
 Let me guess what the preprocessor flags are...
-They appear to be: -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include
+They appear to be: -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector
 
 Your C linker may need flags.  For this question you should
 include -L/whatever and any other flags used by the C linker, but you
@@ -1748,8 +1748,8 @@ We can catify or stringify, separately or together!
  
 Checking Berkeley DB version ...
 You have Berkeley DB Version 2 or greater.
-db.h is from Berkeley DB Version 4.5.20
-libdb is from Berkeley DB Version 4.5.20
+db.h is from Berkeley DB Version 4.8.30
+libdb is from Berkeley DB Version 4.8.30
 db.h and libdb are compatible.
 Looks OK.
  

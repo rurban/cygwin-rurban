@@ -1,5 +1,4 @@
 cp -rpf /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/* /usr/lib/perl5/5.14/i686-cygwin-threads-64int/
-rm -rf Pod-Escapes-1.04
 tar xvzf Pod-Escapes-1.04.tar.gz
 Pod-Escapes-1.04/
 Pod-Escapes-1.04/META.yml
@@ -20,224 +19,228 @@ cd /usr/src/perl/perl-5.14/Pod-Escapes-1.04
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Pod::Escapes
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Pod-Escapes-1.04: make[0;0m
 cp lib/Pod/Escapes.pm blib/lib/Pod/Escapes.pm
 Manifying blib/man3/Pod.Escapes.3pm
-rm -rf Pod-Simple-3.20
-tar xvzf Pod-Simple-3.20.tar.gz
-Pod-Simple-3.20/
-Pod-Simple-3.20/ChangeLog
-Pod-Simple-3.20/lib/
-Pod-Simple-3.20/Makefile.PL
-Pod-Simple-3.20/MANIFEST
-Pod-Simple-3.20/MANIFEST.SKIP
-Pod-Simple-3.20/META.json
-Pod-Simple-3.20/META.yml
-Pod-Simple-3.20/README
-Pod-Simple-3.20/t/
-Pod-Simple-3.20/t/00about.t
-Pod-Simple-3.20/t/20_skip.t
-Pod-Simple-3.20/t/ac_d.t
-Pod-Simple-3.20/t/accept01.t
-Pod-Simple-3.20/t/accept05.t
-Pod-Simple-3.20/t/basic.t
-Pod-Simple-3.20/t/begin.t
-Pod-Simple-3.20/t/cbacks.t
-Pod-Simple-3.20/t/chunking.t
-Pod-Simple-3.20/t/closeys.t
-Pod-Simple-3.20/t/corpus/
-Pod-Simple-3.20/t/corpus.t
-Pod-Simple-3.20/t/corpus2/
-Pod-Simple-3.20/t/emptylists.t
-Pod-Simple-3.20/t/encod01.t
-Pod-Simple-3.20/t/encod02.t
-Pod-Simple-3.20/t/encod03.t
-Pod-Simple-3.20/t/end_over.t
-Pod-Simple-3.20/t/eol.t
-Pod-Simple-3.20/t/eol2.t
-Pod-Simple-3.20/t/fake-closers.t
-Pod-Simple-3.20/t/fcodes.t
-Pod-Simple-3.20/t/fcodes_e.t
-Pod-Simple-3.20/t/fcodes_l.t
-Pod-Simple-3.20/t/fcodes_s.t
-Pod-Simple-3.20/t/for.t
-Pod-Simple-3.20/t/fornot.t
-Pod-Simple-3.20/t/heads.t
-Pod-Simple-3.20/t/html01.t
-Pod-Simple-3.20/t/html02.t
-Pod-Simple-3.20/t/html03.t
-Pod-Simple-3.20/t/htmlbat.t
-Pod-Simple-3.20/t/items.t
-Pod-Simple-3.20/t/items02.t
-Pod-Simple-3.20/t/itemstar.t
-Pod-Simple-3.20/t/junk1.pod
-Pod-Simple-3.20/t/junk1o.txt
-Pod-Simple-3.20/t/junk2.pod
-Pod-Simple-3.20/t/junk2o.txt
-Pod-Simple-3.20/t/linkclas.t
-Pod-Simple-3.20/t/output.t
-Pod-Simple-3.20/t/perlcyg.pod
-Pod-Simple-3.20/t/perlcygo.txt
-Pod-Simple-3.20/t/perlfaq.pod
-Pod-Simple-3.20/t/perlfaqo.txt
-Pod-Simple-3.20/t/perlvar.pod
-Pod-Simple-3.20/t/perlvaro.txt
-Pod-Simple-3.20/t/puller.t
-Pod-Simple-3.20/t/pulltitl.t
-Pod-Simple-3.20/t/reinit.t
-Pod-Simple-3.20/t/render.t
-Pod-Simple-3.20/t/search05.t
-Pod-Simple-3.20/t/search10.t
-Pod-Simple-3.20/t/search12.t
-Pod-Simple-3.20/t/search20.t
-Pod-Simple-3.20/t/search22.t
-Pod-Simple-3.20/t/search25.t
-Pod-Simple-3.20/t/search26.t
-Pod-Simple-3.20/t/search27.t
-Pod-Simple-3.20/t/search28.t
-Pod-Simple-3.20/t/search29.t
-Pod-Simple-3.20/t/search50.t
-Pod-Simple-3.20/t/stree.t
-Pod-Simple-3.20/t/strpvbtm.t
-Pod-Simple-3.20/t/testlib1/
-Pod-Simple-3.20/t/testlib2/
-Pod-Simple-3.20/t/testlib3/
-Pod-Simple-3.20/t/tiedfh.t
-Pod-Simple-3.20/t/verb_fmt.t
-Pod-Simple-3.20/t/verbatim.t
-Pod-Simple-3.20/t/x_nixer.t
-Pod-Simple-3.20/t/xhtml01.t
-Pod-Simple-3.20/t/xhtml05.t
-Pod-Simple-3.20/t/xhtml10.t
-Pod-Simple-3.20/t/xhtml15.t
-Pod-Simple-3.20/t/testlib3/squaa/
-Pod-Simple-3.20/t/testlib3/squaa/Vliff.pm
-Pod-Simple-3.20/t/testlib2/hinkhonk/
-Pod-Simple-3.20/t/testlib2/pod/
-Pod-Simple-3.20/t/testlib2/squaa/
-Pod-Simple-3.20/t/testlib2/Suzzle.pm
-Pod-Simple-3.20/t/testlib2/squaa/Vliff.pm
-Pod-Simple-3.20/t/testlib2/squaa/Wowo.pod
-Pod-Simple-3.20/t/testlib2/pod/perlthng.pod
-Pod-Simple-3.20/t/testlib2/pod/perlzuk.pod
-Pod-Simple-3.20/t/testlib2/hinkhonk/Glunk.pod
-Pod-Simple-3.20/t/testlib2/hinkhonk/readme.txt
-Pod-Simple-3.20/t/testlib2/hinkhonk/Vliff.pm
-Pod-Simple-3.20/t/testlib1/Blorm.pm
-Pod-Simple-3.20/t/testlib1/hinkhonk/
-Pod-Simple-3.20/t/testlib1/pod/
-Pod-Simple-3.20/t/testlib1/squaa/
-Pod-Simple-3.20/t/testlib1/squaa.pm
-Pod-Simple-3.20/t/testlib1/zikzik.pod
-Pod-Simple-3.20/t/testlib1/Zonk/
-Pod-Simple-3.20/t/testlib1/Zonk/Fiddle.txt
-Pod-Simple-3.20/t/testlib1/Zonk/Pronk.pm
-Pod-Simple-3.20/t/testlib1/Zonk/Veng.pm
-Pod-Simple-3.20/t/testlib1/squaa/Glunk.pod
-Pod-Simple-3.20/t/testlib1/squaa/Vliff.pm
-Pod-Simple-3.20/t/testlib1/pod/perlflif.pod
-Pod-Simple-3.20/t/testlib1/pod/perlthng.pod
-Pod-Simple-3.20/t/testlib1/hinkhonk/Glunk.pod
-Pod-Simple-3.20/t/testlib1/hinkhonk/readme.txt
-Pod-Simple-3.20/t/testlib1/hinkhonk/Vliff.pm
-Pod-Simple-3.20/t/corpus2/fiqhakbar_iso6.txt
-Pod-Simple-3.20/t/corpus2/fiqhakbar_iso6.xml
-Pod-Simple-3.20/t/corpus2/polish_implicit_utf8.txt
-Pod-Simple-3.20/t/corpus2/polish_utf16be_bom.txt
-Pod-Simple-3.20/t/corpus2/polish_utf16le_bom.txt
-Pod-Simple-3.20/t/corpus2/polish_utf8_bom.txt
-Pod-Simple-3.20/t/corpus2/polish_utf8_bom.xml
-Pod-Simple-3.20/t/corpus2/polish_utf8_bom2.txt
-Pod-Simple-3.20/t/corpus2/polish_utf8_bom2.xml
-Pod-Simple-3.20/t/corpus2/README
-Pod-Simple-3.20/t/corpus/2202jp.txt
-Pod-Simple-3.20/t/corpus/2202jp.xml
-Pod-Simple-3.20/t/corpus/2202jpx.txt
-Pod-Simple-3.20/t/corpus/2202jpx.xml
-Pod-Simple-3.20/t/corpus/2202jpy.txt
-Pod-Simple-3.20/t/corpus/2202jpy.xml
-Pod-Simple-3.20/t/corpus/2202jpz.txt
-Pod-Simple-3.20/t/corpus/2202jpz.xml
-Pod-Simple-3.20/t/corpus/8859_7.pod
-Pod-Simple-3.20/t/corpus/8859_7.xml
-Pod-Simple-3.20/t/corpus/cp1256.txt
-Pod-Simple-3.20/t/corpus/cp1256.xml
-Pod-Simple-3.20/t/corpus/fet_cont.txt
-Pod-Simple-3.20/t/corpus/fet_cont.xml
-Pod-Simple-3.20/t/corpus/fet_dup.txt
-Pod-Simple-3.20/t/corpus/fet_dup.xml
-Pod-Simple-3.20/t/corpus/iso6.txt
-Pod-Simple-3.20/t/corpus/iso6.xml
-Pod-Simple-3.20/t/corpus/koi8r.txt
-Pod-Simple-3.20/t/corpus/koi8r.xml
-Pod-Simple-3.20/t/corpus/laozi38.txt
-Pod-Simple-3.20/t/corpus/laozi38.xml
-Pod-Simple-3.20/t/corpus/laozi38b.txt
-Pod-Simple-3.20/t/corpus/laozi38b.xml
-Pod-Simple-3.20/t/corpus/laozi38p.pod
-Pod-Simple-3.20/t/corpus/laozi38p.xml
-Pod-Simple-3.20/t/corpus/lat1fr.txt
-Pod-Simple-3.20/t/corpus/lat1fr.xml
-Pod-Simple-3.20/t/corpus/lat1frim.txt
-Pod-Simple-3.20/t/corpus/lat1frim.xml
-Pod-Simple-3.20/t/corpus/nonesuch.txt
-Pod-Simple-3.20/t/corpus/nonesuch.xml
-Pod-Simple-3.20/t/corpus/pasternak_cp1251.txt
-Pod-Simple-3.20/t/corpus/pasternak_cp1251.xml
-Pod-Simple-3.20/t/corpus/plain.txt
-Pod-Simple-3.20/t/corpus/plain.xml
-Pod-Simple-3.20/t/corpus/plain_explicit.txt
-Pod-Simple-3.20/t/corpus/plain_explicit.xml
-Pod-Simple-3.20/t/corpus/plain_latin1.txt
-Pod-Simple-3.20/t/corpus/plain_latin1.xml
-Pod-Simple-3.20/t/corpus/plain_utf8.txt
-Pod-Simple-3.20/t/corpus/plain_utf8.xml
-Pod-Simple-3.20/t/corpus/polish_utf8.txt
-Pod-Simple-3.20/t/corpus/polish_utf8.xml
-Pod-Simple-3.20/t/corpus/s2763_sjis.txt
-Pod-Simple-3.20/t/corpus/s2763_sjis.xml
-Pod-Simple-3.20/t/corpus/thai_iso11.txt
-Pod-Simple-3.20/t/corpus/thai_iso11.xml
-Pod-Simple-3.20/lib/Pod/
-Pod-Simple-3.20/lib/Pod/Simple/
-Pod-Simple-3.20/lib/Pod/Simple.pm
-Pod-Simple-3.20/lib/Pod/Simple.pod
-Pod-Simple-3.20/lib/Pod/Simple/BlackBox.pm
-Pod-Simple-3.20/lib/Pod/Simple/Checker.pm
-Pod-Simple-3.20/lib/Pod/Simple/Debug.pm
-Pod-Simple-3.20/lib/Pod/Simple/DumpAsText.pm
-Pod-Simple-3.20/lib/Pod/Simple/DumpAsXML.pm
-Pod-Simple-3.20/lib/Pod/Simple/HTML.pm
-Pod-Simple-3.20/lib/Pod/Simple/HTMLBatch.pm
-Pod-Simple-3.20/lib/Pod/Simple/HTMLLegacy.pm
-Pod-Simple-3.20/lib/Pod/Simple/LinkSection.pm
-Pod-Simple-3.20/lib/Pod/Simple/Methody.pm
-Pod-Simple-3.20/lib/Pod/Simple/Progress.pm
-Pod-Simple-3.20/lib/Pod/Simple/PullParser.pm
-Pod-Simple-3.20/lib/Pod/Simple/PullParserEndToken.pm
-Pod-Simple-3.20/lib/Pod/Simple/PullParserStartToken.pm
-Pod-Simple-3.20/lib/Pod/Simple/PullParserTextToken.pm
-Pod-Simple-3.20/lib/Pod/Simple/PullParserToken.pm
-Pod-Simple-3.20/lib/Pod/Simple/RTF.pm
-Pod-Simple-3.20/lib/Pod/Simple/Search.pm
-Pod-Simple-3.20/lib/Pod/Simple/SimpleTree.pm
-Pod-Simple-3.20/lib/Pod/Simple/Subclassing.pod
-Pod-Simple-3.20/lib/Pod/Simple/Text.pm
-Pod-Simple-3.20/lib/Pod/Simple/TextContent.pm
-Pod-Simple-3.20/lib/Pod/Simple/TiedOutFH.pm
-Pod-Simple-3.20/lib/Pod/Simple/Transcode.pm
-Pod-Simple-3.20/lib/Pod/Simple/TranscodeDumb.pm
-Pod-Simple-3.20/lib/Pod/Simple/TranscodeSmart.pm
-Pod-Simple-3.20/lib/Pod/Simple/XHTML.pm
-Pod-Simple-3.20/lib/Pod/Simple/XMLOutStream.pm
-cd /usr/src/perl/perl-5.14/Pod-Simple-3.20
-[1;39m## stage_Pod-Simple-3.20: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf Pod-Simple-3.22.tar.gz
+Pod-Simple-3.22/
+Pod-Simple-3.22/ChangeLog
+Pod-Simple-3.22/lib/
+Pod-Simple-3.22/Makefile.PL
+Pod-Simple-3.22/MANIFEST
+Pod-Simple-3.22/MANIFEST.SKIP
+Pod-Simple-3.22/META.json
+Pod-Simple-3.22/META.yml
+Pod-Simple-3.22/README
+Pod-Simple-3.22/t/
+Pod-Simple-3.22/t/00about.t
+Pod-Simple-3.22/t/20_skip.t
+Pod-Simple-3.22/t/ac_d.t
+Pod-Simple-3.22/t/accept01.t
+Pod-Simple-3.22/t/accept05.t
+Pod-Simple-3.22/t/basic.t
+Pod-Simple-3.22/t/begin.t
+Pod-Simple-3.22/t/cbacks.t
+Pod-Simple-3.22/t/chunking.t
+Pod-Simple-3.22/t/closeys.t
+Pod-Simple-3.22/t/corpus/
+Pod-Simple-3.22/t/corpus.t
+Pod-Simple-3.22/t/corpus2/
+Pod-Simple-3.22/t/emptylists.t
+Pod-Simple-3.22/t/encod01.t
+Pod-Simple-3.22/t/encod02.t
+Pod-Simple-3.22/t/encod03.t
+Pod-Simple-3.22/t/end_over.t
+Pod-Simple-3.22/t/eol.t
+Pod-Simple-3.22/t/eol2.t
+Pod-Simple-3.22/t/fake-closers.t
+Pod-Simple-3.22/t/fcodes.t
+Pod-Simple-3.22/t/fcodes_e.t
+Pod-Simple-3.22/t/fcodes_l.t
+Pod-Simple-3.22/t/fcodes_s.t
+Pod-Simple-3.22/t/for.t
+Pod-Simple-3.22/t/fornot.t
+Pod-Simple-3.22/t/heads.t
+Pod-Simple-3.22/t/html01.t
+Pod-Simple-3.22/t/html02.t
+Pod-Simple-3.22/t/html03.t
+Pod-Simple-3.22/t/htmlbat.t
+Pod-Simple-3.22/t/items.t
+Pod-Simple-3.22/t/items02.t
+Pod-Simple-3.22/t/itemstar.t
+Pod-Simple-3.22/t/junk1.pod
+Pod-Simple-3.22/t/junk1o.txt
+Pod-Simple-3.22/t/junk2.pod
+Pod-Simple-3.22/t/junk2o.txt
+Pod-Simple-3.22/t/linkclas.t
+Pod-Simple-3.22/t/output.t
+Pod-Simple-3.22/t/perlcyg.pod
+Pod-Simple-3.22/t/perlcygo.txt
+Pod-Simple-3.22/t/perlfaq.pod
+Pod-Simple-3.22/t/perlfaqo.txt
+Pod-Simple-3.22/t/perlvar.pod
+Pod-Simple-3.22/t/perlvaro.txt
+Pod-Simple-3.22/t/puller.t
+Pod-Simple-3.22/t/pulltitl.t
+Pod-Simple-3.22/t/reinit.t
+Pod-Simple-3.22/t/render.t
+Pod-Simple-3.22/t/search05.t
+Pod-Simple-3.22/t/search10.t
+Pod-Simple-3.22/t/search12.t
+Pod-Simple-3.22/t/search20.t
+Pod-Simple-3.22/t/search22.t
+Pod-Simple-3.22/t/search25.t
+Pod-Simple-3.22/t/search26.t
+Pod-Simple-3.22/t/search27.t
+Pod-Simple-3.22/t/search28.t
+Pod-Simple-3.22/t/search29.t
+Pod-Simple-3.22/t/search50.t
+Pod-Simple-3.22/t/stree.t
+Pod-Simple-3.22/t/strpvbtm.t
+Pod-Simple-3.22/t/testlib1/
+Pod-Simple-3.22/t/testlib2/
+Pod-Simple-3.22/t/testlib3/
+Pod-Simple-3.22/t/tiedfh.t
+Pod-Simple-3.22/t/verb_fmt.t
+Pod-Simple-3.22/t/verbatim.t
+Pod-Simple-3.22/t/x_nixer.t
+Pod-Simple-3.22/t/xhtml01.t
+Pod-Simple-3.22/t/xhtml05.t
+Pod-Simple-3.22/t/xhtml10.t
+Pod-Simple-3.22/t/xhtml15.t
+Pod-Simple-3.22/t/xhtml20.t
+Pod-Simple-3.22/t/testlib3/squaa/
+Pod-Simple-3.22/t/testlib3/squaa/Vliff.pm
+Pod-Simple-3.22/t/testlib2/hinkhonk/
+Pod-Simple-3.22/t/testlib2/pod/
+Pod-Simple-3.22/t/testlib2/squaa/
+Pod-Simple-3.22/t/testlib2/Suzzle.pm
+Pod-Simple-3.22/t/testlib2/squaa/Vliff.pm
+Pod-Simple-3.22/t/testlib2/squaa/Wowo.pod
+Pod-Simple-3.22/t/testlib2/pod/perlthng.pod
+Pod-Simple-3.22/t/testlib2/pod/perlzuk.pod
+Pod-Simple-3.22/t/testlib2/hinkhonk/Glunk.pod
+Pod-Simple-3.22/t/testlib2/hinkhonk/readme.txt
+Pod-Simple-3.22/t/testlib2/hinkhonk/Vliff.pm
+Pod-Simple-3.22/t/testlib1/Blorm.pm
+Pod-Simple-3.22/t/testlib1/hinkhonk/
+Pod-Simple-3.22/t/testlib1/pod/
+Pod-Simple-3.22/t/testlib1/squaa/
+Pod-Simple-3.22/t/testlib1/squaa.pm
+Pod-Simple-3.22/t/testlib1/zikzik.pod
+Pod-Simple-3.22/t/testlib1/Zonk/
+Pod-Simple-3.22/t/testlib1/Zonk/Fiddle.txt
+Pod-Simple-3.22/t/testlib1/Zonk/Pronk.pm
+Pod-Simple-3.22/t/testlib1/Zonk/Veng.pm
+Pod-Simple-3.22/t/testlib1/squaa/Glunk.pod
+Pod-Simple-3.22/t/testlib1/squaa/Vliff.pm
+Pod-Simple-3.22/t/testlib1/pod/perlflif.pod
+Pod-Simple-3.22/t/testlib1/pod/perlthng.pod
+Pod-Simple-3.22/t/testlib1/hinkhonk/Glunk.pod
+Pod-Simple-3.22/t/testlib1/hinkhonk/readme.txt
+Pod-Simple-3.22/t/testlib1/hinkhonk/Vliff.pm
+Pod-Simple-3.22/t/corpus2/fiqhakbar_iso6.txt
+Pod-Simple-3.22/t/corpus2/fiqhakbar_iso6.xml
+Pod-Simple-3.22/t/corpus2/polish_implicit_utf8.txt
+Pod-Simple-3.22/t/corpus2/polish_utf16be_bom.txt
+Pod-Simple-3.22/t/corpus2/polish_utf16le_bom.txt
+Pod-Simple-3.22/t/corpus2/polish_utf8_bom.txt
+Pod-Simple-3.22/t/corpus2/polish_utf8_bom.xml
+Pod-Simple-3.22/t/corpus2/polish_utf8_bom2.txt
+Pod-Simple-3.22/t/corpus2/polish_utf8_bom2.xml
+Pod-Simple-3.22/t/corpus2/README
+Pod-Simple-3.22/t/corpus/2202jp.txt
+Pod-Simple-3.22/t/corpus/2202jp.xml
+Pod-Simple-3.22/t/corpus/2202jpx.txt
+Pod-Simple-3.22/t/corpus/2202jpx.xml
+Pod-Simple-3.22/t/corpus/2202jpy.txt
+Pod-Simple-3.22/t/corpus/2202jpy.xml
+Pod-Simple-3.22/t/corpus/2202jpz.txt
+Pod-Simple-3.22/t/corpus/2202jpz.xml
+Pod-Simple-3.22/t/corpus/8859_7.pod
+Pod-Simple-3.22/t/corpus/8859_7.xml
+Pod-Simple-3.22/t/corpus/cp1256.txt
+Pod-Simple-3.22/t/corpus/cp1256.xml
+Pod-Simple-3.22/t/corpus/encwarn01.txt
+Pod-Simple-3.22/t/corpus/encwarn01.xml
+Pod-Simple-3.22/t/corpus/encwarn02.txt
+Pod-Simple-3.22/t/corpus/encwarn02.xml
+Pod-Simple-3.22/t/corpus/fet_cont.txt
+Pod-Simple-3.22/t/corpus/fet_cont.xml
+Pod-Simple-3.22/t/corpus/fet_dup.txt
+Pod-Simple-3.22/t/corpus/fet_dup.xml
+Pod-Simple-3.22/t/corpus/iso6.txt
+Pod-Simple-3.22/t/corpus/iso6.xml
+Pod-Simple-3.22/t/corpus/koi8r.txt
+Pod-Simple-3.22/t/corpus/koi8r.xml
+Pod-Simple-3.22/t/corpus/laozi38.txt
+Pod-Simple-3.22/t/corpus/laozi38.xml
+Pod-Simple-3.22/t/corpus/laozi38b.txt
+Pod-Simple-3.22/t/corpus/laozi38b.xml
+Pod-Simple-3.22/t/corpus/laozi38p.pod
+Pod-Simple-3.22/t/corpus/laozi38p.xml
+Pod-Simple-3.22/t/corpus/lat1fr.txt
+Pod-Simple-3.22/t/corpus/lat1fr.xml
+Pod-Simple-3.22/t/corpus/lat1frim.txt
+Pod-Simple-3.22/t/corpus/lat1frim.xml
+Pod-Simple-3.22/t/corpus/nonesuch.txt
+Pod-Simple-3.22/t/corpus/nonesuch.xml
+Pod-Simple-3.22/t/corpus/pasternak_cp1251.txt
+Pod-Simple-3.22/t/corpus/pasternak_cp1251.xml
+Pod-Simple-3.22/t/corpus/plain.txt
+Pod-Simple-3.22/t/corpus/plain.xml
+Pod-Simple-3.22/t/corpus/plain_explicit.txt
+Pod-Simple-3.22/t/corpus/plain_explicit.xml
+Pod-Simple-3.22/t/corpus/plain_latin1.txt
+Pod-Simple-3.22/t/corpus/plain_latin1.xml
+Pod-Simple-3.22/t/corpus/plain_utf8.txt
+Pod-Simple-3.22/t/corpus/plain_utf8.xml
+Pod-Simple-3.22/t/corpus/polish_utf8.txt
+Pod-Simple-3.22/t/corpus/polish_utf8.xml
+Pod-Simple-3.22/t/corpus/s2763_sjis.txt
+Pod-Simple-3.22/t/corpus/s2763_sjis.xml
+Pod-Simple-3.22/t/corpus/thai_iso11.txt
+Pod-Simple-3.22/t/corpus/thai_iso11.xml
+Pod-Simple-3.22/lib/Pod/
+Pod-Simple-3.22/lib/Pod/Simple/
+Pod-Simple-3.22/lib/Pod/Simple.pm
+Pod-Simple-3.22/lib/Pod/Simple.pod
+Pod-Simple-3.22/lib/Pod/Simple/BlackBox.pm
+Pod-Simple-3.22/lib/Pod/Simple/Checker.pm
+Pod-Simple-3.22/lib/Pod/Simple/Debug.pm
+Pod-Simple-3.22/lib/Pod/Simple/DumpAsText.pm
+Pod-Simple-3.22/lib/Pod/Simple/DumpAsXML.pm
+Pod-Simple-3.22/lib/Pod/Simple/HTML.pm
+Pod-Simple-3.22/lib/Pod/Simple/HTMLBatch.pm
+Pod-Simple-3.22/lib/Pod/Simple/HTMLLegacy.pm
+Pod-Simple-3.22/lib/Pod/Simple/LinkSection.pm
+Pod-Simple-3.22/lib/Pod/Simple/Methody.pm
+Pod-Simple-3.22/lib/Pod/Simple/Progress.pm
+Pod-Simple-3.22/lib/Pod/Simple/PullParser.pm
+Pod-Simple-3.22/lib/Pod/Simple/PullParserEndToken.pm
+Pod-Simple-3.22/lib/Pod/Simple/PullParserStartToken.pm
+Pod-Simple-3.22/lib/Pod/Simple/PullParserTextToken.pm
+Pod-Simple-3.22/lib/Pod/Simple/PullParserToken.pm
+Pod-Simple-3.22/lib/Pod/Simple/RTF.pm
+Pod-Simple-3.22/lib/Pod/Simple/Search.pm
+Pod-Simple-3.22/lib/Pod/Simple/SimpleTree.pm
+Pod-Simple-3.22/lib/Pod/Simple/Subclassing.pod
+Pod-Simple-3.22/lib/Pod/Simple/Text.pm
+Pod-Simple-3.22/lib/Pod/Simple/TextContent.pm
+Pod-Simple-3.22/lib/Pod/Simple/TiedOutFH.pm
+Pod-Simple-3.22/lib/Pod/Simple/Transcode.pm
+Pod-Simple-3.22/lib/Pod/Simple/TranscodeDumb.pm
+Pod-Simple-3.22/lib/Pod/Simple/TranscodeSmart.pm
+Pod-Simple-3.22/lib/Pod/Simple/XHTML.pm
+Pod-Simple-3.22/lib/Pod/Simple/XMLOutStream.pm
+cd /usr/src/perl/perl-5.14/Pod-Simple-3.22
+[1;39m## stage_Pod-Simple-3.22: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Pod::Simple
-Writing MYMETA.yml
-[1;39m## stage_Pod-Simple-3.20: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Pod-Simple-3.22: make[0;0m
 cp lib/Pod/Simple/DumpAsText.pm blib/lib/Pod/Simple/DumpAsText.pm
 cp lib/Pod/Simple/LinkSection.pm blib/lib/Pod/Simple/LinkSection.pm
 cp lib/Pod/Simple/Progress.pm blib/lib/Pod/Simple/Progress.pm
@@ -290,7 +293,6 @@ Manifying blib/man3/Pod.Simple.HTML.3pm
 Manifying blib/man3/Pod.Simple.Subclassing.3pm
 Manifying blib/man3/Pod.Simple.3pm
 Manifying blib/man3/Pod.Simple.DumpAsXML.3pm
-rm -rf Test-Pod-1.45
 tar xvzf Test-Pod-1.45.tar.gz
 Test-Pod-1.45
 Test-Pod-1.45/Build.PL
@@ -330,11 +332,10 @@ cd /usr/src/perl/perl-5.14/Test-Pod-1.45
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Test::Pod
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Test-Pod-1.45: make[0;0m
 cp lib/Test/Pod.pm blib/lib/Test/Pod.pm
 Manifying blib/man3/Test.Pod.3pm
-rm -rf Devel-Symdump-2.08
 tar xvzf Devel-Symdump-2.08.tar.gz
 Devel-Symdump-2.08/
 Devel-Symdump-2.08/t/
@@ -363,12 +364,11 @@ cd /usr/src/perl/perl-5.14/Devel-Symdump-2.08
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Devel::Symdump
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Devel-Symdump-2.08: make[0;0m
 cp lib/Devel/Symdump.pm blib/lib/Devel/Symdump.pm
 cp lib/Devel/Symdump/Export.pm blib/lib/Devel/Symdump/Export.pm
 Manifying blib/man3/Devel.Symdump.3pm
-rm -rf Pod-Coverage-0.22
 tar xvzf Pod-Coverage-0.22.tar.gz
 Pod-Coverage-0.22/
 Pod-Coverage-0.22/t/
@@ -424,7 +424,7 @@ cd /usr/src/perl/perl-5.14/Pod-Coverage-0.22
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Pod::Coverage
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Pod-Coverage-0.22: make[0;0m
 cp lib/Pod/Coverage.pm blib/lib/Pod/Coverage.pm
 cp lib/Pod/Coverage/CountParents.pm blib/lib/Pod/Coverage/CountParents.pm
@@ -436,7 +436,6 @@ Manifying blib/man3/Pod.Coverage.CountParents.3pm
 Manifying blib/man3/Pod.Coverage.3pm
 Manifying blib/man3/Pod.Coverage.ExportOnly.3pm
 Manifying blib/man3/Pod.Coverage.Overloader.3pm
-rm -rf Test-Pod-Coverage-1.08
 tar xvzf Test-Pod-Coverage-1.08.tar.gz
 Test-Pod-Coverage-1.08/
 Test-Pod-Coverage-1.08/t/
@@ -467,11 +466,10 @@ cd /usr/src/perl/perl-5.14/Test-Pod-Coverage-1.08
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Test::Pod::Coverage
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Test-Pod-Coverage-1.08: make[0;0m
 cp Coverage.pm blib/lib/Test/Pod/Coverage.pm
 Manifying blib/man3/Test.Pod.Coverage.3pm
-rm -rf Compress-Bzip2-2.09
 tar xvzf Compress-Bzip2-2.09.tar.gz
 Compress-Bzip2-2.09/
 Compress-Bzip2-2.09/bzlib-src/
@@ -586,12 +584,12 @@ Looks Good.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Compress::Bzip2
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Compress-Bzip2-2.09: make[0;0m
 cp lib/Compress/Bzip2.pm blib/lib/Compress/Bzip2.pm
 AutoSplitting blib/lib/Compress/Bzip2.pm (blib/lib/auto/Compress/Bzip2)
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Bzip2.xs > Bzip2.xsc && mv Bzip2.xsc Bzip2.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"2.09\"  -DXS_VERSION=\"2.09\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Bzip2.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.09\"  -DXS_VERSION=\"2.09\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Bzip2.c
 Running Mkbootstrap for Compress::Bzip2 ()
 chmod 644 Bzip2.bs
 rm -f blib/arch/auto/Compress/Bzip2/Bzip2.dll
@@ -602,7 +600,6 @@ chmod 755 blib/arch/auto/Compress/Bzip2/Bzip2.dll
 cp Bzip2.bs blib/arch/auto/Compress/Bzip2/Bzip2.bs
 chmod 644 blib/arch/auto/Compress/Bzip2/Bzip2.bs
 Manifying blib/man3/Compress.Bzip2.3pm
-rm -rf IO-String-1.08
 tar xvzf IO-String-1.08.tar.gz
 IO-String-1.08/
 IO-String-1.08/META.yml
@@ -623,11 +620,10 @@ cd /usr/src/perl/perl-5.14/IO-String-1.08
 Checking if your kit is complete...
 Looks good
 Writing Makefile for IO::String
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_IO-String-1.08: make[0;0m
 cp String.pm blib/lib/IO/String.pm
 Manifying blib/man3/IO.String.3pm
-rm -rf Archive-Zip-1.30
 tar xvzf Archive-Zip-1.30.tar.gz
 Archive-Zip-1.30/
 Archive-Zip-1.30/META.yml
@@ -703,7 +699,7 @@ cd /usr/src/perl/perl-5.14/Archive-Zip-1.30
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Archive::Zip
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Archive-Zip-1.30: make[0;0m
 cp lib/Archive/Zip/FileMember.pm blib/lib/Archive/Zip/FileMember.pm
 cp lib/Archive/Zip/MemberRead.pm blib/lib/Archive/Zip/MemberRead.pm
@@ -724,7 +720,6 @@ Manifying blib/man3/Archive.Zip.Tree.3pm
 Manifying blib/man3/Archive.Zip.FAQ.3pm
 Manifying blib/man3/Archive.Zip.3pm
 Manifying blib/man3/Archive.Zip.MemberRead.3pm
-rm -rf TermReadKey-2.30
 tar xvzf TermReadKey-2.30.tar.gz
 TermReadKey-2.30/
 TermReadKey-2.30/genchars.pl
@@ -742,7 +737,7 @@ cd /usr/src/perl/perl-5.14/TermReadKey-2.30
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Term::ReadKey
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_TermReadKey-2.30: make[0;0m
 cp ReadKey.pm blib/lib/Term/ReadKey.pm
 AutoSplitting blib/lib/Term/ReadKey.pm (blib/lib/auto/Term/ReadKey)
@@ -753,7 +748,7 @@ Checking for sgtty...
 	Sgtty NOT found.
 Writing sgtty section of cchars.h... Done.
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp -noprototypes -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  ReadKey.xs > ReadKey.xsc && mv ReadKey.xsc ReadKey.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"2.30\"  -DXS_VERSION=\"2.30\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   ReadKey.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.30\"  -DXS_VERSION=\"2.30\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   ReadKey.c
 Running Mkbootstrap for Term::ReadKey ()
 chmod 644 ReadKey.bs
 rm -f blib/arch/auto/Term/ReadKey/ReadKey.dll
@@ -764,7 +759,6 @@ chmod 755 blib/arch/auto/Term/ReadKey/ReadKey.dll
 cp ReadKey.bs blib/arch/auto/Term/ReadKey/ReadKey.bs
 chmod 644 blib/arch/auto/Term/ReadKey/ReadKey.bs
 Manifying blib/man3/Term.ReadKey.3pm
-rm -rf Term-ReadLine-Perl-1.0303
 tar xvzf Term-ReadLine-Perl-1.0303.tar.gz
 Term-ReadLine-Perl-1.0303/
 Term-ReadLine-Perl-1.0303/CHANGES
@@ -781,11 +775,10 @@ cd /usr/src/perl/perl-5.14/Term-ReadLine-Perl-1.0303
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Term::ReadLine
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Term-ReadLine-Perl-1.0303: make[0;0m
 cp ReadLine/Perl.pm blib/lib/Term/ReadLine/Perl.pm
 cp ReadLine/readline.pm blib/lib/Term/ReadLine/readline.pm
-rm -rf Term-ReadLine-Gnu-1.20
 tar xvzf Term-ReadLine-Gnu-1.20.tar.gz
 Term-ReadLine-Gnu-1.20/
 Term-ReadLine-Gnu-1.20/eg/
@@ -820,18 +813,18 @@ Term-ReadLine-Gnu-1.20/typemap
 cd /usr/src/perl/perl-5.14/Term-ReadLine-Gnu-1.20
 [1;39m## stage_Term-ReadLine-Gnu-1.20: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Found `/usr/lib/libncurses.a'.
-gcc-4  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DHAVE_STRING_H rlver.c -o rlver    -Wl,--enable-auto-import -Wl,--export-all-symbols -Wl,--enable-auto-image-base -fstack-protector -L/usr/local/lib -lreadline -lncurses
+gcc-4  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DHAVE_STRING_H rlver.c -o rlver    -Wl,--enable-auto-import -Wl,--export-all-symbols -Wl,--enable-auto-image-base -fstack-protector -L/usr/local/lib -lreadline -lncurses
 It seems that you have the GNU Readline Library version 6.1.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Term::ReadLine::Gnu
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Term-ReadLine-Gnu-1.20: make[0;0m
 cp Gnu.pm blib/lib/Term/ReadLine/Gnu.pm
 cp Gnu/XS.pm blib/lib/Term/ReadLine/Gnu/XS.pm
 AutoSplitting blib/lib/Term/ReadLine/Gnu/XS.pm (blib/lib/auto/Term/ReadLine/Gnu/XS)
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Gnu.xs > Gnu.xsc && mv Gnu.xsc Gnu.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.20\"  -DXS_VERSION=\"1.20\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_STRING_H Gnu.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"1.20\"  -DXS_VERSION=\"1.20\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_STRING_H Gnu.c
 Running Mkbootstrap for Term::ReadLine::Gnu ()
 chmod 644 Gnu.bs
 rm -f blib/arch/auto/Term/ReadLine/Gnu/Gnu.dll
@@ -842,7 +835,6 @@ chmod 755 blib/arch/auto/Term/ReadLine/Gnu/Gnu.dll
 cp Gnu.bs blib/arch/auto/Term/ReadLine/Gnu/Gnu.bs
 chmod 644 blib/arch/auto/Term/ReadLine/Gnu/Gnu.bs
 Manifying blib/man3/Term.ReadLine.Gnu.3pm
-rm -rf XML-NamespaceSupport-1.11
 tar xvzf XML-NamespaceSupport-1.11.tar.gz
 XML-NamespaceSupport-1.11/
 XML-NamespaceSupport-1.11/Changes
@@ -875,11 +867,56 @@ Cannot determine perl version info from lib/XML/NamespaceSupport.pm
 Checking if your kit is complete...
 Looks good
 Writing Makefile for XML::NamespaceSupport
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_XML-NamespaceSupport-1.11: make[0;0m
 cp lib/XML/NamespaceSupport.pm blib/lib/XML/NamespaceSupport.pm
 Manifying blib/man3/XML.NamespaceSupport.3pm
-rm -rf XML-SAX-0.99
+tar xvzf XML-SAX-Base-1.08.tar.gz
+XML-SAX-Base-1.08
+XML-SAX-Base-1.08/README
+XML-SAX-Base-1.08/Changes
+XML-SAX-Base-1.08/dist.ini
+XML-SAX-Base-1.08/MANIFEST
+XML-SAX-Base-1.08/META.json
+XML-SAX-Base-1.08/t
+XML-SAX-Base-1.08/t/00basic.t
+XML-SAX-Base-1.08/t/events.pl
+XML-SAX-Base-1.08/Makefile.PL
+XML-SAX-Base-1.08/t/04chfilter.t
+XML-SAX-Base-1.08/t/03chdriver.t
+XML-SAX-Base-1.08/BuildSAXBase.pl
+XML-SAX-Base-1.08/t/01exception.t
+XML-SAX-Base-1.08/t/05dtdhdriver.t
+XML-SAX-Base-1.08/t/10dochdriver.t
+XML-SAX-Base-1.08/t/06lexhdriver.t
+XML-SAX-Base-1.08/t/16gethandlers.t
+XML-SAX-Base-1.08/t/09resoldriver.t
+XML-SAX-Base-1.08/t/07declhdriver.t
+XML-SAX-Base-1.08/t/08errorhdriver.t
+XML-SAX-Base-1.08/t/01simpledriver.t
+XML-SAX-Base-1.08/t/15parentswitch.t
+XML-SAX-Base-1.08/t/02simplefilter.t
+XML-SAX-Base-1.08/lib/XML/SAX
+XML-SAX-Base-1.08/lib/XML/SAX/Base.pm
+XML-SAX-Base-1.08/t/13handlerswitch.t
+XML-SAX-Base-1.08/t/11sax1multiclass.t
+XML-SAX-Base-1.08/t/12sax2multiclass.t
+XML-SAX-Base-1.08/t/release-pod-syntax.t
+XML-SAX-Base-1.08/t/14downstreamswitch.t
+XML-SAX-Base-1.08/lib/XML/SAX/Exception.pm
+cd /usr/src/perl/perl-5.14/XML-SAX-Base-1.08
+[1;39m## stage_XML-SAX-Base-1.08: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for XML::SAX::Base
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_XML-SAX-Base-1.08: make[0;0m
+cp BuildSAXBase.pl blib/lib/XML/SAX/BuildSAXBase.pl
+cp lib/XML/SAX/Base.pm blib/lib/XML/SAX/Base.pm
+cp lib/XML/SAX/Exception.pm blib/lib/XML/SAX/Exception.pm
+Manifying blib/man3/XML.SAX.Base.3pm
+Manifying blib/man3/XML.SAX.BuildSAXBase.3pm
+Manifying blib/man3/XML.SAX.Exception.3pm
 tar xvzf XML-SAX-0.99.tar.gz
 XML-SAX-0.99/
 XML-SAX-0.99/Makefile.PL
@@ -947,11 +984,13 @@ XML-SAX-0.99/SAX/DocumentLocator.pm
 XML-SAX-0.99/SAX/ParserFactory.pm
 XML-SAX-0.99/README
 cd /usr/src/perl/perl-5.14/XML-SAX-0.99
+[1;39m## stage_XML-SAX-0.99: patch -b -f -p1 ../XML-SAX-0.99.patch[0;0m
+patching file Makefile.PL
 [1;39m## stage_XML-SAX-0.99: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
-Do you want XML::SAX to alter ParserDetails.ini? [Y] Writing Makefile for XML::SAX
-Writing MYMETA.yml
+Writing Makefile for XML::SAX
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_XML-SAX-0.99: make[0;0m
 cp SAX/PurePerl/Exception.pm blib/lib/XML/SAX/PurePerl/Exception.pm
 cp SAX/PurePerl/UnicodeExt.pm blib/lib/XML/SAX/PurePerl/UnicodeExt.pm
@@ -979,232 +1018,234 @@ Manifying blib/man3/XML.SAX.PurePerl.3pm
 Manifying blib/man3/XML.SAX.Intro.3pm
 Manifying blib/man3/XML.SAX.ParserFactory.3pm
 Manifying blib/man3/XML.SAX.PurePerl.Reader.3pm
-rm -rf XML-LibXML-1.96
-tar xvzf XML-LibXML-1.96.tar.gz
-XML-LibXML-1.96/
-XML-LibXML-1.96/perl-libxml-mm.h
-XML-LibXML-1.96/TODO
-XML-LibXML-1.96/Changes
-XML-LibXML-1.96/lib/
-XML-LibXML-1.96/lib/XML/
-XML-LibXML-1.96/lib/XML/LibXML/
-XML-LibXML-1.96/lib/XML/LibXML/CDATASection.pod
-XML-LibXML-1.96/lib/XML/LibXML/Document.pod
-XML-LibXML-1.96/lib/XML/LibXML/PI.pod
-XML-LibXML-1.96/lib/XML/LibXML/Common.pod
-XML-LibXML-1.96/lib/XML/LibXML/InputCallback.pod
-XML-LibXML-1.96/lib/XML/LibXML/Literal.pm
-XML-LibXML-1.96/lib/XML/LibXML/XPathExpression.pod
-XML-LibXML-1.96/lib/XML/LibXML/SAX.pm
-XML-LibXML-1.96/lib/XML/LibXML/NodeList.pm
-XML-LibXML-1.96/lib/XML/LibXML/Schema.pod
-XML-LibXML-1.96/lib/XML/LibXML/Error.pm
-XML-LibXML-1.96/lib/XML/LibXML/Text.pod
-XML-LibXML-1.96/lib/XML/LibXML/ErrNo.pod
-XML-LibXML-1.96/lib/XML/LibXML/Pattern.pod
-XML-LibXML-1.96/lib/XML/LibXML/Dtd.pod
-XML-LibXML-1.96/lib/XML/LibXML/DocumentFragment.pod
-XML-LibXML-1.96/lib/XML/LibXML/RelaxNG.pod
-XML-LibXML-1.96/lib/XML/LibXML/XPathContext.pod
-XML-LibXML-1.96/lib/XML/LibXML/Boolean.pm
-XML-LibXML-1.96/lib/XML/LibXML/Devel.pm
-XML-LibXML-1.96/lib/XML/LibXML/Number.pm
-XML-LibXML-1.96/lib/XML/LibXML/Reader.pod
-XML-LibXML-1.96/lib/XML/LibXML/Error.pod
-XML-LibXML-1.96/lib/XML/LibXML/XPathContext.pm
-XML-LibXML-1.96/lib/XML/LibXML/SAX.pod
-XML-LibXML-1.96/lib/XML/LibXML/Reader.pm
-XML-LibXML-1.96/lib/XML/LibXML/Common.pm
-XML-LibXML-1.96/lib/XML/LibXML/Node.pod
-XML-LibXML-1.96/lib/XML/LibXML/Element.pod
-XML-LibXML-1.96/lib/XML/LibXML/SAX/
-XML-LibXML-1.96/lib/XML/LibXML/SAX/Generator.pm
-XML-LibXML-1.96/lib/XML/LibXML/SAX/Parser.pm
-XML-LibXML-1.96/lib/XML/LibXML/SAX/Builder.pm
-XML-LibXML-1.96/lib/XML/LibXML/SAX/Builder.pod
-XML-LibXML-1.96/lib/XML/LibXML/AttributeHash.pm
-XML-LibXML-1.96/lib/XML/LibXML/RegExp.pod
-XML-LibXML-1.96/lib/XML/LibXML/Parser.pod
-XML-LibXML-1.96/lib/XML/LibXML/ErrNo.pm
-XML-LibXML-1.96/lib/XML/LibXML/Attr.pod
-XML-LibXML-1.96/lib/XML/LibXML/Namespace.pod
-XML-LibXML-1.96/lib/XML/LibXML/Comment.pod
-XML-LibXML-1.96/lib/XML/LibXML/DOM.pod
-XML-LibXML-1.96/LICENSE
-XML-LibXML-1.96/MANIFEST
-XML-LibXML-1.96/xpath.h
-XML-LibXML-1.96/example/
-XML-LibXML-1.96/example/test3.xml
-XML-LibXML-1.96/example/JBR-ALLENtrees.htm
-XML-LibXML-1.96/example/article_internal.xml
-XML-LibXML-1.96/example/dtd.xml
-XML-LibXML-1.96/example/xmlns/
-XML-LibXML-1.96/example/xmlns/goodguy.xml
-XML-LibXML-1.96/example/xmlns/badguy.xml
-XML-LibXML-1.96/example/cb_example.pl
-XML-LibXML-1.96/example/utf-16-1.html
-XML-LibXML-1.96/example/test.dtd
-XML-LibXML-1.96/example/test4.xml
-XML-LibXML-1.96/example/ext_ent.dtd
-XML-LibXML-1.96/example/article_external_bad.xml
-XML-LibXML-1.96/example/enc_latin2.html
-XML-LibXML-1.96/example/xpath.pl
-XML-LibXML-1.96/example/test.html
-XML-LibXML-1.96/example/article.xml
-XML-LibXML-1.96/example/article_internal_bad.xml
-XML-LibXML-1.96/example/catalog.xml
-XML-LibXML-1.96/example/bad.xml
-XML-LibXML-1.96/example/utf-16-2.xml
-XML-LibXML-1.96/example/test.xml
-XML-LibXML-1.96/example/test2.xml
-XML-LibXML-1.96/example/dromeds.xml
-XML-LibXML-1.96/example/enc2_latin2.html
-XML-LibXML-1.96/example/yahoo-finance-html-with-errors.html
-XML-LibXML-1.96/example/article_bad.xml
-XML-LibXML-1.96/example/complex/
-XML-LibXML-1.96/example/complex/complex.dtd
-XML-LibXML-1.96/example/complex/dtd/
-XML-LibXML-1.96/example/complex/dtd/g.dtd
-XML-LibXML-1.96/example/complex/dtd/f.dtd
-XML-LibXML-1.96/example/complex/complex.xml
-XML-LibXML-1.96/example/complex/complex2.xml
-XML-LibXML-1.96/example/thedieline.rss
-XML-LibXML-1.96/example/test.xhtml
-XML-LibXML-1.96/example/xmllibxmldocs.pl
-XML-LibXML-1.96/example/ns.xml
-XML-LibXML-1.96/example/bad.dtd
-XML-LibXML-1.96/example/utf-16-2.html
-XML-LibXML-1.96/LibXML.pm
-XML-LibXML-1.96/Av_CharPtrPtr.h
-XML-LibXML-1.96/LibXML.pod
-XML-LibXML-1.96/Makefile.PL
-XML-LibXML-1.96/docs/
-XML-LibXML-1.96/docs/libxml.dbk
-XML-LibXML-1.96/META.yml
-XML-LibXML-1.96/Av_CharPtrPtr.c
-XML-LibXML-1.96/test/
-XML-LibXML-1.96/test/schema/
-XML-LibXML-1.96/test/schema/demo.xml
-XML-LibXML-1.96/test/schema/badschema.xsd
-XML-LibXML-1.96/test/schema/invaliddemo.xml
-XML-LibXML-1.96/test/schema/schema.xsd
-XML-LibXML-1.96/test/xinclude/
-XML-LibXML-1.96/test/xinclude/entity.txt
-XML-LibXML-1.96/test/xinclude/xinclude.xml
-XML-LibXML-1.96/test/xinclude/test.xml
-XML-LibXML-1.96/test/textReader/
-XML-LibXML-1.96/test/textReader/countries.xml
-XML-LibXML-1.96/test/relaxng/
-XML-LibXML-1.96/test/relaxng/demo4.rng
-XML-LibXML-1.96/test/relaxng/demo.xml
-XML-LibXML-1.96/test/relaxng/demo3.rng
-XML-LibXML-1.96/test/relaxng/badschema.rng
-XML-LibXML-1.96/test/relaxng/invaliddemo.xml
-XML-LibXML-1.96/test/relaxng/schema.rng
-XML-LibXML-1.96/test/relaxng/demo2.rng
-XML-LibXML-1.96/test/relaxng/demo.rng
-XML-LibXML-1.96/META.json
-XML-LibXML-1.96/perl-libxml-sax.h
-XML-LibXML-1.96/Devel.xs
-XML-LibXML-1.96/README
-XML-LibXML-1.96/t/
-XML-LibXML-1.96/t/60struct_error.t
-XML-LibXML-1.96/t/90threads.t
-XML-LibXML-1.96/t/25relaxng.t
-XML-LibXML-1.96/t/72destruction.t
-XML-LibXML-1.96/t/29id.t
-XML-LibXML-1.96/t/09xpath.t
-XML-LibXML-1.96/t/lib/
-XML-LibXML-1.96/t/lib/Stacker.pm
-XML-LibXML-1.96/t/lib/Counter.pm
-XML-LibXML-1.96/t/lib/Collector.pm
-XML-LibXML-1.96/t/lib/TestHelpers.pm
-XML-LibXML-1.96/t/19encoding.t
-XML-LibXML-1.96/t/41xinclude.t
-XML-LibXML-1.96/t/46err_column.t
-XML-LibXML-1.96/t/49callbacks_returning_undef.t
-XML-LibXML-1.96/t/80registryleak.t
-XML-LibXML-1.96/t/23rawfunctions.t
-XML-LibXML-1.96/t/06elements.t
-XML-LibXML-1.96/t/61error.t
-XML-LibXML-1.96/t/27new_callbacks_simple.t
-XML-LibXML-1.96/t/42common.t
-XML-LibXML-1.96/t/28new_callbacks_multiple.t
-XML-LibXML-1.96/t/03doc.t
-XML-LibXML-1.96/t/60error_prev_chain.t
-XML-LibXML-1.96/t/40reader.t
-XML-LibXML-1.96/t/31xpc_functions.t
-XML-LibXML-1.96/t/43options.t
-XML-LibXML-1.96/t/48_rt55000.t
-XML-LibXML-1.96/t/05text.t
-XML-LibXML-1.96/t/10ns.t
-XML-LibXML-1.96/t/12html.t
-XML-LibXML-1.96/t/17callbacks.t
-XML-LibXML-1.96/t/48importing_nodes_IDs_rt_69520.t
-XML-LibXML-1.96/t/21catalog.t
-XML-LibXML-1.96/t/20extras.t
-XML-LibXML-1.96/t/26schema.t
-XML-LibXML-1.96/t/pod.t
-XML-LibXML-1.96/t/47load_xml_callbacks.t
-XML-LibXML-1.96/t/13dtd.t
-XML-LibXML-1.96/t/71overloads.t
-XML-LibXML-1.96/t/data/
-XML-LibXML-1.96/t/data/callbacks_returning_undef.xml
-XML-LibXML-1.96/t/07dtd.t
-XML-LibXML-1.96/t/49global_extent.t
-XML-LibXML-1.96/t/04node.t
-XML-LibXML-1.96/t/24c14n.t
-XML-LibXML-1.96/t/14sax.t
-XML-LibXML-1.96/t/44extent.t
-XML-LibXML-1.96/t/45regex.t
-XML-LibXML-1.96/t/11memory.t
-XML-LibXML-1.96/t/01basic.t
-XML-LibXML-1.96/t/50devel.t
-XML-LibXML-1.96/t/18docfree.t
-XML-LibXML-1.96/t/08findnodes.t
-XML-LibXML-1.96/t/19die_on_invalid_utf8_rt_58848.t
-XML-LibXML-1.96/t/49_load_html.t
-XML-LibXML-1.96/t/02parse.t
-XML-LibXML-1.96/t/15nodelist.t
-XML-LibXML-1.96/t/16docnodes.t
-XML-LibXML-1.96/t/30xpathcontext.t
-XML-LibXML-1.96/t/32xpc_variables.t
-XML-LibXML-1.96/perl-libxml-sax.c
-XML-LibXML-1.96/debian/
-XML-LibXML-1.96/debian/changelog
-XML-LibXML-1.96/debian/libxml-libxml-perl.install
-XML-LibXML-1.96/debian/libxml-libxml-perl.postinst
-XML-LibXML-1.96/debian/libxml-libxml-perl.examples
-XML-LibXML-1.96/debian/libxml-libxml-perl.prerm
-XML-LibXML-1.96/debian/copyright
-XML-LibXML-1.96/debian/compat
-XML-LibXML-1.96/debian/libxml-libxml-perl.docs
-XML-LibXML-1.96/debian/control
-XML-LibXML-1.96/debian/rules
-XML-LibXML-1.96/typemap
-XML-LibXML-1.96/scripts/
-XML-LibXML-1.96/scripts/bump-version-number.pl
-XML-LibXML-1.96/scripts/fast-eumm.pl
-XML-LibXML-1.96/scripts/prints-to-comments.pl
-XML-LibXML-1.96/scripts/Test.pm-to-Test-More.pl
-XML-LibXML-1.96/LibXML.xs
-XML-LibXML-1.96/ppport.h
-XML-LibXML-1.96/xpath.c
-XML-LibXML-1.96/dom.c
-XML-LibXML-1.96/HACKING.txt
-XML-LibXML-1.96/perl-libxml-mm.c
-XML-LibXML-1.96/xpathcontext.h
-XML-LibXML-1.96/dom.h
-cd /usr/src/perl/perl-5.14/XML-LibXML-1.96
-[1;39m## stage_XML-LibXML-1.96: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf XML-LibXML-2.0002.tar.gz
+XML-LibXML-2.0002/
+XML-LibXML-2.0002/perl-libxml-mm.h
+XML-LibXML-2.0002/TODO
+XML-LibXML-2.0002/Changes
+XML-LibXML-2.0002/lib/
+XML-LibXML-2.0002/lib/XML/
+XML-LibXML-2.0002/lib/XML/LibXML/
+XML-LibXML-2.0002/lib/XML/LibXML/CDATASection.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Document.pod
+XML-LibXML-2.0002/lib/XML/LibXML/PI.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Common.pod
+XML-LibXML-2.0002/lib/XML/LibXML/InputCallback.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Literal.pm
+XML-LibXML-2.0002/lib/XML/LibXML/XPathExpression.pod
+XML-LibXML-2.0002/lib/XML/LibXML/SAX.pm
+XML-LibXML-2.0002/lib/XML/LibXML/NodeList.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Schema.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Error.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Text.pod
+XML-LibXML-2.0002/lib/XML/LibXML/ErrNo.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Pattern.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Dtd.pod
+XML-LibXML-2.0002/lib/XML/LibXML/DocumentFragment.pod
+XML-LibXML-2.0002/lib/XML/LibXML/RelaxNG.pod
+XML-LibXML-2.0002/lib/XML/LibXML/XPathContext.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Boolean.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Devel.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Number.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Reader.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Error.pod
+XML-LibXML-2.0002/lib/XML/LibXML/XPathContext.pm
+XML-LibXML-2.0002/lib/XML/LibXML/SAX.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Reader.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Common.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Node.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Element.pod
+XML-LibXML-2.0002/lib/XML/LibXML/SAX/
+XML-LibXML-2.0002/lib/XML/LibXML/SAX/Generator.pm
+XML-LibXML-2.0002/lib/XML/LibXML/SAX/Parser.pm
+XML-LibXML-2.0002/lib/XML/LibXML/SAX/Builder.pm
+XML-LibXML-2.0002/lib/XML/LibXML/SAX/Builder.pod
+XML-LibXML-2.0002/lib/XML/LibXML/AttributeHash.pm
+XML-LibXML-2.0002/lib/XML/LibXML/RegExp.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Parser.pod
+XML-LibXML-2.0002/lib/XML/LibXML/ErrNo.pm
+XML-LibXML-2.0002/lib/XML/LibXML/Attr.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Namespace.pod
+XML-LibXML-2.0002/lib/XML/LibXML/Comment.pod
+XML-LibXML-2.0002/lib/XML/LibXML/DOM.pod
+XML-LibXML-2.0002/LICENSE
+XML-LibXML-2.0002/MANIFEST
+XML-LibXML-2.0002/xpath.h
+XML-LibXML-2.0002/example/
+XML-LibXML-2.0002/example/test3.xml
+XML-LibXML-2.0002/example/JBR-ALLENtrees.htm
+XML-LibXML-2.0002/example/article_internal.xml
+XML-LibXML-2.0002/example/dtd.xml
+XML-LibXML-2.0002/example/xmlns/
+XML-LibXML-2.0002/example/xmlns/goodguy.xml
+XML-LibXML-2.0002/example/xmlns/badguy.xml
+XML-LibXML-2.0002/example/cb_example.pl
+XML-LibXML-2.0002/example/utf-16-1.html
+XML-LibXML-2.0002/example/test.dtd
+XML-LibXML-2.0002/example/test4.xml
+XML-LibXML-2.0002/example/ext_ent.dtd
+XML-LibXML-2.0002/example/article_external_bad.xml
+XML-LibXML-2.0002/example/enc_latin2.html
+XML-LibXML-2.0002/example/xpath.pl
+XML-LibXML-2.0002/example/test.html
+XML-LibXML-2.0002/example/article.xml
+XML-LibXML-2.0002/example/article_internal_bad.xml
+XML-LibXML-2.0002/example/catalog.xml
+XML-LibXML-2.0002/example/bad.xml
+XML-LibXML-2.0002/example/utf-16-2.xml
+XML-LibXML-2.0002/example/test.xml
+XML-LibXML-2.0002/example/test2.xml
+XML-LibXML-2.0002/example/dromeds.xml
+XML-LibXML-2.0002/example/enc2_latin2.html
+XML-LibXML-2.0002/example/yahoo-finance-html-with-errors.html
+XML-LibXML-2.0002/example/article_bad.xml
+XML-LibXML-2.0002/example/complex/
+XML-LibXML-2.0002/example/complex/complex.dtd
+XML-LibXML-2.0002/example/complex/dtd/
+XML-LibXML-2.0002/example/complex/dtd/g.dtd
+XML-LibXML-2.0002/example/complex/dtd/f.dtd
+XML-LibXML-2.0002/example/complex/complex.xml
+XML-LibXML-2.0002/example/complex/complex2.xml
+XML-LibXML-2.0002/example/thedieline.rss
+XML-LibXML-2.0002/example/test.xhtml
+XML-LibXML-2.0002/example/xmllibxmldocs.pl
+XML-LibXML-2.0002/example/ns.xml
+XML-LibXML-2.0002/example/bad.dtd
+XML-LibXML-2.0002/example/utf-16-2.html
+XML-LibXML-2.0002/LibXML.pm
+XML-LibXML-2.0002/Av_CharPtrPtr.h
+XML-LibXML-2.0002/LibXML.pod
+XML-LibXML-2.0002/Makefile.PL
+XML-LibXML-2.0002/docs/
+XML-LibXML-2.0002/docs/libxml.dbk
+XML-LibXML-2.0002/META.yml
+XML-LibXML-2.0002/Av_CharPtrPtr.c
+XML-LibXML-2.0002/test/
+XML-LibXML-2.0002/test/schema/
+XML-LibXML-2.0002/test/schema/demo.xml
+XML-LibXML-2.0002/test/schema/badschema.xsd
+XML-LibXML-2.0002/test/schema/invaliddemo.xml
+XML-LibXML-2.0002/test/schema/schema.xsd
+XML-LibXML-2.0002/test/xinclude/
+XML-LibXML-2.0002/test/xinclude/entity.txt
+XML-LibXML-2.0002/test/xinclude/xinclude.xml
+XML-LibXML-2.0002/test/xinclude/test.xml
+XML-LibXML-2.0002/test/textReader/
+XML-LibXML-2.0002/test/textReader/countries.xml
+XML-LibXML-2.0002/test/relaxng/
+XML-LibXML-2.0002/test/relaxng/demo4.rng
+XML-LibXML-2.0002/test/relaxng/demo.xml
+XML-LibXML-2.0002/test/relaxng/demo3.rng
+XML-LibXML-2.0002/test/relaxng/badschema.rng
+XML-LibXML-2.0002/test/relaxng/invaliddemo.xml
+XML-LibXML-2.0002/test/relaxng/schema.rng
+XML-LibXML-2.0002/test/relaxng/demo2.rng
+XML-LibXML-2.0002/test/relaxng/demo.rng
+XML-LibXML-2.0002/META.json
+XML-LibXML-2.0002/perl-libxml-sax.h
+XML-LibXML-2.0002/Devel.xs
+XML-LibXML-2.0002/README
+XML-LibXML-2.0002/t/
+XML-LibXML-2.0002/t/60struct_error.t
+XML-LibXML-2.0002/t/90threads.t
+XML-LibXML-2.0002/t/25relaxng.t
+XML-LibXML-2.0002/t/72destruction.t
+XML-LibXML-2.0002/t/29id.t
+XML-LibXML-2.0002/t/09xpath.t
+XML-LibXML-2.0002/t/lib/
+XML-LibXML-2.0002/t/lib/Stacker.pm
+XML-LibXML-2.0002/t/lib/Counter.pm
+XML-LibXML-2.0002/t/lib/Collector.pm
+XML-LibXML-2.0002/t/lib/TestHelpers.pm
+XML-LibXML-2.0002/t/19encoding.t
+XML-LibXML-2.0002/t/41xinclude.t
+XML-LibXML-2.0002/t/46err_column.t
+XML-LibXML-2.0002/t/49callbacks_returning_undef.t
+XML-LibXML-2.0002/t/80registryleak.t
+XML-LibXML-2.0002/t/23rawfunctions.t
+XML-LibXML-2.0002/t/06elements.t
+XML-LibXML-2.0002/t/61error.t
+XML-LibXML-2.0002/t/27new_callbacks_simple.t
+XML-LibXML-2.0002/t/42common.t
+XML-LibXML-2.0002/t/62overload.t
+XML-LibXML-2.0002/t/28new_callbacks_multiple.t
+XML-LibXML-2.0002/t/03doc.t
+XML-LibXML-2.0002/t/60error_prev_chain.t
+XML-LibXML-2.0002/t/40reader.t
+XML-LibXML-2.0002/t/31xpc_functions.t
+XML-LibXML-2.0002/t/43options.t
+XML-LibXML-2.0002/t/48_rt55000.t
+XML-LibXML-2.0002/t/05text.t
+XML-LibXML-2.0002/t/10ns.t
+XML-LibXML-2.0002/t/12html.t
+XML-LibXML-2.0002/t/17callbacks.t
+XML-LibXML-2.0002/t/48importing_nodes_IDs_rt_69520.t
+XML-LibXML-2.0002/t/21catalog.t
+XML-LibXML-2.0002/t/30keep_blanks.t
+XML-LibXML-2.0002/t/20extras.t
+XML-LibXML-2.0002/t/26schema.t
+XML-LibXML-2.0002/t/pod.t
+XML-LibXML-2.0002/t/47load_xml_callbacks.t
+XML-LibXML-2.0002/t/13dtd.t
+XML-LibXML-2.0002/t/71overloads.t
+XML-LibXML-2.0002/t/data/
+XML-LibXML-2.0002/t/data/callbacks_returning_undef.xml
+XML-LibXML-2.0002/t/07dtd.t
+XML-LibXML-2.0002/t/49global_extent.t
+XML-LibXML-2.0002/t/04node.t
+XML-LibXML-2.0002/t/24c14n.t
+XML-LibXML-2.0002/t/14sax.t
+XML-LibXML-2.0002/t/44extent.t
+XML-LibXML-2.0002/t/45regex.t
+XML-LibXML-2.0002/t/11memory.t
+XML-LibXML-2.0002/t/01basic.t
+XML-LibXML-2.0002/t/50devel.t
+XML-LibXML-2.0002/t/18docfree.t
+XML-LibXML-2.0002/t/08findnodes.t
+XML-LibXML-2.0002/t/19die_on_invalid_utf8_rt_58848.t
+XML-LibXML-2.0002/t/49_load_html.t
+XML-LibXML-2.0002/t/02parse.t
+XML-LibXML-2.0002/t/15nodelist.t
+XML-LibXML-2.0002/t/16docnodes.t
+XML-LibXML-2.0002/t/30xpathcontext.t
+XML-LibXML-2.0002/t/32xpc_variables.t
+XML-LibXML-2.0002/perl-libxml-sax.c
+XML-LibXML-2.0002/debian/
+XML-LibXML-2.0002/debian/changelog
+XML-LibXML-2.0002/debian/libxml-libxml-perl.install
+XML-LibXML-2.0002/debian/libxml-libxml-perl.postinst
+XML-LibXML-2.0002/debian/libxml-libxml-perl.examples
+XML-LibXML-2.0002/debian/libxml-libxml-perl.prerm
+XML-LibXML-2.0002/debian/copyright
+XML-LibXML-2.0002/debian/compat
+XML-LibXML-2.0002/debian/libxml-libxml-perl.docs
+XML-LibXML-2.0002/debian/control
+XML-LibXML-2.0002/debian/rules
+XML-LibXML-2.0002/typemap
+XML-LibXML-2.0002/scripts/
+XML-LibXML-2.0002/scripts/bump-version-number.pl
+XML-LibXML-2.0002/scripts/fast-eumm.pl
+XML-LibXML-2.0002/scripts/update-HACKING-file.bash
+XML-LibXML-2.0002/scripts/prints-to-comments.pl
+XML-LibXML-2.0002/scripts/Test.pm-to-Test-More.pl
+XML-LibXML-2.0002/LibXML.xs
+XML-LibXML-2.0002/ppport.h
+XML-LibXML-2.0002/xpath.c
+XML-LibXML-2.0002/dom.c
+XML-LibXML-2.0002/HACKING.txt
+XML-LibXML-2.0002/perl-libxml-mm.c
+XML-LibXML-2.0002/xpathcontext.h
+XML-LibXML-2.0002/dom.h
+cd /usr/src/perl/perl-5.14/XML-LibXML-2.0002
+[1;39m## stage_XML-LibXML-2.0002: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 enable native perl UTF8
 running xml2-config...ok (2.7.8)
 looking for -lxml2... yes
 Checking if your kit is complete...
 Looks good
 Writing Makefile for XML::LibXML
-Writing MYMETA.yml
-[1;39m## stage_XML-LibXML-1.96: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_XML-LibXML-2.0002: make[0;0m
 cp lib/XML/LibXML/Devel.pm blib/lib/XML/LibXML/Devel.pm
 cp lib/XML/LibXML/DOM.pod blib/lib/XML/LibXML/DOM.pod
 cp lib/XML/LibXML/ErrNo.pod blib/lib/XML/LibXML/ErrNo.pod
@@ -1248,15 +1289,15 @@ cp lib/XML/LibXML/RegExp.pod blib/lib/XML/LibXML/RegExp.pod
 cp lib/XML/LibXML/Schema.pod blib/lib/XML/LibXML/Schema.pod
 cp lib/XML/LibXML/Pattern.pod blib/lib/XML/LibXML/Pattern.pod
 cp lib/XML/LibXML/NodeList.pm blib/lib/XML/LibXML/NodeList.pm
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK Av_CharPtrPtr.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK Av_CharPtrPtr.c
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Devel.xs > Devel.xsc && mv Devel.xsc Devel.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK Devel.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK Devel.c
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  LibXML.xs > LibXML.xsc && mv LibXML.xsc LibXML.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK LibXML.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK dom.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK perl-libxml-mm.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK perl-libxml-sax.c
-gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.96\"  -DXS_VERSION=\"1.96\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK xpath.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK LibXML.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK dom.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK perl-libxml-mm.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK perl-libxml-sax.c
+gcc-4 -c  -I/usr/include/libxml2  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.0002\"  -DXS_VERSION=\"2.0002\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DHAVE_UTF8 -DHAVE_BLANK xpath.c
 Running Mkbootstrap for XML::LibXML ()
 chmod 644 LibXML.bs
 rm -f blib/arch/auto/XML/LibXML/LibXML.dll
@@ -1300,7 +1341,6 @@ Manifying blib/man3/XML.LibXML.Schema.3pm
 Manifying blib/man3/XML.LibXML.RegExp.3pm
 Manifying blib/man3/XML.LibXML.NodeList.3pm
 Manifying blib/man3/XML.LibXML.Pattern.3pm
-rm -rf XML-Parser-2.41
 tar xvzf XML-Parser-2.41.tar.gz
 XML-Parser-2.41
 XML-Parser-2.41/Changes
@@ -1381,9 +1421,9 @@ cd /usr/src/perl/perl-5.14/XML-Parser-2.41
 Checking if your kit is complete...
 Looks good
 Writing Makefile for XML::Parser::Expat
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 Writing Makefile for XML::Parser
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_XML-Parser-2.41: make[0;0m
 cp Parser/Encodings/x-sjis-cp932.enc blib/lib/XML/Parser/Encodings/x-sjis-cp932.enc
 cp Parser/Encodings/koi8-r.enc blib/lib/XML/Parser/Encodings/koi8-r.enc
@@ -1418,7 +1458,7 @@ cp Parser/Encodings/iso-8859-5.enc blib/lib/XML/Parser/Encodings/iso-8859-5.enc
 make[1]: Entering directory `/usr/src/perl/perl-5.14/XML-Parser-2.41/Expat'
 cp Expat.pm ../blib/lib/XML/Parser/Expat.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp -noprototypes -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Expat.xs > Expat.xsc && mv Expat.xsc Expat.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"2.41\"  -DXS_VERSION=\"2.41\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Expat.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.41\"  -DXS_VERSION=\"2.41\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Expat.c
 Running Mkbootstrap for XML::Parser::Expat ()
 chmod 644 Expat.bs
 rm -f ../blib/arch/auto/XML/Parser/Expat/Expat.dll
@@ -1436,7 +1476,6 @@ Manifying blib/man3/XML.Parser.3pm
 Manifying blib/man3/XML.Parser.Style.Subs.3pm
 Manifying blib/man3/XML.Parser.Style.Tree.3pm
 Manifying blib/man3/XML.Parser.Style.Stream.3pm
-rm -rf Proc-ProcessTable-0.45
 tar xvzf Proc-ProcessTable-0.45.tar.gz
 Proc-ProcessTable-0.45/
 Proc-ProcessTable-0.45/README.dec_osf
@@ -1531,9 +1570,9 @@ Processing hints file hints/cygwin.pl
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Proc::ProcessTable::Process
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 Writing Makefile for Proc::ProcessTable
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Proc-ProcessTable-0.45: make[0;0m
 cp Killall.pm blib/lib/Proc/Killall.pm
 cp ProcessTable.pm blib/lib/Proc/ProcessTable.pm
@@ -1545,8 +1584,8 @@ AutoSplitting ../blib/lib/Proc/ProcessTable/Process.pm (../blib/lib/auto/Proc/Pr
 Manifying ../blib/man3/Proc.ProcessTable.Process.3pm
 make[1]: Leaving directory `/usr/src/perl/perl-5.14/Proc-ProcessTable-0.45/Process'
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  ProcessTable.xs > ProcessTable.xsc && mv ProcessTable.xsc ProcessTable.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.45\"  -DXS_VERSION=\"0.45\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   ProcessTable.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.45\"  -DXS_VERSION=\"0.45\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   OS.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.45\"  -DXS_VERSION=\"0.45\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   ProcessTable.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.45\"  -DXS_VERSION=\"0.45\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   OS.c
 Running Mkbootstrap for Proc::ProcessTable ()
 chmod 644 ProcessTable.bs
 rm -f blib/arch/auto/Proc/ProcessTable/ProcessTable.dll
@@ -1559,7 +1598,6 @@ chmod 644 blib/arch/auto/Proc/ProcessTable/ProcessTable.bs
 Manifying blib/man3/Proc.ProcessTable.3pm
 Manifying blib/man3/Proc.Killall.3pm
 Manifying blib/man3/Proc.Killfam.3pm
-rm -rf YAML-0.80
 tar xvzf YAML-0.80.tar.gz
 YAML-0.80/
 YAML-0.80/META.yml
@@ -1661,7 +1699,7 @@ patching file t/dump-perl-types.t
 Checking if your kit is complete...
 Looks good
 Writing Makefile for YAML
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_YAML-0.80: make[0;0m
 cp lib/Test/YAML.pm blib/lib/Test/YAML.pm
 cp lib/YAML/Types.pm blib/lib/YAML/Types.pm
@@ -1688,7 +1726,6 @@ Manifying blib/man3/YAML.Dumper.Base.3pm
 Manifying blib/man3/YAML.Tag.3pm
 Manifying blib/man3/YAML.Marshall.3pm
 Manifying blib/man3/YAML.Dumper.3pm
-rm -rf Config-Tiny-2.14
 tar xvzf Config-Tiny-2.14.tar.gz
 Config-Tiny-2.14/
 Config-Tiny-2.14/META.yml
@@ -1713,11 +1750,10 @@ cd /usr/src/perl/perl-5.14/Config-Tiny-2.14
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Config::Tiny
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Config-Tiny-2.14: make[0;0m
 cp lib/Config/Tiny.pm blib/lib/Config/Tiny.pm
 Manifying blib/man3/Config.Tiny.3pm
-rm -rf File-Copy-Recursive-0.38
 tar xvzf File-Copy-Recursive-0.38.tar.gz
 File-Copy-Recursive-0.38/
 File-Copy-Recursive-0.38/Changes
@@ -1733,11 +1769,10 @@ cd /usr/src/perl/perl-5.14/File-Copy-Recursive-0.38
 Checking if your kit is complete...
 Looks good
 Writing Makefile for File::Copy::Recursive
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_File-Copy-Recursive-0.38: make[0;0m
 cp Recursive.pm blib/lib/File/Copy/Recursive.pm
 Manifying blib/man3/File.Copy.Recursive.3pm
-rm -rf IPC-Run3-0.045
 tar xvzf IPC-Run3-0.045.tar.gz
 IPC-Run3-0.045/
 IPC-Run3-0.045/bin/
@@ -1778,7 +1813,7 @@ cd /usr/src/perl/perl-5.14/IPC-Run3-0.045
 Checking if your kit is complete...
 Looks good
 Writing Makefile for IPC::Run3
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_IPC-Run3-0.045: make[0;0m
 cp lib/IPC/Run3/ProfArrayBuffer.pm blib/lib/IPC/Run3/ProfArrayBuffer.pm
 cp lib/IPC/Run3/ProfPP.pm blib/lib/IPC/Run3/ProfPP.pm
@@ -1792,7 +1827,6 @@ Manifying blib/man3/IPC.Run3.ProfLogReader.3pm
 Manifying blib/man3/IPC.Run3.ProfLogger.3pm
 Manifying blib/man3/IPC.Run3.3pm
 Manifying blib/man3/IPC.Run3.ProfReporter.3pm
-rm -rf Probe-Perl-0.01
 tar xvzf Probe-Perl-0.01.tar.gz
 Probe-Perl-0.01/
 Probe-Perl-0.01/Build.PL
@@ -1812,11 +1846,10 @@ cd /usr/src/perl/perl-5.14/Probe-Perl-0.01
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Probe::Perl
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Probe-Perl-0.01: make[0;0m
 cp lib/Probe/Perl.pm blib/lib/Probe/Perl.pm
 Manifying blib/man3/Probe.Perl.3pm
-rm -rf Tee-0.14
 tar xvzf Tee-0.14.tar.gz
 Tee-0.14
 Tee-0.14/Todo
@@ -1852,7 +1885,7 @@ cd /usr/src/perl/perl-5.14/Tee-0.14
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Tee
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Tee-0.14: make[0;0m
 cp lib/Tee/App.pm blib/lib/Tee/App.pm
 cp lib/Tee.pm blib/lib/Tee.pm
@@ -1861,7 +1894,6 @@ cp bin/ptee blib/script/ptee
 Manifying blib/man1/ptee.1
 Manifying blib/man3/Tee.App.3pm
 Manifying blib/man3/Tee.3pm
-rm -rf IO-CaptureOutput-1.1102
 tar xvzf IO-CaptureOutput-1.1102.tar.gz
 IO-CaptureOutput-1.1102
 IO-CaptureOutput-1.1102/MANIFEST
@@ -1905,12 +1937,11 @@ cd /usr/src/perl/perl-5.14/IO-CaptureOutput-1.1102
 Checking if your kit is complete...
 Looks good
 Writing Makefile for IO::CaptureOutput
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_IO-CaptureOutput-1.1102: make[0;0m
 cp lib/IO/CaptureOutput.pm blib/lib/IO/CaptureOutput.pm
 cp lib/IO/CaptureOutput.pod blib/lib/IO/CaptureOutput.pod
 Manifying blib/man3/IO.CaptureOutput.3pm
-rm -rf File-pushd-1.002
 tar xvzf File-pushd-1.002.tar.gz
 File-pushd-1.002/
 File-pushd-1.002/examples/
@@ -1945,11 +1976,53 @@ cd /usr/src/perl/perl-5.14/File-pushd-1.002
 Checking if your kit is complete...
 Looks good
 Writing Makefile for File::pushd
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_File-pushd-1.002: make[0;0m
 cp lib/File/pushd.pm blib/lib/File/pushd.pm
 Manifying blib/man3/File.pushd.3pm
-rm -rf File-HomeDir-0.99
+tar xvzf File-Which-1.09.tar.gz
+File-Which-1.09/
+File-Which-1.09/META.yml
+File-Which-1.09/LICENSE
+File-Which-1.09/Makefile.PL
+File-Which-1.09/README
+File-Which-1.09/script/
+File-Which-1.09/script/pwhich
+File-Which-1.09/MANIFEST
+File-Which-1.09/Changes
+File-Which-1.09/lib/
+File-Which-1.09/lib/File/
+File-Which-1.09/lib/File/Which.pm
+File-Which-1.09/t/
+File-Which-1.09/t/04_pwhich.t
+File-Which-1.09/t/02_all.t
+File-Which-1.09/t/97_meta.t
+File-Which-1.09/t/01_compile.t
+File-Which-1.09/t/98_pod.t
+File-Which-1.09/t/03_simple.t
+File-Which-1.09/t/99_pmv.t
+File-Which-1.09/t/test-bin/
+File-Which-1.09/t/test-bin/test2.bat
+File-Which-1.09/t/test-bin/all
+File-Which-1.09/t/test-bin/test1.exe
+File-Which-1.09/t/test-bin/all.exe
+File-Which-1.09/t/test-bin/README.txt
+File-Which-1.09/t/test-bin/all.bat
+File-Which-1.09/t/test-bin/test4/
+File-Which-1.09/t/test-bin/test4/foo.txt
+File-Which-1.09/t/test-bin/test3
+cd /usr/src/perl/perl-5.14/File-Which-1.09
+[1;39m## stage_File-Which-1.09: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for File::Which
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_File-Which-1.09: make[0;0m
+cp lib/File/Which.pm blib/lib/File/Which.pm
+cp script/pwhich blib/script/pwhich
+/usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/pwhich
+Manifying blib/man1/pwhich.1
+Manifying blib/man3/File.Which.3pm
 tar xvzf File-HomeDir-0.99.tar.gz
 File-HomeDir-0.99/
 File-HomeDir-0.99/README
@@ -2000,7 +2073,7 @@ cd /usr/src/perl/perl-5.14/File-HomeDir-0.99
 Checking if your kit is complete...
 Looks good
 Writing Makefile for File::HomeDir
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_File-HomeDir-0.99: make[0;0m
 cp lib/File/HomeDir/Darwin.pm blib/lib/File/HomeDir/Darwin.pm
 cp lib/File/HomeDir/Darwin/Cocoa.pm blib/lib/File/HomeDir/Darwin/Cocoa.pm
@@ -2022,7 +2095,6 @@ Manifying blib/man3/File.HomeDir.3pm
 Manifying blib/man3/File.HomeDir.Unix.3pm
 Manifying blib/man3/File.HomeDir.FreeDesktop.3pm
 Manifying blib/man3/File.HomeDir.Darwin.Carbon.3pm
-rm -rf Digest-SHA-5.71
 tar xvzf Digest-SHA-5.71.tar.gz
 Digest-SHA-5.71/
 Digest-SHA-5.71/examples/
@@ -2075,15 +2147,15 @@ cd /usr/src/perl/perl-5.14/Digest-SHA-5.71
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Digest::SHA
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Digest-SHA-5.71: make[0;0m
 cp lib/Digest/SHA.pm blib/lib/Digest/SHA.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  SHA.xs > SHA.xsc && mv SHA.xsc SHA.c
-gcc-4 -c  -I.  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"5.71\"  -DXS_VERSION=\"5.71\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DSHA_PERL_MODULE SHA.c
+gcc-4 -c  -I.  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"5.71\"  -DXS_VERSION=\"5.71\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DSHA_PERL_MODULE SHA.c
 Running Mkbootstrap for Digest::SHA ()
 chmod 644 SHA.bs
 rm -f blib/arch/auto/Digest/SHA/SHA.dll
-g++-4   --shared  -Wl,--enable-auto-import -Wl,--export-all-symbols -Wl,--image-base=0x587a0000 -L/usr/local/lib -fstack-protector SHA.o  -o blib/arch/auto/Digest/SHA/SHA.dll 	\
+g++-4   --shared  -Wl,--enable-auto-import -Wl,--export-all-symbols -Wl,--image-base=0x58290000 -L/usr/local/lib -fstack-protector SHA.o  -o blib/arch/auto/Digest/SHA/SHA.dll 	\
   /usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE/cygperl5_14.dll   	\
   
 chmod 755 blib/arch/auto/Digest/SHA/SHA.dll
@@ -2093,7 +2165,83 @@ cp shasum blib/script/shasum
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/shasum
 Manifying blib/man1/shasum.1
 Manifying blib/man3/Digest.SHA.3pm
-rm -rf Module-Signature-0.68
+tar xvzf IPC-Run-0.91.tar.gz
+IPC-Run-0.91/
+IPC-Run-0.91/abuse/
+IPC-Run-0.91/Changes
+IPC-Run-0.91/eg/
+IPC-Run-0.91/lib/
+IPC-Run-0.91/LICENSE
+IPC-Run-0.91/Makefile.PL
+IPC-Run-0.91/MANIFEST
+IPC-Run-0.91/META.json
+IPC-Run-0.91/META.yml
+IPC-Run-0.91/README
+IPC-Run-0.91/t/
+IPC-Run-0.91/TODO
+IPC-Run-0.91/t/97_meta.t
+IPC-Run-0.91/t/98_pod.t
+IPC-Run-0.91/t/98_pod_coverage.t
+IPC-Run-0.91/t/99_perl_minimum_version.t
+IPC-Run-0.91/t/adopt.t
+IPC-Run-0.91/t/binmode.t
+IPC-Run-0.91/t/bogus.t
+IPC-Run-0.91/t/filter.t
+IPC-Run-0.91/t/harness.t
+IPC-Run-0.91/t/io.t
+IPC-Run-0.91/t/kill_kill.t
+IPC-Run-0.91/t/lib/
+IPC-Run-0.91/t/parallel.t
+IPC-Run-0.91/t/pty.t
+IPC-Run-0.91/t/pump.t
+IPC-Run-0.91/t/run.t
+IPC-Run-0.91/t/signal.t
+IPC-Run-0.91/t/timeout.t
+IPC-Run-0.91/t/timer.t
+IPC-Run-0.91/t/win32_compile.t
+IPC-Run-0.91/t/windows_search_path.t
+IPC-Run-0.91/t/lib/Test.pm
+IPC-Run-0.91/lib/IPC/
+IPC-Run-0.91/lib/IPC/Run/
+IPC-Run-0.91/lib/IPC/Run.pm
+IPC-Run-0.91/lib/IPC/Run/Debug.pm
+IPC-Run-0.91/lib/IPC/Run/IO.pm
+IPC-Run-0.91/lib/IPC/Run/Timer.pm
+IPC-Run-0.91/lib/IPC/Run/Win32Helper.pm
+IPC-Run-0.91/lib/IPC/Run/Win32IO.pm
+IPC-Run-0.91/lib/IPC/Run/Win32Pump.pm
+IPC-Run-0.91/eg/factorial
+IPC-Run-0.91/eg/factorial_pipe
+IPC-Run-0.91/eg/factorial_scalar
+IPC-Run-0.91/eg/run_daemon
+IPC-Run-0.91/eg/runsh
+IPC-Run-0.91/eg/runsu
+IPC-Run-0.91/eg/synopsis_scripting
+IPC-Run-0.91/abuse/blocking_debug_with_sub_coprocess
+IPC-Run-0.91/abuse/blocking_writes
+IPC-Run-0.91/abuse/broken_pipe_on_bad_executable_name
+IPC-Run-0.91/abuse/timers
+cd /usr/src/perl/perl-5.14/IPC-Run-0.91
+[1;39m## stage_IPC-Run-0.91: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for IPC::Run
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_IPC-Run-0.91: make[0;0m
+cp lib/IPC/Run/Debug.pm blib/lib/IPC/Run/Debug.pm
+cp lib/IPC/Run/Win32Pump.pm blib/lib/IPC/Run/Win32Pump.pm
+cp lib/IPC/Run.pm blib/lib/IPC/Run.pm
+cp lib/IPC/Run/Win32IO.pm blib/lib/IPC/Run/Win32IO.pm
+cp lib/IPC/Run/IO.pm blib/lib/IPC/Run/IO.pm
+cp lib/IPC/Run/Win32Helper.pm blib/lib/IPC/Run/Win32Helper.pm
+cp lib/IPC/Run/Timer.pm blib/lib/IPC/Run/Timer.pm
+Manifying blib/man3/IPC.Run.Debug.3pm
+Manifying blib/man3/IPC.Run.Win32Pump.3pm
+Manifying blib/man3/IPC.Run.3pm
+Manifying blib/man3/IPC.Run.Win32IO.3pm
+Manifying blib/man3/IPC.Run.Win32Helper.3pm
+Manifying blib/man3/IPC.Run.IO.3pm
+Manifying blib/man3/IPC.Run.Timer.3pm
 tar xvzf Module-Signature-0.68.tar.gz
 Module-Signature-0.68/
 Module-Signature-0.68/script/
@@ -2133,139 +2281,137 @@ Module-Signature-0.68/inc/Module/Install/Scripts.pm
 Module-Signature-0.68/inc/Module/Install/Makefile.pm
 Module-Signature-0.68/inc/Module/Install.pm
 cd /usr/src/perl/perl-5.14/Module-Signature-0.68
+[1;39m## stage_Module-Signature-0.68: patch -b -f -p1 ../Module-Signature-0.68.patch[0;0m
+patching file Makefile.PL
 [1;39m## stage_Module-Signature-0.68: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Looking for GNU Privacy Guard (gpg), a cryptographic signature tool...
 GnuPG found (/usr/bin/gpg).
-Import PAUSE and author keys to GnuPG? [y] Importing... gpg: WARNING: using insecure memory!
-gpg: please see http://www.gnupg.org/faq.html for more information
-done.
 Locating required external dependency bin:gpg... found at /usr/bin/gpg.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Module::Signature
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Module-Signature-0.68: make[0;0m
 cp lib/Module/Signature.pm blib/lib/Module/Signature.pm
 cp script/cpansign blib/script/cpansign
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe "-Iinc" -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/cpansign
 Manifying blib/man1/cpansign.1
 Manifying blib/man3/Module.Signature.3pm
-rm -rf URI-1.59
-tar xvzf URI-1.59.tar.gz
-URI-1.59/
-URI-1.59/Changes
-URI-1.59/Makefile.PL
-URI-1.59/MANIFEST
-URI-1.59/META.yml
-URI-1.59/README
-URI-1.59/t/
-URI-1.59/URI/
-URI-1.59/uri-test
-URI-1.59/URI.pm
-URI-1.59/URI/_foreign.pm
-URI-1.59/URI/_generic.pm
-URI-1.59/URI/_idna.pm
-URI-1.59/URI/_ldap.pm
-URI-1.59/URI/_login.pm
-URI-1.59/URI/_punycode.pm
-URI-1.59/URI/_query.pm
-URI-1.59/URI/_segment.pm
-URI-1.59/URI/_server.pm
-URI-1.59/URI/_userpass.pm
-URI-1.59/URI/data.pm
-URI-1.59/URI/Escape.pm
-URI-1.59/URI/file/
-URI-1.59/URI/file.pm
-URI-1.59/URI/ftp.pm
-URI-1.59/URI/gopher.pm
-URI-1.59/URI/Heuristic.pm
-URI-1.59/URI/http.pm
-URI-1.59/URI/https.pm
-URI-1.59/URI/IRI.pm
-URI-1.59/URI/ldap.pm
-URI-1.59/URI/ldapi.pm
-URI-1.59/URI/ldaps.pm
-URI-1.59/URI/mailto.pm
-URI-1.59/URI/mms.pm
-URI-1.59/URI/news.pm
-URI-1.59/URI/nntp.pm
-URI-1.59/URI/pop.pm
-URI-1.59/URI/QueryParam.pm
-URI-1.59/URI/rlogin.pm
-URI-1.59/URI/rsync.pm
-URI-1.59/URI/rtsp.pm
-URI-1.59/URI/rtspu.pm
-URI-1.59/URI/sip.pm
-URI-1.59/URI/sips.pm
-URI-1.59/URI/snews.pm
-URI-1.59/URI/Split.pm
-URI-1.59/URI/ssh.pm
-URI-1.59/URI/telnet.pm
-URI-1.59/URI/tn3270.pm
-URI-1.59/URI/URL.pm
-URI-1.59/URI/urn/
-URI-1.59/URI/urn.pm
-URI-1.59/URI/WithBase.pm
-URI-1.59/URI/urn/isbn.pm
-URI-1.59/URI/urn/oid.pm
-URI-1.59/URI/file/Base.pm
-URI-1.59/URI/file/FAT.pm
-URI-1.59/URI/file/Mac.pm
-URI-1.59/URI/file/OS2.pm
-URI-1.59/URI/file/QNX.pm
-URI-1.59/URI/file/Unix.pm
-URI-1.59/URI/file/Win32.pm
-URI-1.59/t/abs.t
-URI-1.59/t/clone.t
-URI-1.59/t/cwd.t
-URI-1.59/t/data.t
-URI-1.59/t/escape.t
-URI-1.59/t/file.t
-URI-1.59/t/ftp.t
-URI-1.59/t/generic.t
-URI-1.59/t/gopher.t
-URI-1.59/t/heuristic.t
-URI-1.59/t/http.t
-URI-1.59/t/idna.t
-URI-1.59/t/iri.t
-URI-1.59/t/ldap.t
-URI-1.59/t/mailto.t
-URI-1.59/t/mix.t
-URI-1.59/t/mms.t
-URI-1.59/t/news.t
-URI-1.59/t/num_eq.t
-URI-1.59/t/old-absconf.t
-URI-1.59/t/old-base.t
-URI-1.59/t/old-file.t
-URI-1.59/t/old-relbase.t
-URI-1.59/t/pop.t
-URI-1.59/t/punycode.t
-URI-1.59/t/query-param.t
-URI-1.59/t/query.t
-URI-1.59/t/rel.t
-URI-1.59/t/rfc2732.t
-URI-1.59/t/roy-test.t
-URI-1.59/t/roytest1.html
-URI-1.59/t/roytest2.html
-URI-1.59/t/roytest3.html
-URI-1.59/t/roytest4.html
-URI-1.59/t/roytest5.html
-URI-1.59/t/rsync.t
-URI-1.59/t/rtsp.t
-URI-1.59/t/sip.t
-URI-1.59/t/split.t
-URI-1.59/t/storable-test.pl
-URI-1.59/t/storable.t
-URI-1.59/t/urn-isbn.t
-URI-1.59/t/urn-oid.t
-URI-1.59/t/utf8.t
-cd /usr/src/perl/perl-5.14/URI-1.59
-[1;39m## stage_URI-1.59: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf URI-1.60.tar.gz
+URI-1.60/
+URI-1.60/Changes
+URI-1.60/Makefile.PL
+URI-1.60/MANIFEST
+URI-1.60/META.yml
+URI-1.60/README
+URI-1.60/t/
+URI-1.60/URI/
+URI-1.60/uri-test
+URI-1.60/URI.pm
+URI-1.60/URI/_foreign.pm
+URI-1.60/URI/_generic.pm
+URI-1.60/URI/_idna.pm
+URI-1.60/URI/_ldap.pm
+URI-1.60/URI/_login.pm
+URI-1.60/URI/_punycode.pm
+URI-1.60/URI/_query.pm
+URI-1.60/URI/_segment.pm
+URI-1.60/URI/_server.pm
+URI-1.60/URI/_userpass.pm
+URI-1.60/URI/data.pm
+URI-1.60/URI/Escape.pm
+URI-1.60/URI/file/
+URI-1.60/URI/file.pm
+URI-1.60/URI/ftp.pm
+URI-1.60/URI/gopher.pm
+URI-1.60/URI/Heuristic.pm
+URI-1.60/URI/http.pm
+URI-1.60/URI/https.pm
+URI-1.60/URI/IRI.pm
+URI-1.60/URI/ldap.pm
+URI-1.60/URI/ldapi.pm
+URI-1.60/URI/ldaps.pm
+URI-1.60/URI/mailto.pm
+URI-1.60/URI/mms.pm
+URI-1.60/URI/news.pm
+URI-1.60/URI/nntp.pm
+URI-1.60/URI/pop.pm
+URI-1.60/URI/QueryParam.pm
+URI-1.60/URI/rlogin.pm
+URI-1.60/URI/rsync.pm
+URI-1.60/URI/rtsp.pm
+URI-1.60/URI/rtspu.pm
+URI-1.60/URI/sip.pm
+URI-1.60/URI/sips.pm
+URI-1.60/URI/snews.pm
+URI-1.60/URI/Split.pm
+URI-1.60/URI/ssh.pm
+URI-1.60/URI/telnet.pm
+URI-1.60/URI/tn3270.pm
+URI-1.60/URI/URL.pm
+URI-1.60/URI/urn/
+URI-1.60/URI/urn.pm
+URI-1.60/URI/WithBase.pm
+URI-1.60/URI/urn/isbn.pm
+URI-1.60/URI/urn/oid.pm
+URI-1.60/URI/file/Base.pm
+URI-1.60/URI/file/FAT.pm
+URI-1.60/URI/file/Mac.pm
+URI-1.60/URI/file/OS2.pm
+URI-1.60/URI/file/QNX.pm
+URI-1.60/URI/file/Unix.pm
+URI-1.60/URI/file/Win32.pm
+URI-1.60/t/abs.t
+URI-1.60/t/clone.t
+URI-1.60/t/cwd.t
+URI-1.60/t/data.t
+URI-1.60/t/escape.t
+URI-1.60/t/file.t
+URI-1.60/t/ftp.t
+URI-1.60/t/generic.t
+URI-1.60/t/gopher.t
+URI-1.60/t/heuristic.t
+URI-1.60/t/http.t
+URI-1.60/t/idna.t
+URI-1.60/t/iri.t
+URI-1.60/t/ldap.t
+URI-1.60/t/mailto.t
+URI-1.60/t/mix.t
+URI-1.60/t/mms.t
+URI-1.60/t/news.t
+URI-1.60/t/num_eq.t
+URI-1.60/t/old-absconf.t
+URI-1.60/t/old-base.t
+URI-1.60/t/old-file.t
+URI-1.60/t/old-relbase.t
+URI-1.60/t/pop.t
+URI-1.60/t/punycode.t
+URI-1.60/t/query-param.t
+URI-1.60/t/query.t
+URI-1.60/t/rel.t
+URI-1.60/t/rfc2732.t
+URI-1.60/t/roy-test.t
+URI-1.60/t/roytest1.html
+URI-1.60/t/roytest2.html
+URI-1.60/t/roytest3.html
+URI-1.60/t/roytest4.html
+URI-1.60/t/roytest5.html
+URI-1.60/t/rsync.t
+URI-1.60/t/rtsp.t
+URI-1.60/t/sip.t
+URI-1.60/t/split.t
+URI-1.60/t/storable-test.pl
+URI-1.60/t/storable.t
+URI-1.60/t/urn-isbn.t
+URI-1.60/t/urn-oid.t
+URI-1.60/t/utf8.t
+cd /usr/src/perl/perl-5.14/URI-1.60
+[1;39m## stage_URI-1.60: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
 Writing Makefile for URI
-Writing MYMETA.yml
-[1;39m## stage_URI-1.59: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_URI-1.60: make[0;0m
 cp URI/_ldap.pm blib/lib/URI/_ldap.pm
 cp URI/ftp.pm blib/lib/URI/ftp.pm
 cp URI/_segment.pm blib/lib/URI/_segment.pm
@@ -2329,7 +2475,6 @@ Manifying blib/man3/URI.ldap.3pm
 Manifying blib/man3/URI.Escape.3pm
 Manifying blib/man3/URI.QueryParam.3pm
 Manifying blib/man3/URI.Heuristic.3pm
-rm -rf HTML-Tagset-3.20
 tar xvzf HTML-Tagset-3.20.tar.gz
 HTML-Tagset-3.20/
 HTML-Tagset-3.20/Tagset.pm
@@ -2348,11 +2493,10 @@ cd /usr/src/perl/perl-5.14/HTML-Tagset-3.20
 Checking if your kit is complete...
 Looks good
 Writing Makefile for HTML::Tagset
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_HTML-Tagset-3.20: make[0;0m
 cp Tagset.pm blib/lib/HTML/Tagset.pm
 Manifying blib/man3/HTML.Tagset.3pm
-rm -rf HTML-Parser-3.69
 tar xvzf HTML-Parser-3.69.tar.gz
 HTML-Parser-3.69/
 HTML-Parser-3.69/Changes
@@ -2444,7 +2588,7 @@ cd /usr/src/perl/perl-5.14/HTML-Parser-3.69
 Checking if your kit is complete...
 Looks good
 Writing Makefile for HTML::Parser
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_HTML-Parser-3.69: make[0;0m
 cp lib/HTML/PullParser.pm blib/lib/HTML/PullParser.pm
 cp Parser.pm blib/lib/HTML/Parser.pm
@@ -2456,7 +2600,7 @@ cp lib/HTML/HeadParser.pm blib/lib/HTML/HeadParser.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Parser.xs > Parser.xsc && mv Parser.xsc Parser.c
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe mkhctype >hctype.h
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe mkpfunc >pfunc.h
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"3.69\"  -DXS_VERSION=\"3.69\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DMARKED_SECTION Parser.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"3.69\"  -DXS_VERSION=\"3.69\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -DMARKED_SECTION Parser.c
 Running Mkbootstrap for HTML::Parser ()
 chmod 644 Parser.bs
 rm -f blib/arch/auto/HTML/Parser/Parser.dll
@@ -2473,7 +2617,299 @@ Manifying blib/man3/HTML.TokeParser.3pm
 Manifying blib/man3/HTML.LinkExtor.3pm
 Manifying blib/man3/HTML.HeadParser.3pm
 Manifying blib/man3/HTML.Filter.3pm
-rm -rf libwww-perl-6.04
+tar xvzf HTTP-Date-6.02.tar.gz
+HTTP-Date-6.02/
+HTTP-Date-6.02/Changes
+HTTP-Date-6.02/lib/
+HTTP-Date-6.02/Makefile.PL
+HTTP-Date-6.02/MANIFEST
+HTTP-Date-6.02/META.yml
+HTTP-Date-6.02/README
+HTTP-Date-6.02/t/
+HTTP-Date-6.02/t/date.t
+HTTP-Date-6.02/lib/HTTP/
+HTTP-Date-6.02/lib/HTTP/Date.pm
+cd /usr/src/perl/perl-5.14/HTTP-Date-6.02
+[1;39m## stage_HTTP-Date-6.02: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for HTTP::Date
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_HTTP-Date-6.02: make[0;0m
+cp lib/HTTP/Date.pm blib/lib/HTTP/Date.pm
+Manifying blib/man3/HTTP.Date.3pm
+tar xvzf Encode-Locale-1.03.tar.gz
+Encode-Locale-1.03/
+Encode-Locale-1.03/Changes
+Encode-Locale-1.03/lib/
+Encode-Locale-1.03/Makefile.PL
+Encode-Locale-1.03/MANIFEST
+Encode-Locale-1.03/META.yml
+Encode-Locale-1.03/README
+Encode-Locale-1.03/t/
+Encode-Locale-1.03/t/arg.t
+Encode-Locale-1.03/t/env.t
+Encode-Locale-1.03/lib/Encode/
+Encode-Locale-1.03/lib/Encode/Locale.pm
+cd /usr/src/perl/perl-5.14/Encode-Locale-1.03
+[1;39m## stage_Encode-Locale-1.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Encode::Locale
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Encode-Locale-1.03: make[0;0m
+cp lib/Encode/Locale.pm blib/lib/Encode/Locale.pm
+Manifying blib/man3/Encode.Locale.3pm
+tar xvzf LWP-MediaTypes-6.02.tar.gz
+LWP-MediaTypes-6.02/
+LWP-MediaTypes-6.02/Changes
+LWP-MediaTypes-6.02/lib/
+LWP-MediaTypes-6.02/Makefile.PL
+LWP-MediaTypes-6.02/MANIFEST
+LWP-MediaTypes-6.02/META.yml
+LWP-MediaTypes-6.02/README
+LWP-MediaTypes-6.02/t/
+LWP-MediaTypes-6.02/t/mediatypes.t
+LWP-MediaTypes-6.02/lib/LWP/
+LWP-MediaTypes-6.02/lib/LWP/media.types
+LWP-MediaTypes-6.02/lib/LWP/MediaTypes.pm
+cd /usr/src/perl/perl-5.14/LWP-MediaTypes-6.02
+[1;39m## stage_LWP-MediaTypes-6.02: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for LWP::MediaTypes
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_LWP-MediaTypes-6.02: make[0;0m
+cp lib/LWP/MediaTypes.pm blib/lib/LWP/MediaTypes.pm
+cp lib/LWP/media.types blib/lib/LWP/media.types
+Manifying blib/man3/LWP.MediaTypes.3pm
+tar xvzf HTTP-Message-6.03.tar.gz
+HTTP-Message-6.03/
+HTTP-Message-6.03/Changes
+HTTP-Message-6.03/lib/
+HTTP-Message-6.03/Makefile.PL
+HTTP-Message-6.03/MANIFEST
+HTTP-Message-6.03/META.yml
+HTTP-Message-6.03/README
+HTTP-Message-6.03/t/
+HTTP-Message-6.03/t/common-req.t
+HTTP-Message-6.03/t/headers-auth.t
+HTTP-Message-6.03/t/headers-etag.t
+HTTP-Message-6.03/t/headers-util.t
+HTTP-Message-6.03/t/headers.t
+HTTP-Message-6.03/t/http-config.t
+HTTP-Message-6.03/t/message-charset.t
+HTTP-Message-6.03/t/message-decode-xml.t
+HTTP-Message-6.03/t/message-old.t
+HTTP-Message-6.03/t/message-parts.t
+HTTP-Message-6.03/t/message.t
+HTTP-Message-6.03/t/request.t
+HTTP-Message-6.03/t/response.t
+HTTP-Message-6.03/t/status-old.t
+HTTP-Message-6.03/t/status.t
+HTTP-Message-6.03/lib/HTTP/
+HTTP-Message-6.03/lib/HTTP/Config.pm
+HTTP-Message-6.03/lib/HTTP/Headers/
+HTTP-Message-6.03/lib/HTTP/Headers.pm
+HTTP-Message-6.03/lib/HTTP/Message.pm
+HTTP-Message-6.03/lib/HTTP/Request/
+HTTP-Message-6.03/lib/HTTP/Request.pm
+HTTP-Message-6.03/lib/HTTP/Response.pm
+HTTP-Message-6.03/lib/HTTP/Status.pm
+HTTP-Message-6.03/lib/HTTP/Request/Common.pm
+HTTP-Message-6.03/lib/HTTP/Headers/Auth.pm
+HTTP-Message-6.03/lib/HTTP/Headers/ETag.pm
+HTTP-Message-6.03/lib/HTTP/Headers/Util.pm
+cd /usr/src/perl/perl-5.14/HTTP-Message-6.03
+[1;39m## stage_HTTP-Message-6.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for HTTP::Message
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_HTTP-Message-6.03: make[0;0m
+cp lib/HTTP/Status.pm blib/lib/HTTP/Status.pm
+cp lib/HTTP/Headers/Auth.pm blib/lib/HTTP/Headers/Auth.pm
+cp lib/HTTP/Request.pm blib/lib/HTTP/Request.pm
+cp lib/HTTP/Headers/ETag.pm blib/lib/HTTP/Headers/ETag.pm
+cp lib/HTTP/Config.pm blib/lib/HTTP/Config.pm
+cp lib/HTTP/Headers/Util.pm blib/lib/HTTP/Headers/Util.pm
+cp lib/HTTP/Request/Common.pm blib/lib/HTTP/Request/Common.pm
+cp lib/HTTP/Message.pm blib/lib/HTTP/Message.pm
+cp lib/HTTP/Response.pm blib/lib/HTTP/Response.pm
+cp lib/HTTP/Headers.pm blib/lib/HTTP/Headers.pm
+Manifying blib/man3/HTTP.Status.3pm
+Manifying blib/man3/HTTP.Request.3pm
+Manifying blib/man3/HTTP.Request.Common.3pm
+Manifying blib/man3/HTTP.Headers.Util.3pm
+Manifying blib/man3/HTTP.Config.3pm
+Manifying blib/man3/HTTP.Message.3pm
+Manifying blib/man3/HTTP.Response.3pm
+Manifying blib/man3/HTTP.Headers.3pm
+tar xvzf File-Listing-6.04.tar.gz
+File-Listing-6.04/
+File-Listing-6.04/Changes
+File-Listing-6.04/lib/
+File-Listing-6.04/Makefile.PL
+File-Listing-6.04/MANIFEST
+File-Listing-6.04/META.yml
+File-Listing-6.04/README
+File-Listing-6.04/t/
+File-Listing-6.04/t/apache.t
+File-Listing-6.04/t/dosftp.t
+File-Listing-6.04/t/ls-lR.t
+File-Listing-6.04/t/perm1.t
+File-Listing-6.04/t/perm2.t
+File-Listing-6.04/t/perm3.t
+File-Listing-6.04/t/perm4.t
+File-Listing-6.04/lib/File/
+File-Listing-6.04/lib/File/Listing.pm
+cd /usr/src/perl/perl-5.14/File-Listing-6.04
+[1;39m## stage_File-Listing-6.04: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for File::Listing
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_File-Listing-6.04: make[0;0m
+cp lib/File/Listing.pm blib/lib/File/Listing.pm
+Manifying blib/man3/File.Listing.3pm
+tar xvzf HTTP-Daemon-6.01.tar.gz
+HTTP-Daemon-6.01/
+HTTP-Daemon-6.01/Changes
+HTTP-Daemon-6.01/lib/
+HTTP-Daemon-6.01/Makefile.PL
+HTTP-Daemon-6.01/MANIFEST
+HTTP-Daemon-6.01/META.yml
+HTTP-Daemon-6.01/README
+HTTP-Daemon-6.01/t/
+HTTP-Daemon-6.01/t/chunked.t
+HTTP-Daemon-6.01/t/local/
+HTTP-Daemon-6.01/t/misc/
+HTTP-Daemon-6.01/t/robot/
+HTTP-Daemon-6.01/t/robot/ua-get.t
+HTTP-Daemon-6.01/t/robot/ua.t
+HTTP-Daemon-6.01/t/misc/httpd
+HTTP-Daemon-6.01/t/misc/httpd_term.pl
+HTTP-Daemon-6.01/t/local/http.t
+HTTP-Daemon-6.01/lib/HTTP/
+HTTP-Daemon-6.01/lib/HTTP/Daemon.pm
+cd /usr/src/perl/perl-5.14/HTTP-Daemon-6.01
+[1;39m## stage_HTTP-Daemon-6.01: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for HTTP::Daemon
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_HTTP-Daemon-6.01: make[0;0m
+cp lib/HTTP/Daemon.pm blib/lib/HTTP/Daemon.pm
+Manifying blib/man3/HTTP.Daemon.3pm
+tar xvzf WWW-RobotRules-6.02.tar.gz
+WWW-RobotRules-6.02/
+WWW-RobotRules-6.02/Changes
+WWW-RobotRules-6.02/lib/
+WWW-RobotRules-6.02/Makefile.PL
+WWW-RobotRules-6.02/MANIFEST
+WWW-RobotRules-6.02/META.yml
+WWW-RobotRules-6.02/README
+WWW-RobotRules-6.02/t/
+WWW-RobotRules-6.02/t/misc/
+WWW-RobotRules-6.02/t/rules-dbm.t
+WWW-RobotRules-6.02/t/rules.t
+WWW-RobotRules-6.02/t/misc/dbmrobot
+WWW-RobotRules-6.02/lib/WWW/
+WWW-RobotRules-6.02/lib/WWW/RobotRules/
+WWW-RobotRules-6.02/lib/WWW/RobotRules.pm
+WWW-RobotRules-6.02/lib/WWW/RobotRules/AnyDBM_File.pm
+cd /usr/src/perl/perl-5.14/WWW-RobotRules-6.02
+[1;39m## stage_WWW-RobotRules-6.02: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for WWW::RobotRules
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_WWW-RobotRules-6.02: make[0;0m
+cp lib/WWW/RobotRules.pm blib/lib/WWW/RobotRules.pm
+cp lib/WWW/RobotRules/AnyDBM_File.pm blib/lib/WWW/RobotRules/AnyDBM_File.pm
+Manifying blib/man3/WWW.RobotRules.3pm
+Manifying blib/man3/WWW.RobotRules.AnyDBM_File.3pm
+tar xvzf HTTP-Negotiate-6.01.tar.gz
+HTTP-Negotiate-6.01/
+HTTP-Negotiate-6.01/Changes
+HTTP-Negotiate-6.01/lib/
+HTTP-Negotiate-6.01/Makefile.PL
+HTTP-Negotiate-6.01/MANIFEST
+HTTP-Negotiate-6.01/META.yml
+HTTP-Negotiate-6.01/README
+HTTP-Negotiate-6.01/t/
+HTTP-Negotiate-6.01/t/negotiate.t
+HTTP-Negotiate-6.01/lib/HTTP/
+HTTP-Negotiate-6.01/lib/HTTP/Negotiate.pm
+cd /usr/src/perl/perl-5.14/HTTP-Negotiate-6.01
+[1;39m## stage_HTTP-Negotiate-6.01: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for HTTP::Negotiate
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_HTTP-Negotiate-6.01: make[0;0m
+cp lib/HTTP/Negotiate.pm blib/lib/HTTP/Negotiate.pm
+Manifying blib/man3/HTTP.Negotiate.3pm
+tar xvzf HTTP-Cookies-6.01.tar.gz
+HTTP-Cookies-6.01/
+HTTP-Cookies-6.01/Changes
+HTTP-Cookies-6.01/lib/
+HTTP-Cookies-6.01/Makefile.PL
+HTTP-Cookies-6.01/MANIFEST
+HTTP-Cookies-6.01/META.yml
+HTTP-Cookies-6.01/README
+HTTP-Cookies-6.01/t/
+HTTP-Cookies-6.01/t/cookies.t
+HTTP-Cookies-6.01/lib/HTTP/
+HTTP-Cookies-6.01/lib/HTTP/Cookies/
+HTTP-Cookies-6.01/lib/HTTP/Cookies.pm
+HTTP-Cookies-6.01/lib/HTTP/Cookies/Microsoft.pm
+HTTP-Cookies-6.01/lib/HTTP/Cookies/Netscape.pm
+cd /usr/src/perl/perl-5.14/HTTP-Cookies-6.01
+[1;39m## stage_HTTP-Cookies-6.01: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for HTTP::Cookies
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_HTTP-Cookies-6.01: make[0;0m
+cp lib/HTTP/Cookies/Netscape.pm blib/lib/HTTP/Cookies/Netscape.pm
+cp lib/HTTP/Cookies/Microsoft.pm blib/lib/HTTP/Cookies/Microsoft.pm
+cp lib/HTTP/Cookies.pm blib/lib/HTTP/Cookies.pm
+Manifying blib/man3/HTTP.Cookies.Netscape.3pm
+Manifying blib/man3/HTTP.Cookies.Microsoft.3pm
+Manifying blib/man3/HTTP.Cookies.3pm
+tar xvzf Net-HTTP-6.03.tar.gz
+Net-HTTP-6.03/
+Net-HTTP-6.03/Changes
+Net-HTTP-6.03/lib/
+Net-HTTP-6.03/Makefile.PL
+Net-HTTP-6.03/MANIFEST
+Net-HTTP-6.03/META.yml
+Net-HTTP-6.03/README
+Net-HTTP-6.03/t/
+Net-HTTP-6.03/t/apache-https.t
+Net-HTTP-6.03/t/apache.t
+Net-HTTP-6.03/t/http.t
+Net-HTTP-6.03/lib/Net/
+Net-HTTP-6.03/lib/Net/HTTP/
+Net-HTTP-6.03/lib/Net/HTTP.pm
+Net-HTTP-6.03/lib/Net/HTTPS.pm
+Net-HTTP-6.03/lib/Net/HTTP/Methods.pm
+Net-HTTP-6.03/lib/Net/HTTP/NB.pm
+cd /usr/src/perl/perl-5.14/Net-HTTP-6.03
+[1;39m## stage_Net-HTTP-6.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Net::HTTP
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Net-HTTP-6.03: make[0;0m
+cp lib/Net/HTTP/NB.pm blib/lib/Net/HTTP/NB.pm
+cp lib/Net/HTTP.pm blib/lib/Net/HTTP.pm
+cp lib/Net/HTTPS.pm blib/lib/Net/HTTPS.pm
+cp lib/Net/HTTP/Methods.pm blib/lib/Net/HTTP/Methods.pm
+Manifying blib/man3/Net.HTTP.NB.3pm
+Manifying blib/man3/Net.HTTP.3pm
+Manifying blib/man3/Net.HTTPS.3pm
 tar xvzf libwww-perl-6.04.tar.gz
 libwww-perl-6.04/
 libwww-perl-6.04/AUTHORS
@@ -2564,7 +3000,7 @@ cd /usr/src/perl/perl-5.14/libwww-perl-6.04
 Checking if your kit is complete...
 Looks good
 Writing Makefile for LWP
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_libwww-perl-6.04: make[0;0m
 cp lib/LWP/RobotUA.pm blib/lib/LWP/RobotUA.pm
 cp lib/LWP/Debug.pm blib/lib/LWP/Debug.pm
@@ -2614,7 +3050,6 @@ Manifying blib/man3/lwptut.3pm
 Manifying blib/man3/LWP.Simple.3pm
 Manifying blib/man3/LWP.UserAgent.3pm
 Manifying blib/man3/LWP.MemberMixin.3pm
-rm -rf Net-IP-1.25
 tar xvzf Net-IP-1.25.tar.gz
 Net-IP-1.25/
 Net-IP-1.25/iptab
@@ -2637,7 +3072,7 @@ cd /usr/src/perl/perl-5.14/Net-IP-1.25
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Net::IP
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Net-IP-1.25: make[0;0m
 cp IP.pm blib/lib/Net/IP.pm
 cp ipcount blib/script/ipcount
@@ -2646,7 +3081,33 @@ cp iptab blib/script/iptab
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/iptab
 Manifying blib/man3/Net.IP.3pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe "-Iblib/arch" "-Iblib/lib" Net-IP.spec.PL Net-IP.spec
-rm -rf Net-DNS-0.68
+tar xvzf Digest-HMAC-1.03.tar.gz
+Digest-HMAC-1.03/
+Digest-HMAC-1.03/Changes
+Digest-HMAC-1.03/lib/
+Digest-HMAC-1.03/Makefile.PL
+Digest-HMAC-1.03/MANIFEST
+Digest-HMAC-1.03/META.yml
+Digest-HMAC-1.03/README
+Digest-HMAC-1.03/t/
+Digest-HMAC-1.03/t/rfc2202.t
+Digest-HMAC-1.03/lib/Digest/
+Digest-HMAC-1.03/lib/Digest/HMAC.pm
+Digest-HMAC-1.03/lib/Digest/HMAC_MD5.pm
+Digest-HMAC-1.03/lib/Digest/HMAC_SHA1.pm
+cd /usr/src/perl/perl-5.14/Digest-HMAC-1.03
+[1;39m## stage_Digest-HMAC-1.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Digest::HMAC
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Digest-HMAC-1.03: make[0;0m
+cp lib/Digest/HMAC_MD5.pm blib/lib/Digest/HMAC_MD5.pm
+cp lib/Digest/HMAC.pm blib/lib/Digest/HMAC.pm
+cp lib/Digest/HMAC_SHA1.pm blib/lib/Digest/HMAC_SHA1.pm
+Manifying blib/man3/Digest.HMAC_MD5.3pm
+Manifying blib/man3/Digest.HMAC.3pm
+Manifying blib/man3/Digest.HMAC_SHA1.3pm
 tar xvzf Net-DNS-0.68.tar.gz
 Net-DNS-0.68/
 Net-DNS-0.68/contrib/
@@ -2794,15 +3255,10 @@ check for the expected results when both Net::DNS and the outside world are
 functioning properly. In case of failure it is often undecidable if the error
 lies with Net::DNS or elsewhere.
 
-
-The libraries needed to support IPv6 transport have not been found. 
-You will need recent versions of the IO::Socket::INET6 and Socket6 
-libraries (from CPAN). 
-
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Net::DNS
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Net-DNS-0.68: make[0;0m
 cp lib/Net/DNS/RR/A.pm blib/lib/Net/DNS/RR/A.pm
 cp lib/Net/DNS/RR/Unknown.pm blib/lib/Net/DNS/RR/Unknown.pm
@@ -2861,11 +3317,11 @@ cp lib/Net/DNS/Mailbox.pm blib/lib/Net/DNS/Mailbox.pm
 cp lib/Net/DNS/RR/KX.pm blib/lib/Net/DNS/RR/KX.pm
 cp lib/Net/DNS/RR/MB.pm blib/lib/Net/DNS/RR/MB.pm
 cp lib/Net/DNS/Resolver/Base.pm blib/lib/Net/DNS/Resolver/Base.pm
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.68\"  -DXS_VERSION=\"0.68\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   netdns.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.68\"  -DXS_VERSION=\"0.68\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   netdns.c
 /usr/bin/ar cr netdns.a netdns.o
 : netdns.a
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  DNS.xs > DNS.xsc && mv DNS.xsc DNS.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.68\"  -DXS_VERSION=\"0.68\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   DNS.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.68\"  -DXS_VERSION=\"0.68\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   DNS.c
 Running Mkbootstrap for Net::DNS ()
 chmod 644 DNS.bs
 rm -f blib/arch/auto/Net/DNS/DNS.dll
@@ -2932,7 +3388,6 @@ Manifying blib/man3/Net.DNS.Mailbox.3pm
 Manifying blib/man3/Net.DNS.RR.KX.3pm
 Manifying blib/man3/Net.DNS.RR.MB.3pm
 Manifying blib/man3/Net.DNS.Resolver.Base.3pm
-rm -rf Test-Reporter-1.58
 tar xvzf Test-Reporter-1.58.tar.gz
 Test-Reporter-1.58
 Test-Reporter-1.58/README
@@ -2969,7 +3424,7 @@ cd /usr/src/perl/perl-5.14/Test-Reporter-1.58
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Test::Reporter
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Test-Reporter-1.58: make[0;0m
 cp lib/Test/Reporter/Transport/Null.pm blib/lib/Test/Reporter/Transport/Null.pm
 cp lib/Test/Reporter.pm blib/lib/Test/Reporter.pm
@@ -2979,7 +3434,6 @@ Manifying blib/man3/Test.Reporter.Transport.Null.3pm
 Manifying blib/man3/Test.Reporter.3pm
 Manifying blib/man3/Test.Reporter.Transport.File.3pm
 Manifying blib/man3/Test.Reporter.Transport.3pm
-rm -rf Crypt-SSLeay-0.58
 tar xvzf Crypt-SSLeay-0.58.tar.gz
 Crypt-SSLeay-0.58
 Crypt-SSLeay-0.58/certs
@@ -3020,7 +3474,7 @@ patching file Makefile.PL
 
 BUILD INFORMATION
 ================================================
-ssl library: OpenSSL 1.0.1 in /usr
+ssl library: OpenSSL 1.0.1c in /usr
 ssl header:  openssl/ssl.h
 libraries:   -L/usr/lib -lssl -lcrypto -lgcc
 include dir: -I/usr/include
@@ -3029,7 +3483,7 @@ Checking if your kit is complete...
 Looks good
 Note (probably harmless): No library found for -lgcc
 Writing Makefile for Crypt::SSLeay
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Crypt-SSLeay-0.58: make[0;0m
 cp lib/Crypt/SSLeay/X509.pm blib/lib/Crypt/SSLeay/X509.pm
 cp lib/Net/SSL.pm blib/lib/Net/SSL.pm
@@ -3039,7 +3493,7 @@ cp lib/Crypt/SSLeay/CTX.pm blib/lib/Crypt/SSLeay/CTX.pm
 cp lib/Crypt/SSLeay/MainContext.pm blib/lib/Crypt/SSLeay/MainContext.pm
 cp lib/Crypt/SSLeay/Err.pm blib/lib/Crypt/SSLeay/Err.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  SSLeay.xs > SSLeay.xsc && mv SSLeay.xsc SSLeay.c
-gcc-4 -c  -I/usr/include  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.58\"  -DXS_VERSION=\"0.58\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   SSLeay.c
+gcc-4 -c  -I/usr/include  -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.58\"  -DXS_VERSION=\"0.58\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   SSLeay.c
 Running Mkbootstrap for Crypt::SSLeay ()
 chmod 644 SSLeay.bs
 rm -f blib/arch/auto/Crypt/SSLeay/SSLeay.dll
@@ -3051,29 +3505,28 @@ cp SSLeay.bs blib/arch/auto/Crypt/SSLeay/SSLeay.bs
 chmod 644 blib/arch/auto/Crypt/SSLeay/SSLeay.bs
 Manifying blib/man3/Net.SSL.3pm
 Manifying blib/man3/Crypt.SSLeay.3pm
-rm -rf common-sense-3.4
-tar xvzf common-sense-3.4.tar.gz
-common-sense-3.4/
-common-sense-3.4/t/
-common-sense-3.4/t/00_load.t
-common-sense-3.4/Changes
-common-sense-3.4/LICENSE
-common-sense-3.4/sense.pm.PL
-common-sense-3.4/META.json
-common-sense-3.4/README
-common-sense-3.4/Makefile.PL
-common-sense-3.4/MANIFEST
-cd /usr/src/perl/perl-5.14/common-sense-3.4
-[1;39m## stage_common-sense-3.4: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf common-sense-3.6.tar.gz
+common-sense-3.6/
+common-sense-3.6/t/
+common-sense-3.6/t/00_load.t
+common-sense-3.6/Changes
+common-sense-3.6/LICENSE
+common-sense-3.6/sense.pm.PL
+common-sense-3.6/META.json
+common-sense-3.6/META.yml
+common-sense-3.6/README
+common-sense-3.6/Makefile.PL
+common-sense-3.6/MANIFEST
+cd /usr/src/perl/perl-5.14/common-sense-3.6
+[1;39m## stage_common-sense-3.6: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
 Writing Makefile for common::sense
-Writing MYMETA.yml
-[1;39m## stage_common-sense-3.4: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_common-sense-3.6: make[0;0m
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe sense.pm.PL sense.pm
 cp sense.pm blib/lib/common/sense.pm
 Manifying blib/man3/common.sense.3pm
-rm -rf JSON-XS-2.32
 tar xvzf JSON-XS-2.32.tar.gz
 JSON-XS-2.32/
 JSON-XS-2.32/XS/
@@ -3122,12 +3575,12 @@ cd /usr/src/perl/perl-5.14/JSON-XS-2.32
 Checking if your kit is complete...
 Looks good
 Writing Makefile for JSON::XS
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_JSON-XS-2.32: make[0;0m
 cp XS/Boolean.pm blib/lib/JSON/XS/Boolean.pm
 cp XS.pm blib/lib/JSON/XS.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  XS.xs > XS.xsc && mv XS.xsc XS.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"2.32\"  -DXS_VERSION=\"2.32\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   XS.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"2.32\"  -DXS_VERSION=\"2.32\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   XS.c
 Running Mkbootstrap for JSON::XS ()
 chmod 644 XS.bs
 rm -f blib/arch/auto/JSON/XS/XS.dll
@@ -3142,7 +3595,6 @@ cp bin/json_xs blib/script/json_xs
 Manifying blib/man1/json_xs.1
 Manifying blib/man3/JSON.XS.Boolean.3pm
 Manifying blib/man3/JSON.XS.3pm
-rm -rf JSON-2.53
 tar xvzf JSON-2.53.tar.gz
 JSON-2.53/
 JSON-2.53/lib/
@@ -3223,7 +3675,7 @@ cd /usr/src/perl/perl-5.14/JSON-2.53
 [1;39m## stage_JSON-2.53: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Welcome to JSON (v.2.53)
 =============================
-If you install JSON::XS v.2.27, it makes JSON faster.
+You have JSON::XS (v.2.32), so JSON can work very fast!!
 
  ************************** CAUTION **************************
  * This is 'JSON version 2' and there are many differences   *
@@ -3236,7 +3688,7 @@ If you install JSON::XS v.2.27, it makes JSON faster.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for JSON
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_JSON-2.53: make[0;0m
 cp lib/JSON.pm blib/lib/JSON.pm
 cp lib/JSON/backportPP/Compat5005.pm blib/lib/JSON/backportPP/Compat5005.pm
@@ -3248,7 +3700,6 @@ Manifying blib/man3/JSON.3pm
 Manifying blib/man3/JSON.backportPP.Compat5006.3pm
 Manifying blib/man3/JSON.backportPP.Boolean.3pm
 Manifying blib/man3/JSON.backportPP.3pm
-rm -rf Metabase-Client-Simple-0.008
 tar xvzf Metabase-Client-Simple-0.008.tar.gz
 Metabase-Client-Simple-0.008
 Metabase-Client-Simple-0.008/Changes
@@ -3276,11 +3727,46 @@ cd /usr/src/perl/perl-5.14/Metabase-Client-Simple-0.008
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Metabase::Client::Simple
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Metabase-Client-Simple-0.008: make[0;0m
 cp lib/Metabase/Client/Simple.pm blib/lib/Metabase/Client/Simple.pm
 Manifying blib/man3/Metabase.Client.Simple.3pm
-rm -rf Data-UUID-1.217
+tar xvzf Sub-Install-0.926.tar.gz
+Sub-Install-0.926/
+Sub-Install-0.926/Changes
+Sub-Install-0.926/lib/
+Sub-Install-0.926/LICENSE
+Sub-Install-0.926/Makefile.PL
+Sub-Install-0.926/MANIFEST
+Sub-Install-0.926/META.json
+Sub-Install-0.926/META.yml
+Sub-Install-0.926/MYMETA.json
+Sub-Install-0.926/MYMETA.yml
+Sub-Install-0.926/README
+Sub-Install-0.926/t/
+Sub-Install-0.926/t/00-load.t
+Sub-Install-0.926/t/auto_as.t
+Sub-Install-0.926/t/export.t
+Sub-Install-0.926/t/inst-blessed.t
+Sub-Install-0.926/t/install.t
+Sub-Install-0.926/t/misc_errors.t
+Sub-Install-0.926/t/perl-critic.t
+Sub-Install-0.926/t/pod-coverage.t
+Sub-Install-0.926/t/pod.t
+Sub-Install-0.926/t/reinstall.t
+Sub-Install-0.926/t/SI_install.t
+Sub-Install-0.926/t/SI_reinstall.t
+Sub-Install-0.926/lib/Sub/
+Sub-Install-0.926/lib/Sub/Install.pm
+cd /usr/src/perl/perl-5.14/Sub-Install-0.926
+[1;39m## stage_Sub-Install-0.926: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Sub::Install
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Sub-Install-0.926: make[0;0m
+cp lib/Sub/Install.pm blib/lib/Sub/Install.pm
+Manifying blib/man3/Sub.Install.3pm
 tar xvzf Data-UUID-1.217.tar.gz
 Data-UUID-1.217/
 Data-UUID-1.217/Changes
@@ -3306,6 +3792,8 @@ Data-UUID-1.217/t/threads.t
 Data-UUID-1.217/smp-test/collision.t
 Data-UUID-1.217/smp-test/uuid-fork.pl
 cd /usr/src/perl/perl-5.14/Data-UUID-1.217
+[1;39m## stage_Data-UUID-1.217: patch -b -f -p1 ../Data-UUID-1.217.patch[0;0m
+patching file UUID.h
 [1;39m## stage_Data-UUID-1.217: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
@@ -3313,11 +3801,11 @@ Configured options (run perl Makefile.PL --help for how to change this):
 	UUID state storage: /tmp
 	default umask: 0007
 Writing Makefile for Data::UUID
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Data-UUID-1.217: make[0;0m
 cp UUID.pm blib/lib/Data/UUID.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  UUID.xs > UUID.xsc && mv UUID.xsc UUID.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.217\"  -DXS_VERSION=\"1.217\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -D_STDIR=\"/tmp\" -D__cygwin__ -D_DEFAULT_UMASK=0007 UUID.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"1.217\"  -DXS_VERSION=\"1.217\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"  -D_STDIR=\"/tmp\" -D__cygwin__ -D_DEFAULT_UMASK=0007 UUID.c
 Running Mkbootstrap for Data::UUID ()
 chmod 644 UUID.bs
 rm -f blib/arch/auto/Data/UUID/UUID.dll
@@ -3328,7 +3816,152 @@ chmod 755 blib/arch/auto/Data/UUID/UUID.dll
 cp UUID.bs blib/arch/auto/Data/UUID/UUID.bs
 chmod 644 blib/arch/auto/Data/UUID/UUID.bs
 Manifying blib/man3/Data.UUID.3pm
-rm -rf Data-GUID-0.046
+tar xvzf Params-Util-1.07.tar.gz
+Params-Util-1.07/
+Params-Util-1.07/META.json
+Params-Util-1.07/META.yml
+Params-Util-1.07/README
+Params-Util-1.07/Makefile.PL
+Params-Util-1.07/LICENSE
+Params-Util-1.07/MYMETA.json
+Params-Util-1.07/xt/
+Params-Util-1.07/xt/meta.t
+Params-Util-1.07/xt/pmv.t
+Params-Util-1.07/xt/pod.t
+Params-Util-1.07/Util.xs
+Params-Util-1.07/MANIFEST
+Params-Util-1.07/lib/
+Params-Util-1.07/lib/Params/
+Params-Util-1.07/lib/Params/Util.pm
+Params-Util-1.07/Changes
+Params-Util-1.07/t/
+Params-Util-1.07/t/04_codelike.t
+Params-Util-1.07/t/08_driver.t
+Params-Util-1.07/t/16_invocant.t
+Params-Util-1.07/t/14_codelike.t
+Params-Util-1.07/t/18_driver.t
+Params-Util-1.07/t/12_main.t
+Params-Util-1.07/t/02_main.t
+Params-Util-1.07/t/06_invocant.t
+Params-Util-1.07/t/19_insideout.t
+Params-Util-1.07/t/15_typelike.t
+Params-Util-1.07/t/07_handle.t
+Params-Util-1.07/t/05_typelike.t
+Params-Util-1.07/t/17_handle.t
+Params-Util-1.07/t/09_insideout.t
+Params-Util-1.07/t/handles/
+Params-Util-1.07/t/handles/readfile.txt
+Params-Util-1.07/t/handles/handle.txt
+Params-Util-1.07/t/01_compile.t
+Params-Util-1.07/t/11_compile.t
+Params-Util-1.07/t/driver/
+Params-Util-1.07/t/driver/E.pm
+Params-Util-1.07/t/driver/A.pm
+Params-Util-1.07/t/driver/D.pm
+Params-Util-1.07/t/driver/My_B.pm
+Params-Util-1.07/t/driver/F.pm
+Params-Util-1.07/t/driver/B.pm
+Params-Util-1.07/t/13_all.t
+Params-Util-1.07/t/03_all.t
+cd /usr/src/perl/perl-5.14/Params-Util-1.07
+[1;39m## stage_Params-Util-1.07: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Params::Util
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Params-Util-1.07: make[0;0m
+cp lib/Params/Util.pm blib/lib/Params/Util.pm
+Manifying blib/man3/Params.Util.3pm
+tar xvzf Data-OptList-0.107.tar.gz
+Data-OptList-0.107
+Data-OptList-0.107/README
+Data-OptList-0.107/Changes
+Data-OptList-0.107/LICENSE
+Data-OptList-0.107/dist.ini
+Data-OptList-0.107/t
+Data-OptList-0.107/t/hash.t
+Data-OptList-0.107/META.yml
+Data-OptList-0.107/MANIFEST
+Data-OptList-0.107/t/mkopt.t
+Data-OptList-0.107/META.json
+Data-OptList-0.107/Makefile.PL
+Data-OptList-0.107/lib/Data
+Data-OptList-0.107/lib/Data/OptList.pm
+Data-OptList-0.107/t/release-pod-syntax.t
+cd /usr/src/perl/perl-5.14/Data-OptList-0.107
+[1;39m## stage_Data-OptList-0.107: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Warning: prerequisite Params::Util 0 not found.
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Data::OptList
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Data-OptList-0.107: make[0;0m
+cp lib/Data/OptList.pm blib/lib/Data/OptList.pm
+Manifying blib/man3/Data.OptList.3pm
+tar xvzf Sub-Exporter-0.984.tar.gz
+Sub-Exporter-0.984/
+Sub-Exporter-0.984/Changes
+Sub-Exporter-0.984/dist.ini
+Sub-Exporter-0.984/lib/
+Sub-Exporter-0.984/LICENSE
+Sub-Exporter-0.984/Makefile.PL
+Sub-Exporter-0.984/MANIFEST
+Sub-Exporter-0.984/META.json
+Sub-Exporter-0.984/META.yml
+Sub-Exporter-0.984/README
+Sub-Exporter-0.984/t/
+Sub-Exporter-0.984/xt/
+Sub-Exporter-0.984/xt/release/
+Sub-Exporter-0.984/xt/release/pod-syntax.t
+Sub-Exporter-0.984/t/col-init.t
+Sub-Exporter-0.984/t/collection.t
+Sub-Exporter-0.984/t/expand-group.t
+Sub-Exporter-0.984/t/faux-export.t
+Sub-Exporter-0.984/t/gen-callable.t
+Sub-Exporter-0.984/t/group-generator.t
+Sub-Exporter-0.984/t/inherited.t
+Sub-Exporter-0.984/t/into-level.t
+Sub-Exporter-0.984/t/lib/
+Sub-Exporter-0.984/t/real-export-groupgen.t
+Sub-Exporter-0.984/t/real-export-href.t
+Sub-Exporter-0.984/t/real-export-setup.t
+Sub-Exporter-0.984/t/util-curry.t
+Sub-Exporter-0.984/t/util-currychain.t
+Sub-Exporter-0.984/t/util-like.t
+Sub-Exporter-0.984/t/util-merge.t
+Sub-Exporter-0.984/t/util-mixin.t
+Sub-Exporter-0.984/t/util-namemap.t
+Sub-Exporter-0.984/t/valid-config.t
+Sub-Exporter-0.984/t/lib/Test/
+Sub-Exporter-0.984/t/lib/Test/SubExporter/
+Sub-Exporter-0.984/t/lib/Test/SubExporter/DashSetup.pm
+Sub-Exporter-0.984/t/lib/Test/SubExporter/Faux.pm
+Sub-Exporter-0.984/t/lib/Test/SubExporter/GroupGen.pm
+Sub-Exporter-0.984/t/lib/Test/SubExporter/GroupGenSubclass.pm
+Sub-Exporter-0.984/t/lib/Test/SubExporter/ObjGen.pm
+Sub-Exporter-0.984/t/lib/Test/SubExporter/s_e.pm
+Sub-Exporter-0.984/lib/Sub/
+Sub-Exporter-0.984/lib/Sub/Exporter/
+Sub-Exporter-0.984/lib/Sub/Exporter.pm
+Sub-Exporter-0.984/lib/Sub/Exporter/Cookbook.pod
+Sub-Exporter-0.984/lib/Sub/Exporter/Tutorial.pod
+Sub-Exporter-0.984/lib/Sub/Exporter/Util.pm
+cd /usr/src/perl/perl-5.14/Sub-Exporter-0.984
+[1;39m## stage_Sub-Exporter-0.984: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Warning: prerequisite Params::Util 0.14 not found.
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Sub::Exporter
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Sub-Exporter-0.984: make[0;0m
+cp lib/Sub/Exporter/Util.pm blib/lib/Sub/Exporter/Util.pm
+cp lib/Sub/Exporter/Cookbook.pod blib/lib/Sub/Exporter/Cookbook.pod
+cp lib/Sub/Exporter/Tutorial.pod blib/lib/Sub/Exporter/Tutorial.pod
+cp lib/Sub/Exporter.pm blib/lib/Sub/Exporter.pm
+Manifying blib/man3/Sub.Exporter.Util.3pm
+Manifying blib/man3/Sub.Exporter.Cookbook.3pm
+Manifying blib/man3/Sub.Exporter.Tutorial.3pm
+Manifying blib/man3/Sub.Exporter.3pm
 tar xvzf Data-GUID-0.046.tar.gz
 Data-GUID-0.046/
 Data-GUID-0.046/Changes
@@ -3350,15 +3983,13 @@ Data-GUID-0.046/lib/Data/
 Data-GUID-0.046/lib/Data/GUID.pm
 cd /usr/src/perl/perl-5.14/Data-GUID-0.046
 [1;39m## stage_Data-GUID-0.046: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Warning: prerequisite Data::UUID 1.148 not found.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Data::GUID
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Data-GUID-0.046: make[0;0m
 cp lib/Data/GUID.pm blib/lib/Data/GUID.pm
 Manifying blib/man3/Data.GUID.3pm
-rm -rf CPAN-DistnameInfo-0.12
 tar xvzf CPAN-DistnameInfo-0.12.tar.gz
 CPAN-DistnameInfo-0.12/
 CPAN-DistnameInfo-0.12/Changes
@@ -3378,11 +4009,10 @@ cd /usr/src/perl/perl-5.14/CPAN-DistnameInfo-0.12
 Checking if your kit is complete...
 Looks good
 Writing Makefile for CPAN::DistnameInfo
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_CPAN-DistnameInfo-0.12: make[0;0m
 cp lib/CPAN/DistnameInfo.pm blib/lib/CPAN/DistnameInfo.pm
 Manifying blib/man3/CPAN.DistnameInfo.3pm
-rm -rf Metabase-Fact-0.021
 tar xvzf Metabase-Fact-0.021.tar.gz
 Metabase-Fact-0.021/
 Metabase-Fact-0.021/bin/
@@ -3455,10 +4085,11 @@ Metabase-Fact-0.021/Changes
 Metabase-Fact-0.021/README
 cd /usr/src/perl/perl-5.14/Metabase-Fact-0.021
 [1;39m## stage_Metabase-Fact-0.021: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Warning: prerequisite Test::Exception 0 not found.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Metabase::Fact
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Metabase-Fact-0.021: make[0;0m
 cp lib/Metabase/User/FullName.pm blib/lib/Metabase/User/FullName.pm
 cp lib/Metabase/User/EmailAddress.pm blib/lib/Metabase/User/EmailAddress.pm
@@ -3495,33 +4126,107 @@ Manifying blib/man3/Metabase.Resource.metabase.user.3pm
 Manifying blib/man3/Metabase.Resource.cpan.3pm
 Manifying blib/man3/Metabase.Report.3pm
 Manifying blib/man3/Metabase.User.Profile.3pm
-rm -rf Config-Perl-V-0.14
-tar xvzf Config-Perl-V-0.14.tar.gz
-Config-Perl-V-0.14/
-Config-Perl-V-0.14/examples/
-Config-Perl-V-0.14/examples/show-v.pl
-Config-Perl-V-0.14/V.pm
-Config-Perl-V-0.14/META.yml
-Config-Perl-V-0.14/MANIFEST
-Config-Perl-V-0.14/Changelog
-Config-Perl-V-0.14/Makefile.PL
-Config-Perl-V-0.14/README
-Config-Perl-V-0.14/META.json
-Config-Perl-V-0.14/t/
-Config-Perl-V-0.14/t/00_pod.t
-Config-Perl-V-0.14/t/01_pod.t
-Config-Perl-V-0.14/t/20_plv.t
-Config-Perl-V-0.14/t/10_base.t
-cd /usr/src/perl/perl-5.14/Config-Perl-V-0.14
-[1;39m## stage_Config-Perl-V-0.14: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf Test-Tester-0.108.tar.gz
+Test-Tester-0.108/
+Test-Tester-0.108/lib/
+Test-Tester-0.108/lib/Test/
+Test-Tester-0.108/lib/Test/Tester.pm
+Test-Tester-0.108/lib/Test/Tester/
+Test-Tester-0.108/lib/Test/Tester/Capture.pm
+Test-Tester-0.108/lib/Test/Tester/CaptureRunner.pm
+Test-Tester-0.108/lib/Test/Tester/Delegate.pm
+Test-Tester-0.108/README
+Test-Tester-0.108/TODO
+Test-Tester-0.108/t/
+Test-Tester-0.108/t/MyTest.pm
+Test-Tester-0.108/t/run_test.t
+Test-Tester-0.108/t/SmallTest.pm
+Test-Tester-0.108/t/check_tests.t
+Test-Tester-0.108/t/depth.t
+Test-Tester-0.108/t/auto.t
+Test-Tester-0.108/t/capture.t
+Test-Tester-0.108/t/fail/
+Test-Tester-0.108/t/fail/fail.t
+Test-Tester-0.108/CHANGES
+Test-Tester-0.108/MANIFEST
+Test-Tester-0.108/Makefile.PL
+Test-Tester-0.108/ARTISTIC
+Test-Tester-0.108/META.yml
+cd /usr/src/perl/perl-5.14/Test-Tester-0.108
+[1;39m## stage_Test-Tester-0.108: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Test::Tester
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Test-Tester-0.108: make[0;0m
+cp lib/Test/Tester.pm blib/lib/Test/Tester.pm
+cp lib/Test/Tester/Capture.pm blib/lib/Test/Tester/Capture.pm
+cp lib/Test/Tester/CaptureRunner.pm blib/lib/Test/Tester/CaptureRunner.pm
+cp lib/Test/Tester/Delegate.pm blib/lib/Test/Tester/Delegate.pm
+Manifying blib/man3/Test.Tester.Capture.3pm
+Manifying blib/man3/Test.Tester.3pm
+Manifying blib/man3/Test.Tester.CaptureRunner.3pm
+tar xvzf Test-NoWarnings-1.04.tar.gz
+Test-NoWarnings-1.04/
+Test-NoWarnings-1.04/META.json
+Test-NoWarnings-1.04/META.yml
+Test-NoWarnings-1.04/LICENSE
+Test-NoWarnings-1.04/Makefile.PL
+Test-NoWarnings-1.04/README
+Test-NoWarnings-1.04/xt/
+Test-NoWarnings-1.04/xt/pmv.t
+Test-NoWarnings-1.04/xt/meta.t
+Test-NoWarnings-1.04/xt/pod.t
+Test-NoWarnings-1.04/MANIFEST
+Test-NoWarnings-1.04/lib/
+Test-NoWarnings-1.04/lib/Test/
+Test-NoWarnings-1.04/lib/Test/NoWarnings/
+Test-NoWarnings-1.04/lib/Test/NoWarnings/Warning.pm
+Test-NoWarnings-1.04/lib/Test/NoWarnings.pm
+Test-NoWarnings-1.04/MYMETA.json
+Test-NoWarnings-1.04/Changes
+Test-NoWarnings-1.04/t/
+Test-NoWarnings-1.04/t/04_no_tests.t
+Test-NoWarnings-1.04/t/01_compile.t
+Test-NoWarnings-1.04/t/02_none.t
+Test-NoWarnings-1.04/t/03_end.t
+Test-NoWarnings-1.04/t/05_no_end.t
+Test-NoWarnings-1.04/t/06_fork.t
+cd /usr/src/perl/perl-5.14/Test-NoWarnings-1.04
+[1;39m## stage_Test-NoWarnings-1.04: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Test::NoWarnings
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Test-NoWarnings-1.04: make[0;0m
+cp lib/Test/NoWarnings.pm blib/lib/Test/NoWarnings.pm
+cp lib/Test/NoWarnings/Warning.pm blib/lib/Test/NoWarnings/Warning.pm
+Manifying blib/man3/Test.NoWarnings.3pm
+tar xvzf Config-Perl-V-0.15.tar.gz
+Config-Perl-V-0.15/
+Config-Perl-V-0.15/examples/
+Config-Perl-V-0.15/examples/show-v.pl
+Config-Perl-V-0.15/V.pm
+Config-Perl-V-0.15/META.yml
+Config-Perl-V-0.15/MANIFEST
+Config-Perl-V-0.15/Changelog
+Config-Perl-V-0.15/Makefile.PL
+Config-Perl-V-0.15/README
+Config-Perl-V-0.15/META.json
+Config-Perl-V-0.15/t/
+Config-Perl-V-0.15/t/00_pod.t
+Config-Perl-V-0.15/t/01_pod.t
+Config-Perl-V-0.15/t/20_plv.t
+Config-Perl-V-0.15/t/10_base.t
+cd /usr/src/perl/perl-5.14/Config-Perl-V-0.15
+[1;39m## stage_Config-Perl-V-0.15: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Config::Perl::V
-Writing MYMETA.yml
-[1;39m## stage_Config-Perl-V-0.14: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Config-Perl-V-0.15: make[0;0m
 cp V.pm blib/lib/Config/Perl/V.pm
 Manifying blib/man3/Config.Perl.V.3pm
-rm -rf CPAN-Testers-Report-1.999001
 tar xvzf CPAN-Testers-Report-1.999001.tar.gz
 CPAN-Testers-Report-1.999001
 CPAN-Testers-Report-1.999001/Changes
@@ -3557,7 +4262,7 @@ cd /usr/src/perl/perl-5.14/CPAN-Testers-Report-1.999001
 Checking if your kit is complete...
 Looks good
 Writing Makefile for CPAN::Testers::Report
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_CPAN-Testers-Report-1.999001: make[0;0m
 cp lib/CPAN/Testers/Fact/TesterComment.pm blib/lib/CPAN/Testers/Fact/TesterComment.pm
 cp lib/CPAN/Testers/Fact/TestSummary.pm blib/lib/CPAN/Testers/Fact/TestSummary.pm
@@ -3577,7 +4282,6 @@ Manifying blib/man3/CPAN.Testers.Fact.LegacyReport.3pm
 Manifying blib/man3/CPAN.Testers.Fact.TestEnvironment.3pm
 Manifying blib/man3/CPAN.Testers.Fact.PerlConfig.3pm
 Manifying blib/man3/CPAN.Testers.Fact.Prereqs.3pm
-rm -rf Test-Reporter-Transport-Metabase-1.999008
 tar xvzf Test-Reporter-Transport-Metabase-1.999008.tar.gz
 Test-Reporter-Transport-Metabase-1.999008
 Test-Reporter-Transport-Metabase-1.999008/Changes
@@ -3603,123 +4307,255 @@ cd /usr/src/perl/perl-5.14/Test-Reporter-Transport-Metabase-1.999008
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Test::Reporter::Transport::Metabase
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Test-Reporter-Transport-Metabase-1.999008: make[0;0m
 cp lib/Test/Reporter/Transport/Metabase.pm blib/lib/Test/Reporter/Transport/Metabase.pm
 Manifying blib/man3/Test.Reporter.Transport.Metabase.3pm
-rm -rf CPAN-Reporter-1.2005
-tar xvzf CPAN-Reporter-1.2005.tar.gz
-CPAN-Reporter-1.2005/
-CPAN-Reporter-1.2005/lib/
-CPAN-Reporter-1.2005/lib/CPAN/
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/PrereqCheck.pm
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/History.pm
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/Config.pm
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/FAQ.pm
-CPAN-Reporter-1.2005/lib/CPAN/Reporter/API.pm
-CPAN-Reporter-1.2005/lib/CPAN/Reporter.pm
-CPAN-Reporter-1.2005/examples/
-CPAN-Reporter-1.2005/examples/config.ini
-CPAN-Reporter-1.2005/xt/
-CPAN-Reporter-1.2005/xt/release/
-CPAN-Reporter-1.2005/xt/release/test-version.t
-CPAN-Reporter-1.2005/xt/release/pod-coverage.t
-CPAN-Reporter-1.2005/xt/release/portability.t
-CPAN-Reporter-1.2005/xt/release/pod-syntax.t
-CPAN-Reporter-1.2005/xt/release/distmeta.t
-CPAN-Reporter-1.2005/xt/author/
-CPAN-Reporter-1.2005/xt/author/pod-spell.t
-CPAN-Reporter-1.2005/xt/author/critic.t
-CPAN-Reporter-1.2005/README.PATCHING
-CPAN-Reporter-1.2005/perlcritic.rc
-CPAN-Reporter-1.2005/MANIFEST.SKIP
-CPAN-Reporter-1.2005/Makefile.PL
-CPAN-Reporter-1.2005/t/
-CPAN-Reporter-1.2005/t/perl5lib-shadow/
-CPAN-Reporter-1.2005/t/perl5lib-shadow/Bogus/
-CPAN-Reporter-1.2005/t/perl5lib-shadow/Bogus/Shadow.pm
-CPAN-Reporter-1.2005/t/56_test_report_by_harness.t
-CPAN-Reporter-1.2005/t/41_make_report_discard.t
-CPAN-Reporter-1.2005/t/55_test_report_discard.t
-CPAN-Reporter-1.2005/t/52_test_report_unknown.t
-CPAN-Reporter-1.2005/t/12_toolchain_versions.t
-CPAN-Reporter-1.2005/t/70_darwin_move_config.t
-CPAN-Reporter-1.2005/t/63_config_send_report.t
-CPAN-Reporter-1.2005/t/54_test_report_split.t
-CPAN-Reporter-1.2005/t/31_PL_report_discard.t
-CPAN-Reporter-1.2005/t/62_duplicate_reports.t
-CPAN-Reporter-1.2005/t/15_option_validation.t
-CPAN-Reporter-1.2005/t/60_discard_triggers.t
-CPAN-Reporter-1.2005/t/51_test_report_fail.t
-CPAN-Reporter-1.2005/t/50_test_report_pass.t
-CPAN-Reporter-1.2005/t/perl5lib/
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/NoVersion.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/Conflict.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/Complex.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/Broken.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/TooOld.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/Shadow.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/Found.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/LTE.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/GTE.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/GT.pm
-CPAN-Reporter-1.2005/t/perl5lib/Bogus/LT.pm
-CPAN-Reporter-1.2005/t/14_command_timeout.t
-CPAN-Reporter-1.2005/t/02_config_env_vars.t
-CPAN-Reporter-1.2005/t/53_test_report_na.t
-CPAN-Reporter-1.2005/t/61_bad_dist_names.t
-CPAN-Reporter-1.2005/t/71_missing_config.t
-CPAN-Reporter-1.2005/t/04_option_parsing.t
-CPAN-Reporter-1.2005/t/57_hang_interrupt.t
-CPAN-Reporter-1.2005/t/13_record_command.t
-CPAN-Reporter-1.2005/t/72_rename_history.t
-CPAN-Reporter-1.2005/t/history/
-CPAN-Reporter-1.2005/t/history/reports-sent-longer.db
-CPAN-Reporter-1.2005/t/history/reports-sent.db
-CPAN-Reporter-1.2005/t/history/history.db
-CPAN-Reporter-1.2005/t/20_report_output.t
-CPAN-Reporter-1.2005/t/01_CPAN_Reporter.t
-CPAN-Reporter-1.2005/t/66_have_tested.t
-CPAN-Reporter-1.2005/t/03_config_file.t
-CPAN-Reporter-1.2005/t/40_make_report.t
-CPAN-Reporter-1.2005/t/06_prompt_text.t
-CPAN-Reporter-1.2005/t/11_env_config.t
-CPAN-Reporter-1.2005/t/MockCPANDist.pm
-CPAN-Reporter-1.2005/t/64_transport.t
-CPAN-Reporter-1.2005/t/10_prereq_pm.t
-CPAN-Reporter-1.2005/t/30_PL_report.t
-CPAN-Reporter-1.2005/t/MockHomeDir.pm
-CPAN-Reporter-1.2005/t/05_prompting.t
-CPAN-Reporter-1.2005/t/73_autoflush.t
-CPAN-Reporter-1.2005/t/65_skipfile.t
-CPAN-Reporter-1.2005/t/67_distfile.t
-CPAN-Reporter-1.2005/t/00-compile.t
-CPAN-Reporter-1.2005/t/bin/
-CPAN-Reporter-1.2005/t/bin/NotMakefile.PL
-CPAN-Reporter-1.2005/t/bin/Makefile.PL
-CPAN-Reporter-1.2005/t/bin/NotBuild.PL
-CPAN-Reporter-1.2005/t/bin/Build.PL
-CPAN-Reporter-1.2005/t/68_is_make.t
-CPAN-Reporter-1.2005/t/Frontend.pm
-CPAN-Reporter-1.2005/t/Helper.pm
-CPAN-Reporter-1.2005/t/dist.tgz
-CPAN-Reporter-1.2005/META.json
-CPAN-Reporter-1.2005/MANIFEST
-CPAN-Reporter-1.2005/META.yml
-CPAN-Reporter-1.2005/dist.ini
-CPAN-Reporter-1.2005/LICENSE
-CPAN-Reporter-1.2005/Changes
-CPAN-Reporter-1.2005/README
-CPAN-Reporter-1.2005/Todo
-cd /usr/src/perl/perl-5.14/CPAN-Reporter-1.2005
-[1;39m## stage_CPAN-Reporter-1.2005: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+tar xvzf Capture-Tiny-0.18.tar.gz
+Capture-Tiny-0.18/
+Capture-Tiny-0.18/lib/
+Capture-Tiny-0.18/lib/Capture/
+Capture-Tiny-0.18/lib/Capture/Tiny.pm
+Capture-Tiny-0.18/xt/
+Capture-Tiny-0.18/xt/release/
+Capture-Tiny-0.18/xt/release/test-version.t
+Capture-Tiny-0.18/xt/release/pod-coverage.t
+Capture-Tiny-0.18/xt/release/portability.t
+Capture-Tiny-0.18/xt/release/pod-syntax.t
+Capture-Tiny-0.18/xt/release/distmeta.t
+Capture-Tiny-0.18/xt/author/
+Capture-Tiny-0.18/xt/author/pod-spell.t
+Capture-Tiny-0.18/xt/author/critic.t
+Capture-Tiny-0.18/examples/
+Capture-Tiny-0.18/examples/rt-58208.pl
+Capture-Tiny-0.18/examples/tee.pl
+Capture-Tiny-0.18/README.PATCHING
+Capture-Tiny-0.18/perlcritic.rc
+Capture-Tiny-0.18/Makefile.PL
+Capture-Tiny-0.18/t/
+Capture-Tiny-0.18/t/09-preserve-exit-code.t
+Capture-Tiny-0.18/t/18-custom-capture.t
+Capture-Tiny-0.18/t/21-stderr-badtie.t
+Capture-Tiny-0.18/t/20-stdout-badtie.t
+Capture-Tiny-0.18/t/11-stderr-string.t
+Capture-Tiny-0.18/t/10-stdout-string.t
+Capture-Tiny-0.18/t/07-stderr-closed.t
+Capture-Tiny-0.18/t/06-stdout-closed.t
+Capture-Tiny-0.18/t/22-stdin-badtie.t
+Capture-Tiny-0.18/t/17-pass-results.t
+Capture-Tiny-0.18/t/16-catch-errors.t
+Capture-Tiny-0.18/t/12-stdin-string.t
+Capture-Tiny-0.18/t/08-stdin-closed.t
+Capture-Tiny-0.18/t/01-Capture-Tiny.t
+Capture-Tiny-0.18/t/24-all-badtied.t
+Capture-Tiny-0.18/t/14-stderr-tied.t
+Capture-Tiny-0.18/t/13-stdout-tied.t
+Capture-Tiny-0.18/t/15-stdin-tied.t
+Capture-Tiny-0.18/t/23-all-tied.t
+Capture-Tiny-0.18/t/19-inline-c.t
+Capture-Tiny-0.18/t/00-compile.t
+Capture-Tiny-0.18/t/lib/
+Capture-Tiny-0.18/t/lib/TieEvil.pm
+Capture-Tiny-0.18/t/lib/Utils.pm
+Capture-Tiny-0.18/t/lib/TieLC.pm
+Capture-Tiny-0.18/t/lib/Cases.pm
+Capture-Tiny-0.18/t/02-capture.t
+Capture-Tiny-0.18/t/03-tee.t
+Capture-Tiny-0.18/META.json
+Capture-Tiny-0.18/MANIFEST
+Capture-Tiny-0.18/META.yml
+Capture-Tiny-0.18/dist.ini
+Capture-Tiny-0.18/LICENSE
+Capture-Tiny-0.18/Changes
+Capture-Tiny-0.18/README
+Capture-Tiny-0.18/Todo
+cd /usr/src/perl/perl-5.14/Capture-Tiny-0.18
+[1;39m## stage_Capture-Tiny-0.18: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Capture::Tiny
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Capture-Tiny-0.18: make[0;0m
+cp lib/Capture/Tiny.pm blib/lib/Capture/Tiny.pm
+Manifying blib/man3/Capture.Tiny.3pm
+tar xvzf Devel-Autoflush-0.05.tar.gz
+Devel-Autoflush-0.05/
+Devel-Autoflush-0.05/MANIFEST
+Devel-Autoflush-0.05/META.yml
+Devel-Autoflush-0.05/MANIFEST.SKIP
+Devel-Autoflush-0.05/Todo
+Devel-Autoflush-0.05/t/
+Devel-Autoflush-0.05/t/00-load.t
+Devel-Autoflush-0.05/t/autoflush.t
+Devel-Autoflush-0.05/README
+Devel-Autoflush-0.05/Build.PL
+Devel-Autoflush-0.05/Makefile.PL
+Devel-Autoflush-0.05/Changes
+Devel-Autoflush-0.05/inc/
+Devel-Autoflush-0.05/inc/Module/
+Devel-Autoflush-0.05/inc/Module/Build/
+Devel-Autoflush-0.05/inc/Module/Build/WikiDoc.pm
+Devel-Autoflush-0.05/xt/
+Devel-Autoflush-0.05/xt/kwalitee.t
+Devel-Autoflush-0.05/xt/pod-coverage.t
+Devel-Autoflush-0.05/xt/pod-format.t
+Devel-Autoflush-0.05/xt/critic.t
+Devel-Autoflush-0.05/xt/perlcriticrc
+Devel-Autoflush-0.05/lib/
+Devel-Autoflush-0.05/lib/Devel/
+Devel-Autoflush-0.05/lib/Devel/Autoflush.pm
+Devel-Autoflush-0.05/lib/Devel/Autoflush.pod
+Devel-Autoflush-0.05/INSTALL
+Devel-Autoflush-0.05/LICENSE
+cd /usr/src/perl/perl-5.14/Devel-Autoflush-0.05
+[1;39m## stage_Devel-Autoflush-0.05: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for Devel::Autoflush
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_Devel-Autoflush-0.05: make[0;0m
+cp lib/Devel/Autoflush.pod blib/lib/Devel/Autoflush.pod
+cp lib/Devel/Autoflush.pm blib/lib/Devel/Autoflush.pm
+Manifying blib/man3/Devel.Autoflush.3pm
+tar xvzf IPC-Cmd-0.78.tar.gz
+IPC-Cmd-0.78
+IPC-Cmd-0.78/t
+IPC-Cmd-0.78/t/src
+IPC-Cmd-0.78/t/src/child.pl
+IPC-Cmd-0.78/t/src/x.tgz
+IPC-Cmd-0.78/t/src/output.pl
+IPC-Cmd-0.78/t/02_Interactive.t
+IPC-Cmd-0.78/t/01_IPC-Cmd.t
+IPC-Cmd-0.78/CHANGES
+IPC-Cmd-0.78/MANIFEST
+IPC-Cmd-0.78/lib
+IPC-Cmd-0.78/lib/IPC
+IPC-Cmd-0.78/lib/IPC/Cmd.pm
+IPC-Cmd-0.78/Makefile.PL
+IPC-Cmd-0.78/README
+IPC-Cmd-0.78/META.yml
+IPC-Cmd-0.78/META.json
+cd /usr/src/perl/perl-5.14/IPC-Cmd-0.78
+[1;39m## stage_IPC-Cmd-0.78: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
+Checking if your kit is complete...
+Looks good
+Writing Makefile for IPC::Cmd
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_IPC-Cmd-0.78: make[0;0m
+cp lib/IPC/Cmd.pm blib/lib/IPC/Cmd.pm
+Manifying blib/man3/IPC.Cmd.3pm
+tar xvzf CPAN-Reporter-1.2006.tar.gz
+CPAN-Reporter-1.2006/
+CPAN-Reporter-1.2006/lib/
+CPAN-Reporter-1.2006/lib/CPAN/
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/PrereqCheck.pm
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/History.pm
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/Config.pm
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/FAQ.pm
+CPAN-Reporter-1.2006/lib/CPAN/Reporter/API.pm
+CPAN-Reporter-1.2006/lib/CPAN/Reporter.pm
+CPAN-Reporter-1.2006/examples/
+CPAN-Reporter-1.2006/examples/config.ini
+CPAN-Reporter-1.2006/xt/
+CPAN-Reporter-1.2006/xt/release/
+CPAN-Reporter-1.2006/xt/release/test-version.t
+CPAN-Reporter-1.2006/xt/release/pod-coverage.t
+CPAN-Reporter-1.2006/xt/release/portability.t
+CPAN-Reporter-1.2006/xt/release/pod-syntax.t
+CPAN-Reporter-1.2006/xt/release/distmeta.t
+CPAN-Reporter-1.2006/xt/author/
+CPAN-Reporter-1.2006/xt/author/pod-spell.t
+CPAN-Reporter-1.2006/xt/author/critic.t
+CPAN-Reporter-1.2006/README.PATCHING
+CPAN-Reporter-1.2006/perlcritic.rc
+CPAN-Reporter-1.2006/MANIFEST.SKIP
+CPAN-Reporter-1.2006/Makefile.PL
+CPAN-Reporter-1.2006/t/
+CPAN-Reporter-1.2006/t/perl5lib-shadow/
+CPAN-Reporter-1.2006/t/perl5lib-shadow/Bogus/
+CPAN-Reporter-1.2006/t/perl5lib-shadow/Bogus/Shadow.pm
+CPAN-Reporter-1.2006/t/56_test_report_by_harness.t
+CPAN-Reporter-1.2006/t/41_make_report_discard.t
+CPAN-Reporter-1.2006/t/55_test_report_discard.t
+CPAN-Reporter-1.2006/t/52_test_report_unknown.t
+CPAN-Reporter-1.2006/t/12_toolchain_versions.t
+CPAN-Reporter-1.2006/t/70_darwin_move_config.t
+CPAN-Reporter-1.2006/t/63_config_send_report.t
+CPAN-Reporter-1.2006/t/54_test_report_split.t
+CPAN-Reporter-1.2006/t/31_PL_report_discard.t
+CPAN-Reporter-1.2006/t/62_duplicate_reports.t
+CPAN-Reporter-1.2006/t/15_option_validation.t
+CPAN-Reporter-1.2006/t/60_discard_triggers.t
+CPAN-Reporter-1.2006/t/51_test_report_fail.t
+CPAN-Reporter-1.2006/t/50_test_report_pass.t
+CPAN-Reporter-1.2006/t/perl5lib/
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/NoVersion.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/Conflict.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/Complex.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/Broken.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/TooOld.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/Shadow.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/Found.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/LTE.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/GTE.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/GT.pm
+CPAN-Reporter-1.2006/t/perl5lib/Bogus/LT.pm
+CPAN-Reporter-1.2006/t/14_command_timeout.t
+CPAN-Reporter-1.2006/t/02_config_env_vars.t
+CPAN-Reporter-1.2006/t/53_test_report_na.t
+CPAN-Reporter-1.2006/t/61_bad_dist_names.t
+CPAN-Reporter-1.2006/t/71_missing_config.t
+CPAN-Reporter-1.2006/t/04_option_parsing.t
+CPAN-Reporter-1.2006/t/57_hang_interrupt.t
+CPAN-Reporter-1.2006/t/13_record_command.t
+CPAN-Reporter-1.2006/t/72_rename_history.t
+CPAN-Reporter-1.2006/t/history/
+CPAN-Reporter-1.2006/t/history/reports-sent-longer.db
+CPAN-Reporter-1.2006/t/history/reports-sent.db
+CPAN-Reporter-1.2006/t/history/history.db
+CPAN-Reporter-1.2006/t/20_report_output.t
+CPAN-Reporter-1.2006/t/01_CPAN_Reporter.t
+CPAN-Reporter-1.2006/t/66_have_tested.t
+CPAN-Reporter-1.2006/t/03_config_file.t
+CPAN-Reporter-1.2006/t/40_make_report.t
+CPAN-Reporter-1.2006/t/06_prompt_text.t
+CPAN-Reporter-1.2006/t/11_env_config.t
+CPAN-Reporter-1.2006/t/MockCPANDist.pm
+CPAN-Reporter-1.2006/t/64_transport.t
+CPAN-Reporter-1.2006/t/10_prereq_pm.t
+CPAN-Reporter-1.2006/t/30_PL_report.t
+CPAN-Reporter-1.2006/t/MockHomeDir.pm
+CPAN-Reporter-1.2006/t/05_prompting.t
+CPAN-Reporter-1.2006/t/73_autoflush.t
+CPAN-Reporter-1.2006/t/65_skipfile.t
+CPAN-Reporter-1.2006/t/67_distfile.t
+CPAN-Reporter-1.2006/t/00-compile.t
+CPAN-Reporter-1.2006/t/bin/
+CPAN-Reporter-1.2006/t/bin/NotMakefile.PL
+CPAN-Reporter-1.2006/t/bin/Makefile.PL
+CPAN-Reporter-1.2006/t/bin/NotBuild.PL
+CPAN-Reporter-1.2006/t/bin/Build.PL
+CPAN-Reporter-1.2006/t/68_is_make.t
+CPAN-Reporter-1.2006/t/Frontend.pm
+CPAN-Reporter-1.2006/t/Helper.pm
+CPAN-Reporter-1.2006/t/dist.tgz
+CPAN-Reporter-1.2006/META.json
+CPAN-Reporter-1.2006/MANIFEST
+CPAN-Reporter-1.2006/META.yml
+CPAN-Reporter-1.2006/dist.ini
+CPAN-Reporter-1.2006/LICENSE
+CPAN-Reporter-1.2006/Changes
+CPAN-Reporter-1.2006/README
+CPAN-Reporter-1.2006/Todo
+cd /usr/src/perl/perl-5.14/CPAN-Reporter-1.2006
+[1;39m## stage_CPAN-Reporter-1.2006: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
 Checking if your kit is complete...
 Looks good
 Writing Makefile for CPAN::Reporter
-Writing MYMETA.yml
-[1;39m## stage_CPAN-Reporter-1.2005: make[0;0m
+Writing MYMETA.yml and MYMETA.json
+[1;39m## stage_CPAN-Reporter-1.2006: make[0;0m
 cp lib/CPAN/Reporter.pm blib/lib/CPAN/Reporter.pm
 cp lib/CPAN/Reporter/History.pm blib/lib/CPAN/Reporter/History.pm
 cp lib/CPAN/Reporter/Config.pm blib/lib/CPAN/Reporter/Config.pm
@@ -3732,419 +4568,6 @@ Manifying blib/man3/CPAN.Reporter.Config.3pm
 Manifying blib/man3/CPAN.Reporter.PrereqCheck.3pm
 Manifying blib/man3/CPAN.Reporter.API.3pm
 Manifying blib/man3/CPAN.Reporter.FAQ.3pm
-rm -rf Text-Glob-0.09
-tar xvzf Text-Glob-0.09.tar.gz
-Text-Glob-0.09
-Text-Glob-0.09/MANIFEST
-Text-Glob-0.09/Makefile.PL
-Text-Glob-0.09/Changes
-Text-Glob-0.09/Build.PL
-Text-Glob-0.09/META.yml
-Text-Glob-0.09/lib
-Text-Glob-0.09/lib/Text
-Text-Glob-0.09/lib/Text/Glob.pm
-Text-Glob-0.09/t
-Text-Glob-0.09/t/Text-Glob.t
-cd /usr/src/perl/perl-5.14/Text-Glob-0.09
-[1;39m## stage_Text-Glob-0.09: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Text::Glob
-Writing MYMETA.yml
-[1;39m## stage_Text-Glob-0.09: make[0;0m
-cp lib/Text/Glob.pm blib/lib/Text/Glob.pm
-Manifying blib/man3/Text.Glob.3pm
-rm -rf Number-Compare-0.03
-tar xvzf Number-Compare-0.03.tar.gz
-Number-Compare-0.03/
-Number-Compare-0.03/Changes
-Number-Compare-0.03/lib/
-Number-Compare-0.03/lib/Number/
-Number-Compare-0.03/lib/Number/Compare.pm
-Number-Compare-0.03/Makefile.PL
-Number-Compare-0.03/MANIFEST
-Number-Compare-0.03/MANIFEST.SKIP
-Number-Compare-0.03/META.yml
-Number-Compare-0.03/t/
-Number-Compare-0.03/t/Number-Compare.t
-cd /usr/src/perl/perl-5.14/Number-Compare-0.03
-[1;39m## stage_Number-Compare-0.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Number::Compare
-Writing MYMETA.yml
-[1;39m## stage_Number-Compare-0.03: make[0;0m
-cp lib/Number/Compare.pm blib/lib/Number/Compare.pm
-Manifying blib/man3/Number.Compare.3pm
-rm -rf File-Find-Rule-0.33
-tar xvzf File-Find-Rule-0.33.tar.gz
-File-Find-Rule-0.33/
-File-Find-Rule-0.33/Changes
-File-Find-Rule-0.33/findrule
-File-Find-Rule-0.33/lib/
-File-Find-Rule-0.33/lib/File/
-File-Find-Rule-0.33/lib/File/Find/
-File-Find-Rule-0.33/lib/File/Find/Rule/
-File-Find-Rule-0.33/lib/File/Find/Rule/Extending.pod
-File-Find-Rule-0.33/lib/File/Find/Rule/Procedural.pod
-File-Find-Rule-0.33/lib/File/Find/Rule.pm
-File-Find-Rule-0.33/Makefile.PL
-File-Find-Rule-0.33/MANIFEST
-File-Find-Rule-0.33/META.yml
-File-Find-Rule-0.33/t/
-File-Find-Rule-0.33/t/File-Find-Rule.t
-File-Find-Rule-0.33/t/findrule.t
-File-Find-Rule-0.33/testdir/
-File-Find-Rule-0.33/testdir/File-Find-Rule.t
-File-Find-Rule-0.33/testdir/findrule.t
-File-Find-Rule-0.33/testdir/foobar
-File-Find-Rule-0.33/testdir/lib/
-File-Find-Rule-0.33/testdir/lib/File/
-File-Find-Rule-0.33/testdir/lib/File/Find/
-File-Find-Rule-0.33/testdir/lib/File/Find/Rule/
-File-Find-Rule-0.33/testdir/lib/File/Find/Rule/Test/
-File-Find-Rule-0.33/testdir/lib/File/Find/Rule/Test/ATeam.pm
-cd /usr/src/perl/perl-5.14/File-Find-Rule-0.33
-[1;39m## stage_File-Find-Rule-0.33: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for File::Find::Rule
-Writing MYMETA.yml
-[1;39m## stage_File-Find-Rule-0.33: make[0;0m
-cp lib/File/Find/Rule.pm blib/lib/File/Find/Rule.pm
-cp lib/File/Find/Rule/Extending.pod blib/lib/File/Find/Rule/Extending.pod
-cp lib/File/Find/Rule/Procedural.pod blib/lib/File/Find/Rule/Procedural.pod
-cp findrule blib/script/findrule
-/usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/findrule
-Manifying blib/man1/findrule.1
-Manifying blib/man3/File.Find.Rule.3pm
-Manifying blib/man3/File.Find.Rule.Extending.3pm
-Manifying blib/man3/File.Find.Rule.Procedural.3pm
-rm -rf Data-Compare-1.22
-tar xvzf Data-Compare-1.22.tar.gz
-Data-Compare-1.22/
-Data-Compare-1.22/ARTISTIC.txt
-Data-Compare-1.22/CHANGES
-Data-Compare-1.22/GPL2.txt
-Data-Compare-1.22/lib/
-Data-Compare-1.22/lib/Data/
-Data-Compare-1.22/lib/Data/Compare/
-Data-Compare-1.22/lib/Data/Compare/Plugins/
-Data-Compare-1.22/lib/Data/Compare/Plugins/Scalar/
-Data-Compare-1.22/lib/Data/Compare/Plugins/Scalar/Properties.pm
-Data-Compare-1.22/lib/Data/Compare/Plugins.pod
-Data-Compare-1.22/lib/Data/Compare.pm
-Data-Compare-1.22/MAINTAINERS-NOTE
-Data-Compare-1.22/Makefile.PL
-Data-Compare-1.22/MANIFEST
-Data-Compare-1.22/META.yml
-Data-Compare-1.22/NOTES
-Data-Compare-1.22/README
-Data-Compare-1.22/t/
-Data-Compare-1.22/t/compare.t
-Data-Compare-1.22/t/coverage.sh
-Data-Compare-1.22/t/deep-objects.t
-Data-Compare-1.22/t/deep-recursion.t
-Data-Compare-1.22/t/duplicates.t
-Data-Compare-1.22/t/noimport-register_plugins.t
-Data-Compare-1.22/t/noimport.t
-Data-Compare-1.22/t/oo.t
-Data-Compare-1.22/t/opts-ignore-hash-keys.t
-Data-Compare-1.22/t/plugins.t
-Data-Compare-1.22/t/pod.t
-Data-Compare-1.22/t/realtainttest
-Data-Compare-1.22/t/saritha-nalagandla-bug/
-Data-Compare-1.22/t/saritha-nalagandla-bug/test082_updateevent_multipleinvitees.exp
-Data-Compare-1.22/t/saritha-nalagandla-bug/test082_updateevent_multipleinvitees.out
-Data-Compare-1.22/t/saritha-nalagandla-bug.t
-Data-Compare-1.22/t/scalar-properties.t
-Data-Compare-1.22/t/taint.t
-Data-Compare-1.22/TODO
-cd /usr/src/perl/perl-5.14/Data-Compare-1.22
-[1;39m## stage_Data-Compare-1.22: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Data::Compare
-Writing MYMETA.yml
-[1;39m## stage_Data-Compare-1.22: make[0;0m
-cp lib/Data/Compare/Plugins/Scalar/Properties.pm blib/lib/Data/Compare/Plugins/Scalar/Properties.pm
-cp lib/Data/Compare.pm blib/lib/Data/Compare.pm
-cp lib/Data/Compare/Plugins.pod blib/lib/Data/Compare/Plugins.pod
-Manifying blib/man3/Data.Compare.Plugins.Scalar.Properties.3pm
-Manifying blib/man3/Data.Compare.3pm
-Manifying blib/man3/Data.Compare.Plugins.3pm
-rm -rf CPAN-Checksums-2.08
-tar xvzf CPAN-Checksums-2.08.tar.gz
-CPAN-Checksums-2.08/
-CPAN-Checksums-2.08/MANIFEST
-CPAN-Checksums-2.08/MANIFEST.SKIP
-CPAN-Checksums-2.08/SIGNATURE
-CPAN-Checksums-2.08/META.yml
-CPAN-Checksums-2.08/README
-CPAN-Checksums-2.08/lib/
-CPAN-Checksums-2.08/lib/CPAN/
-CPAN-Checksums-2.08/lib/CPAN/Checksums.pm
-CPAN-Checksums-2.08/META.json
-CPAN-Checksums-2.08/t/
-CPAN-Checksums-2.08/t/42.gz
-CPAN-Checksums-2.08/t/52podcover.t
-CPAN-Checksums-2.08/t/updatedir.t
-CPAN-Checksums-2.08/t/00signature.t
-CPAN-Checksums-2.08/t/44.bz2
-CPAN-Checksums-2.08/t/43
-CPAN-Checksums-2.08/t/pod.t
-CPAN-Checksums-2.08/t/CHECKSUMS
-CPAN-Checksums-2.08/Todo
-CPAN-Checksums-2.08/Makefile.PL
-cd /usr/src/perl/perl-5.14/CPAN-Checksums-2.08
-[1;39m## stage_CPAN-Checksums-2.08: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for CPAN::Checksums
-Writing MYMETA.yml
-[1;39m## stage_CPAN-Checksums-2.08: make[0;0m
-cp lib/CPAN/Checksums.pm blib/lib/CPAN/Checksums.pm
-Manifying blib/man3/CPAN.Checksums.3pm
-rm -rf File-Remove-1.52
-tar xvzf File-Remove-1.52.tar.gz
-File-Remove-1.52/
-File-Remove-1.52/README
-File-Remove-1.52/Makefile.PL
-File-Remove-1.52/LICENSE
-File-Remove-1.52/xt/
-File-Remove-1.52/xt/meta.t
-File-Remove-1.52/xt/pmv.t
-File-Remove-1.52/xt/pod.t
-File-Remove-1.52/lib/
-File-Remove-1.52/lib/File/
-File-Remove-1.52/lib/File/Remove.pm
-File-Remove-1.52/META.yml
-File-Remove-1.52/MANIFEST
-File-Remove-1.52/MYMETA.json
-File-Remove-1.52/Changes
-File-Remove-1.52/t/
-File-Remove-1.52/t/02_directories.t
-File-Remove-1.52/t/04_can_delete.t
-File-Remove-1.52/t/09_fork.t
-File-Remove-1.52/t/05_links.t
-File-Remove-1.52/t/07_cwd.t
-File-Remove-1.52/t/08_spaces.t
-File-Remove-1.52/t/01_compile.t
-File-Remove-1.52/t/03_deep_readonly.t
-File-Remove-1.52/t/06_curly.t
-File-Remove-1.52/inc/
-File-Remove-1.52/inc/Module/
-File-Remove-1.52/inc/Module/Install/
-File-Remove-1.52/inc/Module/Install/DSL.pm
-File-Remove-1.52/inc/Module/Install/Win32.pm
-File-Remove-1.52/inc/Module/Install/WriteAll.pm
-File-Remove-1.52/inc/Module/Install/Can.pm
-File-Remove-1.52/inc/Module/Install/Metadata.pm
-File-Remove-1.52/inc/Module/Install/Base.pm
-File-Remove-1.52/inc/Module/Install/Makefile.pm
-File-Remove-1.52/inc/Module/Install/Fetch.pm
-File-Remove-1.52/inc/Module/Install.pm
-cd /usr/src/perl/perl-5.14/File-Remove-1.52
-[1;39m## stage_File-Remove-1.52: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for File::Remove
-Writing MYMETA.yml
-[1;39m## stage_File-Remove-1.52: make[0;0m
-cp lib/File/Remove.pm blib/lib/File/Remove.pm
-Manifying blib/man3/File.Remove.3pm
-rm -rf File-chmod-0.32
-tar xvzf File-chmod-0.32.tar.gz
-File-chmod-0.32/
-File-chmod-0.32/Changes
-File-chmod-0.32/test.pl
-File-chmod-0.32/chmod.pm
-File-chmod-0.32/Makefile.PL
-File-chmod-0.32/META.yml
-File-chmod-0.32/MANIFEST
-cd /usr/src/perl/perl-5.14/File-chmod-0.32
-[1;39m## stage_File-chmod-0.32: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for File::chmod
-Writing MYMETA.yml
-[1;39m## stage_File-chmod-0.32: make[0;0m
-cp chmod.pm blib/lib/File/chmod.pm
-Manifying blib/man3/File.chmod.3pm
-rm -rf Params-Util-1.07
-tar xvzf Params-Util-1.07.tar.gz
-Params-Util-1.07/
-Params-Util-1.07/META.json
-Params-Util-1.07/META.yml
-Params-Util-1.07/README
-Params-Util-1.07/Makefile.PL
-Params-Util-1.07/LICENSE
-Params-Util-1.07/MYMETA.json
-Params-Util-1.07/xt/
-Params-Util-1.07/xt/meta.t
-Params-Util-1.07/xt/pmv.t
-Params-Util-1.07/xt/pod.t
-Params-Util-1.07/Util.xs
-Params-Util-1.07/MANIFEST
-Params-Util-1.07/lib/
-Params-Util-1.07/lib/Params/
-Params-Util-1.07/lib/Params/Util.pm
-Params-Util-1.07/Changes
-Params-Util-1.07/t/
-Params-Util-1.07/t/04_codelike.t
-Params-Util-1.07/t/08_driver.t
-Params-Util-1.07/t/16_invocant.t
-Params-Util-1.07/t/14_codelike.t
-Params-Util-1.07/t/18_driver.t
-Params-Util-1.07/t/12_main.t
-Params-Util-1.07/t/02_main.t
-Params-Util-1.07/t/06_invocant.t
-Params-Util-1.07/t/19_insideout.t
-Params-Util-1.07/t/15_typelike.t
-Params-Util-1.07/t/07_handle.t
-Params-Util-1.07/t/05_typelike.t
-Params-Util-1.07/t/17_handle.t
-Params-Util-1.07/t/09_insideout.t
-Params-Util-1.07/t/handles/
-Params-Util-1.07/t/handles/readfile.txt
-Params-Util-1.07/t/handles/handle.txt
-Params-Util-1.07/t/01_compile.t
-Params-Util-1.07/t/11_compile.t
-Params-Util-1.07/t/driver/
-Params-Util-1.07/t/driver/E.pm
-Params-Util-1.07/t/driver/A.pm
-Params-Util-1.07/t/driver/D.pm
-Params-Util-1.07/t/driver/My_B.pm
-Params-Util-1.07/t/driver/F.pm
-Params-Util-1.07/t/driver/B.pm
-Params-Util-1.07/t/13_all.t
-Params-Util-1.07/t/03_all.t
-cd /usr/src/perl/perl-5.14/Params-Util-1.07
-[1;39m## stage_Params-Util-1.07: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Params::Util
-Writing MYMETA.yml
-[1;39m## stage_Params-Util-1.07: make[0;0m
-cp lib/Params/Util.pm blib/lib/Params/Util.pm
-Manifying blib/man3/Params.Util.3pm
-rm -rf Test-Script-1.07
-tar xvzf Test-Script-1.07.tar.gz
-Test-Script-1.07/
-Test-Script-1.07/README
-Test-Script-1.07/Makefile.PL
-Test-Script-1.07/LICENSE
-Test-Script-1.07/META.yml
-Test-Script-1.07/MANIFEST
-Test-Script-1.07/lib/
-Test-Script-1.07/lib/Test/
-Test-Script-1.07/lib/Test/Script.pm
-Test-Script-1.07/Changes
-Test-Script-1.07/inc/
-Test-Script-1.07/inc/Module/
-Test-Script-1.07/inc/Module/Install/
-Test-Script-1.07/inc/Module/Install/DSL.pm
-Test-Script-1.07/inc/Module/Install/Win32.pm
-Test-Script-1.07/inc/Module/Install/WriteAll.pm
-Test-Script-1.07/inc/Module/Install/Can.pm
-Test-Script-1.07/inc/Module/Install/Metadata.pm
-Test-Script-1.07/inc/Module/Install/Base.pm
-Test-Script-1.07/inc/Module/Install/Makefile.pm
-Test-Script-1.07/inc/Module/Install/Fetch.pm
-Test-Script-1.07/inc/Module/Install.pm
-Test-Script-1.07/t/
-Test-Script-1.07/t/03_compiles_bad.t
-Test-Script-1.07/t/04_runs_good.t
-Test-Script-1.07/t/97_meta.t
-Test-Script-1.07/t/01_compile.t
-Test-Script-1.07/t/98_pod.t
-Test-Script-1.07/t/02_compiles_good.t
-Test-Script-1.07/t/05_runs_bad.t
-Test-Script-1.07/t/99_pmv.t
-Test-Script-1.07/t/bin/
-Test-Script-1.07/t/bin/bad.pl
-Test-Script-1.07/t/bin/good.pl
-Test-Script-1.07/t/bin/print.pl
-Test-Script-1.07/t/bin/four.pl
-cd /usr/src/perl/perl-5.14/Test-Script-1.07
-[1;39m## stage_Test-Script-1.07: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Test::Script
-Writing MYMETA.yml
-[1;39m## stage_Test-Script-1.07: make[0;0m
-cp lib/Test/Script.pm blib/lib/Test/Script.pm
-Manifying blib/man3/Test.Script.3pm
-rm -rf CPAN-Inject-1.13
-tar xvzf CPAN-Inject-1.13.tar.gz
-CPAN-Inject-1.13/
-CPAN-Inject-1.13/README
-CPAN-Inject-1.13/Makefile.PL
-CPAN-Inject-1.13/LICENSE
-CPAN-Inject-1.13/xt/
-CPAN-Inject-1.13/xt/meta.t
-CPAN-Inject-1.13/xt/pmv.t
-CPAN-Inject-1.13/xt/pod.t
-CPAN-Inject-1.13/META.yml
-CPAN-Inject-1.13/t/
-CPAN-Inject-1.13/t/01_compile.t
-CPAN-Inject-1.13/t/02_main.t
-CPAN-Inject-1.13/t/data/
-CPAN-Inject-1.13/t/data/Config-Tiny-2.09.tar.gz
-CPAN-Inject-1.13/MANIFEST
-CPAN-Inject-1.13/Changes
-CPAN-Inject-1.13/lib/
-CPAN-Inject-1.13/lib/CPAN/
-CPAN-Inject-1.13/lib/CPAN/Inject.pm
-CPAN-Inject-1.13/script/
-CPAN-Inject-1.13/script/cpaninject
-CPAN-Inject-1.13/inc/
-CPAN-Inject-1.13/inc/Module/
-CPAN-Inject-1.13/inc/Module/Install/
-CPAN-Inject-1.13/inc/Module/Install/Win32.pm
-CPAN-Inject-1.13/inc/Module/Install/WriteAll.pm
-CPAN-Inject-1.13/inc/Module/Install/Can.pm
-CPAN-Inject-1.13/inc/Module/Install/Metadata.pm
-CPAN-Inject-1.13/inc/Module/Install/Scripts.pm
-CPAN-Inject-1.13/inc/Module/Install/Base.pm
-CPAN-Inject-1.13/inc/Module/Install/Makefile.pm
-CPAN-Inject-1.13/inc/Module/Install/Fetch.pm
-CPAN-Inject-1.13/inc/Module/Install.pm
-cd /usr/src/perl/perl-5.14/CPAN-Inject-1.13
-[1;39m## stage_CPAN-Inject-1.13: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Warning: prerequisite Params::Util 0.21 not found.
-Checking if your kit is complete...
-Looks good
-Writing Makefile for CPAN::Inject
-Writing MYMETA.yml
-[1;39m## stage_CPAN-Inject-1.13: make[0;0m
-cp lib/CPAN/Inject.pm blib/lib/CPAN/Inject.pm
-cp script/cpaninject blib/script/cpaninject
-/usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe "-Iinc" -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/cpaninject
-Manifying blib/man1/cpaninject.1
-Manifying blib/man3/CPAN.Inject.3pm
-rm -rf Net-Telnet-3.03
-tar xvzf Net-Telnet-3.03.tar.gz
-Net-Telnet-3.03/
-Net-Telnet-3.03/Makefile.PL
-Net-Telnet-3.03/ChangeLog
-Net-Telnet-3.03/lib/
-Net-Telnet-3.03/lib/Net/
-Net-Telnet-3.03/lib/Net/Telnet.pm
-Net-Telnet-3.03/t/
-Net-Telnet-3.03/t/select.t
-Net-Telnet-3.03/README
-Net-Telnet-3.03/MANIFEST
-cd /usr/src/perl/perl-5.14/Net-Telnet-3.03
-[1;39m## stage_Net-Telnet-3.03: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Checking if your kit is complete...
-Looks good
-Writing Makefile for Net::Telnet
-Writing MYMETA.yml
-[1;39m## stage_Net-Telnet-3.03: make[0;0m
-cp lib/Net/Telnet.pm blib/lib/Net/Telnet.pm
-Manifying blib/man3/Net.Telnet.3pm
-rm -rf Module-ScanDeps-1.08
 tar xvzf Module-ScanDeps-1.08.tar.gz
 Module-ScanDeps-1.08/
 Module-ScanDeps-1.08/inc/
@@ -4249,7 +4672,7 @@ cd /usr/src/perl/perl-5.14/Module-ScanDeps-1.08
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Module::ScanDeps
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Module-ScanDeps-1.08: make[0;0m
 cp lib/Module/ScanDeps/Cache.pm blib/lib/Module/ScanDeps/Cache.pm
 cp lib/Module/ScanDeps/DataFeed.pm blib/lib/Module/ScanDeps/DataFeed.pm
@@ -4258,7 +4681,6 @@ cp script/scandeps.pl blib/script/scandeps.pl
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe "-Iinc" -MExtUtils::MY -e 'MY->fixin(shift)' -- blib/script/scandeps.pl
 Manifying blib/man1/scandeps.pl.1
 Manifying blib/man3/Module.ScanDeps.3pm
-rm -rf PAR-Dist-0.48
 tar xvzf PAR-Dist-0.48.tar.gz
 PAR-Dist-0.48/
 PAR-Dist-0.48/Changes
@@ -4284,11 +4706,10 @@ cd /usr/src/perl/perl-5.14/PAR-Dist-0.48
 Checking if your kit is complete...
 Looks good
 Writing Makefile for PAR::Dist
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_PAR-Dist-0.48: make[0;0m
 cp lib/PAR/Dist.pm blib/lib/PAR/Dist.pm
 Manifying blib/man3/PAR.Dist.3pm
-rm -rf Socket6-0.23
 tar xvzf Socket6-0.23.tar.gz
 Socket6-0.23/
 Socket6-0.23/t/
@@ -4348,11 +4769,11 @@ config.status: creating config.h
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Socket6
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Socket6-0.23: make[0;0m
 cp Socket6.pm blib/lib/Socket6.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp -noprototypes -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  Socket6.xs > Socket6.xsc && mv Socket6.xsc Socket6.c
-gcc -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"0.23\"  -DXS_VERSION=\"0.23\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Socket6.c
+gcc -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"0.23\"  -DXS_VERSION=\"0.23\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Socket6.c
 Running Mkbootstrap for Socket6 ()
 chmod 644 Socket6.bs
 rm -f blib/arch/auto/Socket6/Socket6.dll
@@ -4362,7 +4783,6 @@ g++-4  --shared  -Wl,--enable-auto-import -Wl,--export-all-symbols -Wl,--enable-
 chmod 755 blib/arch/auto/Socket6/Socket6.dll
 cp Socket6.bs blib/arch/auto/Socket6/Socket6.bs
 chmod 644 blib/arch/auto/Socket6/Socket6.bs
-rm -rf IO-Socket-INET6-2.69
 tar xvzf IO-Socket-INET6-2.69.tar.gz
 IO-Socket-INET6-2.69
 IO-Socket-INET6-2.69/MANIFEST
@@ -4392,15 +4812,13 @@ IO-Socket-INET6-2.69/t/io_multihomed6.t
 IO-Socket-INET6-2.69/t/io_udp6.t
 cd /usr/src/perl/perl-5.14/IO-Socket-INET6-2.69
 [1;39m## stage_IO-Socket-INET6-2.69: /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2 Makefile.PL[0;0m
-Warning: prerequisite Socket6 0.12 not found.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for IO::Socket::INET6
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_IO-Socket-INET6-2.69: make[0;0m
 cp lib/IO/Socket/INET6.pm blib/lib/IO/Socket/INET6.pm
 Manifying blib/man3/IO.Socket.INET6.3pm
-rm -rf B-Generate-1.44
 tar xvzf B-Generate-1.44.tar.gz
 B-Generate-1.44/
 B-Generate-1.44/Copying
@@ -4442,11 +4860,11 @@ cv->NEW_with_start disabled.
 Checking if your kit is complete...
 Looks good
 Writing Makefile for B::Generate
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_B-Generate-1.44: make[0;0m
 cp lib/B/Generate.pm blib/lib/B/Generate.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap -typemap typemap  Generate.xs > Generate.xsc && mv Generate.xsc Generate.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include  -DPERL_CUSTOM_OPS -DPERL_CUSTOM_OPCODES -DDISABLE_PERL_CORE_EXPORTED -DUSEIMPORTLIB -O3    -DVERSION=\"1.44\"  -DXS_VERSION=\"1.44\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Generate.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector  -DPERL_CUSTOM_OPS -DPERL_CUSTOM_OPCODES -DDISABLE_PERL_CORE_EXPORTED -DUSEIMPORTLIB -O3    -DVERSION=\"1.44\"  -DXS_VERSION=\"1.44\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Generate.c
 Running Mkbootstrap for B::Generate ()
 chmod 644 Generate.bs
 rm -f blib/arch/auto/B/Generate/Generate.dll
@@ -4457,7 +4875,6 @@ chmod 755 blib/arch/auto/B/Generate/Generate.dll
 cp Generate.bs blib/arch/auto/B/Generate/Generate.bs
 chmod 644 blib/arch/auto/B/Generate/Generate.bs
 Manifying blib/man3/B.Generate.3pm
-rm -rf PadWalker-1.93
 tar xvzf PadWalker-1.93.tar.gz
 PadWalker-1.93/
 PadWalker-1.93/Changes
@@ -4486,11 +4903,11 @@ cd /usr/src/perl/perl-5.14/PadWalker-1.93
 Checking if your kit is complete...
 Looks good
 Writing Makefile for PadWalker
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_PadWalker-1.93: make[0;0m
 cp PadWalker.pm blib/lib/PadWalker.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  PadWalker.xs > PadWalker.xsc && mv PadWalker.xsc PadWalker.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.93\"  -DXS_VERSION=\"1.93\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   PadWalker.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"1.93\"  -DXS_VERSION=\"1.93\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   PadWalker.c
 Running Mkbootstrap for PadWalker ()
 chmod 644 PadWalker.bs
 rm -f blib/arch/auto/PadWalker/PadWalker.dll
@@ -4501,7 +4918,6 @@ chmod 755 blib/arch/auto/PadWalker/PadWalker.dll
 cp PadWalker.bs blib/arch/auto/PadWalker/PadWalker.bs
 chmod 644 blib/arch/auto/PadWalker/PadWalker.bs
 Manifying blib/man3/PadWalker.3pm
-rm -rf Data-Alias-1.16
 tar xvzf Data-Alias-1.16.tar.gz
 Data-Alias-1.16/
 Data-Alias-1.16/META.yml
@@ -4567,11 +4983,11 @@ cd /usr/src/perl/perl-5.14/Data-Alias-1.16
 Checking if your kit is complete...
 Looks good
 Writing Makefile for Data::Alias
-Writing MYMETA.yml
+Writing MYMETA.yml and MYMETA.json
 [1;39m## stage_Data-Alias-1.16: make[0;0m
 cp lib/Data/Alias.pm blib/lib/Data/Alias.pm
 /usr/src/perl/perl-5.14/inst/usr/bin/perl5.14.2.exe "-Iinc" /usr/lib/perl5/5.14/ExtUtils/xsubpp  -typemap /usr/lib/perl5/5.14/ExtUtils/typemap  Alias.xs > Alias.xsc && mv Alias.xsc Alias.c
-gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -DUSEIMPORTLIB -O3    -DVERSION=\"1.16\"  -DXS_VERSION=\"1.16\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Alias.c
+gcc-4 -c    -DPERL_USE_SAFE_PUTENV -U__STRICT_ANSI__ -g -fno-strict-aliasing -pipe -fstack-protector -DUSEIMPORTLIB -O3    -DVERSION=\"1.16\"  -DXS_VERSION=\"1.16\"  "-I/usr/lib/perl5/5.14/i686-cygwin-threads-64int/CORE"   Alias.c
 Running Mkbootstrap for Data::Alias ()
 chmod 644 Alias.bs
 rm -f blib/arch/auto/Data/Alias/Alias.dll

@@ -1,38 +1,7 @@
 [1;39m## stage_Pod-Escapes-1.04: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Escapes.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Escapes.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Pod-Simple-3.20: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/BlackBox.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Checker.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Debug.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/DumpAsText.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/DumpAsXML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/HTML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/HTMLBatch.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/HTMLLegacy.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/LinkSection.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Methody.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Progress.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/PullParser.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/PullParserEndToken.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/PullParserStartToken.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/PullParserTextToken.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/PullParserToken.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/RTF.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Search.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/SimpleTree.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Subclassing.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Text.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/TextContent.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/TiedOutFH.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/Transcode.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/TranscodeDumb.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/TranscodeSmart.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/XHTML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Simple/XMLOutStream.pm
+[1;39m## stage_Pod-Simple-3.22: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Simple.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Simple.Checker.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Simple.Debug.3pm
@@ -57,107 +26,55 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Simple.XHTML.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Simple.XMLOutStream.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Test-Pod-1.45: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Pod.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Pod.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Devel-Symdump-2.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Devel/Symdump.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Devel/Symdump/Export.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Devel.Symdump.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Pod-Coverage-0.22: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Coverage.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Coverage/CountParents.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Coverage/ExportOnly.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Pod/Coverage/Overloader.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Coverage.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Coverage.CountParents.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Coverage.ExportOnly.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Pod.Coverage.Overloader.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/pod_cover
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Test-Pod-Coverage-1.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Pod/Coverage.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Pod.Coverage.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Compress-Bzip2-2.09: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Compress/Bzip2/Bzip2.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Compress/Bzip2/Bzip2.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Compress/Bzip2/autosplit.ix
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Compress/Bzip2.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Compress.Bzip2.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_IO-String-1.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IO/String.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IO.String.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Archive-Zip-1.30: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/Archive.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/BufferedFileHandle.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/DirectoryMember.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/FAQ.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/FileMember.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/Member.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/MemberRead.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/MockFileHandle.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/NewFileMember.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/StringMember.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/Tree.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Archive/Zip/ZipFileMember.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Archive.Zip.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Archive.Zip.FAQ.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Archive.Zip.MemberRead.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Archive.Zip.Tree.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/crc32
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_TermReadKey-2.30: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadKey/ReadKey.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadKey/ReadKey.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadKey/autosplit.ix
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Term/ReadKey.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Term.ReadKey.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Term-ReadLine-Perl-1.0303: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Term/ReadLine/Perl.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Term/ReadLine/readline.pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Term-ReadLine-Gnu-1.20: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadLine/Gnu/Gnu.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadLine/Gnu/Gnu.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Term/ReadLine/Gnu/XS/autosplit.ix
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Term/ReadLine/Gnu.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Term/ReadLine/Gnu/XS.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Term.ReadLine.Gnu.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_XML-NamespaceSupport-1.11: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/NamespaceSupport.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.NamespaceSupport.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_XML-SAX-Base-1.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.Base.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.BuildSAXBase.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.Exception.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_XML-SAX-0.99: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/DocumentLocator.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/Intro.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/ParserFactory.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/DebugHandler.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/DocType.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/DTDDecls.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/EncodingDetect.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Exception.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/NoUnicodeExt.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Productions.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/UnicodeExt.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/XMLDecl.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader/NoUnicodeExt.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader/Stream.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader/String.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader/UnicodeExt.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/XML/SAX/PurePerl/Reader/URI.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.DocumentLocator.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.Intro.3pm
@@ -165,53 +82,9 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.ParserFactory
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.PurePerl.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.SAX.PurePerl.Reader.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_XML-LibXML-1.96: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+[1;39m## stage_XML-LibXML-2.0002: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/XML/LibXML/LibXML.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/XML/LibXML/LibXML.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Attr.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/AttributeHash.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Boolean.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/CDATASection.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Comment.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Common.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Common.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Devel.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Document.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/DocumentFragment.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/DOM.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Dtd.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Element.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/ErrNo.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/ErrNo.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Error.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Error.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/InputCallback.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Literal.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Namespace.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Node.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/NodeList.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Number.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Parser.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Pattern.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/PI.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Reader.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Reader.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/RegExp.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/RelaxNG.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Schema.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/Text.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/XPathContext.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/XPathContext.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/XPathExpression.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX/Builder.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX/Builder.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX/Generator.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/LibXML/SAX/Parser.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.LibXML.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.LibXML.Attr.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.LibXML.AttributeHash.3pm
@@ -251,39 +124,7 @@ Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i
 make[1]: Entering directory `/usr/src/perl/perl-5.14/XML-Parser-2.41/Expat'
 make[1]: Leaving directory `/usr/src/perl/perl-5.14/XML-Parser-2.41/Expat'
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/XML/Parser/Expat/Expat.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/XML/Parser/Expat/Expat.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Expat.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/LWPExternEnt.pl
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/big5.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/euc-kr.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/ibm866.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-2.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-3.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-4.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-5.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-7.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-8.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/iso-8859-9.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/Japanese_Encodings.msg
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/koi8-r.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/README
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/windows-1250.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/windows-1251.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/windows-1252.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/windows-1255.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-euc-jp-jisx0221.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-euc-jp-unicode.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-sjis-cp932.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-sjis-jdk117.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-sjis-jisx0221.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Encodings/x-sjis-unicode.enc
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Style/Debug.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Style/Objects.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Style/Stream.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Style/Subs.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/XML/Parser/Style/Tree.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.Parser.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.Parser.Expat.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/XML.Parser.Style.Debug.3pm
@@ -296,33 +137,13 @@ Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i
 make[1]: Entering directory `/usr/src/perl/perl-5.14/Proc-ProcessTable-0.45/Process'
 make[1]: Leaving directory `/usr/src/perl/perl-5.14/Proc-ProcessTable-0.45/Process'
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Proc/ProcessTable/ProcessTable.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Proc/ProcessTable/ProcessTable.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Proc/ProcessTable/Process/autosplit.ix
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Proc/example.pl
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Proc/Killall.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Proc/Killfam.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Proc/ProcessTable.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Proc/ProcessTable/Process.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Proc.Killall.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Proc.Killfam.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Proc.ProcessTable.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Proc.ProcessTable.Process.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_YAML-0.80: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/YAML.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Any.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Dumper.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Error.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Loader.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Marshall.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Mo.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Node.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Tag.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Types.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Dumper/Base.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/YAML/Loader/Base.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.YAML.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/YAML.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/YAML.Any.3pm
@@ -337,20 +158,12 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/YAML.Tag.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/YAML.Types.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Config-Tiny-2.14: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Config/Tiny.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Config.Tiny.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_File-Copy-Recursive-0.38: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/Copy/Recursive.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Copy.Recursive.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_IPC-Run3-0.045: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3/ProfArrayBuffer.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3/ProfLogger.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3/ProfLogReader.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3/ProfPP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IPC/Run3/ProfReporter.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run3.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run3.ProfArrayBuffer.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run3.ProfLogger.3pm
@@ -359,37 +172,24 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run3.ProfPP.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run3.ProfReporter.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Probe-Perl-0.01: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Probe/Perl.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Probe.Perl.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Tee-0.14: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Tee.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Tee/App.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/ptee.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Tee.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Tee.App.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/ptee
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_IO-CaptureOutput-1.1102: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IO/CaptureOutput.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IO/CaptureOutput.pod
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IO.CaptureOutput.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_File-pushd-1.002: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/pushd.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.pushd.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_File-Which-1.09: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/pwhich.1
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Which.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_File-HomeDir-0.99: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Darwin.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Driver.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/FreeDesktop.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/MacOS9.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Test.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Unix.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Windows.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Darwin/Carbon.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/HomeDir/Darwin/Cocoa.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.HomeDir.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.HomeDir.Darwin.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.HomeDir.Darwin.Carbon.3pm
@@ -403,72 +203,24 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.HomeDir.Windows.
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Digest-SHA-5.71: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Digest/SHA/SHA.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Digest/SHA/SHA.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Digest/SHA.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/shasum.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Digest.SHA.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/shasum
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_IPC-Run-0.91: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.Debug.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.IO.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.Timer.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.Win32Helper.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.Win32IO.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Run.Win32Pump.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Module-Signature-0.68: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Module/Signature.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/cpansign.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Module.Signature.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/cpansign
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_URI-1.59: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/data.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/Escape.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/ftp.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/gopher.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/Heuristic.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/http.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/https.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/IRI.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/ldap.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/ldapi.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/ldaps.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/mailto.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/mms.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/news.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/nntp.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/pop.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/QueryParam.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/rlogin.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/rsync.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/rtsp.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/rtspu.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/sip.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/sips.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/snews.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/Split.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/ssh.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/telnet.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/tn3270.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/URL.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/urn.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/WithBase.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_foreign.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_generic.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_idna.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_ldap.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_login.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_punycode.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_query.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_segment.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_server.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/_userpass.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/Base.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/FAT.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/Mac.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/OS2.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/QNX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/Unix.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/file/Win32.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/urn/isbn.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/URI/urn/oid.pm
+[1;39m## stage_URI-1.60: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/URI.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/URI.data.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/URI.Escape.3pm
@@ -482,20 +234,11 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/URI.WithBase.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/URI._punycode.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_HTML-Tagset-3.20: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/HTML/Tagset.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.Tagset.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_HTML-Parser-3.69: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/HTML/Parser/Parser.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/HTML/Parser/Parser.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/Entities.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/Filter.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/HeadParser.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/LinkExtor.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/Parser.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/PullParser.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/HTML/TokeParser.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.Entities.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.Filter.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.HeadParser.3pm
@@ -504,32 +247,49 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.Parser.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.PullParser.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTML.TokeParser.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_HTTP-Date-6.02: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Date.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Encode-Locale-1.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Encode.Locale.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_LWP-MediaTypes-6.02: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/LWP.MediaTypes.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_HTTP-Message-6.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Config.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Headers.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Headers.Util.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Message.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Request.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Request.Common.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Response.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Status.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_File-Listing-6.04: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Listing.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_HTTP-Daemon-6.01: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Daemon.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_WWW-RobotRules-6.02: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/WWW.RobotRules.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/WWW.RobotRules.AnyDBM_File.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_HTTP-Negotiate-6.01: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Negotiate.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_HTTP-Cookies-6.01: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Cookies.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Cookies.Microsoft.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/HTTP.Cookies.Netscape.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Net-HTTP-6.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.HTTP.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.HTTP.NB.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.HTTPS.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_libwww-perl-6.04: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/lwpcook.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/lwptut.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/ConnCache.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Debug.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/DebugFile.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/MemberMixin.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/RobotUA.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Simple.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/UserAgent.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Authen/Basic.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Authen/Digest.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Authen/Ntlm.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/cpan.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/data.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/file.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/ftp.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/GHTTP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/gopher.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/http.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/loopback.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/mailto.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/nntp.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/LWP/Protocol/nogo.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/lwp-download.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/lwp-dump.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/lwp-mirror.1
@@ -545,78 +305,18 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/LWP.Simple.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/LWP.UserAgent.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/lwpcook.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/lwptut.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/lwp-download
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/lwp-dump
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/lwp-mirror
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/lwp-request
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Net-IP-1.25: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Net/IP.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.IP.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/ipcount
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/iptab
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Digest-HMAC-1.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Digest.HMAC.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Digest.HMAC_MD5.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Digest.HMAC_SHA1.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Net-DNS-0.68: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Net/DNS/DNS.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Net/DNS/DNS.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Domain.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/DomainName.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/FAQ.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Header.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Mailbox.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Nameserver.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Packet.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Question.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Resolver.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Text.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Update.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Resolver/Base.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Resolver/Cygwin.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Resolver/Recurse.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/Resolver/UNIX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/A.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/AAAA.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/AFSDB.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/APL.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/CERT.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/CNAME.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/DHCID.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/DNAME.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/EID.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/HINFO.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/HIP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/IPSECKEY.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/ISDN.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/KX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/LOC.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/MB.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/MG.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/MINFO.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/MR.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/MX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/NAPTR.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/NIMLOC.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/NS.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/NSAP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/NULL.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/OPT.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/PTR.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/PX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/RP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/RT.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/SOA.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/SPF.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/SRV.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/SSHFP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/TKEY.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/TSIG.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/TXT.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/Unknown.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/X25.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/DNS/RR/APL/ApItem.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.DNS.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.DNS.Domain.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.DNS.DomainName.3pm
@@ -676,10 +376,6 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.DNS.Text.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.DNS.Update.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Test-Reporter-1.58: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Reporter.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Reporter/Transport.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Reporter/Transport/File.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Reporter/Transport/Null.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Reporter.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Reporter.Transport.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Reporter.Transport.File.3pm
@@ -687,39 +383,22 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Reporter.Transpo
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Crypt-SSLeay-0.58: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Crypt/SSLeay/SSLeay.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Crypt/SSLeay/SSLeay.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay/Conn.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay/CTX.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay/Err.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay/MainContext.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Crypt/SSLeay/X509.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Net/SSL.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Crypt.SSLeay.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.SSL.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_common-sense-3.4: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/common/sense.pm
+[1;39m## stage_common-sense-3.6: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Manifying blib/man3/common.sense.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/common.sense.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_JSON-XS-2.32: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/JSON/XS/XS.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/JSON/XS/XS.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/JSON/XS.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/JSON/XS/Boolean.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/json_xs.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.XS.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.XS.Boolean.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/json_xs
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_JSON-2.53: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/JSON.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/JSON/backportPP.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/JSON/backportPP/Boolean.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/JSON/backportPP/Compat5005.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/JSON/backportPP/Compat5006.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.backportPP.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.backportPP.Boolean.3pm
@@ -727,41 +406,36 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.backportPP.Compa
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/JSON.backportPP.Compat5006.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Metabase-Client-Simple-0.008: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Client/Simple.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.Client.Simple.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Sub-Install-0.926: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Sub.Install.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Data-UUID-1.217: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Data/UUID/UUID.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Data/UUID/UUID.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Data/UUID.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.UUID.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Params-Util-1.07: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Params/Util.pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Params.Util.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Data-OptList-0.107: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.OptList.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Sub-Exporter-0.984: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Sub.Exporter.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Sub.Exporter.Cookbook.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Sub.Exporter.Tutorial.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Sub.Exporter.Util.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Data-GUID-0.046: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Data/GUID.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.GUID.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_CPAN-DistnameInfo-0.12: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/DistnameInfo.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.DistnameInfo.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Metabase-Fact-0.021: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Fact.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Report.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Fact/Hash.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Fact/String.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/cpan.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/metabase.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/perl.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/cpan/distfile.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/metabase/fact.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/metabase/user.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/Resource/perl/commit.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/User/EmailAddress.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/User/FullName.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/User/Profile.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Metabase/User/Secret.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/metabase-profile.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.Fact.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.Fact.Hash.3pm
@@ -779,22 +453,19 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.User.EmailAd
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.User.FullName.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.User.Profile.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Metabase.User.Secret.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/metabase-profile
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Config-Perl-V-0.14: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Config/Perl/V.pm
+[1;39m## stage_Test-Tester-0.108: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Tester.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Tester.Capture.3pm
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Tester.CaptureRunner.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Test-NoWarnings-1.04: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.NoWarnings.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Config-Perl-V-0.15: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Config.Perl.V.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_CPAN-Testers-Report-1.999001: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Report.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/InstalledModules.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/LegacyReport.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/PerlConfig.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/Prereqs.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/TestEnvironment.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/TesterComment.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/TestOutput.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Testers/Fact/TestSummary.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Testers.Fact.InstalledModules.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Testers.Fact.LegacyReport.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Testers.Fact.PerlConfig.3pm
@@ -806,16 +477,18 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Testers.Fact.Tes
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Testers.Report.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Test-Reporter-Transport-Metabase-1.999008: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Reporter/Transport/Metabase.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Reporter.Transport.Metabase.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_CPAN-Reporter-1.2005: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter/API.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter/Config.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter/FAQ.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter/History.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Reporter/PrereqCheck.pm
+[1;39m## stage_Capture-Tiny-0.18: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Capture.Tiny.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_Devel-Autoflush-0.05: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Devel.Autoflush.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_IPC-Cmd-0.78: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
+Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IPC.Cmd.3pm
+Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
+[1;39m## stage_CPAN-Reporter-1.2006: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.API.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.Config.3pm
@@ -823,102 +496,33 @@ Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.FAQ.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.History.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Reporter.PrereqCheck.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Text-Glob-0.09: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Text/Glob.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Text.Glob.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Number-Compare-0.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Number/Compare.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Number.Compare.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_File-Find-Rule-0.33: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/Find/Rule.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/Find/Rule/Extending.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/Find/Rule/Procedural.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/findrule.1
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Find.Rule.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Find.Rule.Extending.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Find.Rule.Procedural.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/findrule
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Data-Compare-1.22: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Data/Compare.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Data/Compare/Plugins.pod
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Data/Compare/Plugins/Scalar/Properties.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.Compare.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.Compare.Plugins.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.Compare.Plugins.Scalar.Properties.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_CPAN-Checksums-2.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Checksums.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Checksums.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_File-Remove-1.52: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/Remove.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.Remove.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_File-chmod-0.32: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/File/chmod.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/File.chmod.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Params-Util-1.07: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Params/Util.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Params.Util.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Test-Script-1.07: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Test/Script.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Test.Script.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_CPAN-Inject-1.13: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/CPAN/Inject.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/cpaninject.1
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/CPAN.Inject.3pm
-Installing /usr/src/perl/perl-5.14/inst/usr/bin/cpaninject
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
-[1;39m## stage_Net-Telnet-3.03: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Net/Telnet.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Net.Telnet.3pm
-Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Module-ScanDeps-1.08: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Module/ScanDeps.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Module/ScanDeps/Cache.pm
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/Module/ScanDeps/DataFeed.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man1/scandeps.pl.1
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Module.ScanDeps.3pm
 Installing /usr/src/perl/perl-5.14/inst/usr/bin/scandeps.pl
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_PAR-Dist-0.48: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/PAR/Dist.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/PAR.Dist.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Socket6-0.23: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Socket6/Socket6.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Socket6/Socket6.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Socket6.pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_IO-Socket-INET6-2.69: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/IO/Socket/INET6.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/IO.Socket.INET6.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_B-Generate-1.44: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/B/Generate/Generate.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/B/Generate/Generate.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/B/Generate.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/B.Generate.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_PadWalker-1.93: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/PadWalker/PadWalker.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/PadWalker/PadWalker.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/PadWalker.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/PadWalker.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod
 [1;39m## stage_Data-Alias-1.16: make install_vendor DESTDIR=/usr/src/perl/perl-5.14/inst[0;0m
 Files found in blib/arch: installing files in blib/lib into architecture dependent library tree
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Data/Alias/Alias.bs
 Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/auto/Data/Alias/Alias.dll
-Installing /usr/src/perl/perl-5.14/inst/usr/lib/perl5/vendor_perl/5.14/i686-cygwin-threads-64int/Data/Alias.pm
 Installing /usr/src/perl/perl-5.14/inst/usr/share/man/man3/Data.Alias.3pm
 Appending installation info to /usr/src/perl/perl-5.14/inst/usr/lib/perl5/5.14/i686-cygwin-threads-64int/perllocal.pod

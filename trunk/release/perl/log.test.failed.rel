@@ -2,9 +2,10 @@ t/op/filetest..................................................# Failed at op/fi
 t/op/sigdispatch...............................................# Failed at op/sigdispatch.t line 95
 cpan/Time-HiRes/t/HiRes........................................FAILED at test 39
 #   Failed test '  - checking returned architecture name'
+dist/I18N-Collate/t/I18N-Collate...............................#   Failed test 'different object'
 dist/Net-Ping/t/510_ping_udp...................................#   Failed test at t/510_ping_udp.t line 32.
 # Looks like you failed 1 test of 2.
-ext/XS-APItest/t/call_checker..................................fail 5801a880!=5939c6d0 at APItest.xs line 2208 at t/call_checker.t line 7.
+ext/XS-APItest/t/call_checker..................................fail 5801a880!=5951c6d0 at APItest.xs line 2208 at t/call_checker.t line 7.
 lib/File/stat..................................................#   Failed test 'correct -w overload'
 t/porting/regen................................................FAILED at test 22
-Makefile:870: recipe for target `test' failed
+GNUmakefile:870: recipe for target `test' failed

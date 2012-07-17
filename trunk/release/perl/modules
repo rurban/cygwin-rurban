@@ -6,54 +6,56 @@ modules="Pod::Escapes Pod::Simple Test::Pod Devel::Symdump Pod::Coverage Test::P
         IO::String \
         Archive::Zip \
 	Term::ReadKey Term::ReadLine::Perl Term::ReadLine::Gnu \
-        XML::NamespaceSupport XML::SAX XML::LibXML::Common XML::LibXML \
+        XML::NamespaceSupport XML::SAX::Base XML::SAX XML::LibXML::Common XML::LibXML \
 	XML::Parser \
 	Proc::ProcessTable \
 	YAML \
 	Config::Tiny File::Copy::Recursive IPC::Run3 Probe::Perl  \
-    	Tee IO::CaptureOutput File::pushd File::HomeDir \
+    	Tee IO::CaptureOutput File::pushd File::Which File::HomeDir \
 	Digest::SHA \
-	Module::Signature \
-        URI HTML::Tagset HTML::Parser LWP \
-	Net::IP Net::DNS Test::Reporter \
+	IPC::Run Module::Signature \
+        URI HTML::Tagset HTML::Parser HTTP::Date Encode::Locale LWP::MediaTypes \
+          HTTP::Message File::Listing \
+          HTTP::Daemon WWW::RobotRules HTTP::Negotiate HTTP::Cookies Net::HTTP WWW::RobotRules LWP \
+	Net::IP Digest::HMAC_MD5 Net::DNS Test::Reporter \
 	  Net::SSL common::sense JSON::XS JSON Metabase::Client::Simple \
-	  Data::UUID Data::GUID CPAN::DistnameInfo Metabase::Fact \
-	  Config::Perl::V CPAN::Testers::Report \
-	  Test::Reporter::Transport::Metabase CPAN::Reporter \
-        Text::Glob Number::Compare File::Find::Rule Data::Compare CPAN::Checksums 
-	  File::Remove File::chmod \
-          Params::Util Test::Script CPAN::Inject \
-	Net::Telnet \
+	  Sub::Install Data::UUID Sub::Exporter Params::Util Data::OptList Data::GUID CPAN::DistnameInfo Metabase::Fact \
+	  Test::Tester Test::NoWarnings Config::Perl::V CPAN::Testers::Report \
+	  Test::Reporter::Transport::Metabase Capture::Tiny Devel::Autoflush IPC::Cmd \
+          CPAN::Reporter \
 	Module::ScanDeps PAR::Dist \
 	Socket6 IO::Socket::INET6 \
 	B::Generate PadWalker Data::Alias"
 
 # already in CORE
 # Compress-Raw-Bzip2-2.024 IO-Compress-2.024 IO-Compress-Bzip2-2.024
+# YAML-0.81 falls into an endless dependency loop requiring ExtUtils-MakeMaker-6.62
 
-exts="Pod-Escapes-1.04 Pod-Simple-3.20 Test-Pod-1.45 \
+exts="Pod-Escapes-1.04 Pod-Simple-3.22 Test-Pod-1.45 \
 	Devel-Symdump-2.08 Pod-Coverage-0.22 Test-Pod-Coverage-1.08 \
 	Compress-Bzip2-2.09 \
         IO-String-1.08	\
         Archive-Zip-1.30 \
 	TermReadKey-2.30 Term-ReadLine-Perl-1.0303 Term-ReadLine-Gnu-1.20 \
-        XML-NamespaceSupport-1.11 XML-SAX-0.99 XML-LibXML-1.96 \
+        XML-NamespaceSupport-1.11 XML-SAX-Base-1.08 XML-SAX-0.99 XML-LibXML-2.0002 \
 	XML-Parser-2.41 \
 	Proc-ProcessTable-0.45 \
 	YAML-0.80 \
 	Config-Tiny-2.14 File-Copy-Recursive-0.38 IPC-Run3-0.045 Probe-Perl-0.01 \
-    	Tee-0.14 IO-CaptureOutput-1.1102 File-pushd-1.002 File-HomeDir-0.99 \
+    	Tee-0.14 IO-CaptureOutput-1.1102 File-pushd-1.002 File-Which-1.09 File-HomeDir-0.99 \
 	Digest-SHA-5.71 \
-	Module-Signature-0.68 \
-        URI-1.59 HTML-Tagset-3.20 HTML-Parser-3.69 libwww-perl-6.04 \
-	Net-IP-1.25 Net-DNS-0.68 Test-Reporter-1.58 \
-	  Crypt-SSLeay-0.58 common-sense-3.4 JSON-XS-2.32 JSON-2.53 \
+	IPC-Run-0.91 Module-Signature-0.68 \
+        URI-1.60 HTML-Tagset-3.20 HTML-Parser-3.69 HTTP-Date-6.02 \
+          Encode-Locale-1.03 LWP-MediaTypes-6.02 HTTP-Message-6.03 \
+          File-Listing-6.04 HTTP-Daemon-6.01 WWW-RobotRules-6.02 HTTP-Negotiate-6.01 \
+          HTTP-Cookies-6.01 Net-HTTP-6.03 libwww-perl-6.04 \
+	Net-IP-1.25 Digest-HMAC-1.03 Net-DNS-0.68 Test-Reporter-1.58 \
+	  Crypt-SSLeay-0.58 common-sense-3.6 JSON-XS-2.32 JSON-2.53 \
 	    Metabase-Client-Simple-0.008 \
-	  Data-UUID-1.217 Data-GUID-0.046 CPAN-DistnameInfo-0.12 Metabase-Fact-0.021 \
-	    Config-Perl-V-0.14 CPAN-Testers-Report-1.999001 \
-            Test-Reporter-Transport-Metabase-1.999008 CPAN-Reporter-1.2005 \
-        Text-Glob-0.09 Number-Compare-0.03 File-Find-Rule-0.33 Data-Compare-1.22 CPAN-Checksums-2.08 File-Remove-1.52 File-chmod-0.32 Params-Util-1.07 Test-Script-1.07 CPAN-Inject-1.13 \
-	Net-Telnet-3.03 \
+	  Sub-Install-0.926 Data-UUID-1.217 Params-Util-1.07 Data-OptList-0.107 Sub-Exporter-0.984 Data-GUID-0.046 CPAN-DistnameInfo-0.12 Metabase-Fact-0.021 \
+	    Test-Tester-0.108 Test-NoWarnings-1.04 Config-Perl-V-0.15 CPAN-Testers-Report-1.999001 \
+            Test-Reporter-Transport-Metabase-1.999008 \
+            Capture-Tiny-0.18 Devel-Autoflush-0.05 IPC-Cmd-0.78 CPAN-Reporter-1.2006 \
 	Module-ScanDeps-1.08 PAR-Dist-0.48 \
         Socket6-0.23 IO-Socket-INET6-2.69 \
 	B-Generate-1.44 \
@@ -63,3 +65,7 @@ exts="Pod-Escapes-1.04 Pod-Simple-3.20 Test-Pod-1.45 \
 # File-Temp-0.22 now in CORE
 # PAR not because of /usr/bin/pp
 # Algorithm-Diff-1.1902 Text-Diff-0.35 not needed because we removed usr/bin/ptardiff
+# Removed:
+#   Text-Glob-0.09 Number-Compare-0.03 File-Find-Rule-0.33 Data-Compare-1.22 CPAN-Checksums-2.08
+#   File-Remove-1.52 File-chmod-0.32 Params-Util-1.07 Test-Script-1.07 CPAN-Inject-1.13
+#   Net-Telnet-3.03
